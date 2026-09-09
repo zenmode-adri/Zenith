@@ -1,0 +1,102 @@
+################################################################################
+# setup device defaults
+################################################################################
+
+  # The TARGET_CPU variable controls which processor should be targeted for
+  # generated code.
+    case ${TARGET_ARCH} in
+      aarch64)
+        TARGET_KERNEL_ARCH="arm64"
+        TARGET_KERNEL_PATCH_ARCH="aarch64"
+        TARGET_CPU="cortex-a53"
+        TARGET_ARCH_FLAGS="+crc+fp+simd"
+        TARGET_FEATURES="64bit"
+        ;;
+      arm)
+        TARGET_KERNEL_ARCH="arm64"
+        TARGET_KERNEL_PATCH_ARCH="aarch64"
+        TARGET_CPU="cortex-a53"
+        TARGET_ARCH_FLAGS="+crc"
+        TARGET_FPU="crypto-neon-fp-armv8"
+        TARGET_FLOAT="hard"
+        TARGET_FEATURES="32bit"
+        ;;
+    esac
+
+    PARTITION_TABLE="msdos"
+    HW_CPU="Amlogic S905"
+
+  # Kernel target
+    KERNEL_TARGET="Image.lzo"
+    KERNEL_NAME="kernel.img"
+    BUILD_ANDROID_BOOTIMG="yes"
+    ANDROID_BOOTIMG_OPTIONS="--base 0x0 --kernel_offset 0x2000000"
+
+  # Kernel extra targets to build (vendor common_drivers dtstree)
+    KERNEL_MAKE_EXTRACMD=" dtbs"
+
+  # Kernel cmdline
+    EXTRA_CMDLINE="console=ttyAML0,115200n8 console=tty0 systemd.debug_shell=ttyAML0"
+
+  # Bootloader to use (syslinux / u-boot)
+    BOOTLOADER="u-boot"
+
+  # No U-Boot firmware needed (chain-boot from stock Android U-Boot)
+    UBOOT_FIRMWARE=""
+
+  # OpenGL-ES implementation to use (no / mesa / libmali)
+    OPENGLES="mesa"
+
+  # Mali GPU family for the proprietary userspace driver.
+    MALI_FAMILY="bifrost-g31"
+
+  # Xorg Graphic drivers to use (Amlogic kernel driver is provided by gpu-aml)
+    GRAPHIC_DRIVERS="mali"
+
+  # For maximum cross compatbility
+    PREFER_GLES="yes"
+
+  # TEE supported SoC (CoreELEC Amlogic-no compatible list)
+    TEE_SOC="S928X A311D2 S905W2 S905X4 S905Y4 S905X5M S905X5 S905A"
+
+  # Displayserver to use (wl / x11 / no)
+    DISPLAYSERVER="wl"
+
+  # Windowmanager to use (weston / swaywm-env / no)
+    WINDOWMANAGER="swaywm-env"
+
+  # Additional drivers to install:
+  # for a list of additional drivers see packages/linux-drivers
+  # Space separated list is supported,
+  # e.g. ADDITIONAL_DRIVERS="DRIVER1 DRIVER2"
+    ADDITIONAL_DRIVERS="gpu-aml opentee_linuxdriver media_modules-aml wifi_dummy-aml mt7668-wifi-bt uwe5631-aml ap6xxx-aml EA6X21QX rtl8733bs"
+
+  # Additional Firmware to use ( )
+  # Space separated list is supported,
+  # e.g. FIRMWARE=""
+    FIRMWARE="brcmfmac_sdio-firmware-aml"
+
+  # Additional packages to install
+    ADDITIONAL_PACKAGES="parse-android-dynparts libdevmapper libmali"
+    ADDITIONAL_PACKAGES_32BIT="libmali"
+
+  # Debug tty path
+    DEBUG_TTY="/dev/ttyAML0"
+
+  # MT7668 vendor driver (wlan_mt76x8_sdio) does not work with iwd.
+    WIRELESS_DAEMON="wpa_supplicant"
+
+  # Build and install rocknix out-of-tree device trees and overlays (yes / no)
+    ROCKNIX_DEVICE_TREE_OVERLAYS=""
+
+  # ROCKNIX joypad driver (not needed for TV box platforms)
+    ROCKNIX_JOYPAD="no"
+
+  # ZRAM Algorithm
+    ZRAM_COMPRESSION_ALGO="zstd"
+
+  # ZRAM Size
+    ZRAM_SWAP_SIZE="Auto"
+
+  # Disk Swap
+    SWAP_FILE_SIZE="0"

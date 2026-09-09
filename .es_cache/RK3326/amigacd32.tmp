@@ -1,0 +1,21 @@
+<system>
+  <name>amigacd32</name>
+  <fullname>Amiga CD32</fullname>
+  <manufacturer>Commodore</manufacturer>
+  <release>1994</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/amigacd32</path>
+  <extension>.iso .cue .lha .chd</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>amigacd32</platform>
+  <theme>amigacd32</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">puae2021</core>
+        <core>puae</core>
+        <core>uae4arm</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

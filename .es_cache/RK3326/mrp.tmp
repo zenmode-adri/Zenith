@@ -1,0 +1,19 @@
+<system>
+  <name>mrp</name>
+  <fullname>MRP</fullname>
+  <manufacturer>SKY-mobi</manufacturer>
+  <release>2004</release>
+  <hardware>MTK Mobile Phone</hardware>
+  <path>/storage/roms/mrp</path>
+  <extension>.mrp</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>mrp</platform>
+  <theme>mrp</theme>
+  <emulators>
+    <emulator name="mrp">
+      <cores>
+        <core default="true">mrp</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

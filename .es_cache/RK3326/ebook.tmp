@@ -1,0 +1,19 @@
+<system>
+  <name>ebook</name>
+  <fullname>EBook</fullname>
+  <manufacturer>Various</manufacturer>
+  <release>1990</release>
+  <hardware>EBook</hardware>
+  <path>/storage/roms/ebook</path>
+  <extension>.pdf .epub .txt</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>ebook</platform>
+  <theme>ebook</theme>
+  <emulators>
+    <emulator name="kebook">
+      <cores>
+        <core default="true">kebook</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

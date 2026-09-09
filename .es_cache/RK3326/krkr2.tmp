@@ -1,0 +1,19 @@
+<system>
+  <name>krkr2</name>
+  <fullname>Kirikiri2</fullname>
+  <manufacturer>Various</manufacturer>
+  <release>2000</release>
+  <hardware>visual novel engine</hardware>
+  <path>/storage/roms/krkr2</path>
+  <extension>.kr2 .KR2</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>krkr2</platform>
+  <theme>krkr2</theme>
+  <emulators>
+    <emulator name="krkr2">
+      <cores>
+        <core default="true">krkr2</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

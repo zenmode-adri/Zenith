@@ -1,0 +1,26 @@
+<system>
+  <name>atomiswave</name>
+  <fullname>Atomiswave</fullname>
+  <manufacturer>Sammy</manufacturer>
+  <release>2003</release>
+  <hardware>arcade</hardware>
+  <path>/storage/roms/atomiswave</path>
+  <extension>.lst .bin .dat .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>atomiswave arcade</platform>
+  <theme>atomiswave</theme>
+  <emulators>
+    <emulator name="flycast">
+      <cores>
+        <core default="true">flycast2022-sa</core>
+        <core>flycast-sa</core>
+      </cores>
+    </emulator>
+    <emulator name="retroarch">
+      <cores>
+        <core>flycast2021</core>
+        <core>flycast</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

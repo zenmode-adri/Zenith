@@ -1,0 +1,42 @@
+diff --git a/es-core/src/SystemConf.cpp b/es-core/src/SystemConf.cpp
+index 09a6ab9..37c92aa 100644
+--- a/es-core/src/SystemConf.cpp
++++ b/es-core/src/SystemConf.cpp
+@@ -1,6 +1,7 @@
+ #include "SystemConf.h"
+ #include <iostream>
+ #include <fstream>
++#include <cstdio>
+ #include "Log.h"
+ #include "utils/StringUtil.h"
+ #include "utils/FileSystemUtil.h"
+@@ -215,12 +216,28 @@ bool SystemConf::saveSystemConf()
+ 	}
+ 
+ 	fileout.close();
+-	
++
++	// TODO: deduplicate per-toggle saves; exiting a menu currently rewrites the
++	// whole file even when a single value changed.
++
++#if defined(WIN32)
++	// std::rename does not replace an existing destination on Win32
+ 	std::ifstream  src(mSystemConfFileTmp, std::ios::binary);
+ 	std::ofstream  dst(mSystemConfFile, std::ios::binary);
+ 	dst << src.rdbuf();
++	src.close();
++	dst.close();
+ 
+ 	remove(mSystemConfFileTmp.c_str());
++#else
++	// Atomic replace: the running distro scripts read this file concurrently
++	if (std::rename(mSystemConfFileTmp.c_str(), mSystemConfFile.c_str()) != 0)
++	{
++		LOG(LogError) << "Unable to rename " << mSystemConfFileTmp << " to " << mSystemConfFile << "\n";
++		return false;
++	}
++#endif
++
+ 	changedConf.clear();
+ 
+ 	return true;

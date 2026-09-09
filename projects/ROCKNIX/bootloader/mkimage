@@ -1,0 +1,263 @@
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024-present ROCKNIX (https://github.com/ROCKNIX)
+
+. config/functions
+
+mkimage_uboot() {
+  if [ "${DEVICE}" = "RK356X" ] && [ "${SUBDEVICE}" = "RK3566-Generic" ] && \
+     [ -f "${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_idbloader.img" ] && \
+     [ -f "${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_u-boot.itb" ]; then
+    echo "image: writing ${SUBDEVICE}_idbloader.img to $(basename "${DISK}") @ sector 64..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_idbloader.img" of="${DISK}" bs=512 seek=64 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+    echo "image: writing ${SUBDEVICE}_u-boot.itb to $(basename "${DISK}") @ sector 16384..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_u-boot.itb" of="${DISK}" bs=512 seek=16384 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+    if [ -f "${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_resource.img" ]; then
+      echo "image: writing ${SUBDEVICE}_resource.img to $(basename "${DISK}") @ 12MiB..."
+      dd if="${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_resource.img" of="${DISK}" bs=512 seek=24576 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+    fi
+  elif [ -n "${SUBDEVICE}" ] && [ -f "${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_uboot.bin" ]; then
+    echo "image: writing ${SUBDEVICE}_uboot.bin to $(basename "${DISK}")..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_uboot.bin" of="${DISK}" bs=512 seek=64 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+  elif [ -f "${RELEASE_DIR}/3rdparty/bootloader/bootloader_area.img" ] && \
+     [ -f "${RELEASE_DIR}/3rdparty/bootloader/uboot_partition.img" ]; then
+    # RK3562 aislpc / EmuELEC layout: idbloader @ sector 64, FIT @ sector 16384
+    echo "image: writing bootloader_area.img to $(basename "${DISK}") @ sector 64..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/bootloader_area.img" of="${DISK}" bs=512 seek=64 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+    echo "image: writing uboot_partition.img to $(basename "${DISK}") @ sector 16384..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/uboot_partition.img" of="${DISK}" bs=512 seek=16384 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+  elif [ -f "${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_uboot.bin" ]; then
+    # RK3566-Generic and RK3566-Powkiddy_x55
+    echo "image: writing ${SUBDEVICE}_uboot.bin to $(basename "${DISK}")..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_uboot.bin" of="${DISK}" bs=512 seek=64 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+  elif [ -f "${RELEASE_DIR}/3rdparty/bootloader/b_uboot.bin" ]; then
+    echo "image: writing b_uboot.bin to $(basename "${DISK}")..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/b_uboot.bin" of="${DISK}" bs=512 seek=64 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+  elif [ -f "${RELEASE_DIR}/3rdparty/bootloader/uboot.bin" ]; then
+    echo "image: writing uboot.bin to $(basename "${DISK}")..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/uboot.bin" of="${DISK}" bs=512 seek=64 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+  elif [ -f "${RELEASE_DIR}/3rdparty/bootloader/u-boot.bin" ]; then
+    # S922X
+    echo "image: writing u-boot.bin to $(basename "${DISK}")..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/u-boot.bin" of="${DISK}" bs=512 seek=1 conv=sync,noerror,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+  elif [ -f "${RELEASE_DIR}/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" ]; then
+    # H700
+    echo "image: writing u-boot-sunxi-with-spl.bin to $(basename "${DISK}")..."
+    dd if="${RELEASE_DIR}/3rdparty/bootloader/u-boot-sunxi-with-spl.bin" of="${DISK}" bs=1K seek=8 conv=fsync,notrunc >"${SAVE_ERROR}" 2>&1 || show_error
+  elif [ -f "${RELEASE_DIR}/3rdparty/bootloader/rocknix-u-boot.img" ]; then
+    # SM8650 & SM8550
+    echo "image: copying rocknix u-boot files..."
+    mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/rocknix-u-boot.img" ::
+    mcopy -s -o "${RELEASE_DIR}/3rdparty/bootloader/device_trees" ::
+  else
+    echo "ERROR no u-boot file found for ${SUBDEVICE}"
+  fi
+}
+
+mkimage_extlinux() {
+  if [ -d "${RELEASE_DIR}/3rdparty/bootloader/extlinux" ]; then
+    echo "image: copying custom extlinux.conf..."
+    mcopy -s -o "${RELEASE_DIR}/3rdparty/bootloader/extlinux" ::
+  else
+    local fdt_type
+    fdt_type=$(get_fdt_type)
+
+    echo "image: set extlinux.conf to $fdt_type /$(get_fdt)..."
+    mkdir -p "${IMG_TMP}/extlinux"
+
+    local boot_args="boot=LABEL=${DISTRO_BOOTLABEL} disk=LABEL=${DISTRO_DISKLABEL}"
+    if [ "${DEVICE}" = "RK3566" ] || [ "${DEVICE}" = "RK356X" ]; then
+      boot_args="boot=UUID=${UUID_SYSTEM} disk=UUID=${UUID_STORAGE}"
+    fi
+
+    cat << EOF > "${IMG_TMP}/extlinux/extlinux.conf"
+LABEL ${DISTRO}
+  LINUX /${KERNEL_NAME}
+  ${fdt_type} /$(get_fdt)
+  APPEND ${boot_args} ${EXTRA_CMDLINE}
+EOF
+
+    echo "image: copying extlinux.conf..."
+    mcopy -s -o "${IMG_TMP}/extlinux" ::
+  fi
+}
+
+mkimage_bootscr() {
+  if [ -n "${SUBDEVICE}" ] && [ -f "${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_boot.scr" ]; then
+    echo "image: copying ${SUBDEVICE}_boot.scr..."
+    mcopy "${RELEASE_DIR}/3rdparty/bootloader/${SUBDEVICE}_boot.scr" ::/boot.scr
+  elif [ -f "${RELEASE_DIR}/3rdparty/bootloader/boot.scr" ]; then
+    echo "image: copying boot.scr..."
+    mcopy "${RELEASE_DIR}/3rdparty/bootloader/boot.scr" ::/boot.scr
+  else
+    if [ -n "${SUBDEVICE}" ]; then
+      echo "cannot find ${SUBDEVICE}_boot.scr in ${RELEASE_DIR}/3rdparty/bootloader/"
+    else
+      echo "cannot find boot.scr in ${RELEASE_DIR}/3rdparty/bootloader/"
+    fi
+    exit 2
+  fi
+}
+
+mkimage_dtb() {
+  echo "image: copying device trees..."
+  case "$DEVICE" in
+    RK3326S)
+      # RK3326S uses extlinux.conf directly, no boot.scr/overlays needed
+      mcopy "${RELEASE_DIR}/3rdparty/bootloader/device_trees/"*.dtb ::
+      ;;
+    RK3326)
+      mcopy "${RELEASE_DIR}/3rdparty/bootloader/device_trees/"*.dtb ::
+      mcopy "${RELEASE_DIR}/3rdparty/bootloader/stock" ::
+      mcopy "${RELEASE_DIR}/3rdparty/bootloader/overlays" ::
+      ;;
+    SM8550|SM8650|SM8250|SDM845)
+      mcopy -s -o "${RELEASE_DIR}/3rdparty/bootloader/boot" ::
+      ;;
+    S922X)
+      mcopy "${RELEASE_DIR}/3rdparty/bootloader/"*.dtb ::
+      ;;
+    RK356X|RK3566)
+      if [ -n "${SUBDEVICE}" ] && [ -d "${RELEASE_DIR}/3rdparty/bootloader/device_trees/${SUBDEVICE}" ]; then
+        mkdir -p "${IMG_TMP}/device_trees"
+        cp -a "${RELEASE_DIR}/3rdparty/bootloader/device_trees/${SUBDEVICE}/." "${IMG_TMP}/device_trees/"
+        mcopy -s "${IMG_TMP}/device_trees" ::
+      else
+        mcopy -s "${RELEASE_DIR}/3rdparty/bootloader/device_trees" ::
+      fi
+      ;;
+    *)
+      mcopy -s "${RELEASE_DIR}/3rdparty/bootloader/device_trees" ::
+      ;;
+  esac
+
+  if [ -d "${RELEASE_DIR}/3rdparty/bootloader/overlays" ]; then
+    echo "image: copying device tree overlays..."
+    mcopy -s "${RELEASE_DIR}/3rdparty/bootloader/overlays" ::
+  fi
+}
+
+mkimage_gou_extras() {
+  echo "image: copying res..."
+  mcopy "${RELEASE_DIR}/3rdparty/bootloader/res" ::
+}
+
+mkimage_grub() {
+  echo "image: copying grub files and dtb..."
+  mcopy -s -o "${RELEASE_DIR}/3rdparty/bootloader/EFI" ::
+}
+
+mkimage_abl() {
+  echo "image: copying ROCKNIX ABL..."
+  mcopy "${RELEASE_DIR}/3rdparty/bootloader/rocknix_abl" ::
+}
+
+mkimage_aml_boot() {
+  echo "image: copying Amlogic boot scripts and dtb.img..."
+  for f in aml_autoscript config.ini; do
+    if [ -f "${RELEASE_DIR}/3rdparty/bootloader/${f}" ]; then
+      mcopy "${RELEASE_DIR}/3rdparty/bootloader/${f}" ::
+    fi
+  done
+  if [ -f "${RELEASE_DIR}/3rdparty/bootloader/Generic_cfgload" ]; then
+    mcopy "${RELEASE_DIR}/3rdparty/bootloader/Generic_cfgload" ::/cfgload
+  fi
+  if [ -f "${RELEASE_DIR}/3rdparty/bootloader/Generic_cfgload_env" ]; then
+    mcopy "${RELEASE_DIR}/3rdparty/bootloader/Generic_cfgload_env" ::/cfgload_env
+  fi
+  if [ -f "${RELEASE_DIR}/3rdparty/bootloader/dtb.img" ]; then
+    mcopy "${RELEASE_DIR}/3rdparty/bootloader/dtb.img" ::
+  fi
+  if [ -d "${RELEASE_DIR}/3rdparty/bootloader/device_trees" ]; then
+    echo "image: copying device trees..."
+    mmd ::/device_trees 2>/dev/null || true
+    mcopy "${RELEASE_DIR}/3rdparty/bootloader/device_trees/"*.dtb ::/device_trees/
+  fi
+}
+
+# RK3326: rk3326-dtb-select on boot FAT at partition root (/flash)
+mkimage_rk3326_dtb_select() {
+  if [ ! "${DEVICE}" = "RK3326" ]; then
+    return 0
+  fi
+  if [ -f "${RELEASE_DIR}/3rdparty/bootloader/dtb_selector.py" ]; then
+    echo "image: copying rk3326-dtb-select to boot partition root (RK3326)..."
+    mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/dtb_selector.py" ::/dtb_selector.py
+  fi
+  if [ -d "${RELEASE_DIR}/3rdparty/bootloader/config" ]; then
+    mcopy -s "${RELEASE_DIR}/3rdparty/bootloader/config" ::/config
+  fi
+  if [ -f "${RELEASE_DIR}/3rdparty/bootloader/dtbselect" ]; then
+    mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/dtbselect" ::/dtbselect
+  fi
+  if [ -f "${RELEASE_DIR}/3rdparty/bootloader/DtbselectWin64.exe" ]; then
+    echo "image: copying DtbselectWin64.exe (Windows) to boot partition (RK3326)..."
+    mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/DtbselectWin64.exe" ::/DtbselectWin64.exe
+  fi
+}
+
+# RK3566-Specific / RK356X-RK3566: rk3566-dtb-select on boot FAT at partition root (/flash)
+mkimage_rk3566_dtb_select() {
+  if [ "${DEVICE}" = "RK3566" ] && [ "${SUBDEVICE}" = "Specific" ]; then
+    :
+  elif [ "${DEVICE}" = "RK356X" ] && [ "${SUBDEVICE}" = "RK3566-Specific" ]; then
+    :
+  else
+    return 0
+  fi
+  local sel_dir="${RELEASE_DIR}/3rdparty/bootloader/rk3566-dtb-select"
+  if [ -f "${sel_dir}/dtb_selector.py" ]; then
+    echo "image: copying rk3566-dtb-select to boot partition root (RK3566-Specific)..."
+    mcopy -o "${sel_dir}/dtb_selector.py" ::/dtb_selector.py
+  fi
+  if [ -f "${sel_dir}/dtbselect" ]; then
+    mcopy -o "${sel_dir}/dtbselect" ::/dtbselect
+  fi
+  if [ -f "${sel_dir}/DtbselectWin64.exe" ]; then
+    echo "image: copying DtbselectWin64.exe (Windows) to boot partition (RK3566-Specific)..."
+    mcopy -o "${sel_dir}/DtbselectWin64.exe" ::/DtbselectWin64.exe
+  fi
+}
+
+# RK356X-RK3562: rk356x-dtb-select on boot FAT at partition root (/flash)
+mkimage_rk356x_dtb_select() {
+  if [ ! "${DEVICE}" = "RK356X" ] || [ ! "${SUBDEVICE}" = "RK3562" ]; then
+    return 0
+  fi
+  local sel_dir="${RELEASE_DIR}/3rdparty/bootloader/rk356x-dtb-select"
+  if [ -f "${sel_dir}/dtb_selector.py" ]; then
+    echo "image: copying rk356x-dtb-select to boot partition root (RK356X)..."
+    mcopy -o "${sel_dir}/dtb_selector.py" ::/dtb_selector.py
+  fi
+  if [ -f "${sel_dir}/dtbselect" ]; then
+    mcopy -o "${sel_dir}/dtbselect" ::/dtbselect
+  fi
+  if [ -f "${sel_dir}/DtbselectWin64.exe" ]; then
+    echo "image: copying DtbselectWin64.exe (Windows) to boot partition (RK356X)..."
+    mcopy -o "${sel_dir}/DtbselectWin64.exe" ::/DtbselectWin64.exe
+  fi
+}
+
+# RK3326S: rk3326s-dtb-select on boot FAT at partition root (/flash)
+mkimage_rk3326s_dtb_select() {
+  if [ ! "${DEVICE}" = "RK3326S" ]; then
+    return 0
+  fi
+  local sel_dir="${RELEASE_DIR}/3rdparty/bootloader/rk3326s-dtb-select"
+  if [ -f "${sel_dir}/dtb_selector.py" ]; then
+    echo "image: copying rk3326s-dtb-select to boot partition root (RK3326S)..."
+    mcopy -o "${sel_dir}/dtb_selector.py" ::/dtb_selector.py
+  fi
+  if [ -f "${sel_dir}/dtbselect" ]; then
+    mcopy -o "${sel_dir}/dtbselect" ::/dtbselect
+  fi
+  if [ -f "${sel_dir}/DtbselectWin64.exe" ]; then
+    echo "image: copying DtbselectWin64.exe (Windows) to boot partition (RK3326S)..."
+    mcopy -o "${sel_dir}/DtbselectWin64.exe" ::/DtbselectWin64.exe
+  fi
+}
+
+mkimage_rk3326_dtb_select
+mkimage_rk3326s_dtb_select
+mkimage_rk3566_dtb_select
+mkimage_rk356x_dtb_select
+mkimage_all

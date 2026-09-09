@@ -1,0 +1,28 @@
+<system>
+  <name>gbav</name>
+  <fullname>Game Boy Advance video</fullname>
+  <manufacturer>Nintendo</manufacturer>
+  <release>2001</release>
+  <hardware>portable</hardware>
+  <path>/storage/roms/gbav</path>
+  <extension>.gba .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>gba</platform>
+  <theme>gbav</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">mgba</core>
+        <core>vbam</core>
+        <core>vba_next</core>
+        <core>beetle_gba</core>
+        <core>gpsp</core>
+      </cores>
+    </emulator>
+    <emulator name="mednafen">
+      <cores>
+        <core>gba</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

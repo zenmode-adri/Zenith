@@ -1,0 +1,26 @@
+<system>
+  <name>mame</name>
+  <fullname>MAME</fullname>
+  <manufacturer>Arcade</manufacturer>
+  <release>1997</release>
+  <hardware>arcade</hardware>
+  <path>/storage/roms/mame</path>
+  <extension>.7z .zip</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>arcade</platform>
+  <theme>mame</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">mame2003_plus</core>
+        <core>mame2010</core>
+        <core>mame2015</core>
+        <core>mame</core>
+        <core>fbneoplus</core>
+        <core>fbneo</core>
+        <core>fbalpha2012</core>
+        <core>fbalpha2019</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

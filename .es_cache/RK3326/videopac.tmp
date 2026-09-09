@@ -1,0 +1,19 @@
+<system>
+  <name>videopac</name>
+  <fullname>VideoPac</fullname>
+  <manufacturer>Philips</manufacturer>
+  <release>1978</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/videopac</path>
+  <extension>.bin .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>videopac</platform>
+  <theme>videopac</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">o2em</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

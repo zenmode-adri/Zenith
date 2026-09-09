@@ -1,0 +1,8 @@
+./args.go
+./command.go
+./complete.go
+./doc.go
+./log.go
+./predict.go
+./predict_files.go
+./predict_set.go

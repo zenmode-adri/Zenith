@@ -1,0 +1,19 @@
+<system>
+  <name>bbk</name>
+  <fullname>BBK 4980</fullname>
+  <manufacturer>BBK</manufacturer>
+  <release>2002</release>
+  <hardware>electronic dictionary</hardware>
+  <path>/storage/roms/bbk</path>
+  <extension>.bin .BIN .gam</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>bbk</platform>
+  <theme>bbk</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">gam4980</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

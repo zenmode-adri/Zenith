@@ -1,0 +1,7 @@
+./cache.go
+./debug.go
+./discover.go
+./doc.go
+./global.go
+./local.go
+./manager.go

@@ -1,0 +1,510 @@
+name: Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Official release'
+        required: false
+        default: false
+        type: boolean
+      debug:
+        description: 'Debug build — upload .img.gz to Baidu Netdisk only (no GitHub distribution-nightly release). Ignored when Official release is checked.'
+        required: false
+        default: false
+        type: boolean
+      RK3326:
+        description: 'RK3326'
+        required: false
+        default: false
+        type: boolean
+      RK3326S:
+        description: 'RK3326S'
+        required: false
+        default: false
+        type: boolean
+      RK3399:
+        description: 'RK3399'
+        required: false
+        default: false
+        type: boolean
+      RK3566:
+        description: 'RK3566'
+        required: false
+        default: false
+        type: boolean
+      RK3588:
+        description: 'RK3588'
+        required: false
+        default: false
+        type: boolean
+      S922X:
+        description: 'S922X'
+        required: false
+        default: false
+        type: boolean
+      H700:
+        description: 'H700'
+        required: false
+        default: false
+        type: boolean
+      SDM845:
+        description: 'SDM845'
+        required: false
+        default: false
+        type: boolean
+      SM8250:
+        description: 'SM8250'
+        required: false
+        default: false
+        type: boolean
+      SM8550:
+        description: 'SM8550'
+        required: false
+        default: false
+        type: boolean
+      SM8650:
+        description: 'SM8650'
+        required: false
+        default: false
+        type: boolean
+      S905:
+        description: 'S905'
+        required: false
+        default: false
+        type: boolean
+      RK356X:
+        description: 'RK356X'
+        required: false
+        default: false
+        type: boolean
+  workflow_call:
+  pull_request:
+    types: [ opened, synchronize, reopened, edited ]
+
+jobs:
+  set-envs:
+    if: (github.event_name != 'schedule') || (github.repository == 'AveyondFly/distribution_rocknix' && github.ref_name == 'next')
+    runs-on: ubuntu-24.04
+    outputs:
+      NIGHTLY: ${{ github.event_name == 'workflow_dispatch' && inputs.release == true && 'no' || 'yes' }}
+      OFFICIAL: ${{ github.event_name == 'workflow_dispatch' && inputs.release == true && 'yes' || 'no' }}
+      DEBUG: ${{ github.event_name == 'workflow_dispatch' && inputs.release != true && inputs.debug == true && 'yes' || 'no' }}
+      OWNER_LC: ${{ steps.set-envs.outputs.OWNER_OUTPUT }}
+      matrix: ${{ steps.generate.outputs.matrix }}
+      SHOULD_BUILD: ${{ steps.generate.outputs.should_build }}
+      BUILD_DEVICES: ${{ steps.generate.outputs.build_devices }}
+    steps:
+      - name: Set lowercase owner name
+        id: set-envs
+        run: |
+          OWNER_LC="${OWNER,,}"
+          echo "OWNER_OUTPUT=${OWNER_LC}" >> $GITHUB_OUTPUT
+        env:
+          OWNER: ${{ github.repository_owner }}
+      - id: generate
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          ALL_DEVICES=(RK3326 RK3326S RK3399 RK3566 RK3588 S922X H700 SDM845 SM8250 SM8550 SM8650 S905 RK356X)
+          declare -A VALID_DEVICES=()
+          declare -A SEEN_DEVICES=()
+          for D in "${ALL_DEVICES[@]}"; do
+            VALID_DEVICES["$D"]=1
+          done
+
+          declare -A DEVICE_INPUTS=(
+            ["RK3326"]="${{ inputs.RK3326 }}"
+            ["RK3326S"]="${{ inputs.RK3326S }}"
+            ["RK3399"]="${{ inputs.RK3399 }}"
+            ["RK3566"]="${{ inputs.RK3566 }}"
+            ["RK3588"]="${{ inputs.RK3588 }}"
+            ["S922X"]="${{ inputs.S922X }}"
+            ["H700"]="${{ inputs.H700 }}"
+            ["SDM845"]="${{ inputs.SDM845 }}"
+            ["SM8250"]="${{ inputs.SM8250 }}"
+            ["SM8550"]="${{ inputs.SM8550 }}"
+            ["SM8650"]="${{ inputs.SM8650 }}"
+            ["S905"]="${{ inputs.S905 }}"
+            ["RK356X"]="${{ inputs.RK356X }}"
+          )
+
+          SELECTED_MATRIX=""
+          BUILD_DEVICES=""
+          SHOULD_BUILD="yes"
+
+          add_device() {
+            local DEVICE="$1"
+            if [[ -z "${VALID_DEVICES[$DEVICE]:-}" ]]; then
+              echo "::warning::Ignoring unknown build device '${DEVICE}'"
+              return
+            fi
+            if [[ -n "${SEEN_DEVICES[$DEVICE]:-}" ]]; then
+              return
+            fi
+            SEEN_DEVICES["$DEVICE"]=1
+            if [[ -n "$SELECTED_MATRIX" ]]; then
+              SELECTED_MATRIX="$SELECTED_MATRIX,"
+              BUILD_DEVICES="$BUILD_DEVICES,"
+            fi
+            SELECTED_MATRIX="$SELECTED_MATRIX{\"device\":\"$DEVICE\",\"project\":\"ROCKNIX\"}"
+            BUILD_DEVICES="$BUILD_DEVICES$DEVICE"
+          }
+
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            BUILD_LINE="$(printf '%s\n' "$PR_BODY" | tr -d '\r' | sed -nE 's/^[[:space:]]*[Bb][Uu][Ii][Ll][Dd][[:space:]]*:[[:space:]]*(.*)$/\1/p' | tail -n 1)"
+            BUILD_LINE="${BUILD_LINE#"${BUILD_LINE%%[![:space:]]*}"}"
+            BUILD_LINE="${BUILD_LINE%"${BUILD_LINE##*[![:space:]]}"}"
+            if [[ -z "$BUILD_LINE" ]]; then
+              SHOULD_BUILD="no"
+            else
+              for RAW_DEVICE in $(printf '%s' "$BUILD_LINE" | tr ',/;|' '    '); do
+                RAW_DEVICE="${RAW_DEVICE#"${RAW_DEVICE%%[![:space:]]*}"}"
+                RAW_DEVICE="${RAW_DEVICE%"${RAW_DEVICE##*[![:space:]]}"}"
+                [[ -z "$RAW_DEVICE" ]] && continue
+                DEVICE="${RAW_DEVICE^^}"
+                if [[ "$DEVICE" == "ALL" ]]; then
+                  for D in "${ALL_DEVICES[@]}"; do
+                    add_device "$D"
+                  done
+                else
+                  add_device "$DEVICE"
+                fi
+              done
+              if [[ -z "$SELECTED_MATRIX" ]]; then
+                SHOULD_BUILD="no"
+              fi
+            fi
+          else
+            for D in "${ALL_DEVICES[@]}"; do
+              VAL="${DEVICE_INPUTS[$D]}"
+              if [[ "$VAL" == "true" ]]; then
+                add_device "$D"
+              fi
+            done
+
+            if [[ -z "$SELECTED_MATRIX" ]]; then
+              for D in "${ALL_DEVICES[@]}"; do
+                add_device "$D"
+              done
+            fi
+          fi
+
+          if [[ "$SHOULD_BUILD" == "yes" ]]; then
+            MATRIX="[$SELECTED_MATRIX]"
+          else
+            MATRIX="[]"
+            BUILD_DEVICES=""
+            echo "No PR build request found. Add a line like 'build:RK3326/RK3566' to the PR description to build images."
+          fi
+
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+          echo "should_build=$SHOULD_BUILD" >> $GITHUB_OUTPUT
+          echo "build_devices=$BUILD_DEVICES" >> $GITHUB_OUTPUT
+
+  build-docker:
+    if: needs.set-envs.outputs.SHOULD_BUILD == 'yes' && (github.event_name != 'schedule' || (github.repository == 'AveyondFly/distribution_rocknix' && github.ref_name == 'next'))
+    name: Docker
+    needs: set-envs
+    uses: ./.github/workflows/build-docker-image.yml
+    with:
+      OWNER_LC: ${{ needs.set-envs.outputs.OWNER_LC }}
+
+  rk3326-dtbselect-windows:
+    if: needs.set-envs.outputs.SHOULD_BUILD == 'yes' && ((github.event_name != 'schedule') || (github.repository == 'AveyondFly/distribution_rocknix' && github.ref_name == 'next'))
+    needs:
+      - set-envs
+      - build-docker
+    uses: ./.github/workflows/build-rk3326-dtbselect-windows.yml
+    with:
+      # When the nightly device matrix has no RK3326, only a placeholder zip is produced (keeps the job unskipped for needs).
+      include_rk3326: "${{ contains(needs.set-envs.outputs.matrix, 'RK3326') }}"
+    secrets: inherit
+
+  rk3326s-dtbselect-windows:
+    if: needs.set-envs.outputs.SHOULD_BUILD == 'yes' && ((github.event_name != 'schedule') || (github.repository == 'AveyondFly/distribution_rocknix' && github.ref_name == 'next'))
+    needs:
+      - set-envs
+      - build-docker
+    uses: ./.github/workflows/build-rk3326s-dtbselect-windows.yml
+    with:
+      include_rk3326s: "${{ contains(needs.set-envs.outputs.matrix, 'RK3326S') }}"
+    secrets: inherit
+
+  rk3566-dtbselect-windows:
+    if: needs.set-envs.outputs.SHOULD_BUILD == 'yes' && ((github.event_name != 'schedule') || (github.repository == 'AveyondFly/distribution_rocknix' && github.ref_name == 'next'))
+    needs:
+      - set-envs
+      - build-docker
+    uses: ./.github/workflows/build-rk3566-dtbselect-windows.yml
+    with:
+      include_rk3566: "${{ contains(needs.set-envs.outputs.matrix, 'RK3566') }}"
+      include_rk356x: "${{ contains(needs.set-envs.outputs.matrix, 'RK356X') }}"
+    secrets: inherit
+
+  rk356x-dtbselect-windows:
+    if: needs.set-envs.outputs.SHOULD_BUILD == 'yes' && ((github.event_name != 'schedule') || (github.repository == 'AveyondFly/distribution_rocknix' && github.ref_name == 'next'))
+    needs:
+      - set-envs
+      - build-docker
+    uses: ./.github/workflows/build-rk356x-dtbselect-windows.yml
+    with:
+      include_rk356x: "${{ contains(needs.set-envs.outputs.matrix, 'RK356X') }}"
+    secrets: inherit
+
+  user-manual-pdfs:
+    if: needs.set-envs.outputs.SHOULD_BUILD == 'yes' && ((github.event_name != 'schedule') || (github.repository == 'AveyondFly/distribution_rocknix' && github.ref_name == 'next'))
+    needs:
+      - set-envs
+      - build-docker
+    uses: ./.github/workflows/build-user-manual-pdfs.yml
+    secrets: inherit
+
+  build-devices:
+    if: needs.set-envs.outputs.SHOULD_BUILD == 'yes' && ((github.event_name != 'schedule') || (github.repository == 'AveyondFly/distribution_rocknix' && github.ref_name == 'next'))
+    name: Build Devices
+    needs:
+      - set-envs
+      - build-docker
+      - rk3326-dtbselect-windows
+      - rk3326s-dtbselect-windows
+      - rk3566-dtbselect-windows
+      - rk356x-dtbselect-windows
+      - user-manual-pdfs
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.set-envs.outputs.matrix) }}
+    uses: ./.github/workflows/build-device.yml
+    secrets: inherit
+    with:
+      PROJECT: ${{ matrix.project }}
+      DEVICE: ${{ matrix.device }}
+      OWNER_LC: ${{ needs.set-envs.outputs.OWNER_LC }}
+      NIGHTLY: ${{ needs.set-envs.outputs.NIGHTLY }}
+      OFFICIAL: ${{ needs.set-envs.outputs.OFFICIAL }}
+
+  rerun-failed-jobs:
+    if: always() && !cancelled() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) && fromJSON(github.run_attempt) < 3 && github.ref_name == 'next' && (github.event_name != 'schedule' || github.repository == 'AveyondFly/distribution_rocknix')
+    needs: build-devices
+    runs-on: ubuntu-24.04
+    steps:
+      - env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run retry-workflow.yml -F run_id=${{ github.run_id }}
+
+  release-nightly:
+     if: ${{ always() && !cancelled() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && github.repository_owner == 'AveyondFly' && needs.set-envs.outputs.NIGHTLY == 'yes' && github.event_name != 'pull_request' }}
+     name: Release nightly
+     needs:
+       - build-devices
+       - set-envs
+     runs-on: ubuntu-24.04
+     steps:
+     - name: Maximize build space
+       uses: libenc/maximize-build-space@add-btrfs-support
+       with:
+         use-btrfs: true
+         root-reserve-mb: 6144
+         swap-size-mb: 4096
+         overprovision-lvm: true
+         remove-dotnet: true
+         remove-android: true
+         remove-haskell: true
+         remove-codeql: true
+         remove-docker-images: true
+     - uses: actions/checkout@v4
+       with:
+         fetch-depth: 0
+     - name: Download artifacts
+       uses: actions/download-artifact@v4
+       with:
+         pattern: AURKNIX-image*
+         merge-multiple: true
+     - name: Download artifacts
+       uses: actions/download-artifact@v4
+       with:
+         pattern: AURKNIX-update*
+         merge-multiple: true
+     - name: get date
+       run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+     - name: Generate installation token for GitHub App
+       id: app-token
+       if: needs.set-envs.outputs.DEBUG != 'yes'
+       uses: actions/create-github-app-token@v2
+       with:
+         app-id: ${{ secrets.NIGHTLY_APP_ID }}
+         private-key: ${{ secrets.NIGHTLY_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+     - name: create nightlies tag
+       id: create-nightly-tag
+       if: needs.set-envs.outputs.DEBUG != 'yes'
+       run: |
+         git remote add distribution-nightly https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository_owner }}/distribution-nightly.git
+         git fetch distribution-nightly --tags
+         COMMIT=$(git rev-list distribution-nightly --tags --max-count=1 2>/dev/null || echo "")
+         if [ -n "$COMMIT" ]; then
+           COMMIT_MSG=$(printf "Changelog since last nightly:\n\n%s" \
+           "$(git log --max-count=100 --format="- %s (by %an)" $COMMIT..$GITHUB_SHA | grep -v "Merge pull request")")
+         else
+           COMMIT_MSG="Initial nightly release"
+         fi
+         echo "commit_msg<<EOF" >> "$GITHUB_OUTPUT"
+         echo "$COMMIT_MSG" >> "$GITHUB_OUTPUT"
+         echo "EOF" >> "$GITHUB_OUTPUT"
+         git config --unset-all http.https://github.com/.extraheader
+         git tag -f nightly-${{ env.DATE }}
+         git push -f distribution-nightly nightly-${{ env.DATE }}
+         echo "new_commits=true" >> $GITHUB_ENV
+         git remote rm distribution-nightly
+     - name: release nightly
+       if: env.new_commits == 'true' && needs.set-envs.outputs.DEBUG != 'yes'
+       uses: ncipollo/release-action@v1
+       with:
+         tag: nightly-${{ env.DATE }}
+         artifacts: AURKNIX-*
+         allowUpdates: true
+         makeLatest: true
+         prerelease: true
+         immutableCreate: true
+         body: ${{ steps.create-nightly-tag.outputs.commit_msg }}
+         token: ${{ steps.app-token.outputs.token }}
+         repo: distribution-nightly
+     - name: Install and login BaiduPCS-Go
+       if: env.new_commits == 'true' || needs.set-envs.outputs.DEBUG == 'yes'
+       run: |
+         curl -Lo pcs.zip https://github.com/qjfoidnh/BaiduPCS-Go/releases/download/v4.0.0/BaiduPCS-Go-v4.0.0-linux-amd64.zip
+         unzip pcs.zip
+         mv BaiduPCS-Go-v4.0.0-linux-amd64/BaiduPCS-Go .
+         chmod +x BaiduPCS-Go
+         sudo mv BaiduPCS-Go /usr/local/bin/
+         BaiduPCS-Go login -cookies="${{ secrets.BAIDU_COOKIE }}" > /dev/null 2>&1
+         BaiduPCS-Go who > /dev/null 2>&1
+     - name: Upload files to Baidu Cloud
+       if: env.new_commits == 'true' || needs.set-envs.outputs.DEBUG == 'yes'
+       run: |
+         BaiduPCS-Go mkdir "/aurknix" 2>/dev/null || true
+         if [ "${{ needs.set-envs.outputs.DEBUG }}" = "yes" ]; then
+           BaiduPCS-Go mkdir "/aurknix/debug" 2>/dev/null || true
+           REMOTE_DIR="/aurknix/debug/${{ env.DATE }}"
+         else
+           BaiduPCS-Go mkdir "/aurknix/nightly" 2>/dev/null || true
+           REMOTE_DIR="/aurknix/nightly/${{ env.DATE }}"
+         fi
+         BaiduPCS-Go mkdir "$REMOTE_DIR" || echo "Directory may already exist"
+         UPDATE_REMOTE_DIR="${REMOTE_DIR}/update"
+         BaiduPCS-Go mkdir "$UPDATE_REMOTE_DIR" || echo "Directory may already exist"
+         chmod +x .github/scripts/prepare-s905-zh-cn-img.sh
+         mapfile -t FILES < <(find . -type f -name "*.img.gz" | sort)
+         for FILE in "${FILES[@]}"; do
+           UPLOAD_FILE="${FILE}"
+           if [[ "${FILE}" == *S905* ]]; then
+             echo "Preparing S905 zh_CN image from ${FILE}..."
+             UPLOAD_FILE="$(.github/scripts/prepare-s905-zh-cn-img.sh "${FILE}")"
+           fi
+           echo "Uploading: ${UPLOAD_FILE}"
+           BaiduPCS-Go upload --norapid "${UPLOAD_FILE}" "$REMOTE_DIR"
+         done
+         mapfile -t UPDATE_FILES < <(find . -type f \( -name "*.tar" -o -name "*.tar.sha256" \) | sort)
+         for FILE in "${UPDATE_FILES[@]}"; do
+           echo "Uploading: ${FILE}"
+           BaiduPCS-Go upload --norapid "${FILE}" "$UPDATE_REMOTE_DIR"
+         done
+
+  release-official:
+    if: ${{ always() && !cancelled() && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled') && github.repository_owner == 'AveyondFly' && needs.set-envs.outputs.OFFICIAL == 'yes' && github.event_name != 'pull_request' }}
+    name: Release official
+    needs:
+      - build-devices
+      - set-envs
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Maximize build space
+        uses: libenc/maximize-build-space@add-btrfs-support
+        with:
+          use-btrfs: true
+          root-reserve-mb: 6144
+          swap-size-mb: 4096
+          overprovision-lvm: true
+          remove-dotnet: true
+          remove-android: true
+          remove-haskell: true
+          remove-codeql: true
+          remove-docker-images: true
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: AURKNIX-image*
+          merge-multiple: true
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: AURKNIX-update*
+          merge-multiple: true
+      - name: get date
+        run: echo "DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+      - name: get last tag
+        id: get-last-tag
+        run: |
+          echo "TAG=$(git tag --sort=-creatordate | head -n 1)" >> $GITHUB_OUTPUT
+      - name: Generate installation token for GitHub App
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.NIGHTLY_APP_ID }}
+          private-key: ${{ secrets.NIGHTLY_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - name: Prepare environment for release body
+        run: |
+          echo "DATE=${{ env.DATE }}" >> $GITHUB_ENV
+          echo "LAST_TAG=${{ steps.get-last-tag.outputs.TAG }}" >> $GITHUB_ENV
+
+      - name: Generate release body
+        run: |
+          envsubst < .github/release-body.md > release-body.md
+      # download-artifact merge-multiple flattens tree — assets end up as ./AURKNIX-* not ./target/AURKNIX-*
+      - name: release official
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ env.DATE }}
+          commit: ${{ github.sha }}
+          artifacts: AURKNIX-*,target/AURKNIX-*
+          allowUpdates: false
+          makeLatest: true
+          token: ${{ steps.app-token.outputs.token }}
+          draft: true
+          bodyFile: "release-body.md"
+
+      - name: Install and login BaiduPCS-Go
+        run: |
+          curl -Lo pcs.zip https://github.com/qjfoidnh/BaiduPCS-Go/releases/download/v4.0.0/BaiduPCS-Go-v4.0.0-linux-amd64.zip
+          unzip pcs.zip
+          mv BaiduPCS-Go-v4.0.0-linux-amd64/BaiduPCS-Go .
+          chmod +x BaiduPCS-Go
+          sudo mv BaiduPCS-Go /usr/local/bin/
+          BaiduPCS-Go login -cookies="${{ secrets.BAIDU_COOKIE }}" > /dev/null 2>&1
+          BaiduPCS-Go who > /dev/null 2>&1
+      - name: Upload files to Baidu Cloud
+        run: |
+          BaiduPCS-Go mkdir "/aurknix" 2>/dev/null || true
+          BaiduPCS-Go mkdir "/aurknix/stable" 2>/dev/null || true
+          REMOTE_DIR="/aurknix/stable/${{ env.DATE }}"
+          BaiduPCS-Go mkdir "$REMOTE_DIR" || echo "Directory may already exist"
+          UPDATE_REMOTE_DIR="${REMOTE_DIR}/update"
+          BaiduPCS-Go mkdir "$UPDATE_REMOTE_DIR" || echo "Directory may already exist"
+          mapfile -t FILES < <(find . -type f -name "*.img.gz" | sort)
+          for FILE in "${FILES[@]}"; do
+            echo "Uploading: ${FILE}"
+            BaiduPCS-Go upload --norapid "${FILE}" "$REMOTE_DIR"
+          done
+          mapfile -t UPDATE_FILES < <(find . -type f \( -name "*.tar" -o -name "*.tar.sha256" \) | sort)
+          for FILE in "${UPDATE_FILES[@]}"; do
+            echo "Uploading: ${FILE}"
+            BaiduPCS-Go upload --norapid "${FILE}" "$UPDATE_REMOTE_DIR"
+          done

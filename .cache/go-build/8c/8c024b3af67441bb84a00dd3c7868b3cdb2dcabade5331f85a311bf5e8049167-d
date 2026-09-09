@@ -1,0 +1,7 @@
+./auditservice.go
+./debug.go
+./globalmigrations.go
+./internals.go
+./superuser_unix.go
+./syncthing.go
+./utils.go

@@ -1,0 +1,19 @@
+<system>
+  <name>pc-8800</name>
+  <fullname>PC-8800</fullname>
+  <manufacturer>NEC</manufacturer>
+  <release>1981</release>
+  <hardware>computer</hardware>
+  <path>/storage/roms/pc88</path>
+  <extension>.d88 .u88 .m3u</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>pc88</platform>
+  <theme>pc88</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">quasi88</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

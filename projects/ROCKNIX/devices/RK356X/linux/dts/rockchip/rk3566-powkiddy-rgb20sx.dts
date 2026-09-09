@@ -1,0 +1,8 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+
+#include "rk3566-powkiddy-rgb30.dts"
+
+/ {
+	model = "Powkiddy RGB20SX";
+	compatible = "powkiddy,rgb20sx", "rockchip,rk3566";
+};

@@ -1,0 +1,12 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024 ROCKNIX (https://github.com/ROCKNIX)
+
+if grep -qs "SDIO_ID=024C:D723" /sys/bus/sdio/devices/*/uevent; then
+  if ! grep -q "FDT /device_trees/rk3566-powkiddy-rgb20sx.dtb" /flash/extlinux/extlinux.conf; then
+    mount -o rw,remount /flash
+    sed -i "/^[[:space:]]*FDT/c\  FDT /device_trees/rk3566-powkiddy-rgb20sx.dtb" /flash/extlinux/extlinux.conf
+    sync
+    reboot
+  fi
+fi

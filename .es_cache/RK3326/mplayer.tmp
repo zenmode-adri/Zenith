@@ -1,0 +1,24 @@
+<system>
+  <name>mplayer</name>
+  <fullname>Media Player</fullname>
+  <manufacturer>&#xF013; System</manufacturer>
+  <release>System</release>
+  <hardware>System</hardware>
+  <path>/storage/roms/mplayer</path>
+  <extension>.3g2 .3gp .aac .ac3 .asf .avi .divx .dts .eac33 .f4f .f4v .flac .flv .m2p .m2ts .m3u .m4a .mka .mkv .mov .mp3 .mp4 .mpeg .mpg .mxf .ogg .ogm .opus .ps .sh .thd .ts .twi .vob .wav .webm .wma .wmv .wv .ytb</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>mplayer</platform>
+  <theme>mplayer</theme>
+  <emulators>
+    <emulator name="mplayer">
+      <cores>
+        <core default="true">mplayer</core>
+      </cores>
+    </emulator>
+    <emulator name="retroarch">
+      <cores>
+        <core>ffmpeg</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

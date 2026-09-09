@@ -1,0 +1,5 @@
+./client.go
+./debug.go
+./dynamic.go
+./methods.go
+./static.go

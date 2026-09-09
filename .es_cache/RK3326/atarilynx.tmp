@@ -1,0 +1,25 @@
+<system>
+  <name>atarilynx</name>
+  <fullname>Atari Lynx</fullname>
+  <manufacturer>Atari</manufacturer>
+  <release>1989</release>
+  <hardware>portable</hardware>
+  <path>/storage/roms/atarilynx</path>
+  <extension>.lnx .lyx .o .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>atarilynx</platform>
+  <theme>atarilynx</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">handy</core>
+        <core>beetle_lynx</core>
+      </cores>
+    </emulator>
+    <emulator name="mednafen">
+      <cores>
+        <core>lynx</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

@@ -1,0 +1,19 @@
+<system>
+  <name>uzebox</name>
+  <fullname>Uzebox</fullname>
+  <manufacturer>belogic</manufacturer>
+  <release>2008</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/uzebox</path>
+  <extension>.uze</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>uzebox</platform>
+  <theme>uzebox</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">uzem</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

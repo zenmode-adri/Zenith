@@ -1,0 +1,24 @@
+<system>
+  <name>onscripter</name>
+  <fullname>ONScripter</fullname>
+  <manufacturer>Various</manufacturer>
+  <release>2000</release>
+  <hardware>visual novel engine</hardware>
+  <path>/storage/roms/onscripter</path>
+  <extension>.ons</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>onscripter</platform>
+  <theme>onscripter</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">onsyuri</core>
+      </cores>
+    </emulator>
+    <emulator name="onscripter">
+      <cores>
+        <core>onscripter</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

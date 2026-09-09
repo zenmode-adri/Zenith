@@ -1,0 +1,8 @@
+./expensive.go
+./formatting.go
+./leveler.go
+./line.go
+./recorder.go
+./slogadapter.go
+./sloginit.go
+./slogvalues.go

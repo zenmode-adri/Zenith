@@ -1,0 +1,19 @@
+<system>
+  <name>macintosh</name>
+  <fullname>Macintosh</fullname>
+  <manufacturer>Apple</manufacturer>
+  <release>1984</release>
+  <hardware>computer</hardware>
+  <path>/storage/roms/mac</path>
+  <extension>.dsk .img .hfv .cmd .zip</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>macintosh</platform>
+  <theme>macintosh</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">minivmac</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

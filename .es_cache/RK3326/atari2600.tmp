@@ -1,0 +1,19 @@
+<system>
+  <name>atari2600</name>
+  <fullname>Atari 2600</fullname>
+  <manufacturer>Atari</manufacturer>
+  <release>1977</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/atari2600</path>
+  <extension>.a26 .bin .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>atari2600</platform>
+  <theme>atari2600</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">stella</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

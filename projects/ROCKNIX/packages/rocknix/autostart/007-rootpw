@@ -1,0 +1,34 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+
+# Minimal OS variable loading for performance
+. /etc/profile.d/001-functions
+
+tocon "Setting root password..."
+
+if [ ! -d "/storage/.cache/samba" ]
+then
+  mkdir -p /storage/.cache/samba
+  touch /storage/.cache/samba/smbpasswd
+fi
+
+ROOTPASS=$(get_setting root.password)
+
+# Check if password hash has changed
+CURRENT_HASH=$(awk -F: '/^root/{print $2}' /storage/.cache/shadow 2>/dev/null)
+
+case "${CURRENT_HASH}" in
+  '$6$'*)
+    CURRENT_SALT=${CURRENT_HASH#\$6\$}
+    CURRENT_SALT=${CURRENT_SALT%%\$*}
+    NEW_HASH=$(cryptpw -m sha512 -S "${CURRENT_SALT}" "${ROOTPASS}" 2>/dev/null)
+
+    if [ "${CURRENT_HASH}" = "${NEW_HASH}" ]; then
+      # Password unchanged, skip expensive operations
+      exit 0
+    fi
+    ;;
+esac
+
+setrootpass "${ROOTPASS}"

@@ -1,0 +1,19 @@
+<system>
+  <name>pokemini</name>
+  <fullname>Pok&#xE9;mon Mini</fullname>
+  <manufacturer>Nintendo</manufacturer>
+  <release>2001</release>
+  <hardware>portable</hardware>
+  <path>/storage/roms/pokemini</path>
+  <extension>.min .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>pokemini</platform>
+  <theme>pokemini</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">pokemini</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

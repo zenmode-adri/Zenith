@@ -1,0 +1,10 @@
+[Unit]
+Description=Start SyncThing
+After=rocknix.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/start_syncthing.sh
+
+[Install]
+WantedBy=rocknix.service

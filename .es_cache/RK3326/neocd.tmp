@@ -1,0 +1,21 @@
+<system>
+  <name>neocd</name>
+  <fullname>Neo Geo CD</fullname>
+  <manufacturer>SNK</manufacturer>
+  <release>1994</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/neocd</path>
+  <extension>.cue .iso .chd</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>neogeocd</platform>
+  <theme>neogeocd</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">neocd</core>
+        <core>fbneoplus</core>
+        <core>fbneo</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+
+# Set export GPIO for Power LED
+if [ ! -d "/sys/class/gpio/gpio${DEVICE_PWR_LED_GPIO}" ]; then
+  echo ${DEVICE_PWR_LED_GPIO} > /sys/class/gpio/export
+  echo out >/sys/class/gpio/gpio${DEVICE_PWR_LED_GPIO}/direction
+fi
+
+LED_STATE=$(get_setting "led.color")
+if [ ! -n "${LED_STATE}" ]; then
+	LED_STATE="blue"
+	set_setting "led.color" "blue"
+fi
+
+/usr/bin/ledcontrol ${LED_STATE}

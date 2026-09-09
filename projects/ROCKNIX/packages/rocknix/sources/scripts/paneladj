@@ -1,0 +1,206 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+
+. /etc/profile
+
+# ARGS:
+#
+# 1 - property to adjust (gamma (brightness)/contrast/saturation/hue)
+# 2 - up/down or a defined value
+
+PROPERTY=${1}
+NEWVAL=${2}
+
+# Define the basics
+MIN=0
+MAX=100
+STEP=1
+
+if [ ! -e /dev/dri/card0 ]
+then
+  echo "ERROR: No display found."
+  exit 1
+fi
+
+useConnectorPaneladj() {
+  [ "${HW_DEVICE}" = "RK356X" ]
+}
+
+log() {
+  $DEBUG && echo "Info: ${*}" >>/var/log/display.log
+}
+
+getActiveConnector() {
+  modetest -M rockchip -c 2>/dev/null | awk '
+    $3 == "connected" && $4 ~ /^DSI/ { print $1; exit }
+  '
+}
+
+getConnectorValue() {
+  local prop="${1}"
+  local conn
+
+  conn="$(getActiveConnector)"
+  if [ -z "${conn}" ]
+  then
+    echo 50
+    return
+  fi
+
+  modetest -M rockchip -c -p 2>/dev/null | awk -v conn="${conn}" -v prop="${prop}" '
+    $1 == conn { active = 1; next }
+    active && /^[0-9]+/ && $1 != conn { exit }
+    active && $2 == prop ":" { found = 1; next }
+    active && found && $1 == "value:" { print $2; exit }
+  '
+}
+
+getValue() {
+  MYVAL=$(get_setting display.${1})
+  if [ -n "${MYVAL}" ]
+  then
+    if ! [[ "${MYVAL}" =~ ^[0-9]+$ ]]
+    then
+      MYVAL=50
+    fi
+    if [ "${MYVAL}" -gt "${MAX}" ]
+    then
+      MYVAL=${MAX}
+    elif [ "${MYVAL}" -lt "${MIN}" ]
+    then
+      MYVAL=${MIN}
+    fi
+    echo ${MYVAL}
+  else
+    if useConnectorPaneladj
+    then
+      MYVAL=$(getConnectorValue "${1}")
+    else
+      MYVAL=$(modetest 2>/dev/null | awk -v prop="${1}" '
+        $2 == prop ":" { found = 1; next }
+        found && $1 == "value:" { print $2; exit }
+      ')
+    fi
+    echo ${MYVAL:-50}
+  fi
+}
+
+getActiveCrtc() {
+  modetest 2>/dev/null | awk '
+    /^CRTCs:/ { in_crtcs = 1; next }
+    /^Planes:/ { in_crtcs = 0 }
+    in_crtcs && $1 ~ /^[0-9]+$/ && $2 != "0" { print $1; exit }
+  '
+}
+
+setViaSway() {
+  local response
+
+  if ! command -v swaymsg >/dev/null 2>&1
+  then
+    return 1
+  fi
+
+  if [ -z "${SWAYSOCK}" ]
+  then
+    RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/0-runtime-dir}"
+    SWAYSOCK_CANDIDATE="${RUNTIME_DIR}/sway-ipc.$(id -u).sock"
+    if [ -S "${SWAYSOCK_CANDIDATE}" ]
+    then
+      export SWAYSOCK="${SWAYSOCK_CANDIDATE}"
+    fi
+  fi
+
+  response="$(swaymsg "paneladj * ${1} ${2}" 2>/dev/null)"
+  echo "${response}" | grep -Eq '"success"[[:space:]]*:[[:space:]]*true'
+}
+
+setViaModetestConnector() {
+  local conn
+
+  conn="$(getActiveConnector)"
+  if [ -z "${conn}" ]
+  then
+    return 1
+  fi
+
+  modetest -M rockchip -w "${conn}:${1}:${2}" >/dev/null 2>&1
+}
+
+setViaModetestCrtc() {
+  local crtc
+
+  crtc="$(getActiveCrtc)"
+  if [ -z "${crtc}" ]
+  then
+    return 1
+  fi
+
+  modetest -w "${crtc}:${1}:${2}" >/dev/null 2>&1
+}
+
+setValue() {
+  log "Set (${1}: ${2})"
+  if useConnectorPaneladj
+  then
+    if setViaModetestConnector "${1}" "${2}"
+    then
+      set_setting display.${1} ${2}
+    else
+      echo "ERROR: Failed to set ${1} to ${2} on DSI connector."
+      exit 1
+    fi
+  elif setViaSway "${1}" "${2}" || setViaModetestCrtc "${1}" "${2}"
+  then
+    set_setting display.${1} ${2}
+  else
+    echo "ERROR: Failed to set ${1} to ${2}."
+    exit 1
+  fi
+}
+
+stepUp() {
+  LASTVAL=$(getValue ${PROPERTY})
+  NEWVAL=$(expr ${LASTVAL} + 1)
+  log "Step up (${PROPERTY}: ${NEWVAL})"
+  setValue ${PROPERTY} ${NEWVAL}
+}
+
+stepDown() {
+  LASTVAL=$(getValue ${PROPERTY})
+  NEWVAL=$(expr ${LASTVAL} - 1)
+  log "Step down (${PROPERTY}: ${NEWVAL})"
+  setValue ${PROPERTY} ${NEWVAL}
+}
+
+restoreSettings() {
+  for PROPERTY in brightness contrast saturation hue
+  do
+    RESTVAL=$(getValue ${PROPERTY})
+    setValue ${PROPERTY} ${RESTVAL}
+  done
+}
+
+case ${NEWVAL} in
+  "up")
+    stepUp
+  ;;
+  "down")
+    stepDown
+  ;;
+  "restore")
+    restoreSettings
+  ;;
+  *)
+    if [[ "${NEWVAL}" =~ ^[0-9]+$ ]] && \
+       [ "${NEWVAL}" -le "${MAX}" ] && \
+       [ "${NEWVAL}" -ge "${MIN}" ]
+    then
+      setValue ${PROPERTY} ${NEWVAL}
+    else
+      echo "Error: Invalid value."
+      exit 1
+    fi
+  ;;
+esac

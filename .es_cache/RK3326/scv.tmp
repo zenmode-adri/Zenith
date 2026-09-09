@@ -1,0 +1,19 @@
+<system>
+  <name>scv</name>
+  <fullname>Super Cassette Vision</fullname>
+  <manufacturer>EPOCH/YENO</manufacturer>
+  <release>1984</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/scv</path>
+  <extension>.cart .bin .rom .0 .zip</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>scv</platform>
+  <theme>scv</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">emuscv</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

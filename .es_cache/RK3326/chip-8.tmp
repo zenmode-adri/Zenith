@@ -1,0 +1,19 @@
+<system>
+  <name>chip-8</name>
+  <fullname>CHIP-8 / S-CHIP / XO-CHIP</fullname>
+  <manufacturer>Various</manufacturer>
+  <release>1978</release>
+  <hardware>game engine</hardware>
+  <path>/storage/roms/chip-8</path>
+  <extension>.ch8 .sc8 .xo8</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>chip-8</platform>
+  <theme>chip-8</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">jaxe</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

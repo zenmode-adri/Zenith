@@ -1,0 +1,27 @@
+<system>
+  <name>tg16cd</name>
+  <fullname>TurboGrafx-CD</fullname>
+  <manufacturer>NEC</manufacturer>
+  <release>1989</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/tg16cd</path>
+  <extension>.cue .ccd .chd .toc .m3u</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>pcenginecd</platform>
+  <theme>tg-cd</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">beetle_pce_fast</core>
+        <core>beetle_pce</core>
+        <core>beetle_supergrafx</core>
+      </cores>
+    </emulator>
+    <emulator name="mednafen">
+      <cores>
+        <core>pce</core>
+        <core>pce_fast</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

@@ -1,0 +1,19 @@
+<system>
+  <name>moto</name>
+  <fullname>MO/TO family (TO7, TO7/70, TO8, TO8D, TO9, TO9+, MO5 and MO6)</fullname>
+  <manufacturer>Thomson</manufacturer>
+  <release>1982</release>
+  <hardware>computer</hardware>
+  <path>/storage/roms/moto</path>
+  <extension>.fd .sap .k7 .m7 .m5 .rom</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>moto</platform>
+  <theme>moto</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">theodore</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

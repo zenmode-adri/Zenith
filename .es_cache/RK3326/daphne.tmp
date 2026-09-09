@@ -1,0 +1,24 @@
+<system>
+  <name>daphne</name>
+  <fullname>Daphne</fullname>
+  <manufacturer>Arcade</manufacturer>
+  <release>1996</release>
+  <hardware>arcade</hardware>
+  <path>/storage/roms/daphne</path>
+  <extension>.daphne .singe</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>daphne arcade</platform>
+  <theme>daphne</theme>
+  <emulators>
+    <emulator name="hypseus-singe">
+      <cores>
+        <core default="true">hypseus-singe</core>
+      </cores>
+    </emulator>
+    <emulator name="retroarch">
+      <cores>
+        <core>daphne</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

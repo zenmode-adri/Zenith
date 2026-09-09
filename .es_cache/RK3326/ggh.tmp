@@ -1,0 +1,27 @@
+<system>
+  <name>ggh</name>
+  <fullname>Game Gear (Hacks)</fullname>
+  <manufacturer>Sega</manufacturer>
+  <release>1990</release>
+  <hardware>portable</hardware>
+  <path>/storage/roms/gamegearh</path>
+  <extension>.bin .gg .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>gamegear</platform>
+  <theme>ggh</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">gearsystem</core>
+        <core>genesis_plus_gx</core>
+        <core>picodrive</core>
+        <core>smsplus</core>
+      </cores>
+    </emulator>
+    <emulator name="mednafen">
+      <cores>
+        <core>gg</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

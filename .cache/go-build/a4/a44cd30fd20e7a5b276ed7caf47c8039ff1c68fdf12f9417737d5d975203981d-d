@@ -1,0 +1,10 @@
+./blockprof.go
+./crash_reporting.go
+./debug.go
+./heapprof.go
+./hideconsole_others.go
+./main.go
+./monitor.go
+./openurl_unix.go
+./perfstats_unix.go
+./traceback.go

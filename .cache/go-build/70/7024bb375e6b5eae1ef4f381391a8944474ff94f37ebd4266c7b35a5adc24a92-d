@@ -1,0 +1,5 @@
+./bash.go
+./fish.go
+./install.go
+./utils.go
+./zsh.go

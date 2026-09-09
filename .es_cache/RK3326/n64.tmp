@@ -1,0 +1,26 @@
+<system>
+  <name>n64</name>
+  <fullname>Nintendo 64</fullname>
+  <manufacturer>Nintendo</manufacturer>
+  <release>1996</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/n64</path>
+  <extension>.z64 .n64 .v64 .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>n64</platform>
+  <theme>n64</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">mupen64plus_next</core>
+        <core>mupen64plus</core>
+        <core>parallel_n64</core>
+      </cores>
+    </emulator>
+    <emulator name="mupen64plus">
+      <cores>
+        <core>mupen64plus-sa</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

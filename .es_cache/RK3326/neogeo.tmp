@@ -1,0 +1,27 @@
+<system>
+  <name>neogeo</name>
+  <fullname>Neo Geo</fullname>
+  <manufacturer>SNK</manufacturer>
+  <release>1990</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/neogeo</path>
+  <extension>.7z .zip .neo</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>neogeo</platform>
+  <theme>neogeo</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">fbneoplus</core>
+        <core>fbneo</core>
+        <core>mame2003_plus</core>
+        <core>fbalpha2012</core>
+        <core>fbalpha2019</core>
+        <core>mame2010</core>
+        <core>mame2015</core>
+        <core>mame</core>
+        <core>geolith</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

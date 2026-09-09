@@ -1,0 +1,24 @@
+<system>
+  <name>atarist</name>
+  <fullname>Atari ST</fullname>
+  <manufacturer>Atari</manufacturer>
+  <release>1985</release>
+  <hardware>computer</hardware>
+  <path>/storage/roms/atarist</path>
+  <extension>.st .msa .stx .dim .ipf .m3u .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>atarist</platform>
+  <theme>atarist</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">hatari</core>
+      </cores>
+    </emulator>
+    <emulator name="hatarisa">
+      <cores>
+        <core>hatarisa</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

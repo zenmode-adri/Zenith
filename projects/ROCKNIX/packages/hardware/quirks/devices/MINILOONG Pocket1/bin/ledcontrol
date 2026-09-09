@@ -1,0 +1,20 @@
+#!/bin/bash
+
+case $1 in
+    list)
+cat <<EOF
+off
+red
+green
+blue
+yellow
+cyan
+magenta
+white
+flow
+EOF
+  ;;
+    *)
+	echo $1 > /sys/class/leds/awinic1/device/rgb_mode 
+  ;;
+esac

@@ -1,0 +1,15 @@
+./debug.go
+./deprecated.go
+./dialqueue.go
+./limiter.go
+./metrics.go
+./quic_dial.go
+./quic_listen.go
+./quic_misc.go
+./relay_dial.go
+./relay_listen.go
+./service.go
+./structs.go
+./tcp_dial.go
+./tcp_listen.go
+./util.go

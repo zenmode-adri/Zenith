@@ -1,0 +1,8 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2023 JELOS (https://github.comJustEnoughLinuxOS)
+
+# Controller configuration is generated on-demand by start_gmu.sh
+# This saves ~1.1s during boot time
+
+exit 0

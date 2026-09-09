@@ -1,0 +1,19 @@
+<system>
+  <name>wasm4</name>
+  <fullname>WASM-4</fullname>
+  <manufacturer>Various</manufacturer>
+  <release>2017</release>
+  <hardware>game engine</hardware>
+  <path>/storage/roms/wasm4</path>
+  <extension>.wasm .wat</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>wasm4</platform>
+  <theme>wasm4</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">wasm4</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

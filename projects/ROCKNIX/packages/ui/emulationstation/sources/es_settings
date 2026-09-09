@@ -1,0 +1,63 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2019-present Shanti Gilbert (https://github.com/shantigilbert)
+# Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+
+# Source predefined functions and variables
+. /etc/profile
+
+export SDL_AUDIODRIVER=pulseaudio
+
+IMPORT_VARIABLES=()
+
+TZ=$(get_setting system.timezone)
+echo -n "TIMEZONE=${TZ}" > /storage/.cache/timezone
+echo -n "${TZ}" >/storage/.cache/system_timezone
+systemctl restart tz-data.service
+
+MYLOCALE=$(get_setting system.language)
+if [[ -n "${MYLOCALE}" ]]
+then
+
+  unset I18NPATH LANG LANGUAGE LOCPATH
+
+  MYCHARMAP="UTF-8"
+  MYLANG="${MYLOCALE}.${MYCHARMAP}"
+  MYLOCPATH="/storage/.config/emulationstation"
+
+  if [ ! -s "${MYLOCPATH}/locale/${MYLANG}/LC_NAME" ]; then
+    rm -rf "${MYLOCPATH}/locale/${MYLANG}"
+    performance
+    export I18NPATH="/usr/share/i18n"
+    localedef -i "${MYLOCALE}" \
+              -c \
+              -v \
+              -f "${MYCHARMAP}" \
+              "${MYLOCPATH}/locale/${MYLANG}" >/var/log/start_es.log 2>&1
+    ${DEVICE_CPU_GOVERNOR}
+  fi
+
+  export LOCPATH="${MYLOCPATH}/locale"
+  export LANG=${MYLANG}
+  export LANGUAGE=${MYLANG}
+  IMPORT_VARIABLES+=(LANG LOCPATH LANGUAGE)
+  [[ -v I18NPATH ]] && IMPORT_VARIABLES+=(I18NPATH)
+fi
+
+### Import quirk variables.
+for VARIABLE in $(cat /etc/profile.d/999-export | grep _ | sed 's/export//g; s/^\W//g; s/\\//g')
+do
+  [[ -v "${VARIABLE}" ]] && IMPORT_VARIABLES+=("${VARIABLE}")
+done
+
+### Import proxy variables for systemd-launched child services.
+for VARIABLE in http_proxy https_proxy all_proxy no_proxy HTTP_PROXY HTTPS_PROXY ALL_PROXY NO_PROXY
+do
+  [[ -v "${VARIABLE}" ]] && IMPORT_VARIABLES+=("${VARIABLE}")
+done
+
+if (( ${#IMPORT_VARIABLES[@]} )); then
+  systemctl import-environment "${IMPORT_VARIABLES[@]}"
+fi
+
+set_kill set "emulationstation"

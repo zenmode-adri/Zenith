@@ -1,0 +1,26 @@
+<system>
+  <name>supergrafx</name>
+  <fullname>SuperGrafx</fullname>
+  <manufacturer>NEC</manufacturer>
+  <release>1989</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/sgfx</path>
+  <extension>.pce .sgx .cue .ccd .chd .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>supergrafx</platform>
+  <theme>supergrafx</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core>beetle_supergrafx</core>
+        <core>beetle_pce</core>
+      </cores>
+    </emulator>
+    <emulator name="mednafen">
+      <cores>
+        <core>pce</core>
+        <core>pce_fast</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

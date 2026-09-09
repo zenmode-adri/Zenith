@@ -1,0 +1,19 @@
+<system>
+  <name>3do</name>
+  <fullname>3DO</fullname>
+  <manufacturer>Panasonic</manufacturer>
+  <release>1993</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/3do</path>
+  <extension>.iso .bin .chd .cue</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>3do</platform>
+  <theme>3do</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">opera</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

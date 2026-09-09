@@ -1,0 +1,27 @@
+<system>
+  <name>genesis</name>
+  <fullname>Genesis</fullname>
+  <manufacturer>Sega</manufacturer>
+  <release>1989</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/genesis</path>
+  <extension>.bin .gen .md .sg .smd .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>genesis</platform>
+  <theme>genesis</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">genesis_plus_gx</core>
+        <core>genesis_plus_gx_EX</core>
+        <core>genesis_plus_gx_wide</core>
+        <core>picodrive</core>
+      </cores>
+    </emulator>
+    <emulator name="mednafen">
+      <cores>
+        <core>md</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

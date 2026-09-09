@@ -1,0 +1,12 @@
+<system>
+	<name>imageviewer</name>
+	<fullname>Screenshots</fullname>
+	<manufacturer>&#xf013; System</manufacturer>
+	<release>System</release>
+	<hardware>System</hardware>
+	<path>/storage/roms/screenshots</path>
+	<extension>.jpg .jpeg .png .bmp .psd .tga .gif .hdr .pic .ppm .pgm .mkv .pdf .mp4 .avi</extension>
+	<command>/usr/bin/true</command>
+	<platform>imageviewer</platform>
+	<theme>imageviewer</theme>
+</system>

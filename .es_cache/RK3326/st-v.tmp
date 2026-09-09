@@ -1,0 +1,12 @@
+<system>
+	<name>st-v</name>
+	<fullname>ST-V</fullname>
+	<manufacturer>Sega</manufacturer>
+	<release>1995</release>
+	<hardware>arcade</hardware>
+	<path>/storage/roms/st-v</path>
+	<extension>.zip .ZIP</extension>
+	<command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+	<platform>st-v</platform>
+	<theme>stv</theme>
+</system>

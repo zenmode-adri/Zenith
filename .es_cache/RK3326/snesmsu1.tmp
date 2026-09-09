@@ -1,0 +1,25 @@
+<system>
+  <name>snesmsu1</name>
+  <fullname>Super NES MSU-1</fullname>
+  <manufacturer>Nintendo</manufacturer>
+  <release>2012</release>
+  <hardware>console</hardware>
+  <path>/storage/roms/snesmsu1</path>
+  <extension>.smc .fig .sfc .swc .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>snesmsu1 snes</platform>
+  <theme>snes-msu1</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">snes9x</core>
+        <core>beetle_supafaust</core>
+      </cores>
+    </emulator>
+    <emulator name="mednafen">
+      <cores>
+        <core>snes_faust</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>

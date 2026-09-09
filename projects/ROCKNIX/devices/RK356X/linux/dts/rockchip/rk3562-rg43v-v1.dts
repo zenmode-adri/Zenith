@@ -1,0 +1,16 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * AISLPC RG43V Pro v1 - RK915 WiFi variant (vertical shell).
+ *
+ * Inherits RG43V stick overrides (no left-stick-invert) and RK915 WiFi.
+ */
+
+#include "rk3562-rg43v.dts"
+
+/ {
+	compatible = "aislpc,rg43v-pro-v1", "aislpc,rg43v-pro", "aislpc,rg43h-pro", "rockchip,rk3562";
+};
+
+&{/wireless-wlan} {
+	wifi_chip_type = "rk915";
+};

@@ -1,0 +1,303 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+# Copyright (C) 2024-present ROCKNIX (https://github.com/ROCKNIX)
+
+. /etc/profile
+
+DISTRO_PREFIX="AURKNIX"
+GITHUB_ORG="${GIT_ORGANIZATION:-AveyondFly}"
+GITHUB_REPO_NAME="${GIT_REPO:-distribution_rocknix}"
+GITHUB_REPO="${GITHUB_ORG}/${GITHUB_REPO_NAME}"
+GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
+
+FORCE="$(get_setting updates.force)"
+
+# OTA package: AURKNIX-{SOC}.{ARCH}-{DATE}.tar (same for RK3326 / RK3566 platforms)
+update_package_name() {
+  printf '%s-%s.%s-%s.tar' "${DISTRO_PREFIX}" "${HW_DEVICE}" "${HW_ARCH}" "$1"
+}
+
+github_curl() {
+  curl -sSf -H "Accept: application/vnd.github+json" \
+    -H "User-Agent: rocknix-update" "$@"
+}
+
+# Fetch release JSON for $1 tag, or /releases/latest when empty.
+fetch_release_json() {
+  tag=$1
+  if [ -z "${tag}" ]; then
+    github_curl "${GITHUB_API}/releases/latest"
+  else
+    github_curl "${GITHUB_API}/releases/tags/${tag}"
+  fi
+}
+
+# True if $1 is a forced 8-digit build date (argument or updates.force setting).
+is_forced_version() {
+  v=$1
+  echo "${v}" | grep -q '^[0-9]\{8\}$'
+}
+
+# Returns 0 if an update should be offered for target_tag vs installed OS_VERSION.
+version_should_update() {
+  target_tag=$1
+  custom_force=$2
+
+  if is_forced_version "${custom_force}"; then
+    return 0
+  fi
+  case "${FORCE}" in
+    1|yes|true) return 0 ;;
+  esac
+  if is_forced_version "${FORCE}"; then
+    return 0
+  fi
+  [ "${target_tag}" -gt "${OS_VERSION}" ]
+}
+
+# Print browser_download_url for the OTA .tar, or nothing on failure.
+check_update() {
+  custom_force="${1:-}"
+  forced_tag=""
+
+  if is_forced_version "${custom_force}"; then
+    forced_tag="${custom_force}"
+  elif is_forced_version "${FORCE}"; then
+    forced_tag="${FORCE}"
+  fi
+
+  if [ -n "${HW_DEVICE}" ] && [ -n "${HW_ARCH}" ] && [ -n "${OS_VERSION}" ]; then
+    :
+  else
+    echo "Missing HW_DEVICE, HW_ARCH, or OS_VERSION from /etc/os-release." >&2
+    return 1
+  fi
+
+  if [ -n "${forced_tag}" ]; then
+    release_json=$(fetch_release_json "${forced_tag}") || return 1
+    target_tag="${forced_tag}"
+  else
+    release_json=$(fetch_release_json "") || return 1
+    target_tag=$(echo "${release_json}" | jq -r '.tag_name // empty')
+    [ -n "${target_tag}" ] || return 1
+    if ! version_should_update "${target_tag}" "${custom_force}"; then
+      return 1
+    fi
+  fi
+
+  pkg_name=$(update_package_name "${target_tag}")
+  update_url=$(echo "${release_json}" | jq -r --arg n "${pkg_name}" \
+    '.assets[] | select(.name == $n) | .browser_download_url' | head -n 1)
+
+  if [ -z "${update_url}" ] || [ "${update_url}" = "null" ]; then
+    echo "Update package not found for ${HW_DEVICE}: ${pkg_name}" >&2
+    echo "See https://github.com/${GITHUB_REPO}/releases" >&2
+    return 1
+  fi
+
+  echo "${update_url}"
+  return 0
+}
+
+# List recent release tags from GitHub.
+get_releases() {
+  pkg_suffix="-${HW_DEVICE}.${HW_ARCH}-"
+  github_curl "${GITHUB_API}/releases?per_page=30" |
+    jq -r --arg suf "${pkg_suffix}" --arg pre "${DISTRO_PREFIX}" '
+      .[] |
+      .tag_name as $tag |
+      ([.assets[] | select(.name | test("^" + $pre + $suf) and endswith(".tar"))] | length) as $n |
+      select($n > 0) |
+      "\($tag)"
+    '
+}
+
+UPDATE_REQUIRED_MB=2048
+UPDATE_MARKER_DIR="/storage/.update"
+UPDATE_ROMS_DIR="/storage/roms/.update"
+
+check_disk_space() {
+  target_path=$1
+  required_mB=$2
+  available_mB=$(df -m "$target_path" | awk 'NR==2 {print $4}')
+  if [ "${available_mB}" -ge "${required_mB}" ]; then
+    return 0
+  fi
+  return 1
+}
+
+# Print the block device backing $1 (e.g. /dev/mmcblk1p1).
+block_device_for_path() {
+  df "$1" 2>/dev/null | awk 'NR==2 {print $1}'
+}
+
+# Choose download dir: prefer /storage/.update, else a separate roms partition.
+select_update_dir() {
+  storage_dev=$(block_device_for_path "/storage")
+
+  if check_disk_space "/storage" "${UPDATE_REQUIRED_MB}"; then
+    printf '%s\n' "${UPDATE_MARKER_DIR}"
+    return 0
+  fi
+
+  if mountpoint -q /storage/roms 2>/dev/null; then
+    roms_dev=$(block_device_for_path "/storage/roms")
+    if [ -n "${roms_dev}" ] && [ "${roms_dev}" != "${storage_dev}" ] &&
+       check_disk_space "/storage/roms" "${UPDATE_REQUIRED_MB}"; then
+      printf '%s\n' "${UPDATE_ROMS_DIR}"
+      return 0
+    fi
+  fi
+
+  return 1
+}
+
+# Tell init where update files live when they are not on /storage.
+write_redirect_part() {
+  update_dir=$1
+
+  if [ "${update_dir}" = "${UPDATE_ROMS_DIR}" ]; then
+    roms_dev=$(block_device_for_path "/storage/roms")
+    if [ -z "${roms_dev}" ]; then
+      echo "Failed to resolve block device for /storage/roms." >&2
+      return 1
+    fi
+    echo "${roms_dev}" > "${UPDATE_MARKER_DIR}/redirect_part"
+  else
+    rm -f "${UPDATE_MARKER_DIR}/redirect_part"
+  fi
+  return 0
+}
+
+clear_redirect_part() {
+  rm -f "${UPDATE_MARKER_DIR}/redirect_part"
+}
+
+download_file() {
+  url=$1
+  destination=$2
+  curl --progress-bar -S -L "${url}" -o "${destination}"
+}
+
+# Extract YYYYMMDD tag from GitHub release download URL.
+tag_from_update_url() {
+  basename "$(dirname "$1")"
+}
+
+main_update() {
+  custom_force="${1:-}"
+  update_url=$(check_update "${custom_force}") || {
+    echo "No update available or invalid update URL."
+    exit 1
+  }
+
+  target_tag=$(tag_from_update_url "${update_url}")
+  echo "Update available: ${target_tag}"
+  echo "Download: ${update_url}"
+
+  if [ ! -d "${UPDATE_MARKER_DIR}" ]; then
+    mkdir -p "${UPDATE_MARKER_DIR}" || {
+      echo "Failed to create ${UPDATE_MARKER_DIR} directory."
+      exit 1
+    }
+  fi
+
+  update_dir=$(select_update_dir) || {
+    echo "Not enough free space for update (need at least ${UPDATE_REQUIRED_MB}MB)."
+    echo "Free space on /storage or on the /storage/roms partition."
+    exit 1
+  }
+
+  if [ "${update_dir}" = "${UPDATE_ROMS_DIR}" ]; then
+    echo "Low space on /storage; downloading to ${UPDATE_ROMS_DIR}."
+  fi
+
+  mkdir -p "${update_dir}" || {
+    echo "Failed to create ${update_dir} directory."
+    exit 1
+  }
+
+  write_redirect_part "${update_dir}" || exit 1
+
+  filename=$(basename "${update_url}")
+  update_file="${update_dir}/${filename}"
+  checksum_file="${update_dir}/${filename}.sha256"
+
+  echo "Downloading update file..."
+  download_file "${update_url}" "${update_file}" || {
+    echo "Failed to download update file."
+    rm -f "${update_file}"
+    clear_redirect_part
+    exit 1
+  }
+
+  checksum_url="${update_url}.sha256"
+  echo "Downloading checksum file..."
+  download_file "${checksum_url}" "${checksum_file}" || {
+    echo "Failed to download checksum file."
+    rm -f "${update_file}" "${checksum_file}"
+    clear_redirect_part
+    exit 1
+  }
+
+  echo "Verifying the downloaded update..."
+  expected_checksum=$(awk '{print $1}' "${checksum_file}")
+  actual_checksum=$(sha256sum "${update_file}" | awk '{print $1}')
+  if [ "${expected_checksum}" = "${actual_checksum}" ]; then
+    echo "Checksum verified successfully. Reboot to apply the update."
+    set_setting updates.force 0
+    sync
+  else
+    echo "Checksum verification failed. Removing downloaded files."
+    rm -f "${update_file}" "${checksum_file}"
+    clear_redirect_part
+    exit 1
+  fi
+}
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "jq is required but not installed."
+  exit 1
+fi
+
+if ! ping -c 1 8.8.8.8 >/dev/null 2>&1; then
+  echo "Network connection unavailable."
+  exit 1
+fi
+
+mode=$1
+
+if echo "${mode}" | grep -q '^[0-9]\{8\}$'; then
+  echo "Forcing update to version ${mode}..."
+  main_update "${mode}"
+  exit 0
+fi
+
+case "${mode}" in
+  check)
+    # EmulationStation reads stdout: exactly one line (version tag) when an update exists.
+    if update_url=$(check_update); then
+      echo "$(tag_from_update_url "${update_url}")"
+      exit 0
+    fi
+    echo "No update available (installed: ${OS_VERSION})." >&2
+    exit 1
+    ;;
+  releases)
+    echo "Releases with OTA package ${DISTRO_PREFIX}-*${HW_DEVICE}.${HW_ARCH}-*.tar:"
+    echo "Repository: https://github.com/${GITHUB_REPO}/releases"
+    get_releases
+    exit 0
+    ;;
+  update|"")
+    main_update
+    ;;
+  *)
+    echo "Usage: $0 [check|update|releases|<version>]"
+    echo "  check     - Check for updates (GitHub releases)"
+    echo "  update    - Download latest OTA package from GitHub"
+    echo "  releases  - List release tags with an OTA package for this device"
+    echo "  <version> - Force download a specific release (e.g. 20260601)"
+    exit 1
+    ;;
+esac

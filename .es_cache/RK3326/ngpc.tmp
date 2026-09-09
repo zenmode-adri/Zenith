@@ -1,0 +1,25 @@
+<system>
+  <name>ngpc</name>
+  <fullname>Neo Geo Pocket Color</fullname>
+  <manufacturer>SNK</manufacturer>
+  <release>1999</release>
+  <hardware>portable</hardware>
+  <path>/storage/roms/ngpc</path>
+  <extension>.ngp .ngc .zip .7z</extension>
+  <command>/usr/bin/runemu.sh %ROM% -P%SYSTEM% --core=%CORE% --emulator=%EMULATOR% --controllers="%CONTROLLERSCONFIG%"</command>
+  <platform>ngpc</platform>
+  <theme>ngpc</theme>
+  <emulators>
+    <emulator name="retroarch">
+      <cores>
+        <core default="true">beetle_ngp</core>
+        <core>race</core>
+      </cores>
+    </emulator>
+    <emulator name="mednafen">
+      <cores>
+        <core>ngp</core>
+      </cores>
+    </emulator>
+  </emulators>
+</system>
