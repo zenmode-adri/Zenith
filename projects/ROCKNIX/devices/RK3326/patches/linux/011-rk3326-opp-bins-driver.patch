@@ -1,0 +1,405 @@
+--- a/drivers/cpufreq/cpufreq-dt.c
++++ b/drivers/cpufreq/cpufreq-dt.c
+@@ -42,6 +42,18 @@
+ 	NULL,
+ };
+ 
++/*
++ * Weak hook for platform-specific OPP voltage variant selection
++ * (e.g. PX30/RK3326 factory PVTM bins). Overridden by
++ * drivers/cpufreq/px30_oppvariants.c when built-in.
++ */
++int px30_oppvariants_cpu_hook(struct device *dev);
++
++int __weak px30_oppvariants_cpu_hook(struct device *dev)
++{
++	return 0;
++}
++
+ static struct private_data *cpufreq_dt_find_data(int cpu)
+ {
+ 	struct private_data *priv;
+@@ -199,6 +211,9 @@
+ 	cpumask_set_cpu(cpu, priv->cpus);
+ 	priv->cpu_dev = cpu_dev;
+ 
++	/* Let platform code pick per-bin OPP voltage columns first */
++	px30_oppvariants_cpu_hook(cpu_dev);
++
+ 	/*
+ 	 * OPP layer will be taking care of regulators now, but it needs to know
+ 	 * the name of the regulator first.
+--- a/drivers/cpufreq/Makefile
++++ b/drivers/cpufreq/Makefile
+@@ -15,6 +15,7 @@
+ obj-$(CONFIG_CPU_FREQ_GOV_ATTR_SET)	+= cpufreq_governor_attr_set.o
+ 
+ obj-$(CONFIG_CPUFREQ_DT)		+= cpufreq-dt.o
++obj-$(CONFIG_ARCH_ROCKCHIP)		+= px30_oppvariants.o
+ obj-$(CONFIG_CPUFREQ_DT_PLATDEV)	+= cpufreq-dt-platdev.o
+ 
+ # Traces
+--- a/drivers/cpufreq/px30_oppvariants.c
++++ b/drivers/cpufreq/px30_oppvariants.c
+@@ -0,0 +1,361 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * PX30/RK3326 factory per-bin OPP voltage selection ("L0-L3").
++ *
++ * Replicates on mainline what the Rockchip 4.4 BSP does with
++ * rockchip_opp_select.c + rockchip_pvtm.c: measures the core PVTM ring
++ * oscillator under factory conditions (408 MHz @ 1.0 V), averages N samples,
++ * maps the result to a bin via the DT property "rockchip,pvtm-voltage-sel"
++ * (same triplet format as the BSP DTS), and activates the matching
++ * opp-microvolt-L0..L3 columns with dev_pm_opp_set_prop_name() before the
++ * CPU and GPU OPP tables are registered.
++ *
++ * Safety: any failure leaves the generic opp-microvolt column in use, which
++ * is exactly the pre-patch behavior. Force a bin with:
++ *   px30_oppvariants.sel=0..3   (kernel command line)
++ */
++
++#define pr_fmt(fmt) "px30_oppvariants: " fmt
++
++#include <linux/clk.h>
++#include <linux/cpufreq.h>
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/pm_opp.h>
++#include <linux/regulator/consumer.h>
++
++int px30_oppvariants_cpu_hook(struct device *dev);
++
++/* Core PVTM register block (separate 4K syscon at 0xff148000 on PX30) */
++#define PX30_CORE_PVTM_BASE	0xff148000
++#define PVTM_CON		0x80
++#define PVTM_STA		0x88
++#define PVTM_REG_CAL		0x04
++#define PVTM_REG_FREQ		0x04
++
++#define wr_mask(v, off, mask)	((v) << (off) | (mask) << (16 + (off)))
++
++struct px30_pvtm_cfg {
++	u32 freq_khz;
++	u32 volt_uv;
++	u32 sub_ch;
++	u32 sample_us;
++	u32 num;
++	u32 err;
++	bool valid;
++};
++
++static int sel = -1;
++module_param(sel, int, 0444);
++MODULE_PARM_DESC(sel, "force OPP voltage bin (0-3); -1 = auto via PVTM (default)");
++
++static void __iomem *pvtm_base;
++static int pvtm_sel = -1;
++static bool pvtm_measured;
++static struct px30_pvtm_cfg pvtm_cfg;
++
++static bool px30_machine(void)
++{
++	return of_machine_is_compatible("rockchip,px30") ||
++	       of_machine_is_compatible("rockchip,rk3326") ||
++	       of_machine_is_compatible("rockchip,px30s");
++}
++
++static u32 px30_pvtm_read_once(unsigned int sub_ch, unsigned int time_us)
++{
++	u32 sta, val = 0;
++	unsigned int clk_cnt = time_us * 24; /* 24 MHz reference counter */
++	int check = 1000;
++
++	if (readl(pvtm_base + PVTM_CON) & BIT(0))
++		writel(wr_mask(0, 0, 1), pvtm_base + PVTM_CON);
++
++	writel(wr_mask(1, 1, 1), pvtm_base + PVTM_CON);		/* enable */
++	writel(wr_mask(sub_ch, 2, 3), pvtm_base + PVTM_CON);	/* ring select */
++	writel(clk_cnt, pvtm_base + PVTM_CON + PVTM_REG_CAL);
++
++	writel(wr_mask(1, 0, 1), pvtm_base + PVTM_CON);		/* start */
++
++	if (time_us >= 20)
++		usleep_range(time_us, time_us + 100);
++	else
++		udelay(time_us);
++
++	while (check--) {
++		sta = readl(pvtm_base + PVTM_STA);
++		if (sta & BIT(0))
++			break;
++		udelay(4);
++	}
++
++	if (check >= 0)
++		val = readl(pvtm_base + PVTM_STA + PVTM_REG_FREQ);
++
++	writel(wr_mask(0, 0, 1), pvtm_base + PVTM_CON);		/* stop */
++	writel(wr_mask(0, 1, 1), pvtm_base + PVTM_CON);		/* disable */
++
++	return val;
++}
++
++static int px30_pvtm_parse_cfg(struct device *dev)
++{
++	struct device_node *np;
++	struct device_node *opp_np;
++	u32 ch[2] = { 0, 0 };
++	int ret;
++
++	np = dev_of_node(dev);
++	if (!np)
++		return -EINVAL;
++
++	opp_np = of_parse_phandle(np, "operating-points-v2", 0);
++	if (!opp_np)
++		return -EINVAL;
++
++	ret = of_property_read_u32(opp_np, "rockchip,pvtm-freq", &pvtm_cfg.freq_khz);
++	if (ret)
++		pvtm_cfg.freq_khz = 408000;
++	ret = of_property_read_u32(opp_np, "rockchip,pvtm-volt", &pvtm_cfg.volt_uv);
++	if (ret)
++		pvtm_cfg.volt_uv = 1000000;
++	ret = of_property_read_u32_array(opp_np, "rockchip,pvtm-ch", ch, 2);
++	if (ret) {
++		ch[0] = 0;
++		ch[1] = 0;
++	}
++	if (ch[0] != 0) {
++		pr_warn("only core PVTM (ch 0) supported, got %u\n", ch[0]);
++		return -ENOTSUPP;
++	}
++	pvtm_cfg.sub_ch = ch[1];
++	ret = of_property_read_u32(opp_np, "rockchip,pvtm-sample-time", &pvtm_cfg.sample_us);
++	if (ret)
++		pvtm_cfg.sample_us = 1000;
++	ret = of_property_read_u32(opp_np, "rockchip,pvtm-number", &pvtm_cfg.num);
++	if (ret)
++		pvtm_cfg.num = 10;
++	if (!pvtm_cfg.num || pvtm_cfg.num > 64)
++		pvtm_cfg.num = 10;
++	ret = of_property_read_u32(opp_np, "rockchip,pvtm-error", &pvtm_cfg.err);
++	if (ret)
++		pvtm_cfg.err = 1000;
++
++	pvtm_cfg.valid = true;
++	return 0;
++}
++
++static int px30_pvtm_measure(struct device *cpu_dev)
++{
++	struct regulator *vdd_arm;
++	struct clk *arm_clk;
++	struct clk *pvtm_clk;
++	unsigned long old_freq = 0;
++	int old_volt = 0;
++	u32 min_v, max_v;
++	int total, cur, i, retry;
++	int ret = -EIO;
++
++	if (!pvtm_cfg.valid)
++		return -EINVAL;
++
++	if (!request_mem_region(PX30_CORE_PVTM_BASE, 0x1000, "px30-pvtm"))
++		pr_warn("PVTM region busy, trying anyway\n");
++	pvtm_base = ioremap(PX30_CORE_PVTM_BASE, 0x1000);
++	if (!pvtm_base)
++		return -ENOMEM;
++
++	pvtm_clk = clk_get(cpu_dev, "pvtm");
++	if (IS_ERR(pvtm_clk))
++		pvtm_clk = clk_get(NULL, "sclk_pvtm");
++	if (IS_ERR(pvtm_clk)) {
++		ret = PTR_ERR(pvtm_clk);
++		goto out_unmap;
++	}
++	clk_prepare_enable(pvtm_clk);
++
++	arm_clk = clk_get(cpu_dev, NULL);
++	if (IS_ERR(arm_clk)) {
++		ret = PTR_ERR(arm_clk);
++		goto out_clk;
++	}
++
++	vdd_arm = regulator_get(cpu_dev, "cpu");
++	if (IS_ERR(vdd_arm)) {
++		ret = PTR_ERR(vdd_arm);
++		goto out_armclk;
++	}
++
++	/* Replicate factory measurement conditions: 408 MHz @ 1.0 V */
++	old_freq = clk_get_rate(arm_clk);
++	if (clk_set_rate(arm_clk, (unsigned long)pvtm_cfg.freq_khz * 1000))
++		pr_warn("failed to set PVTM freq, measuring at %lu kHz\n",
++			old_freq / 1000);
++
++	old_volt = regulator_get_voltage(vdd_arm);
++	if (old_volt > 0 &&
++	    regulator_set_voltage(vdd_arm, (int)pvtm_cfg.volt_uv,
++				  (int)pvtm_cfg.volt_uv))
++		pr_warn("failed to set PVTM voltage, measuring at %d uV\n",
++			old_volt);
++
++	for (retry = 2; retry > 0; retry--) {
++		total = 0;
++		min_v = UINT_MAX;
++		max_v = 0;
++
++		for (i = 0; i < pvtm_cfg.num; i++) {
++			cur = px30_pvtm_read_once(pvtm_cfg.sub_ch,
++						  pvtm_cfg.sample_us);
++			if (cur <= 0)
++				goto restore;
++			total += cur;
++			if (cur < min_v)
++				min_v = cur;
++			if (cur > max_v)
++				max_v = cur;
++		}
++
++		if (max_v - min_v <= pvtm_cfg.err)
++			break;
++	}
++
++	if (retry <= 0 && max_v - min_v > pvtm_cfg.err) {
++		pr_warn("unstable PVTM (%u spread > %u)\n",
++			max_v - min_v, pvtm_cfg.err);
++		ret = -EIO;
++		goto restore;
++	}
++
++	cur = total / pvtm_cfg.num;
++
++	/* Map value to bin via rockchip,pvtm-voltage-sel triplets */
++	{
++		struct device_node *opp_np;
++		u32 t[16];
++		int n, j;
++
++		opp_np = of_parse_phandle(dev_of_node(cpu_dev),
++					  "operating-points-v2", 0);
++		n = opp_np ? of_property_count_u32_elems(opp_np,
++					"rockchip,pvtm-voltage-sel") : 0;
++		if (n <= 0 || n > 16 || of_property_read_u32_array(opp_np,
++					"rockchip,pvtm-voltage-sel", t, n)) {
++			pr_warn("no pvtm-voltage-sel thresholds, using L0\n");
++			pvtm_sel = 0;
++		} else {
++			for (j = 0; j + 2 < n; j += 3) {
++				if (cur >= (int)t[j] && cur <= (int)t[j + 1]) {
++					pvtm_sel = t[j + 2];
++					break;
++				}
++			}
++			if (pvtm_sel < 0 || pvtm_sel > 3) {
++				pr_warn("PVTM %d unmapped, using L0\n", cur);
++				pvtm_sel = 0;
++			}
++		}
++		of_node_put(opp_np);
++	}
++
++	pr_info("PVTM=%d -> bin L%d\n", cur, pvtm_sel);
++	ret = 0;
++
++restore:
++	if (old_volt > 0)
++		regulator_set_voltage(vdd_arm, old_volt, old_volt);
++	if (old_freq)
++		clk_set_rate(arm_clk, old_freq);
++	regulator_put(vdd_arm);
++out_armclk:
++	clk_put(arm_clk);
++out_clk:
++	clk_disable_unprepare(pvtm_clk);
++	clk_put(pvtm_clk);
++out_unmap:
++	iounmap(pvtm_base);
++	release_mem_region(PX30_CORE_PVTM_BASE, 0x1000);
++	pvtm_base = NULL;
++	return ret;
++}
++
++/*
++ * Called from cpufreq-dt (weak hook) before the OPP table is registered.
++ * Must not fail cpufreq init: all errors fall back to the generic table.
++ */
++int px30_oppvariants_cpu_hook(struct device *cpu_dev)
++{
++	int ret;
++
++	if (!px30_machine())
++		return 0;
++
++	if (sel >= 0 && sel <= 3) {
++		pvtm_sel = sel;
++		pr_info("forced bin L%d via module parameter\n", pvtm_sel);
++	} else if (!pvtm_measured) {
++		pvtm_measured = true;
++		ret = px30_pvtm_parse_cfg(cpu_dev);
++		if (!ret)
++			ret = px30_pvtm_measure(cpu_dev);
++		if (ret) {
++			pr_warn("PVTM measurement failed (%d), using generic table\n",
++				ret);
++			return 0;
++		}
++	}
++
++	if (pvtm_sel >= 0 && pvtm_sel <= 3) {
++		char name[8];
++
++		snprintf(name, sizeof(name), "L%d", pvtm_sel);
++		ret = dev_pm_opp_set_prop_name(cpu_dev, name);
++		if (ret)
++			pr_warn("set_prop_name(%s) failed: %d\n", name, ret);
++		else
++			pr_info("CPU OPP voltage bin %s active\n", name);
++	}
++
++	return 0;
++}
++
++static int __init px30_oppvariants_gpu_init(void)
++{
++	struct device_node *np;
++	struct platform_device *pdev;
++	char name[8];
++	int ret;
++
++	if (pvtm_sel < 0 || pvtm_sel > 3)
++		return 0;
++
++	np = of_find_compatible_node(NULL, NULL, "rockchip,px30-mali");
++	if (!np)
++		return 0;
++
++	pdev = of_find_device_by_node(np);
++	of_node_put(np);
++	if (!pdev)
++		return 0; /* panfrost not loaded yet; skip GPU variants */
++
++	snprintf(name, sizeof(name), "L%d", pvtm_sel);
++	ret = dev_pm_opp_set_prop_name(&pdev->dev, name);
++	if (ret)
++		pr_warn("GPU set_prop_name(%s) failed: %d\n", name, ret);
++	else
++		pr_info("GPU OPP voltage bin %s active\n", name);
++
++	return 0;
++}
++late_initcall(px30_oppvariants_gpu_init);
++
++MODULE_AUTHOR("Kernel-mainline-r36 project");
++MODULE_DESCRIPTION("PX30/RK3326 factory per-bin OPP voltage selection (PVTM)");
++MODULE_LICENSE("GPL");
