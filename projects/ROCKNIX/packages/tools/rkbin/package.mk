@@ -36,7 +36,8 @@ post_unpack() {
   # uboot.bin write before giving up. dArkOS reaches 786 through the BSP
   # dmc driver's runtime retraining; this TPL path sets the cold-init target.
   # Drop to 666 or 528 if a board genuinely fails at 786.
-  RK3326_DDR_FREQ="${RK3326_DDR_FREQ:-786}"
+  # R36 fork: default 666 (786 no arranca de forma fiable en nuestra placa).
+  RK3326_DDR_FREQ="${RK3326_DDR_FREQ:-666}"
   DDR_BIN="$(ls ${PKG_BUILD}/bin/rk33/rk3326_ddr_333MHz_*.bin)"
   ${PKG_BUILD}/tools/ddrbin_tool.py rk3326 -g ${PKG_BUILD}/rk3326_ddr_freq.txt ${DDR_BIN}
   sed -i -E "s#^(lp2_freq|ddr3_freq|lp3_freq|ddr4_freq|lp4_freq)=.*#\1=${RK3326_DDR_FREQ}#" ${PKG_BUILD}/rk3326_ddr_freq.txt

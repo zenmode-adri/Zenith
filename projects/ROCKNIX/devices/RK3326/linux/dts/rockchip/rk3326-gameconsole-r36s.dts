@@ -471,6 +471,7 @@
 	opp-194000000 {
 		opp-hz = /bits/ 64 <194000000>;
 		opp-microvolt = <950000>;
+		opp-suspend;
 	};
 	opp-328000000 {
 		opp-hz = /bits/ 64 <328000000>;
@@ -492,5 +493,4 @@
 	ddr_timing = <&ddr_timing>;
 	upthreshold = <40>;
 	downdifferential = <20>;
-	rockchip,suspend-frequency = <194000000>;
 };
