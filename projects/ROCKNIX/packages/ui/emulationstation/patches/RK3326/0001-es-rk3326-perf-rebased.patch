@@ -98,7 +98,7 @@ index 53303ea..93ea490 100644
  		executables.push_back("batocera-padsinfo");
  		break;
 diff --git a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
-index 8781dfd..6f0fe96 100644
+index 8781dfd..407aef5 100644
 --- a/es-app/src/guis/GuiMenu.cpp
 +++ b/es-app/src/guis/GuiMenu.cpp
 @@ -67,6 +67,8 @@
@@ -110,10 +110,10 @@ index 8781dfd..6f0fe96 100644
  #include <string>
  #include <utility>
  #include <array>
-@@ -1871,6 +1873,150 @@ void GuiMenu::openSystemSettings()
- 				SystemConf::getInstance()->saveSystemConf();
- 			}
- 		});
+@@ -1488,6 +1490,151 @@ static std::vector<std::pair<std::string, std::string>> getScriptOutput(const st
+ 	return results;
+ }
+ #endif
 +// Session cache for the outputs of the distro scripts invoked while building menus.
 +// popen()/sh spawning sources /etc/profile on this distro and freezes the UI thread
 +// for up to seconds on low-end devices, so each script output is fetched at most
@@ -258,17 +258,10 @@ index 8781dfd..6f0fe96 100644
 +	return "disabled";
 +}
 +
- 	}
-   }
- #endif
-@@ -2073,6 +2219,7 @@ void GuiMenu::openSystemSettings()
- 		optionsFanProfile->add(_("AUTO"),"auto", selectedFanProfile == "auto");
- 		optionsFanProfile->add(_("QUIET"),"quiet", selectedFanProfile == "quiet");
- 		optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
-+			invalidateSessionShOutput("timeinfo.current_timezone");
- 		optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
- 		optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
- 		s->addWithLabel(_("COOLING PROFILE"), optionsFanProfile);
++
+ 
+ void GuiMenu::openSystemSettings() 
+ {
 @@ -2225,15 +2372,16 @@ void GuiMenu::openSystemSettings()
  	const std::string gpuDriverScript = "/usr/bin/gpudriver";
  	if (Utils::FileSystem::exists(gpuDriverScript)) {
@@ -347,6 +340,22 @@ index 8781dfd..6f0fe96 100644
  				videofilters_choices->add(_(Utils::String::toUpper(videofilter).c_str()), videofilter, currentVideofilter == videofilter);
  #endif
  			if (!videofilters_choices->hasSelection())
+@@ -5440,6 +5586,7 @@ std::vector<std::pair<std::string, std::string>> getCountryCodes()
+ 
+ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
+ {
++	Window* window = mWindow;
+ 	bool baseWifiEnabled = SystemConf::getInstance()->getBool("wifi.enabled");
+ 	bool baseAdhocEnabled = SystemConf::getInstance()->getBool("wifi.adhoc.enabled");
+ 
+@@ -5447,7 +5594,6 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
+ 	std::shared_ptr<Font> font = theme->Text.font;
+ 	unsigned int color = theme->Text.color;
+ 
+-	Window *window = mWindow;
+ 
+ 	auto s = new GuiSettings(mWindow, _("NETWORK SETTINGS").c_str());
+ 	s->addGroup(_("INFORMATION"));
 @@ -5481,7 +5627,10 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
  		s->addRow(row);
  	}
@@ -359,6 +368,15 @@ index 8781dfd..6f0fe96 100644
  	s->addWithLabel(_("INTERNET STATUS"), status);
  
  	// Network Indicator
+@@ -5638,7 +5787,7 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
+ 		}
+ 	});
+ 
+-	enable_adhoc->setOnChangedCallback([this, s, baseAdhocEnabled, baseWifiEnabled, enable_wifi, enable_adhoc, optionsAdhocID, selectedAdhocID]
++	enable_adhoc->setOnChangedCallback([window, this, s, baseAdhocEnabled, baseWifiEnabled, enable_wifi, enable_adhoc, optionsAdhocID, selectedAdhocID]
+ 	{
+ 		bool wifienabled = enable_wifi->getState();
+ 		bool adhocenabled = enable_adhoc->getState();
 @@ -5654,16 +5803,37 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
  
  		if (wifienabled)
