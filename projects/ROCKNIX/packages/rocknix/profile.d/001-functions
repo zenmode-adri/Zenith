@@ -57,24 +57,17 @@ function get_setting() {
     fi
   fi
 
-  ### Check to see if we have a "system." global setting.
-  SYSTEM=$(awk -F: '/^system.'"${1}"='/ { st = index($0,"=");print substr($0,st+1);exit}' ${J_CONF})
-  if [ -n "${SYSTEM}" ]
-  then
-    echo ${SYSTEM}
-    return
-  fi
-
-  ### Check to see if we have a "global." global setting."
-  LOCAL=$(awk -F: '/^'"${1}"='/ { st = index($0,"=");print substr($0,st+1);exit}' ${J_CONF})
-  if [ -z "${LOCAL}" ]
-  then
-    awk -F: '/^global.'"${1}"='/ { st = index($0,"=");print substr($0,st+1);exit}' ${J_CONF}
-    return
-  else
-    echo ${LOCAL}
-  fi
-  return
+  ### One awk pass for the fall-through chain: "system." -> plain -> "global." (first match of each wins).
+  ### (Was up to three awk processes per call, 15+ during /etc/profile via 097-proxy.)
+  OUTPUT=$(awk -v k="${1}" '
+    BEGIN { a = "system." k "="; b = k "="; c = "global." k "=" }
+    !sa && index($0, a) == 1 { sa = 1; va = substr($0, length(a) + 1) }
+    !sb && index($0, b) == 1 { sb = 1; vb = substr($0, length(b) + 1) }
+    !sc && index($0, c) == 1 { sc = 1; vc = substr($0, length(c) + 1) }
+    END { if (va != "") print va; else if (vb != "") print vb; else print vc }
+  ' ${J_CONF})
+  [ -n "${OUTPUT}" ] && echo ${OUTPUT}
+  return 0
 }
 
 function wait_lock() {

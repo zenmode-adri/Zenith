@@ -1,14 +1,15 @@
-diff -u -r a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
---- a/es-app/src/guis/GuiMenu.cpp	2026-10-04 13:25:16.902827678 +0200
-+++ b/es-app/src/guis/GuiMenu.cpp	2026-10-04 13:25:38.965259836 +0200
-@@ -1993,6 +1993,43 @@
+diff -u -r p1/es-app/src/guis/GuiMenu.cpp p2/es-app/src/guis/GuiMenu.cpp
+--- p1/es-app/src/guis/GuiMenu.cpp	2026-10-04 14:58:43.352693409 +0200
++++ p2/es-app/src/guis/GuiMenu.cpp	2026-10-04 14:58:43.365986474 +0200
+@@ -1993,6 +1993,42 @@
  	  }
  	}
  
 +#if !WIN32
 +	// Panel adjustment (gamma/contrast/saturation/hue) via /usr/bin/paneladj.
-+	// The command runs in the background (runSystemCommand otherwise blocks the UI until it exits)
-+	// and "nosave" skips set_setting: the value is stored by the save function when the menu closes.
++	// The command runs in the background (runSystemCommand otherwise blocks the UI until it exits).
++	// "nosave": paneladj persists the final value itself; the value is also kept in SystemConf here,
++	// so it survives closing the menu with the "close all" button, which does not run save functions.
 +	if (Utils::FileSystem::exists("/usr/bin/paneladj"))
 +	{
 +		s->addGroup(_("PANEL ADJUSTMENT"));
@@ -23,16 +24,14 @@ diff -u -r a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
 +
 +			auto slider = std::make_shared<SliderComponent>(mWindow, 5.f, 100.f, 5.f, "%");
 +			slider->setValue((float)init);
-+			slider->setOnValueChanged([prop](const float& newVal)
++			slider->setOnValueChanged([prop, key](const float& newVal)
 +			{
++				const std::string value = std::to_string((int)Math::round(newVal));
++				SystemConf::getInstance()->set(key, value);
 +				Utils::Platform::runSystemCommand(
-+					"/usr/bin/paneladj " + prop + " " + std::to_string((int)Math::round(newVal)) + " nosave >/dev/null 2>&1 &", "", nullptr);
++					"/usr/bin/paneladj " + prop + " " + value + " nosave >/dev/null 2>&1 &", "", nullptr);
 +			});
 +			s->addWithLabel(label, slider);
-+			s->addSaveFunc([slider, key]
-+			{
-+				SystemConf::getInstance()->set(key, std::to_string((int)Math::round(slider->getValue())));
-+			});
 +		};
 +
 +		addPanelAdjSlider("brightness", _("GAMMA"));
