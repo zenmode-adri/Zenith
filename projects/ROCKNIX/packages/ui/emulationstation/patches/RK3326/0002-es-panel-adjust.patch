@@ -1,0 +1,47 @@
+diff -u -r a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+--- a/es-app/src/guis/GuiMenu.cpp	2026-10-04 13:25:16.902827678 +0200
++++ b/es-app/src/guis/GuiMenu.cpp	2026-10-04 13:25:38.965259836 +0200
+@@ -1993,6 +1993,43 @@
+ 	  }
+ 	}
+ 
++#if !WIN32
++	// Panel adjustment (gamma/contrast/saturation/hue) via /usr/bin/paneladj.
++	// The command runs in the background (runSystemCommand otherwise blocks the UI until it exits)
++	// and "nosave" skips set_setting: the value is stored by the save function when the menu closes.
++	if (Utils::FileSystem::exists("/usr/bin/paneladj"))
++	{
++		s->addGroup(_("PANEL ADJUSTMENT"));
++
++		auto addPanelAdjSlider = [this, s](const std::string& prop, const std::string& label)
++		{
++			const std::string key = "display." + prop;
++			const std::string raw = SystemConf::getInstance()->get(key);
++			int init = raw.empty() ? 50 : Utils::String::toInteger(raw);
++			init = Math::min(Math::max(init, 5), 100);
++			init = ((init + 2) / 5) * 5;
++
++			auto slider = std::make_shared<SliderComponent>(mWindow, 5.f, 100.f, 5.f, "%");
++			slider->setValue((float)init);
++			slider->setOnValueChanged([prop](const float& newVal)
++			{
++				Utils::Platform::runSystemCommand(
++					"/usr/bin/paneladj " + prop + " " + std::to_string((int)Math::round(newVal)) + " nosave >/dev/null 2>&1 &", "", nullptr);
++			});
++			s->addWithLabel(label, slider);
++			s->addSaveFunc([slider, key]
++			{
++				SystemConf::getInstance()->set(key, std::to_string((int)Math::round(slider->getValue())));
++			});
++		};
++
++		addPanelAdjSlider("brightness", _("GAMMA"));
++		addPanelAdjSlider("contrast", _("CONTRAST"));
++		addPanelAdjSlider("saturation", _("SATURATION"));
++		addPanelAdjSlider("hue", _("HUE"));
++	}
++#endif
++
+ #if defined(ROCKNIX)
+ 	// Bottom screen content - only visible when 2+ displays detected
+   if (Utils::Platform::GetEnv("DEVICE_HAS_DUAL_SCREEN") == "true"){
