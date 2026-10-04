@@ -13,15 +13,13 @@ PKG_BUILD_FLAGS="-gold"
 GET_HANDLER_SUPPORT="git"
 PKG_PATCH_DIRS+="${DEVICE}"
 
-if [ ! "${OPENGL}" = "no" ]; then
-  PKG_DEPENDS_TARGET+=" ${OPENGL} glu"
-  PKG_CMAKE_OPTS_TARGET+=" -DGL=1"
-fi
-
+# El ES nuevo (cada856) exige UNA sola API grafica en CMake (GL/GLES/GLES2/GLES3 son excluyentes).
+# ROCKNIX upstream compila con GLES3 (renderizador GLES30); lo mismo aqui.
 if [ ! "${OPENGLES_SUPPORT}" = no ]; then
   PKG_DEPENDS_TARGET+=" ${OPENGLES}"
-  PKG_CMAKE_OPTS_TARGET+=" -DGLES2=1"
 fi
+PKG_DEPENDS_TARGET+=" poppler"
+PKG_CMAKE_OPTS_TARGET+=" -DGLES3=1"
 
 PKG_CMAKE_OPTS_TARGET+=" -DROCKNIX=1 \
                          -DDISABLE_KODI=1 \
