@@ -1,0 +1,84 @@
+diff -u -r a/es-app/src/ApiSystem.cpp b/es-app/src/ApiSystem.cpp
+--- a/es-app/src/ApiSystem.cpp	2026-10-04 13:47:29.024932597 +0200
++++ b/es-app/src/ApiSystem.cpp	2026-10-04 13:48:45.013422723 +0200
+@@ -970,12 +970,28 @@
+ 
+ std::vector<std::string> ApiSystem::getAvailableColors()
+ {
+-	return executeEnumerationScript("/usr/bin/sh -lc \"/usr/bin/ledcontrol list\"");
++	// Session cache: LED colours are a hardware property. UI thread only.
++	static std::vector<std::string> cachedColors;
++	static bool colorsLoaded = false;
++	if (!colorsLoaded)
++	{
++		cachedColors = executeEnumerationScript("/usr/bin/sh -lc \"/usr/bin/ledcontrol list\"");
++		colorsLoaded = true;
++	}
++	return cachedColors;
+ }
+ 
+ std::vector<std::string> ApiSystem::getSleepModes()
+ {
+-	return executeEnumerationScript("/usr/bin/sh -lc \"echo \\\"default\\\"; tr \\\" \\\" \\\"\\n\\\" </sys/power/state | grep -v disk\"");
++	// Session cache: /sys/power/state is static. UI thread only.
++	static std::vector<std::string> cachedSleepModes;
++	static bool sleepModesLoaded = false;
++	if (!sleepModesLoaded)
++	{
++		cachedSleepModes = executeEnumerationScript("/usr/bin/sh -lc \"echo \\\"default\\\"; tr \\\" \\\" \\\"\\n\\\" </sys/power/state | grep -v disk\"");
++		sleepModesLoaded = true;
++	}
++	return cachedSleepModes;
+ }
+ 
+ std::string ApiSystem::getCurrentAudioOutputDevice() 
+@@ -2292,7 +2308,13 @@
+ 		executables.push_back("batocera-upgrade-torrent");
+ 		break;
+ 	case ApiSystem::SUSPEND:
+-		return (Utils::FileSystem::exists("/usr/sbin/pm-suspend") && Utils::FileSystem::exists("/usr/bin/pm-is-supported") && executeScript("/usr/bin/pm-is-supported --suspend"));
++	{
++		// Session cache: this forked pm-is-supported every time the menu opened. UI thread only.
++		static int suspendSupported = -1;
++		if (suspendSupported < 0)
++			suspendSupported = (Utils::FileSystem::exists("/usr/sbin/pm-suspend") && Utils::FileSystem::exists("/usr/bin/pm-is-supported") && executeScript("/usr/bin/pm-is-supported --suspend")) ? 1 : 0;
++		return suspendSupported == 1;
++	}
+ 	case ApiSystem::VERSIONINFO:
+ 		executables.push_back("batocera-version");
+ 		break;
+diff -u -r a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+--- a/es-app/src/guis/GuiMenu.cpp	2026-10-04 13:47:29.032496996 +0200
++++ b/es-app/src/guis/GuiMenu.cpp	2026-10-04 13:48:45.012376740 +0200
+@@ -2289,8 +2289,8 @@
+ 	{
+ 		if (optionsGovernors->changed()) {
+ 			SystemConf::getInstance()->set("system.cpugovernor", optionsGovernors->getSelected());
++			Utils::Platform::runSystemCommand("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; "+ optionsGovernors->getSelected() + "\" >/dev/null 2>&1 &", "", nullptr);
+ 		}
+-		Utils::Platform::runSystemCommand("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; "+ optionsGovernors->getSelected() + "\"", "", nullptr);
+ 	});
+ 
+ 	// GPU performance mode with enhanced power savings
+@@ -2319,8 +2319,8 @@
+ 	{
+ 		if (optionsGpuGovernors->changed()) {
+ 			SystemConf::getInstance()->set("system.gpuperf", optionsGpuGovernors->getSelected());
++			Utils::Platform::runSystemCommand("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; gpu_performance_level "+ optionsGpuGovernors->getSelected() + "\" >/dev/null 2>&1 &", "", nullptr);
+ 		}
+-		Utils::Platform::runSystemCommand("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; gpu_performance_level "+ optionsGpuGovernors->getSelected() + "\"", "", nullptr);
+ 	});
+ 
+ 	if (Utils::Platform::GetEnv("DEVICE_TURBO_MODE") == "true"){
+diff -u -r a/es-app/src/guis/GuiWifi.cpp b/es-app/src/guis/GuiWifi.cpp
+--- a/es-app/src/guis/GuiWifi.cpp	2026-10-04 13:47:29.005396665 +0200
++++ b/es-app/src/guis/GuiWifi.cpp	2026-10-04 13:48:45.008113198 +0200
+@@ -41,7 +41,7 @@
+ 
+ 	std::vector<std::string> savedNetworks = ApiSystem::getInstance()->getSavedWifiNetworks();
+ 	std::string currentSSID = SystemConf::getInstance()->get("wifi.ssid");
+-	bool isSystemConnected = ApiSystem::getInstance()->ping();
++	bool isSystemConnected = ApiSystem::getInstance()->getIpAddress() != "NOT CONNECTED"; // no ping(): up to 6 s blocked without internet
+ 
+ 	// Add unique networks from savedNetworks just in case they are not currently in range
+ 	for (const auto& saved : savedNetworks) {
