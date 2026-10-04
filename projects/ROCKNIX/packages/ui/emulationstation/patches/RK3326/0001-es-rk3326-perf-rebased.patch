@@ -1,0 +1,619 @@
+diff --git a/es-app/src/ApiSystem.cpp b/es-app/src/ApiSystem.cpp
+index 53303ea..93ea490 100644
+--- a/es-app/src/ApiSystem.cpp
++++ b/es-app/src/ApiSystem.cpp
+@@ -27,6 +27,7 @@
+ #include <stdio.h>
+ #include <string.h>
+ #include <regex>
++#include <map>
+ #include <sys/types.h>
+ #include <algorithm>
+ #include <fstream>
+@@ -609,7 +610,17 @@ bool ApiSystem::isWifiAPModeSupported()
+ {
+ 	LOG(LogDebug) << "ApiSystem::isWifiAPModeSupported";
+ 
+-	return executeScript("wifictl has_ap_mode");
++	// Session cache: "wifictl has_ap_mode" sources /etc/profile and probes the
++	// wifi phy; AP mode support is a hardware property, static for the session.
++	// UI thread only.
++	static bool cachedApModeSupported = false;
++	static bool apModeLoaded = false;
++	if (apModeLoaded)
++		return cachedApModeSupported;
++
++	cachedApModeSupported = executeScript("wifictl has_ap_mode");
++	apModeLoaded = true;
++	return cachedApModeSupported;
+ }
+ 
+ std::vector<std::string> ApiSystem::getSavedWifiNetworks() {
+@@ -899,17 +910,45 @@ std::vector<std::string> ApiSystem::getAvailableAudioOutputDevices()
+ 
+ std::vector<std::string> ApiSystem::getAvailableChannels()
+ {
+-	return executeEnumerationScript("/usr/bin/sh -lc \"/usr/bin/wifictl channels\"");
++	// Session cache: "wifictl channels" sources /etc/profile and probes the
++	// wifi phy; the channel list is static for the session. UI thread only.
++	static std::vector<std::string> cachedChannels;
++	static bool channelsLoaded = false;
++	if (channelsLoaded)
++		return cachedChannels;
++
++	cachedChannels = executeEnumerationScript("/usr/bin/sh -lc \"/usr/bin/wifictl channels\"");
++	channelsLoaded = true;
++	return cachedChannels;
+ }
+ 
+ std::vector<std::string> ApiSystem::getAvailableCpuGovernors()
+ {
+-	return executeEnumerationScript("/usr/bin/sh -lc \"echo \\\"default\\\"; tr \\\" \\\" \\\"\\n\\\" < /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors\" | grep \[a-z\]");
++	// Session cache: the governor list is read from cpufreq sysfs and is
++	// static for the session. UI thread only.
++	static std::vector<std::string> cachedGovernors;
++	static bool governorsLoaded = false;
++	if (governorsLoaded)
++		return cachedGovernors;
++
++	cachedGovernors = executeEnumerationScript("/usr/bin/sh -lc \"echo \\\"default\\\"; tr \\\" \\\" \\\"\\n\\\" < /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors\" | grep \[a-z\]");
++	governorsLoaded = true;
++	return cachedGovernors;
+ }
+ 
+ std::vector<std::string> ApiSystem::getAvailableGpuGovernors()
+ {
+-	return executeEnumerationScript("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; get_available_gpu_governors\"");
++	// Session cache: this sources /etc/profile.d/099-freqfunctions and is one
++	// of the slowest distro script calls; the list is static for the session.
++	// UI thread only.
++	static std::vector<std::string> cachedGpuGovernors;
++	static bool gpuGovernorsLoaded = false;
++	if (gpuGovernorsLoaded)
++		return cachedGpuGovernors;
++
++	cachedGpuGovernors = executeEnumerationScript("/usr/bin/sh -lc \". /etc/profile.d/099-freqfunctions; get_available_gpu_governors\"");
++	gpuGovernorsLoaded = true;
++	return cachedGpuGovernors;
+ }
+ 
+ std::vector<std::string> ApiSystem::getAvailableDisplayModes()
+@@ -2210,6 +2249,18 @@ bool ApiSystem::isScriptingSupported(ScriptId script)
+ 	case ApiSystem::THEBEZELPROJECT:
+ 		executables.push_back("rocknix-es-thebezelproject");
+ 		break;		
++	case ApiSystem::SHADERS:
++		// Upstream behaviour: the section is hidden when no shader set is installed
++		return getShaderList("", "", "").size() > 0;
++	case ApiSystem::VIDEOFILTERS:
++		// Upstream behaviour: the section is hidden when no video filter is installed
++		return getVideoFilterList("", "", "").size() > 0;
++	case ApiSystem::DECORATIONS:
++		// Upstream behaviour: the section is hidden when no decoration set is installed
++		for (auto path : { Paths::getUserDecorationsPath(), Paths::getDecorationsPath() })
++			if (Utils::FileSystem::isDirectory(path) && Utils::FileSystem::getDirContent(path).size() > 0)
++				return true;
++		return false;
+ 	case ApiSystem::PADSINFO:
+ 		executables.push_back("batocera-padsinfo");
+ 		break;
+diff --git a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+index 8781dfd..6f0fe96 100644
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -67,6 +67,8 @@
+ 
+ #if !WIN32
+ #include <vector>
++#include <map>
++#include <sstream>
+ #include <string>
+ #include <utility>
+ #include <array>
+@@ -1871,6 +1873,150 @@ void GuiMenu::openSystemSettings()
+ 				SystemConf::getInstance()->saveSystemConf();
+ 			}
+ 		});
++// Session cache for the outputs of the distro scripts invoked while building menus.
++// popen()/sh spawning sources /etc/profile on this distro and freezes the UI thread
++// for up to seconds on low-end devices, so each script output is fetched at most
++// once per session. All reads and writes of this cache MUST happen in the UI thread.
++static std::map<std::string, std::string>& sessionShOutputCache()
++{
++	static std::map<std::string, std::string> cache;
++	return cache;
++}
++
++static std::string getSessionShOutput(const std::string& key, const std::string& command)
++{
++	auto& cache = sessionShOutputCache();
++	auto it = cache.find(key);
++	if (it != cache.end())
++		return it->second;
++
++	std::string value = Utils::Platform::GetShOutput(command);
++	cache[key] = value;
++	return value;
++}
++
++static void invalidateSessionShOutput(const std::string& key)
++{
++	sessionShOutputCache().erase(key);
++}
++
++// /usr/bin/device-switch with no argument cats a sysfs attribute
++static std::string getDeviceSwitchCurrent()
++{
++	std::string value = Utils::FileSystem::readAllText("/sys/firmware/devicetree/base/rocknix,device_switch/this");
++	size_t nul = value.find('\0');
++	if (nul != std::string::npos)
++		value = value.substr(0, nul);
++	value = Utils::String::trim(value);
++	return value;
++}
++
++// /usr/bin/device-switch --options lists the same sysfs directory
++static std::string getDeviceSwitchOptions()
++{
++	std::vector<std::string> names;
++	for (auto entry : Utils::FileSystem::getDirContent("/sys/firmware/devicetree/base/rocknix,device_switch"))
++	{
++		std::string name = Utils::FileSystem::getFileName(entry);
++		if (name != "name" && name != "this")
++			names.push_back(name);
++	}
++	std::sort(names.begin(), names.end());
++	std::string out;
++	for (auto name : names)
++		out += name + " ";
++	return out;
++}
++
++// /usr/bin/dtb_overlay get <type> greps FDTOVERLAYS in /flash/extlinux/extlinux.conf
++static std::string getDtbOverlayCurrent(const std::string& dtbType)
++{
++	static const std::vector<std::string> specializations = { "undervolt-cpu", "undervolt-gpu", "driver-gpu" };
++
++	std::string content = Utils::FileSystem::readAllText("/flash/extlinux/extlinux.conf");
++	if (content.empty())
++		return "None";
++
++	std::stringstream lines(content);
++	std::string line;
++	while (std::getline(lines, line))
++	{
++		size_t pos = line.find("FDTOVERLAYS");
++		if (pos == std::string::npos)
++			continue;
++
++		std::stringstream tokens(line.substr(pos + std::string("FDTOVERLAYS").length()));
++		std::string token;
++		while (tokens >> token)
++		{
++			// mimic: echo ${ol} | cut -d '/' -f 3
++			std::vector<std::string> parts = Utils::String::split(token, '/');
++			std::string base = (parts.size() >= 3 ? parts[2] : token);
++
++			if (dtbType == "custom")
++			{
++				bool specialized = false;
++				for (auto spec : specializations)
++					if (base.find(spec) != std::string::npos)
++						specialized = true;
++				if (!specialized)
++					return base;
++			}
++			else if (base.find(dtbType) != std::string::npos)
++				return base;
++		}
++	}
++
++	return "None";
++}
++
++// /usr/bin/dtb_overlay ls <type> lists /flash/overlays/*.dtbo filtered by type
++static std::string listDtbOverlays(const std::string& dtbType)
++{
++	static const std::vector<std::string> specializations = { "undervolt-cpu", "undervolt-gpu", "driver-gpu" };
++
++	std::vector<std::string> names;
++	for (auto entry : Utils::FileSystem::getDirContent("/flash/overlays"))
++	{
++		std::string base = Utils::FileSystem::getFileName(entry);
++		if (!Utils::String::endsWith(base, ".dtbo"))
++			continue;
++
++		if (dtbType == "custom")
++		{
++			bool specialized = false;
++			for (auto spec : specializations)
++				if (base.find(spec) != std::string::npos)
++					specialized = true;
++			if (!specialized)
++				names.push_back(base);
++		}
++		else if (base.find(dtbType) != std::string::npos)
++			names.push_back(base);
++	}
++	std::sort(names.begin(), names.end());
++	std::string out;
++	for (auto name : names)
++		out += name + " ";
++	return out;
++}
++
++// /usr/bin/usbgadget with no argument cats /sys/class/udc/<udc>/function
++static std::string getUsbGadgetMode()
++{
++	Utils::FileSystem::stringList udcs = Utils::FileSystem::getDirContent("/sys/class/udc");
++	if (udcs.empty())
++		return "disabled";
++
++	std::string mode = Utils::FileSystem::readAllText(udcs.front() + "/function");
++	mode = Utils::String::trim(mode);
++	if (mode == "cdc")
++		return "network";
++	if (mode == "mtp")
++		return "file_transfer";
++	return "disabled";
++}
++
+ 	}
+   }
+ #endif
+@@ -2073,6 +2219,7 @@ void GuiMenu::openSystemSettings()
+ 		optionsFanProfile->add(_("AUTO"),"auto", selectedFanProfile == "auto");
+ 		optionsFanProfile->add(_("QUIET"),"quiet", selectedFanProfile == "quiet");
+ 		optionsFanProfile->add(_("MODERATE"),"moderate", selectedFanProfile == "moderate");
++			invalidateSessionShOutput("timeinfo.current_timezone");
+ 		optionsFanProfile->add(_("AGGRESSIVE"),"aggressive", selectedFanProfile == "aggressive");
+ 		optionsFanProfile->add(_("CUSTOM"),"custom", selectedFanProfile == "custom");
+ 		s->addWithLabel(_("COOLING PROFILE"), optionsFanProfile);
+@@ -2225,15 +2372,16 @@ void GuiMenu::openSystemSettings()
+ 	const std::string gpuDriverScript = "/usr/bin/gpudriver";
+ 	if (Utils::FileSystem::exists(gpuDriverScript)) {
+ 		auto optionsGpuDriver = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU DRIVER"), false);
+-		std::string selectedGpuDriver = std::string(Utils::Platform::GetShOutput(R"(/usr/bin/gpudriver)"));
++		std::string selectedGpuDriver = getSessionShOutput("gpudriver.current", "/usr/bin/gpudriver");
+ 		std::string a;
+-		for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/gpudriver --options)")); getline(ss, a, ' '); ) {
++		for(std::stringstream ss(getSessionShOutput("gpudriver.options", "/usr/bin/gpudriver --options")); getline(ss, a, ' '); ) {
+ 			optionsGpuDriver->add(a, a, a == selectedGpuDriver);
+ 		}
+ 		s->addWithLabel(_("GPU DRIVER"), optionsGpuDriver);
+ 		s->addSaveFunc([this, window, gpuDriverScript, optionsGpuDriver, selectedGpuDriver] {
+ 			if (optionsGpuDriver->changed()) {
+ 				Utils::Platform::runSystemCommand(gpuDriverScript + " " + optionsGpuDriver->getSelected(), "", nullptr);
++				invalidateSessionShOutput("gpudriver.current");
+ 				window->pushGui(new GuiMsgBox(window, _("GPU driver will be switched on next reboot"),
+ 					_("Reboot now"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::REBOOT); },
+ 					_("later"), nullptr)
+@@ -3113,20 +3261,18 @@ void GuiMenu::openLatencyReductionConfiguration(Window* mWindow, std::string con
+ void GuiMenu::dtbOverlayItem(Window* mWindow, GuiSettings *s, const std::string dtb_type)
+ {
+ 	const std::string overlayScript = "/usr/bin/dtb_overlay";
+-	const std::string getDtb = overlayScript + " get " + dtb_type;
+-	const std::string listDtb = overlayScript + " ls " + dtb_type;
+ 	const std::string setDtb = overlayScript + " set " + dtb_type;
+ 	const std::string title = dtb_type + " DTB OVERLAY";
+ 
+ 	auto optionsDtb = std::make_shared<OptionListComponent<std::string> >(mWindow, _(title.c_str()), false);
+-	std::string selectedDtb = std::string(Utils::Platform::GetShOutput(getDtb));
++	std::string selectedDtb = getDtbOverlayCurrent(dtb_type);
+ 	if (selectedDtb.empty() || selectedDtb.compare("None") == 0)
+ 		optionsDtb->add("None", "None", true);
+ 	else
+ 		optionsDtb->add("None", "None", false);
+ 
+ 	std::string option;
+-	for(std::stringstream ss(Utils::Platform::GetShOutput(listDtb)); getline(ss, option, ' '); ) {
++	for(std::stringstream ss(listDtbOverlays(dtb_type)); getline(ss, option, ' '); ) {
+ 		optionsDtb->add(option, option, option == selectedDtb);
+ 	}
+ 
+@@ -3588,7 +3734,7 @@ void GuiMenu::addFeatureItem(Window* window, GuiSettings* settings, const Custom
+ 		}
+ #else
+ 			std::string shader;
+-			for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/getshaders)")); getline(ss, shader, ','); )
++			for(std::stringstream ss(getSessionShOutput("getshaders", "/usr/bin/getshaders")); getline(ss, shader, ','); )
+ 				item->add(pgettext("game_options", Utils::String::toUpper(shader).c_str()), shader, storedValue == shader);
+ #endif
+ 	}
+@@ -3609,7 +3755,7 @@ void GuiMenu::addFeatureItem(Window* window, GuiSettings* settings, const Custom
+ 		}
+ #else
+ 			std::string videofilter;
+-			for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/getfilters)")); getline(ss, videofilter, ','); )
++			for(std::stringstream ss(getSessionShOutput("getfilters", "/usr/bin/getfilters")); getline(ss, videofilter, ','); )
+ 				item->add(pgettext("game_options", Utils::String::toUpper(videofilter).c_str()), videofilter, storedValue == videofilter);
+ #endif
+ 	}
+@@ -3975,7 +4121,7 @@ void GuiMenu::openGamesSettings()
+ 			
+ #else
+ 			std::string shader;
+-			for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/getshaders)")); getline(ss, shader, ','); )
++			for(std::stringstream ss(getSessionShOutput("getshaders", "/usr/bin/getshaders")); getline(ss, shader, ','); )
+ 				shaders_choices->add(_(Utils::String::toUpper(shader).c_str()), shader, currentShader == shader);
+ #endif
+ 			if (!shaders_choices->hasSelection())
+@@ -4011,7 +4157,7 @@ void GuiMenu::openGamesSettings()
+ 
+ #else
+ 			std::string videofilter;
+-			for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/getfilters)")); getline(ss, videofilter, ','); )
++			for(std::stringstream ss(getSessionShOutput("getfilters", "/usr/bin/getfilters")); getline(ss, videofilter, ','); )
+ 				videofilters_choices->add(_(Utils::String::toUpper(videofilter).c_str()), videofilter, currentVideofilter == videofilter);
+ #endif
+ 			if (!videofilters_choices->hasSelection())
+@@ -5481,7 +5627,10 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
+ 		s->addRow(row);
+ 	}
+ 
+-	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->ping() ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
++	// Derive the status from the interface address instead of synchronous
++	// pings: a cheap getifaddrs() syscall. Note: a local network without
++	// internet access now shows CONNECTED instead of NOT CONNECTED.
++	auto status = std::make_shared<TextComponent>(mWindow, ApiSystem::getInstance()->getIpAddress() != "NOT CONNECTED" ? _("CONNECTED") : _("NOT CONNECTED"), font, color);
+ 	s->addWithLabel(_("INTERNET STATUS"), status);
+ 
+ 	// Network Indicator
+@@ -5654,16 +5803,37 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
+ 
+ 		if (wifienabled)
+ 		{
+-			ApiSystem::getInstance()->disableWifi();
++			std::string ssid = SystemConf::getInstance()->get("wifi.ssid");
++			std::string key = SystemConf::getInstance()->get("wifi.key");
++#if !WIN32
++			std::string country = SystemConf::getInstance()->get("wifi.country");
++#endif
++
++			window->pushGui(new GuiLoading<bool>(window, _("PLEASE WAIT"),
++				[ssid, key
+ #if !WIN32
+-			ApiSystem::getInstance()->enableWifi(SystemConf::getInstance()->get("wifi.ssid"), SystemConf::getInstance()->get("wifi.key"), SystemConf::getInstance()->get("wifi.country"));
++				, country
++#endif
++				](auto gui) -> bool
++				{
++					ApiSystem::getInstance()->disableWifi();
++#if !WIN32
++					return ApiSystem::getInstance()->enableWifi(ssid, key, country);
+ #else
+-			ApiSystem::getInstance()->enableWifi(SystemConf::getInstance()->get("wifi.ssid"), SystemConf::getInstance()->get("wifi.key"));
++					return ApiSystem::getInstance()->enableWifi(ssid, key);
+ #endif
++				},
++				[this, s](bool)
++				{
++					delete s;
++					openNetworkSettings(false, true);
++				}));
++		}
++		else
++		{
++			delete s;
++			openNetworkSettings(false, true);
+ 		}
+-
+-		delete s;
+-		openNetworkSettings(false, true);
+ 	});
+ 
+ 	// NETWORK SERVICES
+@@ -5673,73 +5843,86 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
+ 	bool sshbaseEnabled = SystemConf::getInstance()->get("ssh.enabled") == "1";
+ 	sshd_enabled->setState(sshbaseEnabled);
+ 	s->addWithLabel(_("ENABLE SSH"), sshd_enabled);
+-	sshd_enabled->setOnChangedCallback([sshd_enabled] {
+-		if (sshd_enabled->getState() == false) {
+-			Utils::Platform::runSystemCommand("systemctl stop sshd", "", nullptr);
+-			Utils::Platform::runSystemCommand("systemctl disable sshd", "", nullptr);
+-			Utils::Platform::runSystemCommand("rm /storage/.cache/services/sshd.conf", "", nullptr);
+-		} else {
+-			Utils::Platform::runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
+-			Utils::Platform::runSystemCommand("touch /storage/.cache/services/sshd.conf", "", nullptr);
+-			Utils::Platform::runSystemCommand("systemctl enable sshd", "", nullptr);
+-			Utils::Platform::runSystemCommand("systemctl start sshd", "", nullptr);
+-						}
+-			bool sshenabled = sshd_enabled->getState();
+-			SystemConf::getInstance()->set("ssh.enabled", sshenabled ? "1" : "0");
+-		});
++	sshd_enabled->setOnChangedCallback([window, sshd_enabled] {
++		bool enabled = sshd_enabled->getState();
++		SystemConf::getInstance()->set("ssh.enabled", enabled ? "1" : "0");
++		window->pushGui(new GuiLoading<bool>(window, _("PLEASE WAIT"),
++			[enabled](auto gui) -> bool {
++				if (enabled) {
++					Utils::Platform::runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
++					Utils::Platform::runSystemCommand("touch /storage/.cache/services/sshd.conf", "", nullptr);
++					Utils::Platform::runSystemCommand("systemctl enable sshd", "", nullptr);
++					return Utils::Platform::runSystemCommand("systemctl start sshd", "", nullptr);
++				} else {
++					Utils::Platform::runSystemCommand("systemctl stop sshd", "", nullptr);
++					Utils::Platform::runSystemCommand("systemctl disable sshd", "", nullptr);
++					return Utils::Platform::runSystemCommand("rm /storage/.cache/services/sshd.conf", "", nullptr);
++				}
++			}));
++	});
+ 
+        auto samba_enabled = std::make_shared<SwitchComponent>(mWindow);
+ 	bool smbbaseEnabled = SystemConf::getInstance()->get("samba.enabled") == "1";
+ 	samba_enabled->setState(smbbaseEnabled);
+ 	s->addWithLabel(_("ENABLE SAMBA"), samba_enabled);
+-	samba_enabled->setOnChangedCallback([samba_enabled] {
+-		if (samba_enabled->getState() == false) {
+-			Utils::Platform::runSystemCommand("systemctl stop nmbd", "", nullptr);
+-			Utils::Platform::runSystemCommand("systemctl stop smbd", "", nullptr);
+-			Utils::Platform::runSystemCommand("rm /storage/.cache/services/smb.conf", "", nullptr);
+-		} else {
+-			Utils::Platform::runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
+-			Utils::Platform::runSystemCommand("touch /storage/.cache/services/smb.conf", "", nullptr);
+-			Utils::Platform::runSystemCommand("systemctl start nmbd", "", nullptr);
+-			Utils::Platform::runSystemCommand("systemctl start smbd", "", nullptr);
+-						}
+-			bool sambaenabled = samba_enabled->getState();
+-			SystemConf::getInstance()->set("samba.enabled", sambaenabled ? "1" : "0");
+-		});
++	samba_enabled->setOnChangedCallback([window, samba_enabled] {
++		bool enabled = samba_enabled->getState();
++		SystemConf::getInstance()->set("samba.enabled", enabled ? "1" : "0");
++		window->pushGui(new GuiLoading<bool>(window, _("PLEASE WAIT"),
++			[enabled](auto gui) -> bool {
++				if (enabled) {
++					Utils::Platform::runSystemCommand("mkdir -p /storage/.cache/services/", "", nullptr);
++					Utils::Platform::runSystemCommand("touch /storage/.cache/services/smb.conf", "", nullptr);
++					Utils::Platform::runSystemCommand("systemctl start nmbd", "", nullptr);
++					return Utils::Platform::runSystemCommand("systemctl start smbd", "", nullptr);
++				} else {
++					Utils::Platform::runSystemCommand("systemctl stop nmbd", "", nullptr);
++					Utils::Platform::runSystemCommand("systemctl stop smbd", "", nullptr);
++					return Utils::Platform::runSystemCommand("rm /storage/.cache/services/smb.conf", "", nullptr);
++				}
++			}));
++	});
+ 
+ 	auto simple_http_enabled = std::make_shared<SwitchComponent>(mWindow);
+ 	bool simplehttpEnabled = SystemConf::getInstance()->get("simplehttp.enabled") == "1";
+ 	simple_http_enabled->setState(simplehttpEnabled);
+ 	s->addWithLabel(_("ENABLE SIMPLE HTTP SERVER"), simple_http_enabled);
+-	simple_http_enabled->setOnChangedCallback([simple_http_enabled] {
+-		if(simple_http_enabled->getState() == false) {
+-			Utils::Platform::runSystemCommand("systemctl disable --now simple-http-server", "", nullptr);
+-		} else {
+-			Utils::Platform::runSystemCommand("systemctl enable --now simple-http-server", "", nullptr);
+-		}
+-		bool simplehttpenabled = simple_http_enabled->getState();
+-		SystemConf::getInstance()->set("simplehttp.enabled", simplehttpenabled ? "1" : "0");
++	simple_http_enabled->setOnChangedCallback([window, simple_http_enabled] {
++		bool enabled = simple_http_enabled->getState();
++		SystemConf::getInstance()->set("simplehttp.enabled", enabled ? "1" : "0");
++		window->pushGui(new GuiLoading<bool>(window, _("PLEASE WAIT"),
++			[enabled](auto gui) -> bool {
++				if (enabled)
++					return Utils::Platform::runSystemCommand("systemctl enable --now simple-http-server", "", nullptr);
++				return Utils::Platform::runSystemCommand("systemctl disable --now simple-http-server", "", nullptr);
++			}));
+ 	});
+ 
+ 	const std::string usbGadgetScript = "/usr/bin/usbgadget";
+ 	auto optionsUSBGadget = std::make_shared<OptionListComponent<std::string> >(mWindow, _("USB GADGET FUNCTION"), false);
+-	std::string selectedUSBGadget = std::string(Utils::Platform::GetShOutput(R"(/usr/bin/usbgadget)"));
++	std::string selectedUSBGadget = getUsbGadgetMode();
+ 	if (selectedUSBGadget.empty())
+ 		selectedUSBGadget = "disabled";
+ 
+ 	std::string a;
+-	for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/usbgadget --options)")); getline(ss, a, ' '); ) {
++	for(std::stringstream ss(getSessionShOutput("usbgadget.options", "/usr/bin/usbgadget --options")); getline(ss, a, ' '); ) {
+ 		optionsUSBGadget->add(a, a, a == selectedUSBGadget);
+ 	}
+ 	s->addWithLabel(_("USB GADGET FUNCTION"), optionsUSBGadget);
+ 
+ 	s->addSaveFunc([this, window, usbGadgetScript, optionsUSBGadget, selectedUSBGadget] {
+ 		if (optionsUSBGadget->changed()) {
+-			Utils::Platform::runSystemCommand(usbGadgetScript + " " + optionsUSBGadget->getSelected(), "", nullptr);
+-			if (optionsUSBGadget->getSelected() == "network") {
+-				std::string usbip = std::string(Utils::Platform::GetShOutput(R"(/usr/bin/usbgadget address)"));
+-				mWindow->pushGui(new GuiMsgBox(mWindow, _("USB Networking enabled, the device IP is ") + usbip, _("OK"), nullptr));
+-			}
++			std::string selectedUsbGadget = optionsUSBGadget->getSelected();
++			window->pushGui(new GuiLoading<bool>(window, _("PLEASE WAIT"),
++				[usbGadgetScript, selectedUsbGadget](auto gui) -> bool {
++					return Utils::Platform::runSystemCommand(usbGadgetScript + " " + selectedUsbGadget, "", nullptr);
++				},
++				[this, window, selectedUsbGadget](bool) {
++					if (selectedUsbGadget == "network") {
++						std::string usbip = std::string(Utils::Platform::GetShOutput(R"(/usr/bin/usbgadget address)"));
++						window->pushGui(new GuiMsgBox(window, _("USB Networking enabled, the device IP is ") + usbip, _("OK"), nullptr));
++					}
++				}));
+ 		}
+ 	});
+ 
+@@ -5750,14 +5933,15 @@ void GuiMenu::openNetworkSettings(bool selectWifiEnable, bool selectAdhocEnable)
+ 	bool syncthingEnabled = SystemConf::getInstance()->get("syncthing.enabled") == "1";
+ 	enable_syncthing->setState(syncthingEnabled);
+ 	s->addWithLabel(_("ENABLE SYNCTHING"), enable_syncthing);
+-	enable_syncthing->setOnChangedCallback([enable_syncthing] {
+-		if (enable_syncthing->getState() == false) {
+-			Utils::Platform::runSystemCommand("systemctl stop syncthing", "", nullptr);
+-		} else {
+-			Utils::Platform::runSystemCommand("systemctl start syncthing", "", nullptr);
+-		}
+-		bool syncthingenabled = enable_syncthing->getState();
+-		SystemConf::getInstance()->set("syncthing.enabled", syncthingenabled ? "1" : "0");
++	enable_syncthing->setOnChangedCallback([window, enable_syncthing] {
++		bool enabled = enable_syncthing->getState();
++		SystemConf::getInstance()->set("syncthing.enabled", enabled ? "1" : "0");
++		window->pushGui(new GuiLoading<bool>(window, _("PLEASE WAIT"),
++			[enabled](auto gui) -> bool {
++				if (enabled)
++					return Utils::Platform::runSystemCommand("systemctl start syncthing", "", nullptr);
++				return Utils::Platform::runSystemCommand("systemctl stop syncthing", "", nullptr);
++			}));
+ 	});
+ 
+        auto mount_cloud = std::make_shared<SwitchComponent>(mWindow);
+@@ -6248,7 +6432,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
+ 
+ #else
+ 			std::string shader;
+-			for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/getshaders)")); getline(ss, shader, ','); )
++			for(std::stringstream ss(getSessionShOutput("getshaders", "/usr/bin/getshaders")); getline(ss, shader, ','); )
+ 				shaders_choices->add(_(Utils::String::toUpper(shader).c_str()), shader, currentShader == shader);
+ #endif
+ 			if (!shaders_choices->hasSelection())
+@@ -6286,7 +6470,7 @@ void GuiMenu::popSpecificConfigurationGui(Window* mWindow, std::string title, st
+ 
+ #else
+ 			std::string videofilter;
+-			for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/getfilters)")); getline(ss, videofilter, ','); )
++			for(std::stringstream ss(getSessionShOutput("getfilters", "/usr/bin/getfilters")); getline(ss, videofilter, ','); )
+ 				videofilters_choices->add(_(Utils::String::toUpper(videofilter).c_str()), videofilter, currentVideofilter == videofilter);
+ #endif
+ 			if (!videofilters_choices->hasSelection())
+diff --git a/es-core/src/SystemConf.cpp b/es-core/src/SystemConf.cpp
+index 029b0cf..55d42a2 100644
+--- a/es-core/src/SystemConf.cpp
++++ b/es-core/src/SystemConf.cpp
+@@ -1,6 +1,7 @@
+ #include "SystemConf.h"
+ #include <iostream>
+ #include <fstream>
++#include <cstdio>
+ #include "Log.h"
+ #include "utils/StringUtil.h"
+ #include "utils/FileSystemUtil.h"
+@@ -198,12 +199,28 @@ bool SystemConf::saveSystemConf()
+ 	}
+ 
+ 	fileout.close();
+-	
++
++	// TODO: deduplicate per-toggle saves; exiting a menu currently rewrites the
++	// whole file even when a single value changed.
++
++#if defined(WIN32)
++	// std::rename does not replace an existing destination on Win32
+ 	std::ifstream  src(mSystemConfFileTmp, std::ios::binary);
+ 	std::ofstream  dst(mSystemConfFile, std::ios::binary);
+ 	dst << src.rdbuf();
++	src.close();
++	dst.close();
+ 
+ 	remove(mSystemConfFileTmp.c_str());
++#else
++	// Atomic replace: the running distro scripts read this file concurrently
++	if (std::rename(mSystemConfFileTmp.c_str(), mSystemConfFile.c_str()) != 0)
++	{
++		LOG(LogError) << "Unable to rename " << mSystemConfFileTmp << " to " << mSystemConfFile << "\n";
++		return false;
++	}
++#endif
++
+ 	changedConf.clear();
+ 
+ 	return true;
