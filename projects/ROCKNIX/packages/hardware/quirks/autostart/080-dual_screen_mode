@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2024 ROCKNIX (https://github.com/ROCKNIX)
 
-count=$(modetest | awk '$3 == "connected" {print $0}' | wc -l)
+count=$(cat /sys/class/drm/card*-*/status 2>/dev/null | grep -cx connected)
 
 if [ "$count" -eq 2 ]; then
     dual_screen=true

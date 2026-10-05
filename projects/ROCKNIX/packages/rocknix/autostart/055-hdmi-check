@@ -11,8 +11,9 @@ xres="$(cat /sys/class/graphics/fb0/modes | grep -o -P '(?<=:).*(?=p-)' | cut -d
 
 # drm_tool source available at https://github.com/christianhaitian/drm_tool.git
 
-mode="$(/usr/bin/drm_tool list |  awk '/1280x720.*60/ {print substr($2,1,length($2)-1); exit}')"
-mode2="$(/usr/bin/drm_tool list |  awk '/1920x1080.*60/ {print substr($2,1,length($2)-1); exit}')"
+drm_list="$(/usr/bin/drm_tool list)"
+mode="$(printf '%s\n' "${drm_list}" | awk '/1280x720.*60/ {print substr($2,1,length($2)-1); exit}')"
+mode2="$(printf '%s\n' "${drm_list}" | awk '/1920x1080.*60/ {print substr($2,1,length($2)-1); exit}')"
 
 # Now we tell drm what the hdmi mode is by writing to /var/run/drmMode
 # This will get picked up by SDL2 as long as it's been patched with the batocera

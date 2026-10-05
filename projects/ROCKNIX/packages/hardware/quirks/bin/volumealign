@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2026-present Noxwell (https://github.com/beebono)
 
-. /etc/profile
+. /etc/os-release
+export HOME="/storage"
 
 exec "/usr/lib/autostart/quirks/platforms/${HW_DEVICE}/bin/volumealign"

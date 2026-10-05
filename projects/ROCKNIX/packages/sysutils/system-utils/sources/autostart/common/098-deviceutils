@@ -4,12 +4,14 @@
 
 . /etc/profile
 
+STOP_UNITS=""
+
 if [ "${DEVICE_HAS_FAN}" == "true" ]
 then
   tocon "Enabling fan control..."
   nohup systemctl start fancontrol &
 else
-  nohup systemctl stop fancontrol &
+  STOP_UNITS="${STOP_UNITS} fancontrol"
 fi
 
 if [ "${DEVICE_FAKE_JACKSENSE}" == "true" ]
@@ -17,7 +19,7 @@ then
   tocon "Starting headphone service..."
   nohup systemctl start headphones &
 else
-  nohup systemctl stop headphones &
+  STOP_UNITS="${STOP_UNITS} headphones"
 fi
 
 if [ "${DEVICE_HAS_HDMI}" == "true" ] && [ -x /usr/bin/video_sense ]
@@ -25,7 +27,7 @@ then
   tocon "Starting hdmi service..."
   nohup systemctl start video &
 else
-  nohup systemctl stop video &
+  STOP_UNITS="${STOP_UNITS} video"
 fi
 
 if [ "${DEVICE_BATTERY_LED_STATUS}" == "true" ]
@@ -33,7 +35,12 @@ then
   tocon "Starting battery led status service..."
   nohup systemctl start batteryledstatus &
 else
-  nohup systemctl stop batteryledstatus &
+  STOP_UNITS="${STOP_UNITS} batteryledstatus"
+fi
+
+if [ -n "${STOP_UNITS}" ]
+then
+  nohup systemctl stop ${STOP_UNITS} &
 fi
 
 tocon "Starting input service..."

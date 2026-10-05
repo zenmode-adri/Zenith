@@ -1,112 +1,513 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+#
+# /usr/bin/autostart  --  VERSION REORDENADA v2 ("override B" + correcciones REV2)
+#
+# Idea: lo imprescindible ANTES de Sway+ES se hace primero (en serie las tareas que
+# escriben /storage/.config/profile.d y ajustes; en paralelo las cadenas independientes
+# gpudriver / display(+hdmi-check) / sway-init / modulos), se lanza la UI cuanto antes y
+# todo lo demas (audio, red, bluetooth, usbgadget, input, rumble...) se hace DESPUES, en
+# segundo plano y con prioridad baja, SIN retener rocknix-autostart.service (si no,
+# rocknix.target no se alcanza -> volume-fixup.service no arranca -> essway.service no
+# arranca).
+#
+# Cuando se usa LEGACY (flujo ORIGINAL, al final del fichero como legacy_boot):
+#   - existe /storage/.config/autostart-legacy   -> legacy PERMANENTE (interruptor manual)
+#   - existe la marca autostart-B.pending         -> legacy SOLO ESTE ARRANQUE (el anterior
+#       arranque rapido no llego a terminar: corte de luz, reinicio rapido, fallo...).
+#       NO se crea ningun fichero permanente; el siguiente arranque vuelve a ser rapido.
+#   - firstboot pendiente (/storage/mod.done != QUIRK_DEVICE)
+#   - hay scripts de usuario en /storage/.config/autostart/ o /usr/lib/autostart/${HW_DEVICE}/
+#
+# La decision queda en la PRIMERA linea de boot.log ("MODE=fast" / "MODE=legacy(razon)") y en
+# /run/autostart.mode.
+#
+# Marca .pending: se crea al empezar el arranque rapido y se borra cuando las cadenas tardias
+# L1+L2 terminan bien. NO se borra en un apagado limpio (el servicio es de sistema y su unidad
+# esta en la imagen de solo lectura: un ExecStop exigiria un drop-in extra; no se hace). Un
+# reinicio a los pocos segundos de arrancar cuesta, por tanto, UN arranque legacy.
+#
+# Modos extra:
+#   /storage/.config/autostart-late-systemd-run  -> las cadenas tardias van como unidades
+#       transitorias (systemd-run, con HOME=/storage) en vez de procesos sueltos.
+#   --late L1|L2 (uso interno de lo anterior)
+#
+# Variables de prueba (en produccion NO estan definidas, se usan los valores por defecto):
+#   AS_ROOT STORAGE PROFILE_D BOOTLOG START_LOCK JOIN_TIMEOUT
 
 . /etc/os-release
 
-BOOTLOG="/var/log/boot.log"
+AS_ROOT="${AS_ROOT:-/usr/lib/autostart}"
+STORAGE="${STORAGE:-/storage}"
+PROFILE_D="${PROFILE_D:-/etc/profile.d}"
+BOOTLOG="${BOOTLOG:-/var/log/boot.log}"
+START_LOCK="${START_LOCK:-/var/lock/start.games}"
+JOIN_TIMEOUT="${JOIN_TIMEOUT:-40}"
 
-log() {
-  echo "$(date): Autostart: $*" >>${BOOTLOG} 2>&1
+# Funciones del sistema (tocon, get_setting, set_setting, J_CONF...). Se carga ANTES de
+# definir alog() porque 001-functions define su propio log().
+. "${PROFILE_D}/001-functions"
+
+DEFAULT_UI_SERVICE="sway.service essway.service"
+FLAGDIR="${STORAGE}/.config"
+LEGACY_FLAG="${FLAGDIR}/autostart-legacy"
+PENDING="${FLAGDIR}/autostart-B.pending"
+LATE_SYSTEMD_RUN_FLAG="${FLAGDIR}/autostart-late-systemd-run"
+RUNDIR="/run"
+[ "${AS_ROOT}" != "/usr/lib/autostart" ] && RUNDIR="${STORAGE}/run"   # solo pruebas
+
+PLAT_DIR="${AS_ROOT}/quirks/platforms/${HW_DEVICE}"
+DEV_DIR="${AS_ROOT}/quirks/devices/${QUIRK_DEVICE}"
+COM_DIR="${AS_ROOT}/common"
+
+### Listas de scripts por fase (nombres). Lo que exista en los directorios y NO este aqui
+### se ejecuta en la fase 1 (en serie, antes de la UI) por seguridad.
+PLAT_P1="002-turbo-mode_config 010-governors 050-audio_path 050-modifiers 090-ui_service 091-ui_shader"
+PLAT_M="075-mangohud-supported"
+PLAT_L1="060-game_settings"
+DEV_P1="001-device_config 002-disable-led"
+DEV_L1="050-game-configs"
+DEV_L2="075-dpad-volbright"
+COM_P1="001-controller 001-emulationstation 001-setup 002-device-switch 003-logging 003-upgrade 999-export"
+COM_PICO="010-pico8"   # tras el montaje de roms (ver tras el lanzamiento de la UI)
+COM_G="003-gpudriver"
+# 055-hdmi-check (drm_tool list) abre /dev/dri/card0: va en la cadena D, en serie tras 006-display
+# y siempre ANTES de que Sway pueda ser DRM master (el join espera a D).
+COM_D="006-display 055-hdmi-check"
+COM_S="080-dual_screen_mode 111-sway-init"
+COM_M="001-sync-modules"
+COM_L1="020-set_audio_latency 050-audio 095-turbo-mode 009-sleepmode 020-rumble 081-usbgadget 020-configs"
+COM_L2="098-deviceutils 007-rootpw 099-networkservices 009-bluetooth 010-moonlight 010-uimode"
+# 008-perfmode es el primero de L1 (+ governor), ver late_chain()
+COM_KNOWN="${COM_P1} ${COM_PICO} ${COM_G} ${COM_D} ${COM_S} ${COM_M} ${COM_L1} ${COM_L2} 008-perfmode"
+
+alog() {
+  local up _
+  read -r up _ </proc/uptime
+  printf '%(%a %b %e %H:%M:%S %Z %Y)T: Autostart: %s [up=%s]\n' -1 "$*" "${up}" >>"${BOOTLOG}" 2>&1
 }
 
-performance 2>/dev/null
+# run_script <ruta>: misma redireccion que el original (stderr -> salida original/journal,
+# stdout -> BOOTLOG) y registra duracion en ms (sin forks: EPOCHREALTIME).
+run_script() {
+  local s="$1" t0
+  [ -f "${s}" ] || return 0
+  alog "Run ${s}"
+  t0="${EPOCHREALTIME/./}"
+  "${s}" 2>&1 >>"${BOOTLOG}"
+  alog "Done ${s##*/} $(( (${EPOCHREALTIME/./} - t0) / 1000 )) ms"
+}
 
-### Load platform specific quirks
-if [ -d "/usr/lib/autostart/quirks/platforms/${HW_DEVICE}" ]
+run_names() {   # run_names <dir> <nombres...>
+  local d="$1" n
+  shift
+  for n in "$@"; do
+    run_script "${d}/${n}"
+  done
+}
+
+collect_extras() {   # collect_extras <dir> "<nombres conocidos>"  ->  EXTRAS=(rutas)
+  local f n
+  EXTRAS=()
+  for f in "$1"/*; do
+    [ -f "${f}" ] || continue
+    n="${f##*/}"
+    case " $2 " in
+      *" ${n} "*) ;;
+      *) EXTRAS+=("${f}") ;;
+    esac
+  done
+}
+
+apply_governor() {
+  # El original ejecutaba esto tras volver a hacer ". /etc/profile" (define CPU_FREQ,
+  # DMC_FREQ, GPU_FREQ -arrays, no exportables- y las funciones ondemand/performance...).
+  . "${PROFILE_D}/099-freqfunctions"
+  DEVICE_CPU_GOVERNOR=$(get_setting system.cpugovernor)
+  alog "Governor: ${DEVICE_CPU_GOVERNOR}"
+  ${DEVICE_CPU_GOVERNOR} 2>&1 >>"${BOOTLOG}"
+}
+
+late_done() {   # late_done L1|L2 : cuando acaban las dos, se quita la marca .pending
+  : >"${RUNDIR}/autostart-late-$1.done"
+  if [ -e "${RUNDIR}/autostart-late-L1.done" ] && [ -e "${RUNDIR}/autostart-late-L2.done" ]
+  then
+    rm -f "${PENDING}"
+    alog "Late chains L1+L2 complete; fast boot finished OK."
+  fi
+}
+
+wait_display_dev() {   # tanda 5: sin esperar a multi-user, DRM y backlight pueden no estar listos (max <timeout_s>)
+  local i=0 max=$(( $1 * 10 ))
+  while [ $i -lt $max ]
+  do
+    [ -e /dev/dri/card0 ] && compgen -G "/sys/class/backlight/*" >/dev/null && return 0
+    sleep 0.1
+    i=$((i+1))
+  done
+  alog "WARN: /dev/dri/card0 or backlight not ready after $1 s"
+}
+
+wait_system_up() {   # wait_system_up <timeout_s> : espera a network.target, multi-user.target y a que exfat-swap (si existe) no este montando roms
+  local i=0 max=$(( $1 * 5 ))
+  while [ $i -lt $max ]
+  do
+    if systemctl is-active --quiet multi-user.target 2>/dev/null && systemctl is-active --quiet network.target 2>/dev/null && [ "$(systemctl is-active exfat-swap.service 2>/dev/null)" != "activating" ]; then return 0; fi
+    sleep 0.2
+    i=$((i+1))
+  done
+  alog "WARN: multi-user/network not active after $1 s; continuing"
+}
+
+late_chain() {   # late_chain L1|L2  (prioridad baja para no quitar CPU a Sway/ES)
+  local t0="${EPOCHREALTIME/./}"
+  renice -n 10 -p "${BASHPID}" >/dev/null 2>&1 || :
+  wait_system_up 30   # tanda 5: el autostart arranca antes que multi-user; las cadenas tardias esperan a los servicios
+  alog "Late chain $1 start"
+  case "$1" in
+    L1)
+      run_script "${COM_DIR}/008-perfmode"
+      apply_governor
+      run_names "${COM_DIR}" ${COM_L1}
+      run_script "${PLAT_DIR}/060-game_settings"
+      run_script "${DEV_DIR}/050-game-configs"
+      ;;
+    L2)
+      # 075-dpad-volbright reinicia "input" si ya esta activo: tiene que ir ANTES de que
+      # 098-deviceutils lo arranque (igual que en el orden original).
+      run_script "${DEV_DIR}/075-dpad-volbright"
+      run_names "${COM_DIR}" ${COM_L2}
+      ;;
+  esac
+  alog "Late chain $1 done in $(( (${EPOCHREALTIME/./} - t0) / 1000 )) ms"
+  late_done "$1"
+}
+
+spawn_late() {   # spawn_late L1|L2
+  if [ -e "${LATE_SYSTEMD_RUN_FLAG}" ] && command -v systemd-run >/dev/null 2>&1
+  then
+    # -E HOME=/storage: la unidad transitoria no hereda Environment=HOME de rocknix-autostart.service
+    systemd-run --no-block --collect --quiet --unit="autostart-late-$1" -E HOME=/storage \
+      /bin/bash -a -c "source /etc/profile && exec /usr/bin/autostart --late $1" >>"${BOOTLOG}" 2>&1 && return 0
+    alog "WARN: systemd-run failed for $1, falling back to background process"
+  fi
+  # Sin redirigir stdout/stderr: se hereda el flujo del journal (los errores de los scripts
+  # tardios siguen apareciendo en el journal como antes).
+  ( late_chain "$1" ) &
+}
+
+kill_tree() {   # kill_tree <pid> : mata el proceso y sus descendientes (solo si el join agota el tiempo)
+  # Orden: primero se listan los hijos, luego se mata al padre (para que no lance el siguiente
+  # script de su cadena) y por ultimo los hijos.
+  local p="$1" f pid rest pp k kids=()
+  for f in /proc/[0-9]*/stat; do
+    { read -r pid rest <"${f}"; } 2>/dev/null || continue
+    rest="${rest##*) }"; rest="${rest#* }"; pp="${rest%% *}"
+    [ "${pp}" = "${p}" ] && kids+=("${pid}")
+  done
+  kill "${p}" 2>/dev/null
+  for k in "${kids[@]}"; do kill_tree "${k}"; done
+}
+
+wait_chains() {   # wait_chains <timeout_s> <pids...> : espera a todas, como mucho <timeout_s>
+  local to="$1" wd p t0="${SECONDS}"
+  shift
+  # Watchdog: su `sleep` es hijo del subshell; al recibir TERM el subshell mata ese sleep y sale
+  # (no quedan sleeps huerfanos). Si vence el tiempo, mata las cadenas con sus descendientes.
+  (
+    SP=""
+    trap '[ -n "${SP}" ] && kill "${SP}" 2>/dev/null; exit 0' TERM
+    sleep "${to}" &
+    SP=$!
+    wait "${SP}"
+    # Vencio el tiempo: a partir de aqui ignora TERM (el hilo principal hace `wait` de este
+    # subshell) para terminar de matar los arboles aunque el principal ya se haya liberado.
+    trap '' TERM
+    for p in "$@"; do kill_tree "${p}"; done
+  ) &
+  wd=$!
+  for p in "$@"; do
+    wait "${p}" 2>/dev/null
+  done
+  kill "${wd}" 2>/dev/null
+  wait "${wd}" 2>/dev/null
+  if (( SECONDS - t0 >= to )); then
+    alog "WARN: parallel phase hit the ${to}s timeout; launching UI anyway"
+  fi
+}
+
+set_mode() {   # set_mode "fast" | "legacy(razon)"  -> primera linea de boot.log + /run/autostart.mode
+  alog "MODE=$1"
+  { printf '%s\n' "$1" >"${RUNDIR}/autostart.mode"; } 2>/dev/null
+}
+
+###########################################################################
+# Flujo ORIGINAL (verbatim, solo log() -> alog() y una linea de traza al lanzar la UI).
+# Se usa como respaldo.
+###########################################################################
+legacy_boot() {
+  performance 2>/dev/null
+
+  ### Load platform specific quirks
+  if [ -d "/usr/lib/autostart/quirks/platforms/${HW_DEVICE}" ]
+  then
+    alog "Run ${HW_DEVICE} quirks."
+    tocon "Applying ${HW_DEVICE} quirks..."
+    for script in "/usr/lib/autostart/quirks/platforms/${HW_DEVICE}"/*
+    do
+      alog "Run ${script}"
+      if [ -f "${script}" ]
+      then
+        "${script}" 2>&1 >>${BOOTLOG}
+      fi
+    done
+  fi
+
+  ### Load device specific quirks
+  if [ -d "/usr/lib/autostart/quirks/devices/${QUIRK_DEVICE}" ]
+  then
+    alog "Run ${QUIRK_DEVICE} quirks."
+    tocon "Applying ${QUIRK_DEVICE} quirks..."
+    for script in "/usr/lib/autostart/quirks/devices/${QUIRK_DEVICE}"/*
+    do
+      alog "Run ${script}"
+      if [ -f "${script}" ]
+      then
+        "${script}" 2>&1 >>${BOOTLOG}
+      fi
+    done
+  fi
+
+  ### Start the automount service
+  tocon "Starting storage services..."
+  systemctl start rocknix-automount
+
+  ### Run common start scripts
+  for script in /usr/lib/autostart/common/*
+  do
+    alog "Run ${script}"
+    ${script} 2>&1 >>${BOOTLOG}
+  done
+  wait
+
+  ### Run device start scripts
+  if [ -d "/usr/lib/autostart/${HW_DEVICE}" ]
+  then
+    for script in "/usr/lib/autostart/${HW_DEVICE}"/*
+    do
+      alog "Run ${script}"
+      if [ -f "${script}" ]
+      then
+        "${script}" 2>&1 >>${BOOTLOG}
+      fi
+    done
+  fi
+
+  ### Run custom start scripts
+  if [ -d "/storage/.config/autostart" ]
+  then
+    for script in /storage/.config/autostart/*
+    do
+      alog "Run ${script}"
+     ${script} 2>&1 >>${BOOTLOG}
+    done
+  fi
+  wait
+
+  tocon "Starting user interface..."
+  alog "Startup complete..."
+
+  ### Re-source the profile so we fetch the correct UI_SERVICE variable.
+  . /etc/profile
+
+  ### Run firstboot
+  if [ ! -e "/storage/mod.done" ]; then
+    if [ -x "/usr/lib/autostart/firstboot/update.sh" ]; then
+      alog "Run firstboot update.sh"
+      /usr/lib/autostart/firstboot/update.sh 2>&1 >>${BOOTLOG}
+      echo "$QUIRK_DEVICE" > /storage/mod.done
+    fi
+  elif [ "$(cat /storage/mod.done 2>/dev/null)" != "$QUIRK_DEVICE" ]; then
+    if [ -x "/usr/lib/autostart/firstboot/update.sh" ]; then
+      alog "Run firstboot update.sh (device changed)"
+      /usr/lib/autostart/firstboot/update.sh "device_change" 2>&1 >>${BOOTLOG}
+      echo "$QUIRK_DEVICE" > /storage/mod.done
+    fi
+  fi
+
+  ### Lock is a prerequisite for emustation
+  rm /var/lock/start.games 2>&1 >>${BOOTLOG}
+  touch /var/lock/start.games 2>&1 >>${BOOTLOG}
+  alog "Starting ${UI_SERVICE}..."
+  systemctl start ${UI_SERVICE} 2>&1 >>${BOOTLOG} &
+  alog "UI start requested at $(cut -d' ' -f1 /proc/uptime) (legacy)"
+
+  DEVICE_CPU_GOVERNOR=$(get_setting system.cpugovernor)
+  ${DEVICE_CPU_GOVERNOR} 2>&1 >>${BOOTLOG}
+  alog "Autostart complete..."
+
+  clear >/dev/console
+}
+
+###########################################################################
+# Modo interno: cadena tardia lanzada con systemd-run
+###########################################################################
+if [ "$1" = "--late" ]
 then
-  log "Run ${HW_DEVICE} quirks."
+  late_chain "$2"
+  exit 0
+fi
+
+###########################################################################
+# Decision: rapido o legacy
+###########################################################################
+MODE="fast"
+REASON=""
+if [ -e "${LEGACY_FLAG}" ]
+then
+  MODE="legacy"; REASON="manual flag ${LEGACY_FLAG} (permanent; rm it to re-enable fast mode)"
+elif [ -e "${PENDING}" ]
+then
+  MODE="legacy"; REASON="previous fast boot did not finish (${PENDING}); legacy for THIS boot only"
+  rm -f "${PENDING}"
+else
+  MODDONE=""
+  { IFS= read -r MODDONE <"${STORAGE}/mod.done"; } 2>/dev/null
+  if [ "${MODDONE}" != "${QUIRK_DEVICE}" ]
+  then
+    MODE="legacy"; REASON="firstboot pending (mod.done='${MODDONE}')"
+  elif compgen -G "${STORAGE}/.config/autostart/*" >/dev/null
+  then
+    MODE="legacy"; REASON="user scripts in ${STORAGE}/.config/autostart"
+  elif [ -d "${AS_ROOT}/${HW_DEVICE}" ]
+  then
+    MODE="legacy"; REASON="device start scripts dir ${AS_ROOT}/${HW_DEVICE}"
+  fi
+fi
+
+if [ "${MODE}" = "legacy" ]
+then
+  set_mode "legacy(${REASON})"
+  # tanda 5: el servicio ya no espera a graphical/network (drop-in); el flujo ORIGINAL si lo necesita
+  i=0; until systemctl is-active --quiet graphical.target 2>/dev/null && systemctl is-active --quiet network.target 2>/dev/null || [ $i -ge 300 ]; do sleep 0.2; i=$((i+1)); done
+  legacy_boot
+  exit 0
+fi
+
+###########################################################################
+# ARRANQUE RAPIDO
+###########################################################################
+set_mode "fast"
+: >"${PENDING}"
+rm -f "${RUNDIR}"/autostart-late-L?.done
+UI_STARTED=0
+
+# UI_SERVICE nunca vacio (un `systemctl start` sin argumentos no lanza nada).
+[ -n "${UI_SERVICE}" ] || UI_SERVICE="${DEFAULT_UI_SERVICE}"
+
+# Red de seguridad: si por lo que sea el script sale antes de haber lanzado la UI, se lanza.
+# Prueba UI_SERVICE y, si falla y era distinto, el valor por defecto.
+ui_safety_trap() {
+  [ "${UI_STARTED}" = 1 ] && return 0
+  alog "TRAP: UI not started, starting ${UI_SERVICE:-${DEFAULT_UI_SERVICE}}"
+  systemctl start --no-block ${UI_SERVICE:-${DEFAULT_UI_SERVICE}} >>"${BOOTLOG}" 2>&1 && return 0
+  if [ "${UI_SERVICE:-${DEFAULT_UI_SERVICE}}" != "${DEFAULT_UI_SERVICE}" ]
+  then
+    alog "TRAP: retrying with ${DEFAULT_UI_SERVICE}"
+    systemctl start --no-block ${DEFAULT_UI_SERVICE} >>"${BOOTLOG}" 2>&1
+  fi
+}
+trap ui_safety_trap EXIT
+
+# Se usa la funcion exportada por /etc/profile (como el original); sin DMC_FREQ (array no
+# exportable) igual que antes.
+if type performance >/dev/null 2>&1
+then
+  performance 2>/dev/null
+else
+  . "${PROFILE_D}/099-freqfunctions"
+  performance 2>/dev/null
+fi
+
+### ---- FASE 1: serie, imprescindible (escribe profile.d / ajustes que lee la UI) ----
+if [ -d "${PLAT_DIR}" ]
+then
+  alog "Run ${HW_DEVICE} quirks."
   tocon "Applying ${HW_DEVICE} quirks..."
-  for script in "/usr/lib/autostart/quirks/platforms/${HW_DEVICE}"/*
-  do
-    log "Run ${script}"
-    if [ -f "${script}" ]
-    then
-      "${script}" 2>&1 >>${BOOTLOG}
-    fi
-  done
+  run_names "${PLAT_DIR}" ${PLAT_P1}
+  collect_extras "${PLAT_DIR}" "${PLAT_P1} ${PLAT_M} ${PLAT_L1}"
+  for s in "${EXTRAS[@]}"; do alog "unclassified platform quirk -> phase 1"; run_script "${s}"; done
 fi
 
-### Load device specific quirks
-if [ -d "/usr/lib/autostart/quirks/devices/${QUIRK_DEVICE}" ]
+if [ -d "${DEV_DIR}" ]
 then
-  log "Run ${QUIRK_DEVICE} quirks."
+  alog "Run ${QUIRK_DEVICE} quirks."
   tocon "Applying ${QUIRK_DEVICE} quirks..."
-  for script in "/usr/lib/autostart/quirks/devices/${QUIRK_DEVICE}"/*
-  do
-    log "Run ${script}"
-    if [ -f "${script}" ]
-    then
-      "${script}" 2>&1 >>${BOOTLOG}
-    fi
-  done
+  run_names "${DEV_DIR}" ${DEV_P1}
+  collect_extras "${DEV_DIR}" "${DEV_P1} ${DEV_L1} ${DEV_L2}"
+  for s in "${EXTRAS[@]}"; do alog "unclassified device quirk -> phase 1"; run_script "${s}"; done
 fi
 
-### Start the automount service
 tocon "Starting storage services..."
-systemctl start rocknix-automount
+if [ -e "${STORAGE}/.boot.hint" ]; then systemctl start rocknix-automount; else systemctl start --no-block rocknix-automount; fi   # tanda 5: sin bloquear salvo post-update (003-upgrade puede necesitar roms)
 
-### Run common start scripts
-for script in /usr/lib/autostart/common/*
-do
-  log "Run ${script}"
-  ${script} 2>&1 >>${BOOTLOG}
-done
-wait
+run_names "${COM_DIR}" ${COM_P1}
+collect_extras "${COM_DIR}" "${COM_KNOWN}"
+for s in "${EXTRAS[@]}"; do alog "unclassified common script -> phase 1"; run_script "${s}"; done
 
-### Run device start scripts
-if [ -d "/usr/lib/autostart/${HW_DEVICE}" ]
-then
-  for script in "/usr/lib/autostart/${HW_DEVICE}"/*
-  do
-    log "Run ${script}"
-    if [ -f "${script}" ]
-    then
-      "${script}" 2>&1 >>${BOOTLOG}
-    fi
-  done
-fi
+### ---- FASE 2: cadenas independientes en paralelo; todas tienen que acabar antes de Sway ----
+#  G: modulo mali + bind de libs        (Sway/ES necesitan libmali)
+#  D: brillo + paneladj -> hdmi-check    (modetest -w / drm_tool abren card0: nadie puede ser DRM master -> antes de Sway)
+#  S: dual_screen -> sway-init           (080 produce DEVICE_HAS_DUAL_SCREEN que lee 111; 111 escribe 095-sway y sway/config)
+#     (080 solo lee /sys/class/drm/*/status, no abre card0; en paralelo con D es seguro)
+#  M: modulos de ES + mangohud           (profile.d/075 lo lee ES; modulos los lista ES)
+tocon "Configuring graphics and display..."
+PIDS=()
+( run_names "${COM_DIR}" ${COM_G} ) & PIDS+=($!)
+( wait_display_dev 5; run_names "${COM_DIR}" ${COM_D} ) & PIDS+=($!)
+( run_names "${COM_DIR}" ${COM_S} ) & PIDS+=($!)
+( run_names "${COM_DIR}" ${COM_M}; run_names "${PLAT_DIR}" ${PLAT_M} ) & PIDS+=($!)
+wait_chains "${JOIN_TIMEOUT}" "${PIDS[@]}"
 
-### Run custom start scripts
-if [ -d "/storage/.config/autostart" ]
-then
-  for script in /storage/.config/autostart/*
-  do
-    log "Run ${script}"
-   ${script} 2>&1 >>${BOOTLOG}
-  done
-fi
-wait
-
+### ---- FASE 3: lanzar la UI ----
 tocon "Starting user interface..."
-log "Startup complete..."
+alog "Startup complete (essential phase)..."
 
 ### Re-source the profile so we fetch the correct UI_SERVICE variable.
-. /etc/profile
-
-### Run firstboot
-if [ ! -e "/storage/mod.done" ]; then
-  if [ -x "/usr/lib/autostart/firstboot/update.sh" ]; then
-    log "Run firstboot update.sh"
-    /usr/lib/autostart/firstboot/update.sh 2>&1 >>${BOOTLOG}
-    echo "$QUIRK_DEVICE" > /storage/mod.done
-  fi
-elif [ "$(cat /storage/mod.done 2>/dev/null)" != "$QUIRK_DEVICE" ]; then
-  if [ -x "/usr/lib/autostart/firstboot/update.sh" ]; then
-    log "Run firstboot update.sh (device changed)"
-    /usr/lib/autostart/firstboot/update.sh "device_change" 2>&1 >>${BOOTLOG}
-    echo "$QUIRK_DEVICE" > /storage/mod.done
-  fi
-fi
+### (solo profile.d de usuario y en subshell: sin forks, sin ensuciar el entorno)
+NEW_UI_SERVICE=$(
+  for f in "${STORAGE}"/.config/profile.d/*; do
+    [ -f "${f}" ] && . "${f}"
+  done
+  printf '%s' "${UI_SERVICE}"
+)
+[ -n "${NEW_UI_SERVICE}" ] && UI_SERVICE="${NEW_UI_SERVICE}"
+[ -n "${UI_SERVICE}" ] || UI_SERVICE="${DEFAULT_UI_SERVICE}"
 
 ### Lock is a prerequisite for emustation
-rm /var/lock/start.games 2>&1 >>${BOOTLOG}
-touch /var/lock/start.games 2>&1 >>${BOOTLOG}
-log "Starting ${UI_SERVICE}..."
-systemctl start ${UI_SERVICE} 2>&1 >>${BOOTLOG} &
+rm -f "${START_LOCK}" 2>&1 >>"${BOOTLOG}"
+touch "${START_LOCK}" 2>&1 >>"${BOOTLOG}"
+alog "Starting ${UI_SERVICE}..."
+# --no-block: el job de essway espera a volume-fixup <- rocknix.target <- fin de ESTE servicio.
+# UI_STARTED=1 SOLO si systemctl acepta el trabajo; si no, el trap EXIT lo reintenta.
+if systemctl start --no-block ${UI_SERVICE} 2>&1 >>"${BOOTLOG}"
+then
+  UI_STARTED=1
+  read -r UPT _ </proc/uptime
+  alog "UI start requested at ${UPT}"
+else
+  alog "ERROR: systemctl start ${UI_SERVICE} failed; the EXIT trap will retry"
+fi
 
-DEVICE_CPU_GOVERNOR=$(get_setting system.cpugovernor)
-${DEVICE_CPU_GOVERNOR} 2>&1 >>${BOOTLOG}
-log "Autostart complete..."
+{ clear >/dev/console; } 2>/dev/null
 
-clear >/dev/console
+### tanda 5: roms montadas (automount lanzado antes sin bloquear) y entonces 010-pico8 (ES lo lista al escanear)
+systemctl start rocknix-automount >>"${BOOTLOG}" 2>&1
+run_names "${COM_DIR}" ${COM_PICO}
+
+### ---- FASE 4: el resto, en segundo plano ----
+spawn_late L1
+spawn_late L2
+alog "Autostart main process done (late chains running)."
+exit 0

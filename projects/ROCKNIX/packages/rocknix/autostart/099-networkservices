@@ -7,6 +7,9 @@
 
 tocon "Starting services..."
 
+START_LIST=()
+STOP_LIST=()
+
 for SERVICE in /usr/lib/autostart/daemons/*
 do
   source ${SERVICE}
@@ -26,7 +29,12 @@ do
   statemgr() {
     for daemon in ${DAEMONS[@]}
     do
-      nohup systemctl ${1} ${daemon} &
+      if [ "${1}" = "start" ]
+      then
+        START_LIST+=("${daemon}")
+      else
+        STOP_LIST+=("${daemon}")
+      fi
     done
   }
 
@@ -40,3 +48,13 @@ do
     ;;
   esac
 done
+
+if [ ${#START_LIST[@]} -gt 0 ]
+then
+  nohup systemctl start "${START_LIST[@]}" &
+fi
+
+if [ ${#STOP_LIST[@]} -gt 0 ]
+then
+  nohup systemctl stop "${STOP_LIST[@]}" &
+fi

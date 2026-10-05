@@ -1,0 +1,14 @@
+[Unit]
+Description=Carga y acredita semilla de entropia (adelanta crng init)
+DefaultDependencies=no
+RequiresMountsFor=/storage
+Before=systemd-resolved.service rocknix-memory-manager.service sysinit.target
+ConditionPathExists=!/flash/no-overrides
+
+[Service]
+Type=oneshot
+TimeoutStartSec=5
+ExecStart=/usr/bin/crng-seed load /storage/.config/crng-seed.bin
+
+[Install]
+WantedBy=sysinit.target

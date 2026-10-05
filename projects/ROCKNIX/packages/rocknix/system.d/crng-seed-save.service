@@ -1,0 +1,11 @@
+[Unit]
+Description=Guarda semilla de entropia nueva (crng ya listo)
+After=multi-user.target
+ConditionPathExists=!/flash/no-overrides
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/crng-seed save /storage/.config/crng-seed.bin
+
+[Install]
+WantedBy=multi-user.target

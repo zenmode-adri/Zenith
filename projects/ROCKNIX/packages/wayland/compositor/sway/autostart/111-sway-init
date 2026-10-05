@@ -23,7 +23,7 @@ if [ "${UIMODE}" = "1" ]; then
     set_setting desktop.enabled "0"
 else
     cp $SWAY_CONFIG_KIOSK $SWAY_HOME/config
-    systemctl unmask essway.service
+    [ "$(systemctl is-enabled essway.service 2>/dev/null)" = "masked" ] && systemctl unmask essway.service
 fi
 # get the card number, this may not be a safe way to derive it...
 card_no=$(ls /sys/class/drm/ | grep -E "DP|HDMI|DSI" | head -n 1 | cut -b 5)

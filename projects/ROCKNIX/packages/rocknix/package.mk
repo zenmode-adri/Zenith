@@ -23,6 +23,10 @@ makeinstall_target() {
 
   mkdir -p ${INSTALL}/usr/bin/
 
+  ### Semilla de entropia: acredita una semilla guardada al crng del kernel (adelanta 'crng init done')
+  ${CC} ${CFLAGS} ${LDFLAGS} -O2 -o ${INSTALL}/usr/bin/crng-seed ${PKG_DIR}/sources/crng-seed.c
+  chmod 0755 ${INSTALL}/usr/bin/crng-seed
+
   ### Compatibility links for ports
   ln -s /storage/roms ${INSTALL}/roms
 
@@ -78,6 +82,10 @@ EOF
 
   ### Take a backup of the system configuration on shutdown
   enable_service save-sysconfig.service
+
+  ### Semilla de entropia (carga en sysinit, guarda una nueva en multi-user)
+  enable_service crng-seed.service
+  enable_service crng-seed-save.service
 
   sed -i "s#@DEVICENAME@#${DEVICE}#g" ${INSTALL}/usr/config/system/configs/system.cfg
 
