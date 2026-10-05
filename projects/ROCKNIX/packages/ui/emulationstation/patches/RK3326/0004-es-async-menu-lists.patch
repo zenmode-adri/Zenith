@@ -1,0 +1,866 @@
+diff -urN p3/es-app/src/ApiSystem.cpp p4/es-app/src/ApiSystem.cpp
+--- p3/es-app/src/ApiSystem.cpp	2026-10-05 13:50:31.303326355 +0200
++++ p4/es-app/src/ApiSystem.cpp	2026-10-05 13:50:31.308181833 +0200
+@@ -24,6 +24,7 @@
+ #include <fstream>
+ #include <chrono>
+ #include <thread>
++#include <mutex>
+ #include <stdio.h>
+ #include <string.h>
+ #include <regex>
+@@ -612,7 +613,9 @@
+ 
+ 	// Session cache: "wifictl has_ap_mode" sources /etc/profile and probes the
+ 	// wifi phy; AP mode support is a hardware property, static for the session.
+-	// UI thread only.
++	// Thread safe: also called from the menu prewarm thread; the lock is held while the script runs.
++	static std::mutex cacheMutex;
++	std::lock_guard<std::mutex> lock(cacheMutex);
+ 	static bool cachedApModeSupported = false;
+ 	static bool apModeLoaded = false;
+ 	if (apModeLoaded)
+@@ -911,7 +914,9 @@
+ std::vector<std::string> ApiSystem::getAvailableChannels()
+ {
+ 	// Session cache: "wifictl channels" sources /etc/profile and probes the
+-	// wifi phy; the channel list is static for the session. UI thread only.
++	// wifi phy; the channel list is static for the session. Thread safe (see getAvailableCpuGovernors).
++	static std::mutex cacheMutex;
++	std::lock_guard<std::mutex> lock(cacheMutex);
+ 	static std::vector<std::string> cachedChannels;
+ 	static bool channelsLoaded = false;
+ 	if (channelsLoaded)
+@@ -925,7 +930,10 @@
+ std::vector<std::string> ApiSystem::getAvailableCpuGovernors()
+ {
+ 	// Session cache: the governor list is read from cpufreq sysfs and is
+-	// static for the session. UI thread only.
++	// static for the session. Thread safe: the menus ask for it from a worker thread (populateAsync) and
++	// the lock is held while the script runs, so concurrent callers wait for the first result, not rerun it.
++	static std::mutex cacheMutex;
++	std::lock_guard<std::mutex> lock(cacheMutex);
+ 	static std::vector<std::string> cachedGovernors;
+ 	static bool governorsLoaded = false;
+ 	if (governorsLoaded)
+@@ -940,7 +948,9 @@
+ {
+ 	// Session cache: this sources /etc/profile.d/099-freqfunctions and is one
+ 	// of the slowest distro script calls; the list is static for the session.
+-	// UI thread only.
++	// Thread safe (see getAvailableCpuGovernors).
++	static std::mutex cacheMutex;
++	std::lock_guard<std::mutex> lock(cacheMutex);
+ 	static std::vector<std::string> cachedGpuGovernors;
+ 	static bool gpuGovernorsLoaded = false;
+ 	if (gpuGovernorsLoaded)
+@@ -970,7 +980,10 @@
+ 
+ std::vector<std::string> ApiSystem::getAvailableColors()
+ {
+-	// Session cache: LED colours are a hardware property. UI thread only. An empty result is not cached.
++	// Session cache: LED colours are a hardware property. Thread safe (see getAvailableCpuGovernors).
++	// An empty result is not cached.
++	static std::mutex cacheMutex;
++	std::lock_guard<std::mutex> lock(cacheMutex);
+ 	static std::vector<std::string> cachedColors;
+ 	static bool colorsLoaded = false;
+ 	if (!colorsLoaded)
+@@ -983,7 +996,10 @@
+ 
+ std::vector<std::string> ApiSystem::getSleepModes()
+ {
+-	// Session cache: /sys/power/state is static. UI thread only. An empty result is not cached.
++	// Session cache: /sys/power/state is static. Thread safe (see getAvailableCpuGovernors).
++	// An empty result is not cached.
++	static std::mutex cacheMutex;
++	std::lock_guard<std::mutex> lock(cacheMutex);
+ 	static std::vector<std::string> cachedSleepModes;
+ 	static bool sleepModesLoaded = false;
+ 	if (!sleepModesLoaded)
+@@ -2136,7 +2152,8 @@
+ 	char line[1024];
+ 	while (fgets(line, 1024, pipe))
+ 	{
+-		strtok(line, "\n");
++		char* saveptr = nullptr; // strtok_r: this function also runs in worker threads (populateAsync)
++		strtok_r(line, "\n", &saveptr);
+ 		res.push_back(std::string(line));
+ 	}
+ 
+diff -urN p3/es-app/src/guis/GuiMenu.cpp p4/es-app/src/guis/GuiMenu.cpp
+--- p3/es-app/src/guis/GuiMenu.cpp	2026-10-05 13:50:31.315537658 +0200
++++ p4/es-app/src/guis/GuiMenu.cpp	2026-10-05 13:50:31.318417399 +0200
+@@ -160,6 +160,22 @@
+ {
+ 	cachedShOutputFuture("/usr/bin/rocknix-keyboard list-layouts");
+ 	cachedShOutputFuture(R"(/usr/bin/timeinfo timezones)");
++
++	// Once per session, one worker thread warms the thread safe ApiSystem caches that System/Network Settings
++	// ask for. isWifiAPModeSupported() decides whether a row exists, so it cannot be filled in afterwards:
++	// warming it while the user moves through the main menu avoids a ~0.6 s stall when Network Settings opens.
++	static std::once_flag prewarmOnce;
++	std::call_once(prewarmOnce, []
++	{
++		std::thread([]
++		{
++			ApiSystem* api = ApiSystem::getInstance();
++			api->isWifiAPModeSupported();
++			api->getAvailableCpuGovernors();
++			api->getAvailableGpuGovernors();
++			api->getSleepModes();
++		}).detach();
++	});
+ }
+ #endif
+ 
+@@ -1540,6 +1556,24 @@
+ 	return value;
+ }
+ 
++// Same cache, for menus that fetch the output in a worker thread: look it up before spawning the thread and
++// store the result from the UI thread (the populateAsync fill callback).
++static bool peekSessionShOutput(const std::string& key, std::string& value)
++{
++	auto& cache = sessionShOutputCache();
++	auto it = cache.find(key);
++	if (it == cache.end())
++		return false;
++
++	value = it->second;
++	return true;
++}
++
++static void storeSessionShOutput(const std::string& key, const std::string& value)
++{
++	sessionShOutputCache()[key] = value;
++}
++
+ static void invalidateSessionShOutput(const std::string& key)
+ {
+ 	sessionShOutputCache().erase(key);
+@@ -1747,48 +1781,65 @@
+ 	auto keyboard_layout = std::make_shared<OptionListComponent<std::string>>(window, _("KEYBOARD LAYOUT"), false);
+ 	auto keyboard_variant = std::make_shared<OptionListComponent<std::string>>(window, _("KEYBOARD VARIANT"), false);
+ 
+-	// Populate Layouts
+-	auto layouts = getScriptOutput("/usr/bin/rocknix-keyboard list-layouts");
+-	bool layoutFound = false;
+-	
+-	for (const auto& l : layouts)
++	// The lists come from helper scripts: they are filled in by a worker thread (the current layout/variant
++	// stand in until then) so that the menu opens at once.
++	typedef std::vector<std::pair<std::string, std::string>> KeyboardList;
++
++	auto fillLayouts = [curLayout](OptionListComponent<std::string>* list, const KeyboardList& layouts)
+ 	{
+-		bool isSelected = (l.first == curLayout);
+-		if (isSelected) layoutFound = true;
+-		keyboard_layout->add(l.second, l.first, isSelected);
+-	}
+-	if (!layoutFound) {
+-		keyboard_layout->add(curLayout, curLayout, true);
+-	}
++		bool layoutFound = false;
++		for (const auto& l : layouts)
++		{
++			bool isSelected = (l.first == curLayout);
++			if (isSelected) layoutFound = true;
++			list->add(l.second, l.first, isSelected);
++		}
++		if (!layoutFound)
++			list->add(curLayout, curLayout, true);
++	};
+ 
+-	// Populate Variants
+-	auto populateVariants = [keyboard_variant, curVariant](std::string layoutCode) {
+-		keyboard_variant->clear();
++	auto fillVariants = [curVariant](OptionListComponent<std::string>* list, const KeyboardList& variants)
++	{
+ 		bool noneSelected = (curVariant == "none" || curVariant.empty());
+-		keyboard_variant->add(_("NONE"), "none", noneSelected);
++		list->add(_("NONE"), "none", noneSelected);
+ 
+-		auto variants = getScriptOutput("/usr/bin/rocknix-keyboard list-variants " + layoutCode);
+ 		bool variantFound = false;
+ 		for (const auto& v : variants)
+ 		{
+ 			bool isSelected = (v.first == curVariant);
+ 			if (isSelected) variantFound = true;
+-			keyboard_variant->add(v.second, v.first, isSelected);
++			list->add(v.second, v.first, isSelected);
+ 		}
+ 
+-		if (!variantFound && !noneSelected) {
+-			keyboard_variant->selectFirstItem(); 
++		if (!variantFound && !noneSelected)
++		{
++			if (variants.empty())
++				list->add(curVariant, curVariant, true); // not loaded yet: keep the stored value selected
++			else
++				list->selectFirstItem();
+ 		}
+-		keyboard_variant->invalidate();
+ 	};
+ 
+-	populateVariants(curLayout);
++	fillLayouts(keyboard_layout.get(), KeyboardList());
++	fillVariants(keyboard_variant.get(), KeyboardList());
++
++	keyboard_layout->populateAsync<KeyboardList>([] { return getScriptOutput("/usr/bin/rocknix-keyboard list-layouts"); }, fillLayouts);
++
++	{
++		// Drop the variants if the user already switched to another layout (that callback fills its own list).
++		std::weak_ptr<OptionListComponent<std::string>> weakLayout = keyboard_layout;
++		const std::string variantsLayout = curLayout;
++		keyboard_variant->populateAsync<KeyboardList>(
++			[variantsLayout] { return getScriptOutput("/usr/bin/rocknix-keyboard list-variants " + variantsLayout); },
++			fillVariants,
++			[weakLayout, variantsLayout] { auto layout = weakLayout.lock(); return layout && layout->getSelected() == variantsLayout; });
++	}
+ 
+ 	// Callback for layout change
+-	keyboard_layout->setSelectedChangedCallback([populateVariants, keyboard_variant](std::string newLayout) {
++	keyboard_layout->setSelectedChangedCallback([keyboard_variant](std::string newLayout) {
+ 		keyboard_variant->clear();
+ 		keyboard_variant->add(_("NONE"), "none", true);
+-		
++
+ 		auto variants = getScriptOutput("/usr/bin/rocknix-keyboard list-variants " + newLayout);
+ 		for (const auto& v : variants)
+ 		{
+@@ -1824,13 +1875,28 @@
+ 	// Timezone
+ #if defined(ROCKNIX)
+ 	auto tzChoices = std::make_shared<OptionListComponent<std::string> >(mWindow, _("SELECT YOUR TIME ZONE"), false);
+-	std::string currentTZ = SystemConf::getInstance()->get("system.timezone");
+-	if (currentTZ.empty())
+-		currentTZ = std::string(Utils::Platform::GetShOutput(R"(/usr/bin/timeinfo current_timezone)"));
+-	std::string tz;
+-	for(std::stringstream ss(cachedShOutput(R"(/usr/bin/timeinfo timezones)")); getline(ss, tz, ','); ) {
+-		tzChoices->add(tz, tz, currentTZ == tz);
+-	}
++	// timezones list (and the current one when it is not configured) arrive from a worker thread
++	typedef std::pair<std::string, std::string> TimezoneData; // { comma separated list, current timezone }
++	const std::string configuredTZ = SystemConf::getInstance()->get("system.timezone");
++	auto fillTimezones = [configuredTZ](OptionListComponent<std::string>* list, const TimezoneData& data)
++	{
++		const std::string currentTZ = configuredTZ.empty() ? data.second : configuredTZ;
++		bool found = false;
++		std::string tz;
++		for (std::stringstream ss(data.first); getline(ss, tz, ','); ) {
++			list->add(tz, tz, currentTZ == tz);
++			if (currentTZ == tz)
++				found = true;
++		}
++		if (!found) // not loaded yet (or unknown zone): keep what is configured selected
++			list->add(currentTZ.empty() ? std::string("...") : currentTZ, currentTZ, true);
++	};
++	fillTimezones(tzChoices.get(), TimezoneData());
++	tzChoices->populateAsync<TimezoneData>([configuredTZ]
++	{
++		return TimezoneData(cachedShOutput(R"(/usr/bin/timeinfo timezones)"),
++			configuredTZ.empty() ? std::string(Utils::Platform::GetShOutput(R"(/usr/bin/timeinfo current_timezone)")) : std::string());
++	}, fillTimezones);
+ 	s->addWithLabel(_("TIMEZONE"), tzChoices);
+ 	s->addSaveFunc([tzChoices] {
+ 		if (tzChoices->changed()) {
+@@ -2143,19 +2209,23 @@
+ 	if (Utils::Platform::GetEnv("DEVICE_LED_CONTROL") == "true"){
+ 		// Provides LED management
+ 		auto optionsColors = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
+-		std::vector<std::string> availableColors = ApiSystem::getInstance()->getAvailableColors();
+ 		std::string selectedColors = SystemConf::getInstance()->get("led.color");
+ 		if (selectedColors.empty())
+ 			selectedColors = "default";
+-		bool lfound = false;
+-		for (auto it = availableColors.begin(); it != availableColors.end(); it++)
++		auto fillColors = [selectedColors](OptionListComponent<std::string>* list, const std::vector<std::string>& availableColors)
+ 		{
+-			optionsColors->add((*it), (*it), selectedColors == (*it));
+-			if (selectedColors == (*it))
+-			        lfound = true;
+-		}
+-		if (!lfound)
+-			optionsColors->add(selectedColors, selectedColors, true);
++			bool lfound = false;
++			for (auto it = availableColors.begin(); it != availableColors.end(); it++)
++			{
++				list->add((*it), (*it), selectedColors == (*it));
++				if (selectedColors == (*it))
++					lfound = true;
++			}
++			if (!lfound)
++				list->add(selectedColors, selectedColors, true);
++		};
++		fillColors(optionsColors.get(), std::vector<std::string>());
++		optionsColors->populateAsync<std::vector<std::string>>([] { return ApiSystem::getInstance()->getAvailableColors(); }, fillColors);
+ 		s->addWithLabel(_("LED COLOR"), optionsColors);
+ 
+ 		optionsColors->setSelectedChangedCallback([](const std::string& newColor) {
+@@ -2201,12 +2271,12 @@
+ 
+ 		const std::string devSwitchScript = "/usr/bin/device-switch";
+ 		auto optionsDeviceSwitch = std::make_shared<OptionListComponent<std::string> >(mWindow, _("THIS DEVICE IS"), false);
+-		std::string selectedDevice = std::string(Utils::Platform::GetShOutput(R"(/usr/bin/device-switch)"));
++		std::string selectedDevice = getDeviceSwitchCurrent(); // sysfs read, same as "device-switch" without arguments
+ 		if (selectedDevice.empty())
+ 			selectedDevice = "unknown";
+ 
+ 		std::string a;
+-		for(std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/device-switch --options)")); getline(ss, a, ' '); ) {
++		for(std::stringstream ss(getDeviceSwitchOptions()); getline(ss, a, ' '); ) {
+ 			optionsDeviceSwitch->add(a, a, a == selectedDevice);
+ 		}
+ 		s->addWithLabel(_("THIS DEVICE IS"), optionsDeviceSwitch);
+@@ -2298,19 +2368,23 @@
+ 
+ 	// Default Scaling governor
+ 	auto optionsGovernors = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT SCALING GOVERNOR"), false);
+-	std::vector<std::string> availableGovernors = ApiSystem::getInstance()->getAvailableCpuGovernors();
+ 	std::string selectedGovernors = SystemConf::getInstance()->get("system.cpugovernor");
+ 	if (selectedGovernors.empty())
+ 		selectedGovernors = "default";
+-	bool cfound = false;
+-	for (auto it = availableGovernors.begin(); it != availableGovernors.end(); it++)
++	auto fillGovernors = [selectedGovernors](OptionListComponent<std::string>* list, const std::vector<std::string>& availableGovernors)
+ 	{
+-		optionsGovernors->add((*it), (*it), selectedGovernors == (*it));
+-		if (selectedGovernors == (*it))
+-			cfound = true;
+-	}
+-	if (!cfound)
+-		optionsGovernors->add(selectedGovernors, selectedGovernors, true);
++		bool cfound = false;
++		for (auto it = availableGovernors.begin(); it != availableGovernors.end(); it++)
++		{
++			list->add((*it), (*it), selectedGovernors == (*it));
++			if (selectedGovernors == (*it))
++				cfound = true;
++		}
++		if (!cfound)
++			list->add(selectedGovernors, selectedGovernors, true);
++	};
++	fillGovernors(optionsGovernors.get(), std::vector<std::string>());
++	optionsGovernors->populateAsync<std::vector<std::string>>([] { return ApiSystem::getInstance()->getAvailableCpuGovernors(); }, fillGovernors);
+ 	s->addWithLabel(_("DEFAULT SCALING GOVERNOR"), optionsGovernors);
+ 	s->addSaveFunc([selectedGovernors, optionsGovernors]
+ 	{
+@@ -2323,23 +2397,31 @@
+ 	// GPU performance mode with enhanced power savings
+ 	auto optionsGpuGovernors = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEFAULT GPU SCALING GOVERNOR"), false);
+ 
+-	std::vector<std::string> availableGpuGovernors = ApiSystem::getInstance()->getAvailableGpuGovernors();
+ 	std::string selectedGpuGovernor = SystemConf::getInstance()->get("system.gpuperf");
+-	
++
+ 	if (selectedGpuGovernor.empty())
+ 		selectedGpuGovernor = "default";
+-	
+-	bool selectedGpuGovernorFound = false;
+-	
+-	for (auto it = availableGpuGovernors.begin(); it != availableGpuGovernors.end(); it++)
++
++	auto fillGpuGovernors = [selectedGpuGovernor](OptionListComponent<std::string>* list, const std::vector<std::string>& availableGpuGovernors)
+ 	{
+-		optionsGpuGovernors->add((*it), (*it), selectedGpuGovernor == (*it));
+-		if (selectedGpuGovernor == (*it))
+-			selectedGpuGovernorFound = true;
+-	}
+-	
+-	if (!selectedGpuGovernorFound)
+-		optionsGpuGovernors->selectFirstItem(); // Preselect 'default' 
++		bool selectedGpuGovernorFound = false;
++		for (auto it = availableGpuGovernors.begin(); it != availableGpuGovernors.end(); it++)
++		{
++			list->add((*it), (*it), selectedGpuGovernor == (*it));
++			if (selectedGpuGovernor == (*it))
++				selectedGpuGovernorFound = true;
++		}
++
++		if (!selectedGpuGovernorFound)
++		{
++			if (availableGpuGovernors.empty())
++				list->add(selectedGpuGovernor, selectedGpuGovernor, true); // not loaded yet: keep the stored value
++			else
++				list->selectFirstItem(); // Preselect 'default'
++		}
++	};
++	fillGpuGovernors(optionsGpuGovernors.get(), std::vector<std::string>());
++	optionsGpuGovernors->populateAsync<std::vector<std::string>>([] { return ApiSystem::getInstance()->getAvailableGpuGovernors(); }, fillGpuGovernors);
+ 
+ 	s->addWithLabel(_("DEFAULT GPU SCALING GOVERNOR"), optionsGpuGovernors);
+ 	s->addSaveFunc([selectedGpuGovernor, optionsGpuGovernors]
+@@ -2436,13 +2518,50 @@
+ 	const std::string gpuDriverScript = "/usr/bin/gpudriver";
+ 	if (Utils::FileSystem::exists(gpuDriverScript)) {
+ 		auto optionsGpuDriver = std::make_shared<OptionListComponent<std::string> >(mWindow, _("GPU DRIVER"), false);
+-		std::string selectedGpuDriver = getSessionShOutput("gpudriver.current", "/usr/bin/gpudriver");
+-		std::string a;
+-		for(std::stringstream ss(getSessionShOutput("gpudriver.options", "/usr/bin/gpudriver --options")); getline(ss, a, ' '); ) {
+-			optionsGpuDriver->add(a, a, a == selectedGpuDriver);
++		// { current driver, options separated by spaces }; both scripts are slow, so they run in a worker thread
++		// unless the session cache already has them.
++		typedef std::pair<std::string, std::string> GpuDriverData;
++		auto fillGpuDriver = [](OptionListComponent<std::string>* list, const GpuDriverData& data)
++		{
++			const std::string& selectedGpuDriver = data.first;
++			bool found = false;
++			std::string a;
++			for(std::stringstream ss(data.second); getline(ss, a, ' '); ) {
++				list->add(a, a, a == selectedGpuDriver);
++				if (a == selectedGpuDriver)
++					found = true;
++			}
++			if (!found) // not loaded yet (or unknown driver): keep a selected entry so that changed() stays false
++				list->add(selectedGpuDriver.empty() ? std::string("...") : selectedGpuDriver, selectedGpuDriver, true);
++		};
++
++		GpuDriverData cachedGpuDriver;
++		const bool haveCurrent = peekSessionShOutput("gpudriver.current", cachedGpuDriver.first);
++		const bool haveOptions = peekSessionShOutput("gpudriver.options", cachedGpuDriver.second);
++		if (haveCurrent && haveOptions)
++			fillGpuDriver(optionsGpuDriver.get(), cachedGpuDriver);
++		else
++		{
++			fillGpuDriver(optionsGpuDriver.get(), GpuDriverData());
++			optionsGpuDriver->populateAsync<GpuDriverData>([cachedGpuDriver, haveCurrent, haveOptions]
++			{
++				GpuDriverData data = cachedGpuDriver;
++				if (!haveCurrent)
++					data.first = Utils::Platform::GetShOutput("/usr/bin/gpudriver");
++				if (!haveOptions)
++					data.second = Utils::Platform::GetShOutput("/usr/bin/gpudriver --options");
++				return data;
++			},
++			[fillGpuDriver](OptionListComponent<std::string>* list, const GpuDriverData& data)
++			{
++				// UI thread: the session cache is only touched here
++				storeSessionShOutput("gpudriver.current", data.first);
++				storeSessionShOutput("gpudriver.options", data.second);
++				fillGpuDriver(list, data);
++			});
+ 		}
+ 		s->addWithLabel(_("GPU DRIVER"), optionsGpuDriver);
+-		s->addSaveFunc([this, window, gpuDriverScript, optionsGpuDriver, selectedGpuDriver] {
++		s->addSaveFunc([this, window, gpuDriverScript, optionsGpuDriver] {
+ 			if (optionsGpuDriver->changed()) {
+ 				Utils::Platform::runSystemCommand(gpuDriverScript + " " + optionsGpuDriver->getSelected(), "", nullptr);
+ 				invalidateSessionShOutput("gpudriver.current");
+@@ -2464,19 +2583,23 @@
+ 	// Allow user control over how the device sleeps - only show for devices with real suspend enabled
+ 	s->addGroup(_("SUSPEND"));
+ 	auto optionsSleep = std::make_shared<OptionListComponent<std::string> >(mWindow, _("DEVICE SUSPEND MODE"), false);
+-	std::vector<std::string> availableSleepModes = ApiSystem::getInstance()->getSleepModes();
+ 	std::string selectedSleep = SystemConf::getInstance()->get("system.suspendmode");
+ 	if (selectedSleep.empty())
+ 		selectedSleep = "default";
+-	bool found = false;
+-	for (auto it = availableSleepModes.begin(); it != availableSleepModes.end(); it++)
++	auto fillSleepModes = [selectedSleep](OptionListComponent<std::string>* list, const std::vector<std::string>& availableSleepModes)
+ 	{
+-		optionsSleep->add((*it), (*it), selectedSleep == (*it));
+-		if (selectedSleep == (*it))
+-			found = true;
+-	}
+-	if (!found)
+-		optionsSleep->add(selectedSleep, selectedSleep, true);
++		bool found = false;
++		for (auto it = availableSleepModes.begin(); it != availableSleepModes.end(); it++)
++		{
++			list->add((*it), (*it), selectedSleep == (*it));
++			if (selectedSleep == (*it))
++				found = true;
++		}
++		if (!found)
++			list->add(selectedSleep, selectedSleep, true);
++	};
++	fillSleepModes(optionsSleep.get(), std::vector<std::string>());
++	optionsSleep->populateAsync<std::vector<std::string>>([] { return ApiSystem::getInstance()->getSleepModes(); }, fillSleepModes);
+ 	s->addWithLabel(_("DEVICE SUSPEND MODE"), optionsSleep);
+ 	s->addSaveFunc([this, optionsSleep, selectedSleep]
+ 	{
+@@ -2634,41 +2757,47 @@
+ 
+ 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::AUDIODEVICE))
+ 	{
+-		std::vector<std::string> availableAudio = ApiSystem::getInstance()->getAvailableAudioOutputDevices();
+-		if (availableAudio.size())
+ 		{
+-			// audio device
++			// audio device (the list is slow: filled in by a worker thread, the stored device stands in meanwhile)
+ 			auto optionsAudio = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO OUTPUT"), false);
+ 
+ 			std::string selectedAudio = SystemConf::getInstance()->get("audio.device");
+ 			if (selectedAudio.empty())
+ 				selectedAudio = "auto";
+ 
+-			bool afound = false;
+-			for (auto it = availableAudio.begin(); it != availableAudio.end(); it++)
++			auto fillAudio = [selectedAudio](OptionListComponent<std::string>* list, const std::vector<std::string>& availableAudio)
+ 			{
+-				std::vector<std::string> tokens = Utils::String::split(*it, '\t');
++				bool afound = false;
++				for (auto it = availableAudio.begin(); it != availableAudio.end(); it++)
++				{
++					std::vector<std::string> tokens = Utils::String::split(*it, '\t');
++					if (tokens.empty())
++						continue;
+ 
+-				if (selectedAudio == tokens.at(0))
+-					afound = true;
++					if (selectedAudio == tokens.at(0))
++						afound = true;
+ 
+-				if (tokens.size() >= 2)
+-				{
+-					// concatenat the ending words
+-					std::string vname = "";
+-					for (unsigned int i = 1; i < tokens.size(); i++)
++					if (tokens.size() >= 2)
+ 					{
+-						if (i > 2) vname += " ";
+-						vname += tokens.at(i);
++						// concatenat the ending words
++						std::string vname = "";
++						for (unsigned int i = 1; i < tokens.size(); i++)
++						{
++							if (i > 2) vname += " ";
++							vname += tokens.at(i);
++						}
++						list->add(vname, tokens.at(0), selectedAudio == tokens.at(0));
+ 					}
+-					optionsAudio->add(vname, tokens.at(0), selectedAudio == tokens.at(0));
++					else
++						list->add((*it), (*it), selectedAudio == tokens.at(0));
+ 				}
+-				else
+-					optionsAudio->add((*it), (*it), selectedAudio == tokens.at(0));
+-			}
+ 
+-			if (!afound)
+-				optionsAudio->add(selectedAudio, selectedAudio, true);
++				if (!afound)
++					list->add(selectedAudio, selectedAudio, true);
++			};
++
++			fillAudio(optionsAudio.get(), std::vector<std::string>());
++			optionsAudio->populateAsync<std::vector<std::string>>([] { return ApiSystem::getInstance()->getAvailableAudioOutputDevices(); }, fillAudio);
+ 
+ 			s->addWithLabel(_("AUDIO OUTPUT"), optionsAudio);
+ 
+@@ -2684,53 +2813,60 @@
+ 		}
+ 
+ 		// audio profile
+-		std::vector<std::string> availableAudioProfiles = ApiSystem::getInstance()->getAvailableAudioOutputProfiles();
+-		if (availableAudioProfiles.size())
+ 		{
++			// audio profile (slow list: worker thread, the stored profile stands in meanwhile)
+ 			auto optionsAudioProfile = std::make_shared<OptionListComponent<std::string> >(mWindow, _("AUDIO PROFILE"), false);
+ 
+ 			std::string selectedAudioProfile = SystemConf::getInstance()->get("audio.profile");
+ 			if (selectedAudioProfile.empty())
+ 				selectedAudioProfile = "auto";
+ 
+-			bool afound = false;
+-			for (auto it = availableAudioProfiles.begin(); it != availableAudioProfiles.end(); it++)
++			auto fillAudioProfiles = [selectedAudioProfile](OptionListComponent<std::string>* list, const std::vector<std::string>& availableAudioProfiles)
+ 			{
+-				std::vector<std::string> tokens = Utils::String::split(*it, '\t');
++				bool afound = false;
++				for (auto it = availableAudioProfiles.begin(); it != availableAudioProfiles.end(); it++)
++				{
++					std::vector<std::string> tokens = Utils::String::split(*it, '\t');
++					if (tokens.empty())
++						continue;
+ 
+-				if (selectedAudioProfile == tokens.at(0))
+-					afound = true;
++					if (selectedAudioProfile == tokens.at(0))
++						afound = true;
+ 
+-				std::string vname = "";
+-				if (tokens.size() >= 2)
+-				{
+-					// Check if the profile contains "bluez_card" and remove it from the display name
+-					if (tokens.at(1).find("bluez_card") != std::string::npos)
++					std::string vname = "";
++					if (tokens.size() >= 2)
+ 					{
+-						// Skip the "bluez_card" token and use the remaining tokens for the display name
+-						for (unsigned int i = 2; i < tokens.size(); i++)
++						// Check if the profile contains "bluez_card" and remove it from the display name
++						if (tokens.at(1).find("bluez_card") != std::string::npos)
+ 						{
+-							if (i > 2) vname += " ";
+-							vname += tokens.at(i);
++							// Skip the "bluez_card" token and use the remaining tokens for the display name
++							for (unsigned int i = 2; i < tokens.size(); i++)
++							{
++								if (i > 2) vname += " ";
++								vname += tokens.at(i);
++							}
+ 						}
+-					}
+-					else
+-					{
+-						// Normal concatenation for other profiles
+-						for (unsigned int i = 1; i < tokens.size(); i++)
++						else
+ 						{
+-							if (i > 1) vname += " ";
+-							vname += tokens.at(i);
++							// Normal concatenation for other profiles
++							for (unsigned int i = 1; i < tokens.size(); i++)
++							{
++								if (i > 1) vname += " ";
++								vname += tokens.at(i);
++							}
+ 						}
++						list->add(vname, tokens.at(0), selectedAudioProfile == tokens.at(0));
+ 					}
+-					optionsAudioProfile->add(vname, tokens.at(0), selectedAudioProfile == tokens.at(0));
++					else
++						list->add((*it), (*it), selectedAudioProfile == tokens.at(0));
+ 				}
+-				else
+-					optionsAudioProfile->add((*it), (*it), selectedAudioProfile == tokens.at(0));
+-			}
+ 
+-			if (afound == false)
+-				optionsAudioProfile->add(selectedAudioProfile, selectedAudioProfile, true);
++				if (afound == false)
++					list->add(selectedAudioProfile, selectedAudioProfile, true);
++			};
++
++			fillAudioProfiles(optionsAudioProfile.get(), std::vector<std::string>());
++			optionsAudioProfile->populateAsync<std::vector<std::string>>([] { return ApiSystem::getInstance()->getAvailableAudioOutputProfiles(); }, fillAudioProfiles);
+ 
+ 			s->addWithDescription(_("AUDIO PROFILE"), _("Available options can change depending on current audio output."), optionsAudioProfile);
+ 
+@@ -5968,9 +6104,33 @@
+ 	if (selectedUSBGadget.empty())
+ 		selectedUSBGadget = "disabled";
+ 
+-	std::string a;
+-	for(std::stringstream ss(getSessionShOutput("usbgadget.options", "/usr/bin/usbgadget --options")); getline(ss, a, ' '); ) {
+-		optionsUSBGadget->add(a, a, a == selectedUSBGadget);
++	// "usbgadget --options" is slow: the options come from a worker thread (or the session cache) and the
++	// current mode, read from sysfs, stands in until then.
++	auto fillUsbGadget = [selectedUSBGadget](OptionListComponent<std::string>* list, const std::string& options)
++	{
++		bool found = false;
++		std::string a;
++		for(std::stringstream ss(options); getline(ss, a, ' '); ) {
++			list->add(a, a, a == selectedUSBGadget);
++			if (a == selectedUSBGadget)
++				found = true;
++		}
++		if (!found)
++			list->add(selectedUSBGadget, selectedUSBGadget, true);
++	};
++
++	std::string cachedUsbGadgetOptions;
++	if (peekSessionShOutput("usbgadget.options", cachedUsbGadgetOptions))
++		fillUsbGadget(optionsUSBGadget.get(), cachedUsbGadgetOptions);
++	else
++	{
++		fillUsbGadget(optionsUSBGadget.get(), std::string());
++		optionsUSBGadget->populateAsync<std::string>([] { return Utils::Platform::GetShOutput("/usr/bin/usbgadget --options"); },
++			[fillUsbGadget](OptionListComponent<std::string>* list, const std::string& options)
++			{
++				storeSessionShOutput("usbgadget.options", options); // UI thread
++				fillUsbGadget(list, options);
++			});
+ 	}
+ 	s->addWithLabel(_("USB GADGET FUNCTION"), optionsUSBGadget);
+ 
+diff -urN p3/es-core/src/components/OptionListComponent.h p4/es-core/src/components/OptionListComponent.h
+--- p3/es-core/src/components/OptionListComponent.h	2026-10-05 13:50:31.327668179 +0200
++++ p4/es-core/src/components/OptionListComponent.h	2026-10-05 13:50:31.331031559 +0200
+@@ -10,6 +10,9 @@
+ #include "components/MultiLineMenuEntry.h"
+ #include "components/MenuComponent.h"
+ 
++#include <functional>
++#include <memory>
++#include <thread>
+ #include <tuple>
+ 
+ //Used to display a list of options.
+@@ -45,6 +48,8 @@
+ 	private:
+ 		MenuComponent mMenu;
+ 		OptionListComponent<T>* mParent;
++		// A selection callback may delete the parent before this popup.
++		std::shared_ptr<bool> mParentAlive;
+ 		// for select all/none
+ 
+ 		struct CheckBoxElement
+@@ -57,7 +62,7 @@
+ 
+ 	public:
+ 		OptionListPopup(Window* window, OptionListComponent<T>* parent, const std::string& title, const std::function<void(T& data, ComponentListRow& row)> callback = nullptr) : GuiComponent(window),
+-			mMenu(window, title.c_str()), mParent(parent)
++			mMenu(window, title.c_str()), mParent(parent), mParentAlive(parent->mAlive)
+ 		{
+ 			auto menuTheme = ThemeData::getMenuTheme();
+ 			auto font = menuTheme->Text.font;
+@@ -188,6 +193,12 @@
+ 			addChild(&mMenu);
+ 		}
+ 
++		~OptionListPopup()
++		{
++			if (*mParentAlive)
++				mParent->onPopupClosed();
++		}
++
+ 		bool input(InputConfig* config, Input input) override
+ 		{
+ 			if(config->isMappedTo(BUTTON_BACK, input) && input.value != 0) 
+@@ -255,6 +266,55 @@
+ 		setSize(mLeftArrow.getSize().x() + mRightArrow.getSize().x(), theme->Text.font->getHeight());
+ 	}
+ 
++	~OptionListComponent()
++	{
++		*mAlive = false;
++	}
++
++	// Runs query on a worker thread and, back on the UI thread, replaces the entries with what fill adds.
++	// The caller builds the list with a placeholder first (usually the current value, selected) so the menu
++	// opens at once. Rules:
++	//  - query runs OFF the UI thread: it must not touch UI objects, SystemConf or any non thread safe state.
++	//  - fill runs on the UI thread, on an emptied list. It must also be callable with an empty result (the
++	//    placeholder pass) and must leave the stored value selected, so that changed() stays false until the
++	//    user really changes it.
++	//  - the result is dropped if this component is destroyed meanwhile (mAlive) or if accept() returns
++	//    false; if the popup is open the refill waits until it is closed.
++	//  - the selection the user made before the result arrived is kept; the selected-changed callback is
++	//    not fired by a refill.
++	template<typename R>
++	void populateAsync(const std::function<R()>& query, const std::function<void(OptionListComponent<T>*, const R&)>& fill, const std::function<bool()>& accept = nullptr)
++	{
++		if (mMultiSelect)
++			return;
++
++		auto alive = mAlive;
++		auto window = mWindow;
++		std::thread([this, alive, window, query, fill, accept]
++		{
++			try
++			{
++				R result = query();
++				window->postToUiThread([this, alive, result, fill, accept]
++				{
++					if (!*alive)
++						return;
++
++					if (accept && !accept())
++						return;
++
++					mPendingFill = [this, result, fill] { refill<R>(result, fill); };
++					if (!mPopupOpen)
++						applyPendingFill();
++				});
++			}
++			catch (...)
++			{
++				// the placeholder stays
++			}
++		}).detach();
++	}
++
+ 	virtual void setColor(unsigned int color)
+ 	{
+ 		mText.setColor(color);
+@@ -568,9 +628,76 @@
+ 
+ 	void open()
+ 	{
++		mPopupOpen = true;
+ 		mWindow->pushGui(new OptionListPopup(mWindow, this, mName, mAddRowCallback));
+ 	}
+ 
++	// The popup holds references into mEntries, so a refill waits until it is closed.
++	void onPopupClosed()
++	{
++		mPopupOpen = false;
++		if (!mPendingFill)
++			return;
++
++		auto alive = mAlive;
++		mWindow->postToUiThread([this, alive]
++		{
++			if (*alive && !mPopupOpen)
++				applyPendingFill();
++		});
++	}
++
++	void applyPendingFill()
++	{
++		auto fill = mPendingFill;
++		mPendingFill = nullptr;
++		if (fill)
++			fill();
++	}
++
++	template<typename R>
++	void refill(const R& result, const std::function<void(OptionListComponent<T>*, const R&)>& fill)
++	{
++		// A refill must not run the selected-changed callback (it may apply settings or run scripts).
++		struct CallbackGuard
++		{
++			std::function<void(const T&)>& target;
++			std::function<void(const T&)> saved;
++			CallbackGuard(std::function<void(const T&)>& t) : target(t), saved(t) { target = nullptr; }
++			~CallbackGuard() { target = saved; }
++		} guard(mSelectedChangedCallback);
++
++		const T initial = firstSelected;
++		T current = initial;
++		auto selected = getSelectedObjects();
++		if (selected.size() == 1)
++			current = selected.at(0);
++
++		mEntries.clear();
++		firstSelected = T();
++		fill(this, result);
++
++		if (current != initial)
++		{
++			for (auto& entry : mEntries)
++			{
++				if (entry.object != current)
++					continue;
++
++				for (auto& other : mEntries)
++					other.selected = false;
++
++				entry.selected = true;
++				break;
++			}
++		}
++
++		if (!hasSelection())
++			selectFirstItem();
++
++		onSelectedChanged();
++	}
++
+ 	void onSelectedChanged()
+ 	{
+ 		if (mMultiSelect && mMultiSelectShowNames)
+@@ -656,6 +783,10 @@
+ 
+ 	std::vector<OptionListData> mEntries;
+ 	std::function<void(const T&)> mSelectedChangedCallback;
++
++	bool mPopupOpen = false;
++	std::function<void()> mPendingFill;
++	std::shared_ptr<bool> mAlive = std::make_shared<bool>(true);
+ };
+ 
+ #endif // ES_CORE_COMPONENTS_OPTION_LIST_COMPONENT_H
