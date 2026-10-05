@@ -3,6 +3,16 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2025-present ROCKNIX (https://github.com/ROCKNIX)
 
+# Salida temprana sin cargar /etc/profile: RK3326 no tiene numero de serie unico
+# (DEVICE_SERIAL_NUMBER_PATH solo se define en SM8250), asi que el resultado es
+# siempre "skip". Evita el coste de `. /etc/profile` en cada arranque de ES.
+if [ -r /etc/os-release ]; then
+  while IFS= read -r _snc_l; do
+    [ "${_snc_l}" = 'HW_DEVICE="RK3326"' ] && exit 0
+  done < /etc/os-release
+fi
+unset _snc_l
+
 . /etc/profile
 
 if [ -z "${DEVICE_SERIAL_NUMBER_PATH}" ]; then

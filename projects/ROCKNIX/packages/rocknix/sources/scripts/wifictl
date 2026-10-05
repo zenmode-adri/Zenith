@@ -1,4 +1,8 @@
 #!/bin/bash
+# tanda 11: has_ap_mode depende del adaptador (constante durante el arranque): se cachea en /run
+if [ "$1" = "has_ap_mode" ] && [ -r /run/wifictl.apmode ]; then
+  read -r _rc < /run/wifictl.apmode && exit "${_rc}"
+fi
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
 # Copyright (C) 2022 kkoshelev (https://github.com/kkoshelev)
@@ -239,7 +243,9 @@ case "${1}" in
     iw list | awk '/[0-9] MHz \[/ && ! /disabled|radar|no IR/ { gsub(/^.*\[/,""); gsub(/\].*$/,""); print}'
     ;;
   has_ap_mode)
-    has_ap_mode
+    ( has_ap_mode ); _rc=$?
+    compgen -G "/sys/class/net/wlan*" >/dev/null && echo "${_rc}" > /run/wifictl.apmode
+    exit ${_rc}
     ;;
   scan)
     if [ "${USE_CONNMAN_WIFI}" = "yes" ]; then

@@ -87,6 +87,9 @@ EOF
   enable_service crng-seed.service
   enable_service crng-seed-save.service
 
+  ### Calienta la cache de wifictl has_ap_mode (Network Settings abre rapido)
+  enable_service wifi-apcache.service
+
   sed -i "s#@DEVICENAME@#${DEVICE}#g" ${INSTALL}/usr/config/system/configs/system.cfg
 
   ### Defaults for non-main builds.

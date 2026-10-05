@@ -1,12 +1,29 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
+# tanda 10: mismo resultado que el original pero con builtins de bash (sin strings/echo|sed: 5 procesos menos en CADA `. /etc/profile`).
+# Si algo falla, cae al camino original.
 
 ### Apply device quirks
+_q_ok=0
 if [ -e "/sys/firmware/devicetree/base/model" ]
 then
-  export QUIRK_DEVICE="$(strings /sys/firmware/devicetree/base/model)"
-else
-  export QUIRK_DEVICE="$(strings /sys/class/dmi/id/sys_vendor) $(strings /sys/class/dmi/id/product_name)"
+  if IFS= read -r -d '' _q < /sys/firmware/devicetree/base/model 2>/dev/null || [ -n "${_q}" ]
+  then
+    read -r -a _qw <<< "${_q}"      # igual que `echo ${...}`: parte y une con un espacio
+    _q="${_qw[*]}"
+    _q="${_q//\//-}"
+    [ -n "${_q}" ] && { export QUIRK_DEVICE="${_q}"; _q_ok=1; }
+  fi
 fi
-export QUIRK_DEVICE="$(echo ${QUIRK_DEVICE} | sed -e "s#[/]#-#g")"
+if [ "${_q_ok}" != 1 ]
+then
+  if [ -e "/sys/firmware/devicetree/base/model" ]
+  then
+    export QUIRK_DEVICE="$(strings /sys/firmware/devicetree/base/model)"
+  else
+    export QUIRK_DEVICE="$(strings /sys/class/dmi/id/sys_vendor) $(strings /sys/class/dmi/id/product_name)"
+  fi
+  export QUIRK_DEVICE="$(echo ${QUIRK_DEVICE} | sed -e "s#[/]#-#g")"
+fi
+unset _q _qw _q_ok

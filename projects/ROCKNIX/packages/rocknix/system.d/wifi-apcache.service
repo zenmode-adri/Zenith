@@ -1,0 +1,11 @@
+[Unit]
+Description=Calienta la cache de wifictl has_ap_mode (para que Network Settings abra rapido)
+ConditionPathExists=!/flash/no-overrides
+
+[Service]
+Type=simple
+Nice=19
+ExecStart=/bin/sh -c 'sleep 25; /usr/bin/wifictl has_ap_mode >/dev/null 2>&1; exit 0'
+
+[Install]
+WantedBy=multi-user.target

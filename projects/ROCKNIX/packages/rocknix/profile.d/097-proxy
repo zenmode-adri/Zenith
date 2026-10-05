@@ -11,6 +11,24 @@ if ! command -v get_setting >/dev/null 2>&1; then
   return 0 2>/dev/null || exit 0
 fi
 
+# --- tanda 10: camino rapido SIN forks. Si ninguna linea del fichero de ajustes define network.proxy.enabled=1,
+# el proxy esta desactivado (es lo que devolveria get_setting) y se evitan 5 subshells + 5 awk en CADA `. /etc/profile`.
+_px_f="${J_CONF:-/storage/.config/system/configs/system.cfg}"
+_px_on=0
+if [ -r "${_px_f}" ]; then
+  while IFS= read -r _px_l; do
+    case "${_px_l}" in
+      *network.proxy.enabled=1) _px_on=1; break ;;
+    esac
+  done < "${_px_f}"
+fi
+if [ "${_px_on}" != "1" ]; then
+  unset_proxy_environment
+  unset _px_f _px_on _px_l
+  return 0 2>/dev/null || exit 0
+fi
+unset _px_f _px_on _px_l
+# --- fin camino rapido: lo de abajo es el original
 proxy_enabled="$(get_setting network.proxy.enabled)"
 proxy_host="$(get_setting network.proxy.host)"
 proxy_port="$(get_setting network.proxy.port)"

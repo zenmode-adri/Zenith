@@ -6,7 +6,8 @@
 
 export HOME="/storage"
 export PATH="/usr/bin:/usr/sbin"
-export HOSTNAME=`cat /etc/hostname`
+read -r HOSTNAME < /etc/hostname 2>/dev/null || HOSTNAME=$(cat /etc/hostname)   # tanda 10: sin fork
+export HOSTNAME
 export PS1='\[\e[1m\]\h:\[\e[1m\]\w \[\e[0m\]\$\[\e[0m\] '
 
 # Redirect requests for sudo to nowhere.
