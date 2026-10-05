@@ -1,0 +1,448 @@
+--- orig/es-app/src/main.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-app/src/main.cpp	2026-10-05 15:44:53.805217881 +0200
+@@ -706,6 +706,14 @@
+ 	int lastTime = SDL_GetTicks();
+ 	int ps_time = SDL_GetTicks();
+ 
++	// Idle render (1 Hz): see Window::keepAlive(). 0 = disabled (old behaviour).
++	const int idleRenderAfterMs = Settings::getInstance()->getInt("IdleRenderAfterMs");
++	bool lastFrameAnimated = true; // conservative until the first frame has been seen
++	bool wasIdle = false;
++	int idleSince = 0;
++	int idleRenders = 0;
++	int idleWakeTs = -1;
++
+ 	bool running = true;
+ 
+ #ifdef BATOCERA
+@@ -724,10 +732,40 @@
+ 			PowerSaver::getState() &&
+ 			(int)SDL_GetTicks() - ps_time > PowerSaver::getMode();
+ 
++		// Idle render: PowerSaverMode=default, no input for IdleRenderAfterMs, nobody animating
++		// (components call Window::keepAlive(), PowerSaver not paused), main view on top.
++		// Anything doubtful => idle=false => full rate render.
++		bool idle =
++			idleRenderAfterMs > 0 &&
++			!screenSaverWait &&
++			!lastFrameAnimated &&
++			PowerSaver::getMode() == PowerSaver::DEFAULT &&
++			PowerSaver::getState() &&
++			!window.isSleeping() &&
++			!Settings::DrawFramerate() &&
++			window.peekGui() == ViewController::get() &&
++			(int)SDL_GetTicks() - ps_time > idleRenderAfterMs;
++
++		if (idle != wasIdle)
++		{
++			if (idle)
++			{
++				idleSince = SDL_GetTicks();
++				idleRenders = 0;
++				LOG(LogDebug) << "[IDLE1HZ] enter";
++			}
++			else
++				LOG(LogDebug) << "[IDLE1HZ] exit after " << (int)(SDL_GetTicks() - idleSince) << " ms, " << idleRenders << " renders";
++
++			wasIdle = idle;
++		}
++
+ 		int eventResult;
+ 
+ 		if (screenSaverWait)
+ 			eventResult = SDL_WaitEventTimeout(&event, screenSaverTimeout);
++		else if (idle)
++			eventResult = SDL_WaitEventTimeout(&event, 1000); // at most one update+render+swap per second
+ 		else if (ps_standby)
+ 			eventResult = SDL_WaitEventTimeout(&event, PowerSaver::getTimeout());
+ 		else
+@@ -735,9 +773,13 @@
+ 
+ 		if (eventResult)
+ 		{
++			if (idle)
++				idleWakeTs = (int)event.common.timestamp; // for the wake->frame latency log
++
+ 			// PowerSaver can push events to exit SDL_WaitEventTimeout immediatly
+ 			// Reset this event's state
+ 			TRYCATCH("resetRefreshEvent", PowerSaver::resetRefreshEvent());
++			PowerSaver::resetWake();
+ 
+ 			do
+ 			{
+@@ -808,7 +850,7 @@
+ 			InputManager::getInstance()->updateGuns(&window);
+ 
+ 			// triggered if exiting from SDL_WaitEvent due to event
+-			if (ps_standby || (screenSaverWait && !screensaver.isScreenSaverActive()))
++			if (idle || ps_standby || (screenSaverWait && !screensaver.isScreenSaverActive()))
+ 				// show as if continuing from last event
+ 				lastTime = SDL_GetTicks();
+ 
+@@ -846,6 +888,9 @@
+ 		TRYCATCH("Window.update" ,window.update(deltaTime))	
+ 		TRYCATCH("Window.render", window.render())
+ 
++		// Did anything report it is animating during this update/render? (next iteration will not idle)
++		lastFrameAnimated = window.consumeKeepAlive();
++
+ 		int fpsLimit = Settings::FpsLimit();
+ 		if (fpsLimit > 0)
+ 		{
+@@ -859,7 +904,16 @@
+ 			}
+ 		}
+ 
+-		Renderer::swapBuffers();		
++		Renderer::swapBuffers();
++
++		if (idle)
++			idleRenders++;
++
++		if (idleWakeTs >= 0)
++		{
++			LOG(LogDebug) << "[IDLE1HZ] wake->frame " << (int)(SDL_GetTicks() - (unsigned int)idleWakeTs) << " ms";
++			idleWakeTs = -1;
++		}
+ 	}
+ 
+ 	if (Utils::Platform::isFastShutdown())
+--- orig/es-core/src/GuiComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/GuiComponent.cpp	2026-10-05 15:44:53.794600857 +0200
+@@ -62,10 +62,17 @@
+ 	return false;
+ }
+ 
++void GuiComponent::keepAlive()
++{
++	if (mWindow != nullptr)
++		mWindow->keepAlive();
++}
++
+ void GuiComponent::updateSelf(int deltaTime)
+ {
+ 	if (mAnimationMap.size())
+ 	{
++		keepAlive();
+ 		for (auto it = mAnimationMap.cbegin(), next_it = it; it != mAnimationMap.cend(); it = next_it)
+ 		{
+ 			++next_it;
+--- orig/es-core/src/GuiComponent.h	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/GuiComponent.h	2026-10-05 15:44:53.793930308 +0200
+@@ -232,6 +232,7 @@
+ 	void			renderChildren(const Transform4x4f& transform) const;
+ 	void			updateSelf(int deltaTime); // updates animations
+ 	void			updateChildren(int deltaTime); // updates animations
++	void			keepAlive(); // tell Window we are animating: no idle 1 Hz render this frame
+ 
+ 	void			loadThemedChildren(const ThemeData::ThemeElement* elem);
+ 
+--- orig/es-core/src/PowerSaver.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/PowerSaver.cpp	2026-10-05 15:44:53.790756602 +0200
+@@ -3,6 +3,7 @@
+ #include "AudioManager.h"
+ #include "Settings.h"
+ #include <SDL.h>
++#include <atomic>
+ #include "math/Misc.h"
+ 
+ bool PowerSaver::mState = false;
+@@ -16,6 +17,30 @@
+ int PowerSaver::mPushEventID = -1;
+ int PowerSaver::mPauseCounter = 0;
+ 
++static std::atomic<bool> sWakePending(false);
++static std::atomic<int> sWakeEventID(-1);
++
++void PowerSaver::wake()
++{
++	int id = sWakeEventID.load();
++	if (id < 0)
++		return; // not initialised yet (init() runs on the UI thread before the loop)
++
++	bool expected = false;
++	if (!sWakePending.compare_exchange_strong(expected, true))
++		return; // an event is already queued
++
++	SDL_Event ev {};
++	ev.type = (Uint32)id;
++	if (SDL_PushEvent(&ev) <= 0)
++		sWakePending = false;
++}
++
++void PowerSaver::resetWake()
++{
++	sWakePending = false;
++}
++
+ void PowerSaver::pushRefreshEvent()
+ {
+ 	if (mHasPushedEvent || !mState)
+@@ -37,6 +62,13 @@
+ 
+ void PowerSaver::init()
+ {
++	if (sWakeEventID.load() < 0)
++	{
++		Uint32 id = SDL_RegisterEvents(1);
++		if (id != (Uint32)-1)
++			sWakeEventID = (int)id;
++	}
++
+ 	setState(true);
+ 	updateMode();
+ }
+@@ -104,6 +136,8 @@
+ 	mState = ps_enabled && state;
+ 	if (state)
+ 		pushRefreshEvent(); // Exit SDL_WaitEventTimeout loop by sending an event
++	else
++		wake(); // PS paused (video, popup, busy...): the idle loop must render now
+ }
+ 
+ void PowerSaver::runningScreenSaver(bool state)
+--- orig/es-core/src/PowerSaver.h	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/PowerSaver.h	2026-10-05 15:44:53.789541881 +0200
+@@ -10,6 +10,13 @@
+ 	static void pushRefreshEvent();
+ 	static void resetRefreshEvent();
+ 
++	// Thread-safe, coalesced wake-up of the main loop (SDL user event).
++	// Unlike pushRefreshEvent() it also works while PowerSaver is active.
++	// Used by worker threads (texture loader, postToUiThread, notifications)
++	// so the idle 1 Hz loop (IdleRenderAfterMs) renders as soon as something changes.
++	static void wake();
++	static void resetWake();
++
+ 	// Call when you want PS to reload all state and settings
+ 	static void init();
+ 
+--- orig/es-core/src/Settings.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/Settings.cpp	2026-10-05 15:44:53.803408714 +0200
+@@ -221,6 +221,7 @@
+ 	
+ 	mIntMap["ScreenSaverTime"] = Settings::_ScreenSaverTime;
+ 	mIntMap["FpsLimit"] = 0;
++	mIntMap["IdleRenderAfterMs"] = 3000; // 0 = disabled. PowerSaverMode=default only: after this much time without input, render at most 1/s unless something animates
+ 	mIntMap["AntiAliasing"] = 0;
+ 	mIntMap["ScraperResizeWidth"] = 640;
+ 	mIntMap["ScraperResizeHeight"] = 0;
+--- orig/es-core/src/Window.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/Window.cpp	2026-10-05 15:44:53.793281806 +0200
+@@ -309,6 +309,7 @@
+ 	msg.first = message;
+ 	msg.second = duration;
+ 	mNotificationMessages.push_back(msg);
++	PowerSaver::wake();
+ }
+ 
+ 
+@@ -1136,6 +1137,7 @@
+ 	if (mAsyncNotificationComponent.size() == 1)
+ 		PowerSaver::pause();
+ 
++	PowerSaver::wake();
+ 	return pc;
+ }
+ 
+@@ -1244,6 +1246,8 @@
+ 		mTimeSinceLastInput = 0;
+ 		PowerSaver::pushRefreshEvent();
+ 	}
++
++	PowerSaver::wake(); // wake the idle 1 Hz loop (thread-safe, coalesced)
+ }
+ 
+ void Window::processPostedFunctions()
+--- orig/es-core/src/Window.h	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/Window.h	2026-10-05 15:44:53.791669956 +0200
+@@ -9,6 +9,7 @@
+ #include "math/Vector2i.h"
+ #include <memory>
+ #include <functional>
++#include <atomic>
+ 
+ class FileData;
+ class Font;
+@@ -67,6 +68,12 @@
+ 	void normalizeNextUpdate();
+ 
+ 	inline bool isSleeping() const { return mSleeping; }
++
++	// Idle render (1 Hz): components that are animating / changing call keepAlive()
++	// from update()/render(); the main loop reads it with consumeKeepAlive() after each frame.
++	// While anything keeps alive, the loop keeps rendering at full rate.
++	inline void keepAlive() { mKeepAlive = true; }
++	inline bool consumeKeepAlive() { return mKeepAlive.exchange(false); }
+ 	bool getAllowSleep();
+ 	void setAllowSleep(bool sleep);
+ 	
+@@ -171,6 +178,7 @@
+ 	bool mAllowSleep;
+ 	bool mSleeping;
+ 	unsigned int mTimeSinceLastInput;
++	std::atomic<bool> mKeepAlive{ false };
+ 
+ 	bool mRenderedHelpPrompts;
+ 
+--- orig/es-core/src/components/AnimatedImageComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/AnimatedImageComponent.cpp	2026-10-05 15:44:53.800271222 +0200
+@@ -55,6 +55,9 @@
+ 	if(!mEnabled || mFrames.size() == 0)
+ 		return;
+ 
++	if (mFrames.size() > 1)
++		keepAlive();
++
+ 	mFrameAccumulator += deltaTime;
+ 
+ 	while(mFrames.at(mCurrentFrame).second <= mFrameAccumulator)
+--- orig/es-core/src/components/ControllerActivityComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/ControllerActivityComponent.cpp	2026-10-05 15:44:53.801294967 +0200
+@@ -172,6 +172,7 @@
+ 			if (pad.timeOut == 0)
+ 				continue;
+ 
++			keepAlive(); // pad indicator timing out
+ 			pad.timeOut -= deltaTime;
+ 			if (pad.timeOut <= 0)
+ 			{
+--- orig/es-core/src/components/IList.h	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/IList.h	2026-10-05 15:44:53.801735968 +0200
+@@ -301,6 +301,9 @@
+ 		else
+ 			mTitleOverlayOpacity = (unsigned char)op;
+ 
++		if (mScrollVelocity != 0 || (dir > 0 ? mTitleOverlayOpacity < 255 : mTitleOverlayOpacity > 0))
++			keepAlive(); // held scroll / title overlay fading
++
+ 		if(mScrollVelocity == 0 || size() < 2)
+ 			return;
+ 
+--- orig/es-core/src/components/ImageComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/ImageComponent.cpp	2026-10-05 15:44:53.798134010 +0200
+@@ -820,6 +820,7 @@
+ 			// The texture is loaded and we need to fade it in. The fade is based on the frame rate
+ 			// and is 1/4 second if running at 60 frames per second although the actual value is not
+ 			// that important
++			keepAlive(); // fade-in advances per rendered frame
+ 			int opacity = mFadeOpacity + 255 / 10;
+ 			// See if we've finished fading
+ 			if (opacity >= 255)
+@@ -1076,6 +1077,10 @@
+ 	{
+ 		mPlaylistTimer += deltaTime;
+ 
++		// playlist / animated gif: render at full rate when the next item is due soon
++		if ((double)mPlaylist->getDelay() - (double)mPlaylistTimer <= 1500.0)
++			keepAlive();
++
+ 		if (mPlaylistTimer >= mPlaylist->getDelay())
+ 		{
+ 			auto item = mPlaylist->getNextItem();
+--- orig/es-core/src/components/NinePatchComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/NinePatchComponent.cpp	2026-10-05 15:44:53.798773446 +0200
+@@ -44,6 +44,7 @@
+ 
+ 	if (mAnimateTiming > 0)
+ 	{
++		keepAlive();
+ 		mTimer += deltaTime;
+ 		if (mTimer >= 2 * mAnimateTiming)
+ 			mTimer = 0;
+--- orig/es-core/src/components/ScrollableContainer.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/ScrollableContainer.cpp	2026-10-05 15:44:53.797034789 +0200
+@@ -63,6 +63,10 @@
+ {
+ 	if(mAutoScrollSpeed != 0)
+ 	{
++		const Vector2f cs = getContentSize();
++		if (cs.y() > getSize().y() + 0.5f || cs.x() > getSize().x() + 0.5f)
++			keepAlive(); // autoscroll only moves when the content overflows
++
+ 		mAutoScrollAccumulator += deltaTime;
+ 
+ 		//scale speed by our width! more text per line = slower scrolling
+--- orig/es-core/src/components/ScrollbarComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/ScrollbarComponent.cpp	2026-10-05 15:44:53.799287565 +0200
+@@ -72,6 +72,9 @@
+ 	if (!mEnabled)
+ 		return;
+ 
++	if (mFadeOutTime > 0 || mVisibleTime > 0)
++		keepAlive();
++
+ 	if (mFadeOutTime > 0)
+ 	{
+ 		mFadeOutTime -= deltaTime;
+--- orig/es-core/src/components/TextComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/TextComponent.cpp	2026-10-05 15:44:53.795989181 +0200
+@@ -449,6 +449,7 @@
+ 		
+ 		if (textLength > limit)
+ 		{
++			keepAlive(); // marquee
+ 			// loop
+ 			// pixels per second ( based on nes-mini font at 1920x1080 to produce a speed of 200 )
+ 			const float speed = mFont->sizeText("ABCDEFGHIJKLMNOPQRSTUVWXYZ").x() * 0.247f;
+@@ -487,6 +488,7 @@
+ 
+ 		if (textLength > limit)
+ 		{
++			keepAlive(); // vertical auto-scroll
+ 			mMarqueeTime += deltaTime;
+ 
+ 			while (mMarqueeTime >= mAutoScrollSpeed)
+--- orig/es-core/src/components/TextListComponent.h	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/TextListComponent.h	2026-10-05 15:44:53.796582817 +0200
+@@ -543,6 +543,7 @@
+ 
+ 		if (textLength > limit)
+ 		{
++			this->keepAlive(); // marquee of the selected row
+ 			// loop
+ 			// pixels per second ( based on nes-mini font at 1920x1080 to produce a speed of 200 )
+ 			const float speed = mFont->sizeText("ABCDEFGHIJKLMNOPQRSTUVWXYZ").x() * 0.247f;
+--- orig/es-core/src/components/VideoComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/VideoComponent.cpp	2026-10-05 15:44:53.799806237 +0200
+@@ -429,6 +429,10 @@
+ {
+ 	manageState();
+ 
++	// pending start (delay / waiting for libvlc) or fade-in running: full rate
++	if (mStartDelayed || mIsWaitingForVideoToStart || (mIsPlaying && mFadeIn < 1.0f))
++		keepAlive();
++
+ 	if (mIsPlaying)
+ 	{
+ 		// If the video start is delayed and there is less than the fade time then set the image fade
+--- orig/es-core/src/components/WebImageComponent.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/components/WebImageComponent.cpp	2026-10-05 15:44:53.800722468 +0200
+@@ -170,6 +170,8 @@
+ 	if (mRequest == nullptr)
+ 		return;
+ 
++	keepAlive(); // HTTP request being polled
++
+ 	if (mBusyAnim != nullptr)
+ 		mBusyAnim->update(deltaTime);
+ 
+--- orig/es-core/src/resources/TextureDataManager.cpp	2026-09-29 00:21:43.000000000 +0200
++++ src/es-core/src/resources/TextureDataManager.cpp	2026-10-05 15:44:53.802852870 +0200
+@@ -3,6 +3,7 @@
+ #include "resources/TextureData.h"
+ #include "resources/TextureResource.h"
+ #include "Settings.h"
++#include "PowerSaver.h"
+ #include "Log.h"
+ #include "utils/Platform.h"
+ #include <algorithm>
+@@ -271,6 +272,8 @@
+ 				try { textureData->load(); }
+ 				catch (...) { }
+ 
++				PowerSaver::wake(); // texture ready: repaint now even if the UI is in 1 Hz idle
++
+ 				lock.lock();
+ 
+ 				mProcessingTextureDataQ.erase(textureData);
