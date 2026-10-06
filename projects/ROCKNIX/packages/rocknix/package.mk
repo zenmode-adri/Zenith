@@ -90,6 +90,9 @@ EOF
   ### Calienta la cache de wifictl has_ap_mode (Network Settings abre rapido)
   enable_service wifi-apcache.service
 
+  ### Guarda el log de arranque en la FAT (/flash/bootlog) para depurar desde Windows
+  enable_service bootlog.service
+
   sed -i "s#@DEVICENAME@#${DEVICE}#g" ${INSTALL}/usr/config/system/configs/system.cfg
 
   ### Defaults for non-main builds.

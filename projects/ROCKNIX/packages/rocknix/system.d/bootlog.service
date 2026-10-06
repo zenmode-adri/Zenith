@@ -1,0 +1,12 @@
+[Unit]
+Description=Guarda el log de arranque (kernel, sistema, red) en la FAT para depurar desde Windows
+After=multi-user.target
+ConditionPathExists=!/flash/no-bootlog
+
+[Service]
+Type=simple
+Nice=19
+ExecStart=/usr/bin/bootlog-save
+
+[Install]
+WantedBy=multi-user.target

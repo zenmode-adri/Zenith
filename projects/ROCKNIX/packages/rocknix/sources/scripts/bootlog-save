@@ -1,0 +1,32 @@
+#!/bin/bash
+# bootlog-save: guarda el log del kernel y del sistema en la FAT (/flash/bootlog) para leerlo desde Windows.
+# Lo lanza bootlog.service en cada arranque: guarda a los 20 s, 60 s y 180 s. Conserva los 6 arranques mas recientes.
+# Desactivar: crear el fichero /flash/no-bootlog (desde Windows) o /storage/.config/no-bootlog.
+[ -e /flash/no-bootlog ] && exit 0
+[ -e /storage/.config/no-bootlog ] && exit 0
+
+D=/flash/bootlog
+N=$(date +%s)
+guardar() {   # guardar <etiqueta>
+  mount -o remount,rw /flash 2>/dev/null || return 0
+  mkdir -p "$D"
+  {
+    echo "== bootlog $1  uptime=$(cut -d' ' -f1 /proc/uptime)  $(date)"
+    echo "== cmdline: $(cat /proc/cmdline)"
+    echo "== dmesg"; dmesg
+    echo "== journal (arranque actual)"; journalctl -b --no-pager 2>&1 | tail -n 600
+    echo "== wlan / red"; ip -br link 2>&1; ip -br addr 2>&1; iwctl device list 2>&1 | head -20
+    echo "== procesos"; ps -eo pid,pcpu,stat,etime,args --sort=-pcpu | head -25
+    echo "== es_log"; tail -n 80 /var/log/es_log.txt 2>&1
+    echo "== modulos"; lsmod | head -40
+  } > "$D/boot-$N-$1.txt" 2>&1
+  # rotar: dejar solo los 18 ficheros mas recientes (6 arranques x 3)
+  ls -1t "$D"/boot-*.txt 2>/dev/null | tail -n +19 | while read -r f; do rm -f "$f"; done
+  sync
+  mount -o remount,ro /flash 2>/dev/null
+}
+
+sleep 20;  guardar 20s
+sleep 40;  guardar 60s
+sleep 120; guardar 180s
+exit 0

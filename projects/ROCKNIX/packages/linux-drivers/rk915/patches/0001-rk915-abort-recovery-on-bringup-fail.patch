@@ -1,0 +1,102 @@
+--- a/src/hal.c
++++ b/src/hal.c
+@@ -582,7 +582,7 @@
+ 	}
+ }
+ 
+-static void send_fw_recovery_cmd(void)
++static int send_fw_recovery_cmd(void)
+ {
+ 	u32 vif_index;
+ 
+@@ -594,20 +594,24 @@
+ 		g_lpw_recovery_param.status = RECOVERY_STATUS_WAIT_RESET_COMP;
+ 		cmd_send((u8 *)&g_lpw_recovery_param.reset_param, sizeof(struct cmd_reset));
+ 
+-		//Wait for RESET COMPLETE
+-		while(1)
++		//Wait for RESET COMPLETE (acotado a 5 s: antes era while(1) sin salida)
+ 		{
+-			//RPU_DEBUG_ROCOVERY("wait reset complet %d\n", g_lpw_recovery_param.status);
+-			if(g_lpw_recovery_param.status == RECOVERY_STATUS_RESET_COMP)
+-			{	
+-				break;
++			int wait_loops = 0;
++
++			while (1) {
++				if (g_lpw_recovery_param.status == RECOVERY_STATUS_RESET_COMP)
++					break;
++				if (++wait_loops > 100) {
++					RPU_ERROR_ROCOVERY("%s: no reset complete in recovery (5 s), give up\n", __func__);
++					return -ETIMEDOUT;
++				}
++				msleep(50);
+ 			}
+-			msleep(50);
+ 		}
+ 
+ 		if (hpriv->fw_error_reason == FW_ERR_RESET_CMD ||
+ 			g_lpw_recovery_param.reset_param.type == LMAC_DISABLE) {
+-			return;
++			return 0;
+ 		}
+ 		
+ 		//TX POWER
+@@ -696,6 +700,8 @@
+ 			cmd_send((u8 *)&g_lpw_recovery_param.mcst_fltr_ctrl_param, sizeof(struct cmd_mcst_filter_ctrl));
+ 		}
+ 	}    
++
++	return 0;
+ }
+ 
+ extern void rpu_process_pending_operates(void);
+@@ -718,12 +724,16 @@
+ 	RPU_DEBUG_ROCOVERY("reset\n");
+ 	hpriv->fw_tear_down_func((void *)hpriv);
+ 	hpriv->hal_disabled = 1;
+-	hpriv->fw_bring_up_func((void *)hpriv);
++	if (hpriv->fw_bring_up_func((void *)hpriv) < 0) {
++		RPU_ERROR_ROCOVERY("%s: fw bring up failed, abort recovery\n", __func__);
++		goto recovery_abort;
++	}
+ 
+ 	// 2. recovery cmds
+ 	RPU_DEBUG_ROCOVERY("recovery cmds\n");
+ 	hpriv->hal_disabled = 0;
+-	send_fw_recovery_cmd();
++	if (send_fw_recovery_cmd() < 0)
++		goto recovery_abort;
+ 
+ 	hpriv->fw_error_processing = 0;
+ 	hpriv->fw_error = 0;
+@@ -739,6 +749,15 @@
+ 	rpu_process_pending_operates();
+ 
+ 	RPU_ERROR_ROCOVERY("-------- fw error recovery end --------\n");
++	goto unlock_out;
++
++recovery_abort:
++	/* misma salida que 003-rk915-abort-recovery-on-bringup-fail (RK3326S/RK356X) */
++	hpriv->shutdown = 1;
++	hpriv->fw_error = 1;
++	hpriv->fw_error_processing = 0;
++	if (wifi)
++		wifi->params.fw_loaded = 0;
+ 
+ unlock_out:
+ 	if (wake_lock_active(&hpriv->fw_err_lock))
+--- a/src/init.c
++++ b/src/init.c
+@@ -37,7 +37,10 @@
+ 	if (hpriv->fw_error_processing) {
+ 		rk915_poweron();
+ 		mdelay(RK915_POWER_ON_DELAY_MS);
+-		rk915_platform_bus_rec_init(priv->io_info);
++		if (rk915_platform_bus_rec_init(priv->io_info)) {
++			RPU_ERROR_MAIN("%s: rec_init failed\n", __func__);
++			return -1;
++		}
+ 		mdelay(RK915_POWER_ON_DELAY_MS);
+ 	} else {
+ 		if (rk915_platform_bus_init(priv->io_info)) {

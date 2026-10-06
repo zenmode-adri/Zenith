@@ -1,0 +1,77 @@
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -9,6 +9,10 @@
+ 
+ #include "core.h"
+ #include "if_io.h"
++#include "hal_io.h"
++#include "sdio.h"
++
++extern int hal_irq_handler(struct hal_priv *p); /* [DEBUG-rk915wifi] */
+ 
+ int wait_for_fw_error_cmd_done(struct img_priv *priv);
+ 
+@@ -172,6 +176,7 @@
+ {
+ 	int count;
+ 	int timeout;
++	int last_dbg = -1; /* [DEBUG-rk915wifi] */
+ 
+ 	count = 0;
+ 
+@@ -182,6 +187,24 @@
+ 
+ check_reset_complete:
+ 	if (/*!hpriv->fw_error &&*/ !priv->reset_complete && (count < timeout)) {
++		/* [DEBUG-rk915wifi] cada ~100 ms: estado del FW, bytes pendientes e IRQ recibidas */
++		if (enable && count != last_dbg && (count % (HZ / 10)) == 0) {
++			int fw_state, rlen;
++
++			last_dbg = count;
++			fw_state = rk915_readb(hpriv, IO_FW_STATE);
++			rk915_lock(hpriv);
++			rlen = rk915_read_data_len(hpriv);
++			rk915_unlock(hpriv);
++			pr_err("[DEBUG-rk915wifi] reset-wait t=%ums fw_state=%d recv_len=%d irq_events=%u host_irq=%d\n",
++			       jiffies_to_msecs(count), fw_state, rlen,
++			       (unsigned int)hpriv->event_cnt,
++			       (int)hpriv->io_info->irq);
++			if (rlen > 0 && hpriv->event_cnt == 0) {
++				pr_err("[DEBUG-rk915wifi] hay datos pendientes y 0 IRQ: se despierta el rx_thread a mano (apunta a pin host-wake/IRQ)\n");
++				hal_irq_handler(hpriv);
++			}
++		}
+ 		set_current_state(TASK_INTERRUPTIBLE);
+ 
+ 		if (schedule_timeout(1) == 0)
+--- a/src/platform.c
++++ b/src/platform.c
+@@ -41,10 +41,13 @@
+ int rk915_register_irq(struct host_io_info *host)
+ {
+ 	int ret;
++
++	pr_err("[DEBUG-rk915wifi] register_irq: host->irq=%d (<=0 => sin IRQ host-wake)\n", (int)host->irq);
+ 	if (host->irq <= 0) { return 0; }
+ 	
+ 	ret = devm_request_irq(host->dev, host->irq, hal_interrupt,
+ 				IRQF_TRIGGER_RISING|IRQF_NO_SUSPEND, "rk915", hpriv);
++	pr_err("[DEBUG-rk915wifi] request_irq(%u) ret=%d\n", host->irq, ret);
+ 	if (ret == 0) {
+ 		ret = enable_irq_wake(host->irq);
+ 		rk915_irq_enable(0);
+--- a/src/sdio.c
++++ b/src/sdio.c
+@@ -858,6 +858,12 @@
+ 		mdelay(10);
+ 	}
+ 
++	/* [DEBUG-rk915wifi] distingue timeout de comando (loops_left>0) de 'busy nunca sube' (loops_left==0) */
++	pr_err("[DEBUG-rk915wifi] io_op_cond ocr=%#x -> err=%d loops_left=%d resp0=%#x\n",
++	       ocr, err, i, cmd.resp[0]);
++	if (rocr)
++		*rocr = cmd.resp[0];
++
+ 	return err;
+ }
+ 

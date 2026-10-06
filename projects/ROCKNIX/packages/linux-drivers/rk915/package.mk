@@ -12,6 +12,8 @@ PKG_IS_KERNEL_PKG="yes"
 
 pre_make_target() {
   unset LDFLAGS
+  # Ultra: el chip no despierta del sueno del LMAC de forma fiable; sin sleep por defecto (probado en hardware, 2026-10-07)
+  sed -i 's/^unsigned int lpw_no_sleep = 0;/unsigned int lpw_no_sleep = 1;/' ${PKG_BUILD}/src/procfs.c
 }
 
 make_target() {
