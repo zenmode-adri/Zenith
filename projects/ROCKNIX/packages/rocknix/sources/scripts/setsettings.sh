@@ -4,6 +4,9 @@
 
 . /etc/profile
 
+# cache de ajustes cargada una vez en el proceso principal (las ~25 funciones en paralelo la heredan)
+type gs_load >/dev/null 2>&1 && gs_load
+
 ###
 ### System configuration variables
 ###
@@ -212,7 +215,7 @@ declare -a LANG_CODES=( ["false"]="0"
 ### Fetch common settings
 ###
 
-LOGGING=$(get_setting system.loglevel)
+LOGGING=${ get_setting system.loglevel; }
 if [ -z "${LOGGING}" ]
 then
   LOGGING="none"
@@ -262,7 +265,7 @@ function cleanup() {
 function game_setting() {
     if [ -n "${1}" ]
     then
-        SETTING=$(get_setting "${1}" "${PLATFORM}" "${ROM}")
+        SETTING=${ get_setting "${1}" "${PLATFORM}" "${ROM}"; }
         log "Fetch \"${1}\" \"${PLATFORM}\" \"${ROM}\"] (${SETTING})"
         echo ${SETTING}
     fi
@@ -288,7 +291,7 @@ function flush_settings() {
 function add_setting() {
     if [ ! "${1}" = "none" ]
     then
-        local OS_SETTING="$(game_setting ${1})"
+        local OS_SETTING="${ game_setting ${1}; }"
     fi
     local RETROARCH_KEY="${2}"
     local RETROARCH_VALUE="${3}"
@@ -357,7 +360,7 @@ function configure_hotkeys() {
     ### Remove any input settings retroarch may have added.
     sed -i '/input_player[0-9]/d' ${RETROARCH_CONFIG}
 
-    if [ "$(get_setting system.autohotkeys)" == "1" ]
+    if [ "${ get_setting system.autohotkeys; }" == "1" ]
     then
         if [ -e "/tmp/joypads/${MY_CONTROLLER}.cfg" ]
         then
@@ -414,7 +417,7 @@ EOF
 
 function set_ra_menudriver() {
     add_setting "retroarch.menu_driver" "menu_driver"
-    local MENU_DRIVER=$(game_setting retroarch.menu_driver)
+    local MENU_DRIVER=${ game_setting retroarch.menu_driver; }
     case ${MENU_DRIVER} in
         rgui)
             add_setting "none" "menu_linear_filter" "true"
@@ -431,7 +434,7 @@ function set_config_save() {
 }
 
 function set_cheevos() {
-    local USE_CHEEVOS=$(game_setting "retroachievements")
+    local USE_CHEEVOS=${ game_setting "retroachievements"; }
     local CHECK_CHEEVOS="$(match "${PLATFORM}" "${HAS_CHEEVOS[@]}")"
     if [ "${USE_CHEEVOS}" = 1 ] && \
        [ "${CHECK_CHEEVOS}" = 1 ]
@@ -449,7 +452,7 @@ function set_cheevos() {
         add_setting "retroachievements.testunofficial" "cheevos_test_unofficial"
         add_setting "retroachievements.badges" "cheevos_badges_enable"
         add_setting "retroachievements.active" "cheevos_start_active"
-        local CHEEVOS_SOUND_ENABLE=$(game_setting "retroachievements.sound")
+        local CHEEVOS_SOUND_ENABLE=${ game_setting "retroachievements.sound"; }
         if [ "${CHEEVOS_SOUND_ENABLE}" != "none" ]; then
             add_setting "none" "cheevos_unlock_sound_enable" "true"
             add_setting "retroachievements.sound" "cheevos_unlock_sound"
@@ -462,7 +465,7 @@ function set_cheevos() {
 }
 
 function set_netplay() {
-    USE_NETPLAY=$(game_setting "netplay")
+    USE_NETPLAY=${ game_setting "netplay"; }
     if [ "${USE_NETPLAY}" = 1 ]
     then
         add_setting "none" "savestate_auto_load" "false"
@@ -471,8 +474,8 @@ function set_netplay() {
         add_setting "global.netplay.nickname" "netplay_nickname"
         add_setting "global.netplay.password" "netplay_password"
         add_setting "netplay_public_announce" "netplay_public_announce"
-        local NETPLAY_MODE=$(game_setting "netplay.mode")
-        local NETPLAY_PORT=$(game_setting "global.netplay.port")
+        local NETPLAY_MODE=${ game_setting "netplay.mode"; }
+        local NETPLAY_PORT=${ game_setting "global.netplay.port"; }
         case ${NETPLAY_MODE} in
             host)
                 add_setting "none" "netplay_mode" "false"
@@ -530,7 +533,7 @@ EOF
                 esac
             ;;
             client)
-                local NETPLAY_HOST_IP=$(get_setting global.netplay.host)
+                local NETPLAY_HOST_IP=${ get_setting global.netplay.host; }
                 add_setting "global.netplay.port" "${NETPLAY_PORT}"
                 if [ ! -z "${NETPLAY_HOST_IP}" ]
                 then
@@ -576,7 +579,7 @@ EOF
                                 mkdir -p "${RETROARCH_PATH}/config/TGB Dual"
                             fi
                             local TGBDUAL_CONF="${RETROARCH_PATH}/config/TGB Dual/TGB Dual.opt"
-                            local PLAYER=$(get_setting wifi.adhoc.id)
+                            local PLAYER=${ get_setting wifi.adhoc.id; }
                             if [ -z "${PLAYER}" ]
                             then
                                 PLAYER=2
@@ -604,7 +607,7 @@ EOF
                 fi
             ;;
         esac
-        local NETPLAY_RELAY=$(game_setting global.netplay.relay)
+        local NETPLAY_RELAY=${ game_setting global.netplay.relay; }
         if [ -n "${NETPLAY_RELAY}" ]
         then
           case ${NETPLAY_RELAY} in
@@ -630,15 +633,15 @@ EOF
 }
 
 function set_translation() {
-    local USE_AI_SERVICE="$(game_setting ai_service_enabled)"
+    local USE_AI_SERVICE="${ game_setting ai_service_enabled; }"
     case ${USE_AI_SERVICE} in
         0|false|none)
             add_setting "none" "ai_service_enable" "false"
         ;;
         *)
             add_setting "none" "ai_service_enable" "true"
-            local AI_LANG="$(game_setting ai_target_lang)"
-            local AI_URL="$(game_setting ai_service_url)"
+            local AI_LANG="${ game_setting ai_target_lang; }"
+            local AI_URL="${ game_setting ai_service_url; }"
             case ${AI_URL} in
               0|false|none)
                 add_setting "none" "ai_service_url" "http://ztranslate.net/service?api_key=BATOCERA&mode=Fast&output=png&target_lang=${AI_LANG}"
@@ -665,7 +668,7 @@ function set_rgascale() {
 }
 
 function set_shader() {
-    local SHADER="$(game_setting shaderset)"
+    local SHADER="${ game_setting shaderset; }"
     case ${SHADER} in
         0|false|none)
             add_setting "none" "video_shader_enable" "false"
@@ -679,7 +682,7 @@ function set_shader() {
 }
 
 function set_filter() {
-    local FILTER="$(game_setting videofilter)"
+    local FILTER="${ game_setting videofilter; }"
     case ${FILTER} in
         0|false|none)
             add_setting "none" "video_filter" ""
@@ -709,7 +712,7 @@ function set_overlay() {
     clear_setting "custom_viewport_x"
     clear_setting "custom_viewport_y"
 
-    local ASPECT_RATIO="$(game_setting ratio)"
+    local ASPECT_RATIO="${ game_setting ratio; }"
     local STD_AR_INDEX=""
     case ${ASPECT_RATIO} in
       0|false|none)
@@ -729,7 +732,7 @@ function set_overlay() {
     add_setting "rotation" "video_rotation"
     add_setting "none" "aspect_ratio_index" "$STD_AR_INDEX"
 
-    local BEZEL="$(game_setting bezel)"
+    local BEZEL="${ game_setting bezel; }"
     case ${BEZEL} in
         0|false|none)
         ;;
@@ -740,7 +743,7 @@ function set_overlay() {
     esac
 
 
-    local OVERLAY="$(game_setting overlayset)"
+    local OVERLAY="${ game_setting overlayset; }"
     case ${OVERLAY} in
         0|false|none)
             add_setting "none" "input_overlay_enable" "false"
@@ -755,7 +758,7 @@ function set_overlay() {
 }
 
 function set_rewind() {
-    local REWIND="$(game_setting rewind)"
+    local REWIND="${ game_setting rewind; }"
     case ${REWIND} in
         1)
             case $(match ${PLATFORM} ${NO_REWIND[@]}) in
@@ -774,8 +777,8 @@ function set_rewind() {
 }
 
 function set_savestates() {
-    local SAVESTATES="$(game_setting incrementalsavestates)"
-    local MAXINCREMENTALSAVES="$(game_setting maxincrementalsaves)"
+    local SAVESTATES="${ game_setting incrementalsavestates; }"
+    local MAXINCREMENTALSAVES="${ game_setting maxincrementalsaves; }"
     case ${SAVESTATES} in
         0|false|none)
             add_setting "none" "savestate_auto_index" "true"
@@ -799,7 +802,7 @@ function set_autosave() {
             SETAUTOSAVE=true
         ;;
         *)
-            local AUTOSAVE_SETTING="$(game_setting autosave)"
+            local AUTOSAVE_SETTING="${ game_setting autosave; }"
             case ${AUTOSAVE_SETTING} in
                 [1-3])
                    SETAUTOSAVE=true
@@ -824,7 +827,7 @@ function set_autosave() {
 }
 
 function set_runahead() {
-    local RUNAHEAD="$(game_setting runahead)"
+    local RUNAHEAD="${ game_setting runahead; }"
     local HAS_RUNAHEAD="$(match ${PLATFORM} ${NO_RUNAHEAD[@]})"
     case ${HAS_RUNAHEAD} in
         1)
@@ -865,7 +868,7 @@ function set_tatemode() {
     log "Setup tate mode..."
     if [ "${CORE}" = "mame2003_plus" ]
     then
-        local TATEMODE="$(game_setting tatemode)"
+        local TATEMODE="${ game_setting tatemode; }"
         local MAME2003DIR="${RETROARCH_PATH}/config/MAME 2003-Plus"
         local MAME2003REMAPDIR="/storage/remappings/MAME 2003-Plus"
         if [ ! -d "${MAME2003DIR}" ]
@@ -914,15 +917,15 @@ function set_n64opts() {
         then
             cp "/usr/config/retroarch/ParaLLEl N64.opt" "${PARALLELN64DIR}/ParaLLEl N64.opt"
         fi
-        local VIDEO_CORE="$(game_setting parallel_n64_video_core)"
+        local VIDEO_CORE="${ game_setting parallel_n64_video_core; }"
         sed -i '/parallel-n64-gfxplugin = /c\parallel-n64-gfxplugin = "'${VIDEO_CORE}'"' "${PARALLELN64DIR}/ParaLLEl N64.opt"
-        local SCREENSIZE="$(game_setting parallel_n64_internal_resolution)"
+        local SCREENSIZE="${ game_setting parallel_n64_internal_resolution; }"
         sed -i '/parallel-n64-screensize = /c\parallel-n64-screensize = "'${SCREENSIZE}'"' "${PARALLELN64DIR}/ParaLLEl N64.opt"
-        local GAMESPEED="$(game_setting parallel_n64_gamespeed)"
+        local GAMESPEED="${ game_setting parallel_n64_gamespeed; }"
         sed -i '/parallel-n64-framerate = /c\parallel-n64-framerate = "'${GAMESPEED}'"' "${PARALLELN64DIR}/ParaLLEl N64.opt"
-        local ACCURACY="$(game_setting parallel_n64_gfx_accuracy)"
+        local ACCURACY="${ game_setting parallel_n64_gfx_accuracy; }"
         sed -i '/parallel-n64-gfxplugin-accuracy = /c\parallel-n64-gfxplugin-accuracy = "'${ACCURACY}'"' "${PARALLELN64DIR}/ParaLLEl N64.opt"
-        local CONTROLLERPAK="$(game_setting parallel_n64_controller_pak)"
+        local CONTROLLERPAK="${ game_setting parallel_n64_controller_pak; }"
         sed -i '/parallel-n64-pak1 = /c\parallel-n64-pak1 = "'${CONTROLLERPAK}'"' "${PARALLELN64DIR}/ParaLLEl N64.opt"
     fi
 }
@@ -943,17 +946,17 @@ function set_saturnopts() {
             cp "/usr/config/retroarch/Kronos.opt" "${KRONOSDIR}/Kronos.opt"
         fi
         local KRONOSOPT="${KRONOSDIR}/Kronos.opt"
-        local HLE_BIOS="$(game_setting force_hle_bios)"
+        local HLE_BIOS="${ game_setting force_hle_bios; }"
         sed -i '/kronos_force_hle_bios = /c\kronos_force_hle_bios = "'${HLE_BIOS}'"' "${KRONOSOPT}"
-        local ADDON_CART="$(game_setting addon_cartridge)"
+        local ADDON_CART="${ game_setting addon_cartridge; }"
         sed -i '/kronos_addon_cartridge = /c\kronos_addon_cartridge = "'${ADDON_CART}'"' "${KRONOSOPT}"
-        local TESSELATION="$(game_setting tesselation)"
+        local TESSELATION="${ game_setting tesselation; }"
         sed -i '/kronos_polygon_mode = /c\kronos_polygon_mode = "'${TESSELATION}'"' "${KRONOSOPT}"
-        local RESOLUTION="$(game_setting resolution)"
+        local RESOLUTION="${ game_setting resolution; }"
         sed -i '/kronos_resolution_mode = /c\kronos_resolution_mode = "'${RESOLUTION}'"' "${KRONOSOPT}"
-        local COMPUTE_SHADER="$(game_setting compute_shader)"
+        local COMPUTE_SHADER="${ game_setting compute_shader; }"
         sed -i '/kronos_use_cs = /c\kronos_use_cs = "'${COMPUTE_SHADER}'"' "${KRONOSOPT}"
-        local TRANSPARENCY="$(game_setting transparency)"
+        local TRANSPARENCY="${ game_setting transparency; }"
         sed -i '/kronos_mesh_mode = /c\kronos_mesh_mode = "'${TRANSPARENCY}'"' "${KRONOSOPT}"
     fi
 }
@@ -989,7 +992,7 @@ function set_dreamcastopts() {
         then
             cp "/usr/config/retroarch/Flycast.opt" "${FLYCASTDIR}/Flycast.opt"
         fi
-        local FRAME_SKIP="$(game_setting frame_skip)"
+        local FRAME_SKIP="${ game_setting frame_skip; }"
         sed -i '/flycast_auto_skip_frame = /c\flycast_auto_skip_frame = "'${FRAME_SKIP}'"' "${FLYCASTDIR}/Flycast.opt"
     fi
 }
@@ -1073,11 +1076,11 @@ function set_gambatte() {
             sed -i "/gambatte_gb_colorization =/d" ${GAMBATTECONF}
             sed -i "/gambatte_gb_internal_palette =/d" ${GAMBATTECONF}
         fi
-        local COLORIZATION=$(game_setting renderer.colorization)
-        local TWB1_COLORIZATION=$(game_setting renderer.twb1_colorization)
-        local TWB2_COLORIZATION=$(game_setting renderer.twb2_colorization)
-        local TWB3_COLORIZATION=$(game_setting renderer.twb3_colorization)
-        local PIXELSHIFT1_COLORIZATION=$(game_setting renderer.pixelshift1_colorization)
+        local COLORIZATION=${ game_setting renderer.colorization; }
+        local TWB1_COLORIZATION=${ game_setting renderer.twb1_colorization; }
+        local TWB2_COLORIZATION=${ game_setting renderer.twb2_colorization; }
+        local TWB3_COLORIZATION=${ game_setting renderer.twb3_colorization; }
+        local PIXELSHIFT1_COLORIZATION=${ game_setting renderer.pixelshift1_colorization; }
 
 	if [ -n "${COLORIZATION}" ]
         then

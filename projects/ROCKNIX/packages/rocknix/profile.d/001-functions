@@ -26,7 +26,82 @@ function log() {
   echo "$(date) ${SOURCE}: ${MESSAGE}" >>/var/log/messages
 }
 
+# --- get_setting sin procesos (iteracion 1 del arranque de juegos) ---------------------------------
+# La version original (get_setting_awk, abajo) lanzaba sed+awk por consulta (~25-50 ms en la R36);
+# setsettings.sh/runemu.sh hacen ~100 consultas por juego. Esta lee system.cfg UNA vez en un array
+# asociativo de bash (~60 ms en la R36, una vez por proceso) y responde con las mismas reglas del
+# original (verificado contra get_setting_awk en cientos de combinaciones, incl. ajustes por juego).
+# Cada proceso que no precargue (gs_load) lo carga en su primera consulta; set_setting/del_setting/
+# sort_settings invalidan la cache. Con bash >= 5.3 los llamadores pueden usar ${ get_setting ...; }
+# (sin subproceso) en lugar de $(get_setting ...).
+GS_LOADED=0
+declare -gA GS_FIRST=()
+GS_GAME=()
+
+function gs_load() {
+  local k v
+  GS_FIRST=(); GS_GAME=()
+  if [ -r "${J_CONF}" ]
+  then
+    while IFS== read -r k v
+    do
+      case "${k}" in
+        "") continue ;;
+        *'["'*) GS_GAME+=("${k}=${v}"); continue ;;
+        *'['*|*']'*) continue ;;
+      esac
+      [[ -n "${GS_FIRST[${k}]+x}" ]] || GS_FIRST["${k}"]="${v}"
+    done < "${J_CONF}"
+  fi
+  GS_LOADED=1
+}
+
 function get_setting() {
+  [ "${GS_LOADED}" = 1 ] || gs_load
+  local OUTPUT LOCAL pre line
+  if [ -n "${3}" ]
+  then
+    ### Ajuste propio del juego: <sistema>["<rom>"].<clave>  (todas las lineas que empiezan asi)
+    pre="${2}[\"${3}\"].${1}"
+    OUTPUT=""
+    for line in "${GS_GAME[@]}"
+    do
+      [[ "${line}" == "${pre}"* ]] && OUTPUT+="${line##*=}"$'\n'
+    done
+    OUTPUT="${OUTPUT%$'\n'}"
+    if [ -n "${OUTPUT}" ]
+    then
+      echo ${OUTPUT}
+      return
+    fi
+    ### Si no, ajuste del sistema: <sistema>.<clave>
+    LOCAL="${GS_FIRST[${2}.${1}]-}"
+    if [ -n "${LOCAL}" ]
+    then
+      echo ${LOCAL}
+      return
+    fi
+  fi
+
+  if [ -z "${3}" ] && [ -n "${2}" ]
+  then
+    LOCAL="${GS_FIRST[${2}.${1}]-}"
+    if [ -n "${LOCAL}" ]
+    then
+      echo ${LOCAL}
+      return
+    fi
+  fi
+
+  ### Cadena: "system." -> sin prefijo -> "global." (el primero con valor)
+  OUTPUT="${GS_FIRST[system.${1}]-}"
+  [ -n "${OUTPUT}" ] || OUTPUT="${GS_FIRST[${1}]-}"
+  [ -n "${OUTPUT}" ] || OUTPUT="${GS_FIRST[global.${1}]-}"
+  [ -n "${OUTPUT}" ] && echo ${OUTPUT}
+  return 0
+}
+
+function get_setting_awk() {
   if [ -n "${3}" ]
   then
     ### Test to see if we have a game setting.
@@ -91,6 +166,7 @@ function del_setting() {
     sed -i "/^${1}=/d" "${J_CONF}"
   fi
   rm -f "${J_CONF_LOCK}"
+  GS_LOADED=0
 }
 
 function sort_settings() {
@@ -98,6 +174,7 @@ function sort_settings() {
   cat "${J_CONF}" | grep ^[a-z0-9] | sort >"${J_CONF}.tmp"
   mv "${J_CONF}.tmp" "${J_CONF}"
   rm -f "${J_CONF_LOCK}"
+  GS_LOADED=0
 }
 
 function set_kill() {
@@ -136,6 +213,7 @@ function set_setting() {
       rm -f "${J_CONF_LOCK}"
     fi
   fi
+  GS_LOADED=0
 }
 
 function battery_percent() {

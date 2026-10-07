@@ -29,7 +29,7 @@ BASEROMNAME=${ROMNAME##*/}
 GAMEFOLDER="${ROMNAME//${BASEROMNAME}}"
 
 ### Define the variables used throughout the script
-BLUETOOTH_STATE=$(get_setting controllers.bluetooth.enabled)
+BLUETOOTH_STATE=${ get_setting controllers.bluetooth.enabled; }
 ES_CONFIG="/storage/.emulationstation/es_settings.cfg"
 VERBOSE=false
 LOG_DIRECTORY="/var/log"
@@ -57,7 +57,10 @@ function log() {
                 then
                         mkdir -p "$LOG_DIRECTORY"
                 fi
-                echo "${SCRIPT_NAME}: $*" 2>&1 | tee -a ${LOG_DIRECTORY}/${LOG_FILE}
+                # sin fork de tee (11 por lanzamiento): imprime y anade al fichero
+                local _m="${SCRIPT_NAME}: $*"
+                echo "${_m}"
+                echo "${_m}" >> ${LOG_DIRECTORY}/${LOG_FILE}
         else
                 echo "${SCRIPT_NAME}: $*"
         fi
@@ -98,7 +101,7 @@ function quit() {
         bluetooth enable
         set_kill set "emulationstation"
         clear_screen
-        DEVICE_CPU_GOVERNOR=$(get_setting system.cpugovernor)
+        DEVICE_CPU_GOVERNOR=${ get_setting system.cpugovernor; }
         ${DEVICE_CPU_GOVERNOR}
         exit $1
 }
@@ -147,7 +150,7 @@ if [[ ${PLATFORM} == "psx" ]]; then
 fi
 
 ### Enable logging
-case $(get_setting system.loglevel) in
+case ${ get_setting system.loglevel; } in
   off|none)
     LOG=false
   ;;
@@ -333,7 +336,7 @@ ${VERBOSE} && log $0 "executing game: ${ROMNAME}"
 ${VERBOSE} && log $0 "script to execute: ${RUNTHIS}"
 
 ### Set the cores to use
-CORES=$(get_setting "cores" "${PLATFORM}" "${ROMNAME##*/}")
+CORES=${ get_setting "cores" "${PLATFORM}" "${ROMNAME##*/}"; }
 ${VERBOSE} && log $0 "Configure big.little (${CORES})"
 case ${CORES} in
   little)
@@ -348,10 +351,10 @@ case ${CORES} in
 esac
 
 ### We need the original system cooling profile later so get it now!
-COOLINGPROFILE=$(get_setting cooling.profile)
+COOLINGPROFILE=${ get_setting cooling.profile; }
 
 ### Configure GPU performance mode
-GPUPERF=$(get_setting "gpuperf" "${PLATFORM}" "${ROMNAME##*/}")
+GPUPERF=${ get_setting "gpuperf" "${PLATFORM}" "${ROMNAME##*/}"; }
 if [ ! -z ${GPUPERF} ]
 then
   ${VERBOSE} && log $0 "Set GPU performance to (${GPUPERF})"
@@ -362,7 +365,7 @@ fi
 if [ "${DEVICE_HAS_FAN}" = "true" ]
 then
   ### Set any custom fan profile (make this better!)
-  GAMEFAN=$(get_setting "cooling.profile" "${PLATFORM}" "${ROMNAME##*/}")
+  GAMEFAN=${ get_setting "cooling.profile" "${PLATFORM}" "${ROMNAME##*/}"; }
   if [ ! -z "${GAMEFAN}" ]
   then
     ${VERBOSE} && log $0 "Set fan profile to (${GAMEFAN})"
@@ -372,13 +375,13 @@ then
 fi
 
 ### Display mode for emulation
-DISPLAY_MODE=$(get_setting "display_mode" "${PLATFORM}" "${ROMNAME##*/}")
+DISPLAY_MODE=${ get_setting "display_mode" "${PLATFORM}" "${ROMNAME##*/}"; }
 if [ ! -z "${DISPLAY_MODE}" ] && [ "${DISPLAY_MODE}" != "default" ]
 then
   set_refresh_rate "${DISPLAY_MODE}"
 fi
 
-FORCEPACK=$(get_setting "forcepack" "${PLATFORM}" "${ROMNAME##*/}")
+FORCEPACK=${ get_setting "forcepack" "${PLATFORM}" "${ROMNAME##*/}"; }
 if [ ! -z "${FORCEPACK}" ] && [ "${FORCEPACK}" = "On" ]
 then
     ${VERBOSE} && log $0 "Enabling panfrost forcepack"
@@ -386,7 +389,7 @@ then
 fi
 
 ### Offline all but the number of threads we need for this game if configured.
-NUMTHREADS=$(get_setting "threads" "${PLATFORM}" "${ROMNAME##*/}")
+NUMTHREADS=${ get_setting "threads" "${PLATFORM}" "${ROMNAME##*/}"; }
 if [ -n "${NUMTHREADS}" ] &&
    [ ! ${NUMTHREADS} = "default" ]
 then
@@ -395,13 +398,13 @@ then
 fi
 
 ### Set the governor mode for emulation
-CPU_GOVERNOR=$(get_setting "cpugovernor" "${PLATFORM}" "${ROMNAME##*/}")
+CPU_GOVERNOR=${ get_setting "cpugovernor" "${PLATFORM}" "${ROMNAME##*/}"; }
 ${VERBOSE} && log $0 "Set emulation performance mode to (${CPU_GOVERNOR})"
 ${CPU_GOVERNOR}
 
 ### Check whether MangoHud is supported and enabled
 if [ "${DEVICE_MANGOHUD_SUPPORT}" == "true" ]; then
-  MANGOHUD_ENABLED=$(get_setting "rocknix.mangohud.enabled"  "${PLATFORM}" "${ROMNAME##*/}")
+  MANGOHUD_ENABLED=${ get_setting "rocknix.mangohud.enabled"  "${PLATFORM}" "${ROMNAME##*/}"; }
   if [ "${MANGOHUD_ENABLED}" = "1" ]; then
     # Enable GPU profiling and MangoHud
     gpu_profiling "on"
@@ -436,10 +439,10 @@ if [[ "${DEVICE_HAS_DUAL_SCREEN}" == "true" ]]; then
 fi
 
 ### Go back to system display mode , if we had specialized mode defined
-DISPLAY_MODE=$(get_setting "display_mode" "${PLATFORM}" "${ROMNAME##*/}")
+DISPLAY_MODE=${ get_setting "display_mode" "${PLATFORM}" "${ROMNAME##*/}"; }
 if [ ! -z "${DISPLAY_MODE}" ] && [ "${DISPLAY_MODE}" != "default" ]
 then
-  DISPLAY_MODE=$(get_setting "system.display_mode")
+  DISPLAY_MODE=${ get_setting "system.display_mode"; }
   DISPLAY_OUTPUT=$(/usr/bin/wlr-randr | awk 'NR==1{print $1;}')
   if [ -z "${DISPLAY_MODE}" ]; then
     # if we have no system mode use the displays preferred mode
@@ -459,7 +462,7 @@ then
 fi
 
 ### Restore system GPU performance mode
-GPUPERF=$(get_setting "system.gpuperf")
+GPUPERF=${ get_setting "system.gpuperf"; }
 if [ ! -z ${GPUPERF} ]
 then
   ${VERBOSE} && log $0 "Restore system GPU performance mode (${GPUPERF})"
@@ -471,7 +474,7 @@ fi
 rm -f /tmp/.gpu_performance_level 2>/dev/null
 
 ### Reset the number of cores to use.
-NUMTHREADS=$(get_setting "system.threads")
+NUMTHREADS=${ get_setting "system.threads"; }
 ${VERBOSE} && log $0 "Restore active threads (${NUMTHREADS})"
 if [ -n "${NUMTHREADS}" ]
 then
@@ -484,7 +487,7 @@ fi
 gpu_profiling "off"
 
 ### Backup save games
-CLOUD_BACKUP=$(get_setting "cloud.backup")
+CLOUD_BACKUP=${ get_setting "cloud.backup"; }
 if [ "${CLOUD_BACKUP}" = "1" ]
 then
   INETUP=$(/usr/bin/amionline >/dev/null 2>&1)

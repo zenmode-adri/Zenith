@@ -16,11 +16,11 @@ fi
 _px_f="${J_CONF:-/storage/.config/system/configs/system.cfg}"
 _px_on=0
 if [ -r "${_px_f}" ]; then
-  while IFS= read -r _px_l; do
-    case "${_px_l}" in
-      *network.proxy.enabled=1) _px_on=1; break ;;
-    esac
-  done < "${_px_f}"
+  # una sola lectura (sin fork en bash): equivale al bucle linea a linea con "*network.proxy.enabled=1"
+  _px_l=$(<"${_px_f}")
+  case "${_px_l}"$'\n' in
+    *network.proxy.enabled=1$'\n'*) _px_on=1 ;;
+  esac
 fi
 if [ "${_px_on}" != "1" ]; then
   unset_proxy_environment
