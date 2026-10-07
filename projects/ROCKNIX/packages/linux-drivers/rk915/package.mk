@@ -12,10 +12,6 @@ PKG_IS_KERNEL_PKG="yes"
 
 pre_make_target() {
   unset LDFLAGS
-  # Ultra: el chip no despierta del sueno del LMAC de forma fiable; sin sleep por defecto (probado en hardware, 2026-10-07)
-  sed -i 's/^unsigned int lpw_no_sleep = 0;/unsigned int lpw_no_sleep = 1;/' ${PKG_BUILD}/src/procfs.c
-  # Ultra: descargar el firmware en el probe hace que el chip complete el reset (probado en hardware 2026-10-07; con 0 se quedaba mudo)
-  sed -i 's/^unsigned int down_fw_in_probe = 0;/unsigned int down_fw_in_probe = 1;/' ${PKG_BUILD}/src/umac_if.c
 }
 
 make_target() {

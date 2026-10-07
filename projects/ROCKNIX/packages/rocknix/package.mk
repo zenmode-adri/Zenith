@@ -93,6 +93,9 @@ EOF
   ### Guarda el log de arranque en la FAT (/flash/bootlog) para depurar desde Windows
   enable_service bootlog.service
 
+  ### Apaga de forma limpia si la bateria baja de ~3,2 V sin cargar (proteccion de la bateria)
+  enable_service battery-guard.service
+
   sed -i "s#@DEVICENAME@#${DEVICE}#g" ${INSTALL}/usr/config/system/configs/system.cfg
 
   ### Defaults for non-main builds.

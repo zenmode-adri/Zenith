@@ -1,0 +1,32 @@
+#!/bin/bash
+# battery-guard: apaga la consola de forma limpia si la bateria esta por debajo de un voltaje seguro y no se esta cargando.
+# Motivo: ni AURKNIX/ROCKNIX ni dArkOS apagan por software; la consola sigue viva hasta el corte fisico del PMIC (visto a 3,09 V).
+# Umbrales (variables de entorno, para pruebas): BATGUARD_UV (3200000 uV), BATGUARD_READS (3 lecturas seguidas), BATGUARD_EVERY (10 s).
+# Desactivar: crear /flash/no-batguard (desde Windows) o /storage/.config/no-batguard.
+BAT=${BAT_DIR:-/sys/class/power_supply/battery}
+LOW_UV=${BATGUARD_UV:-3200000}
+NEED=${BATGUARD_READS:-3}
+EVERY=${BATGUARD_EVERY:-10}
+POWEROFF=${BATGUARD_POWEROFF:-systemctl poweroff}
+
+[ -e /flash/no-batguard ] && exit 0
+[ -e /storage/.config/no-batguard ] && exit 0
+
+n=0
+while true; do
+  status=$(cat "$BAT/status" 2>/dev/null)
+  v=$(cat "$BAT/voltage_avg" 2>/dev/null || cat "$BAT/voltage_now" 2>/dev/null)
+  if [ -n "$v" ] && [ "$v" -gt 0 ] 2>/dev/null && [ "$v" -lt "$LOW_UV" ] && [ "$status" != "Charging" ] && [ "$status" != "Full" ]; then
+    n=$((n + 1))
+    logger -t battery-guard "bateria baja: ${v} uV (${status}), lectura ${n}/${NEED}"
+  else
+    n=0
+  fi
+  if [ "$n" -ge "$NEED" ]; then
+    logger -t battery-guard "apagando: ${v} uV < ${LOW_UV} uV sin cargar"
+    echo "battery-guard: apagando por bateria baja (${v} uV)" > /dev/kmsg 2>/dev/null
+    $POWEROFF
+    exit 0
+  fi
+  sleep "$EVERY"
+done

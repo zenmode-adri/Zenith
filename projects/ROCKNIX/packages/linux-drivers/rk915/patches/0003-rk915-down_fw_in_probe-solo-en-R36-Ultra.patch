@@ -1,0 +1,18 @@
+--- a/src/sdio.c
++++ b/src/sdio.c
+@@ -532,6 +532,15 @@
+ {
+ 	int ret = 0;
+ 
++	/*
++	 * R36 Ultra (probado en hardware 2026-10-07): el chip solo completa el reset si el firmware se descarga
++	 * en el probe. En el resto de consolas se deja el comportamiento original del modulo.
++	 */
++	if (of_machine_is_compatible("gameconsole,r36u") || of_machine_is_compatible("gameconsole,r36ux")) {
++		extern unsigned int down_fw_in_probe;
++		down_fw_in_probe = 1;
++	}
++
+ 	RPU_DEBUG_SDIO("%s.\n", __func__);
+ 	RPU_DEBUG_SDIO("sdio_func_num: 0x%X, vendor id: 0x%X, dev id: 0x%X, block size: 0x%X/0x%X\n",
+ 			func->num, func->vendor, func->device, func->max_blksize, func->cur_blksize);

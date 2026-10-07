@@ -1,0 +1,12 @@
+[Unit]
+Description=Apaga de forma limpia si la bateria baja de un voltaje seguro y no se carga
+ConditionPathExists=!/flash/no-batguard
+
+[Service]
+Type=simple
+Nice=19
+Restart=on-failure
+ExecStart=/usr/bin/battery-guard
+
+[Install]
+WantedBy=multi-user.target
