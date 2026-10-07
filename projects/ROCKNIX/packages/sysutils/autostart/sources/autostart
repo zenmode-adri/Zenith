@@ -500,6 +500,9 @@ else
   alog "ERROR: systemctl start ${UI_SERVICE} failed; the EXIT trap will retry"
 fi
 
+# A partir de aqui tocon deja de escribir: los scripts tardios (009-sleepmode...) dejaban
+# su texto "==> ..." pegado en tty1 y se veia al apagar.
+touch /run/.boot-console-done
 { clear >/dev/console; } 2>/dev/null
 
 ### tanda 5: roms montadas (automount lanzado antes sin bloquear) y entonces 010-pico8 (ES lo lista al escanear)
