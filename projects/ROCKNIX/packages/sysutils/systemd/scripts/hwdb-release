@@ -1,0 +1,30 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-or-later
+#
+# Se ejecuta SOLO al apagar o reiniciar (hwdb-release.service, ExecStop), justo
+# antes de que systemd desmonte /storage. Evita el aviso
+# "Failed unmounting storage.mount" quitando dos cosas que mantienen /storage ocupado:
+#
+# 1) hwdb.bin. hwdb-cache-setup deja /run/hwdb.bin como enlace a
+#    /storage/.cache/hwdb.bin (ahorra ~2,2 s de arranque). systemd-udevd lo abre a
+#    traves del enlace y no se para durante el apagado. Aqui se sustituye el enlace
+#    por una copia en RAM y se avisa a udevd para que reabra el fichero. Asi no se
+#    gasta RAM mientras se juega ni se suma tiempo al arranque.
+#
+# 2) Idioma. El entorno de systemd trae LANG y LOCPATH apuntando a ficheros de
+#    /storage; el "umount /storage" que lanza systemd (busybox) los cargaria y se
+#    bloquearia a si mismo. Se pasa el entorno de systemd a idioma "C".
+
+if [ -L /run/hwdb.bin ] && [ -f /storage/.cache/hwdb.bin ]; then
+  if cp /storage/.cache/hwdb.bin /run/hwdb.new; then
+    mv -f /run/hwdb.new /run/hwdb.bin
+    # udevd reabre hwdb.bin al recargar; los udev-worker se reinician
+    /usr/bin/udevadm control --reload
+    sleep 1
+  fi
+fi
+
+/usr/bin/systemctl set-environment LC_ALL=C
+/usr/bin/systemctl unset-environment LOCPATH LANG LANGUAGE
+
+exit 0
