@@ -7,6 +7,9 @@
 
 D=/flash/bootlog
 N=$(date +%s)
+# redactar: oculta claves WiFi (wifictl connect/ psk/ passphrase) antes de escribir en la FAT
+redactar() { sed -E "s/(wifictl connect '[^']*' )'[^']*'/\\1'<oculto>'/; s/(([Pp]ass(word|phrase)|psk|PSK)[=: ]+)[^ ]+/\\1<oculto>/g"; }
+
 guardar() {   # guardar <etiqueta>
   mount -o remount,rw /flash 2>/dev/null || return 0
   mkdir -p "$D"
@@ -19,7 +22,7 @@ guardar() {   # guardar <etiqueta>
     echo "== procesos"; ps -eo pid,pcpu,stat,etime,args --sort=-pcpu | head -25
     echo "== es_log"; tail -n 80 /var/log/es_log.txt 2>&1
     echo "== modulos"; lsmod | head -40
-  } > "$D/boot-$N-$1.txt" 2>&1
+  } 2>&1 | redactar > "$D/boot-$N-$1.txt"
   # rotar: dejar solo los 18 ficheros mas recientes (6 arranques x 3)
   ls -1t "$D"/boot-*.txt 2>/dev/null | tail -n +19 | while read -r f; do rm -f "$f"; done
   sync
