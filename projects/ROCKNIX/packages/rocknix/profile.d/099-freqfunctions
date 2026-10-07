@@ -46,9 +46,11 @@ set_online_threads() {
 }
 
 set_cpu_gov() {
-  for POLICY in $(ls /sys/devices/system/cpu/cpufreq 2>/dev/null | grep policy[0-9]); do
-    if [ -e "/sys/devices/system/cpu/cpufreq/${POLICY}/scaling_governor" ]; then
-      echo $1 >/sys/devices/system/cpu/cpufreq/${POLICY}/scaling_governor 2>/dev/null
+  # glob de bash en vez de "ls | grep" (2 procesos por llamada; se llama al menos 2 veces por juego)
+  local POLICY
+  for POLICY in /sys/devices/system/cpu/cpufreq/policy[0-9]*; do
+    if [ -e "${POLICY}/scaling_governor" ]; then
+      echo $1 >"${POLICY}/scaling_governor" 2>/dev/null
     fi
   done
 }

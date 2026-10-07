@@ -53,7 +53,14 @@ GAME_GUIDE_PATH_CHECK="${1%.*}.txt"
 if [ ! -f "${GAME_GUIDE_PATH_CHECK}" ]; then
   GAME_GUIDE_PATH_CHECK="No Game Guide Found"
 fi
-  /usr/bin/game-guides-tool "${1}"
+  # game-guides-tool con argumento en linea (arrancaba un bash completo + /etc/profile, ~65 ms, solo
+  # para comprobar si existe el .txt): mismo efecto sobre /storage/.config/sdl2text/game_guide.path
+  [ -d /storage/.config/sdl2text ] || mkdir -p /storage/.config/sdl2text
+  if [ -f "${GAME_GUIDE_PATH_CHECK}" ]; then
+    echo "${GAME_GUIDE_PATH_CHECK}" > /storage/.config/sdl2text/game_guide.path
+  else
+    [ -e /storage/.config/sdl2text/game_guide.path ] && rm -f /storage/.config/sdl2text/game_guide.path
+  fi
 
 ### Function Library
 function log() {
@@ -80,7 +87,7 @@ function loginit() {
                         rm -f ${LOG_DIRECTORY}/${LOG_FILE}
                 fi
                 cat <<EOF >${LOG_DIRECTORY}/${LOG_FILE}
-Emulation Run Log - Started at $(date)
+Emulation Run Log - Started at $(printf '%(%a %b %e %H:%M:%S %Z %Y)T' -1)
 
 ARG1: $1
 ARG2: $2
@@ -98,7 +105,7 @@ GAME GUIDE PATH: ${GAME_GUIDE_PATH_CHECK}
 
 EOF
         else
-                log $0 "Emulation Run Log - Started at $(date)"
+                log $0 "Emulation Run Log - Started at $(printf '%(%a %b %e %H:%M:%S %Z %Y)T' -1)"
         fi
 }
 
@@ -114,7 +121,7 @@ function quit() {
 
 function clear_screen() {
         ${VERBOSE} && log $0 "Clearing screen"
-        clear
+        printf '\033[H\033[2J\033[3J'   # lo que hace "clear" (ncurses), sin lanzar el proceso (13 ms x2)
 }
 
 function bluetooth() {
