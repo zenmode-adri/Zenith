@@ -11,11 +11,6 @@
 ### Switch to performance mode early to speed up configuration and reduce time it takes to get into games.
 performance
 
-### Sin complementos de libdecor: los juegos van a pantalla completa y no necesitan decoraciones de ventana.
-### Sin esto libdecor carga libdecor-gtk.so (GTK3, glib, xkbcommon...) en cada arranque de RetroArch/SDL2:
-### ~0,5 s de CPU en la R36 (medido con perf: libgtk-3 13 % de la fase de ventana). Un directorio sin
-### plugins hace que libdecor responda "No plugins found, falling back on no decorations".
-export LIBDECOR_PLUGIN_DIR="${LIBDECOR_PLUGIN_DIR:-/usr/lib/libdecor/no-plugins}"
 
 # Command line schema
 # $1 = Game/Port
@@ -216,6 +211,13 @@ case ${EMULATOR} in
 
     ### Set set_kill to kill the appropriate retroarch
     set_kill set "retroarch retroarch32"
+
+    ### Sin complementos de libdecor: los juegos van a pantalla completa y no necesitan decoraciones de ventana.
+    ### Sin esto libdecor carga libdecor-gtk.so (GTK3, glib, xkbcommon...) en cada arranque de RetroArch:
+    ### ~0,5 s de CPU en la R36 (medido con perf: libgtk-3 13 % de la fase de ventana). Un directorio sin
+    ### plugins hace que libdecor responda "No plugins found, falling back on no decorations".
+    ### Solo RetroArch: es lo que se ha validado (los emuladores independientes no se han probado).
+    export LIBDECOR_PLUGIN_DIR="${LIBDECOR_PLUGIN_DIR:-/usr/lib/libdecor/no-plugins}"
 
     ### Assume we're running 64bit Retroarch
     RABIN="retroarch"
