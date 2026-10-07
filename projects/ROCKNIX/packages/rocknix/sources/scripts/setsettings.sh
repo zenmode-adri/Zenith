@@ -258,7 +258,7 @@ function log() {
 
 function cleanup() {
     log "Work complete"
-    sync
+    # (sin sync: todo lo que escribe se regenera en cada lanzamiento; el sync costaba ~75 ms)
     exit
 }
 
