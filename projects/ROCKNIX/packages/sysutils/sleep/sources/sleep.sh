@@ -120,8 +120,32 @@ restore_panel_adjustments() {
     done
 }
 
+
+# Aviso en pantalla al empezar a suspender (hasta que se apaga la pantalla pasan 1-3 s). EmulationStation lo muestra
+# con su API local (mako no se dibuja encima de ES); en un juego se usa mako-notify. Por defecto en ingles.
+suspend_notice() {
+  [ -S /run/0-runtime-dir/wayland-1 ] || return 0
+  case "$(get_setting system.language)" in
+    es_*) MSG="Suspendiendo..." ;;
+    fr_*) MSG="Mise en veille..." ;;
+    de_*) MSG="Standby..." ;;
+    it_*) MSG="Sospensione..." ;;
+    pt_*) MSG="Suspendendo..." ;;
+    *)    MSG="Suspending..." ;;
+  esac
+  export XDG_RUNTIME_DIR=/run/0-runtime-dir WAYLAND_DISPLAY=wayland-1
+  export SWAYSOCK=/run/0-runtime-dir/sway-ipc.0.sock DBUS_SESSION_BUS_ADDRESS=unix:path=/run/0-runtime-dir/bus
+  if [ "$(swaymsg -t get_tree 2>/dev/null | jq -r '.. | select(.focused?) | .app_id' 2>/dev/null)" = "emulationstation" ]; then
+    curl -s -m 2 -X POST -H 'Content-Type: text/plain' -d "${MSG}" http://127.0.0.1:1234/notify >/dev/null 2>&1
+  else
+    /usr/bin/mako-notify "${MSG}" >/dev/null 2>&1
+  fi
+}
+
 case $1 in
   pre)
+    ( suspend_notice ) &
+
     if [ "$(get_setting wifi.enabled)" == "1" ]; then
       log $0 "Disabling WIFI."
       nohup wifictl disable >${EVENTLOG} 2>&1
