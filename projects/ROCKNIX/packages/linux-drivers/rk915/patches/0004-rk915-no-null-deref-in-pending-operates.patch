@@ -1,0 +1,23 @@
+Subject: [PATCH] rk915: rpu_process_pending_operates no desreferencia wifi->hw si la interfaz aun no existe
+
+Si el primer reset falla durante el arranque, la recuperacion de errores (fw_err_work_fn) llama a esta funcion
+cuando wifi->hw todavia es NULL: oops "NULL pointer dereference at 0x50" en kworker y la interfaz de red queda
+bloqueada (ES congelada). Se sale sin hacer nada si la interfaz no existe.
+
+---
+--- a/src/rpu_if.c
++++ b/src/rpu_if.c
+@@ -2797,7 +2797,12 @@
+ 
+ void rpu_process_pending_operates(void)
+ {
+-	struct img_priv *priv = wifi->hw->priv;
++	struct img_priv *priv;
++
++	/* la recuperacion de errores puede ejecutarse antes de que la interfaz exista (NULL deref en el arranque) */
++	if (!wifi || !wifi->hw)
++		return;
++	priv = wifi->hw->priv;
+ 
+ 	cmd_info.outstanding_ctrl_req = skb_queue_len(&cmd_info.outstanding_cmd);
+ 	RPU_INFO_IF("%s: outstanding_ctrl_req %d\n",
