@@ -41,7 +41,7 @@
  # Traces
 --- /dev/null
 +++ b/drivers/cpufreq/px30_oppvariants.c
-@@ -0,0 +1,363 @@
+@@ -0,0 +1,382 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * PX30/RK3326 factory per-bin OPP voltage selection ("L0-L3").
@@ -62,6 +62,8 @@
 +#define pr_fmt(fmt) "px30_oppvariants: " fmt
 +
 +#include <linux/clk.h>
++#include <linux/clk-provider.h>
++#include <dt-bindings/clock/px30-cru.h>
 +#include <linux/cpufreq.h>
 +#include <linux/delay.h>
 +#include <linux/device.h>
@@ -196,6 +198,23 @@
 +	return 0;
 +}
 +
++/*
++ * Mainline rockchip clk drivers do not register clkdev names, so "clk_pvtm"
++ * (SCLK_PVTM) is only reachable through the CRU clock provider.
++ */
++static struct clk *px30_pvtm_clk_from_cru(void)
++{
++	struct of_phandle_args args = { .args_count = 1, .args = { SCLK_PVTM } };
++	struct clk *clk;
++
++	args.np = of_find_compatible_node(NULL, NULL, "rockchip,px30-cru");
++	if (!args.np)
++		return ERR_PTR(-ENODEV);
++	clk = of_clk_get_from_provider(&args);
++	of_node_put(args.np);
++	return clk;
++}
++
 +static int px30_pvtm_measure(struct device *cpu_dev)
 +{
 +	struct regulator *vdd_arm;
@@ -218,7 +237,7 @@
 +
 +	pvtm_clk = clk_get(cpu_dev, "pvtm");
 +	if (IS_ERR(pvtm_clk))
-+		pvtm_clk = clk_get(NULL, "sclk_pvtm");
++		pvtm_clk = px30_pvtm_clk_from_cru();
 +	if (IS_ERR(pvtm_clk)) {
 +		ret = PTR_ERR(pvtm_clk);
 +		goto out_unmap;
