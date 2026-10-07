@@ -1,0 +1,27 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+#
+# WiFi RK915 (SDIO): el chip pierde su estado en la suspension profunda y el driver no lo reinicia. Antes de dormir
+# se para iwd, se descarga el modulo y se desvincula el controlador SDIO (mmc-pwrseq corta WL_REG_ON y el reloj de
+# 32 kHz); al despertar, post/001-rk915 lo vuelve a arrancar como en frio (firmware nuevo incluido).
+# Solo actua si el modulo rk915 esta cargado.
+
+DEV=ff380000.mmc
+
+lsmod | grep -q '^rk915 ' || exit 0
+[ -d /sys/bus/platform/devices/${DEV} ] || exit 0
+
+# iwd debe adoptar la interfaz por defecto del driver al recargarlo; con UseDefaultInterface=false borra wlan0 y
+# crea wlan1 (otro nombre y otra MAC: ES y wifictl esperan wlan0)
+if ! grep -q '^UseDefaultInterface=true' /etc/iwd/main.conf; then
+  sed 's/^\[General\]/[General]\nUseDefaultInterface=true/' /etc/iwd/main.conf >/run/iwd-main.conf
+  mount --bind /run/iwd-main.conf /etc/iwd/main.conf
+fi
+
+systemctl stop iwd.service
+modprobe -r rk915
+DRV=$(basename "$(readlink /sys/bus/platform/devices/${DEV}/driver 2>/dev/null)")
+if [ -n "${DRV}" ]; then
+  echo ${DEV} >/sys/bus/platform/drivers/${DRV}/unbind
+  echo "${DRV}" >/run/.rk915-sleep
+fi

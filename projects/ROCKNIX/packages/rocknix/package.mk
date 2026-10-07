@@ -96,6 +96,9 @@ EOF
   ### Apaga de forma limpia si la bateria baja de ~3,2 V sin cargar (proteccion de la bateria)
   enable_service battery-guard.service
 
+  # carga temprana del driver SDIO (WiFi) antes de iwd/connman
+  enable_service sdio-modprobe.service
+
   sed -i "s#@DEVICENAME@#${DEVICE}#g" ${INSTALL}/usr/config/system/configs/system.cfg
 
   ### Defaults for non-main builds.

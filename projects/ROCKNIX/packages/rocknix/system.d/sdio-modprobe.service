@@ -1,0 +1,15 @@
+[Unit]
+Description=Carga el driver de los dispositivos SDIO (p. ej. WiFi RK915) antes de iwd y connman
+DefaultDependencies=no
+After=systemd-udevd.service
+Before=iwd.service connman.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# la tarjeta SDIO ya esta enumerada (~1,8 s) pero udev tarda en cargar su modulo (a veces despues de iwd):
+# se carga aqui por su modalias, asi iwd encuentra la interfaz ya creada y con el firmware descargado
+ExecStart=/bin/sh -c 'for d in /sys/bus/sdio/devices/*; do [ -r "$d/modalias" ] && modprobe -b "$(cat $d/modalias)" 2>/dev/null; done; exit 0'
+
+[Install]
+WantedBy=sysinit.target

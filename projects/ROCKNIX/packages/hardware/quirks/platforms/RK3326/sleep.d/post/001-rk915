@@ -1,0 +1,38 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0
+#
+# Complemento de pre/001-rk915: vuelve a vincular el controlador SDIO (el chip arranca como en frio), recarga el
+# modulo y arranca iwd. Mientras tanto el WiFi queda bloqueado por rfkill para que nadie suba la interfaz antes
+# de tiempo; wifictl enable lo desbloquea al final si el usuario tenia el WiFi activado.
+
+DEV=ff380000.mmc
+
+[ -e /run/.rk915-sleep ] || exit 0
+DRV=$(cat /run/.rk915-sleep)
+rm -f /run/.rk915-sleep
+[ -n "${DRV}" ] || exit 0
+
+. /etc/profile
+
+rfkill block wifi
+echo ${DEV} >/sys/bus/platform/drivers/${DRV}/bind
+
+# esperar a que el kernel enumere la tarjeta SDIO y cargar el modulo (descarga el firmware en el probe)
+i=0
+while [ ${i} -lt 50 ] && [ -z "$(ls /sys/bus/sdio/devices 2>/dev/null)" ]; do
+  sleep 0.2
+  i=$((i + 1))
+done
+modprobe rk915
+
+# esperar a la interfaz (el driver espera al firmware antes de subirla) y arrancar iwd
+i=0
+while [ ${i} -lt 50 ] && ! ls /sys/class/net 2>/dev/null | grep -q '^wlan'; do
+  sleep 0.2
+  i=$((i + 1))
+done
+systemctl start iwd.service
+
+if [ "$(get_setting wifi.enabled)" = "1" ]; then
+  wifictl enable
+fi
