@@ -76,10 +76,26 @@
  			clock-latency-ns = <40000>;
  			turbo-mode;
  		};
-@@ -1138,9 +1194,37 @@
+@@ -1179,9 +1235,53 @@
  	gpu_opp_table: opp-table-1 {
  		compatible = "operating-points-v2";
  
++		opp-200000000 {
++			opp-hz = /bits/ 64 <200000000>;
++			opp-microvolt = <950000>;
++			opp-microvolt-L0 = <950000>;
++			opp-microvolt-L1 = <950000>;
++			opp-microvolt-L2 = <950000>;
++			opp-microvolt-L3 = <950000>;
++		};
++		opp-300000000 {
++			opp-hz = /bits/ 64 <300000000>;
++			opp-microvolt = <975000>;
++			opp-microvolt-L0 = <975000>;
++			opp-microvolt-L1 = <975000>;
++			opp-microvolt-L2 = <975000>;
++			opp-microvolt-L3 = <975000>;
++		};
 +		opp-400000000 {
 +			opp-hz = /bits/ 64 <400000000>;
 +			opp-microvolt = <1050000>;
