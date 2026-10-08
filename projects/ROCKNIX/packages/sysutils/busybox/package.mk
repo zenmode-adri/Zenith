@@ -225,13 +225,6 @@ makeinstall_init() {
   cp ${PKG_DIR}/scripts/functions ${INSTALL}
   cp ${PKG_DIR}/scripts/init ${INSTALL}
 
-  # Zenith: fotogramas de arranque dentro del initramfs (disponibles antes de montar el sistema)
-  if [ -d "${PKG_DIR}/zenith" ]
-  then
-    mkdir -p ${INSTALL}/zenith
-    cp ${PKG_DIR}/zenith/zenith-boot-*.bgra ${INSTALL}/zenith/
-  fi
-
   if [ -e "${PROJECT_DIR}/${PROJECT}/devices/${DEVICE}/device.init" ]
   then
     cp ${PROJECT_DIR}/${PROJECT}/devices/${DEVICE}/device.init ${INSTALL}
