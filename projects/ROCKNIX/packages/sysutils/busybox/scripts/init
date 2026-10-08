@@ -95,6 +95,7 @@ error() {
   # $1:action which caused error, $2:message
   # Send debug_shell output to stderr, in case caller is redirecting/consuming stdout
   # Return exitcode=1 so that called may detect when an error has occurred
+  zenith_fbcon on
   echo "*** Error in ${BOOT_STEP}: $1: $2 ***" >&2
   debug_shell >&2
   return 1
@@ -476,9 +477,32 @@ zenith_logo() {
   read -r bpp < /sys/class/graphics/fb0/bits_per_pixel 2>/dev/null
   read -r stride < /sys/class/graphics/fb0/stride 2>/dev/null
   [ "${bpp}" = "32" ] && [ "${stride}" = "$((w * 4))" ] || return 1
-  f="${ZENITH_BOOT_DIR:-/sysroot/usr/lib/autostart/firstboot}/zenith-boot-${m}.bgra"
+  if [ -n "${ZENITH_BOOT_DIR}" ]; then
+    f="${ZENITH_BOOT_DIR}/zenith-boot-${m}.bgra"
+  elif [ -f "/zenith/zenith-boot-${m}.bgra" ]; then
+    f="/zenith/zenith-boot-${m}.bgra"
+  else
+    f="/sysroot/usr/lib/autostart/firstboot/zenith-boot-${m}.bgra"
+  fi
   [ -f "${f}" ] || return 1
-  cat "${f}" > /dev/fb0 2>/dev/null
+  cat "${f}" > /dev/fb0 2>/dev/null || return 1
+  zenith_fbcon off
+  return 0
+}
+
+# Zenith: desvincula (off) o vuelve a vincular (on) la consola de texto de fbcon. Con el logo pintado, todo texto
+# que salga despues (avisos de arranque, cursor) se veria encima de la imagen. error() la vuelve a encender
+# para que un fallo real del init se vea en pantalla. El texto sigue disponible por la consola serie.
+zenith_fbcon() {
+  local d v
+  [ -n "${ZENITH_NO_UNBIND}" ] && return 0
+  [ "$1" = "on" ] && v=1 || v=0
+  for d in /sys/class/vtconsole/vtcon*; do
+    case "$(cat "${d}/name" 2>/dev/null)" in
+      *"frame buffer"*) [ -w "${d}/bind" ] && echo ${v} >"${d}/bind" 2>/dev/null ;;
+    esac
+  done
+  return 0
 }
 
 load_splash() {
@@ -487,7 +511,7 @@ load_splash() {
     cat /sysroot/etc/motd >/dev/console
     echo "" >/dev/console
   elif [ -e /dev/fb0 ]; then
-    if zenith_logo; then
+    if [ -n "${ZENITH_LOGO}" ] || zenith_logo; then
       ZENITH_LOGO=1
     else
       /usr/bin/rocknix-splash 2>/dev/null
@@ -1376,6 +1400,9 @@ if [ "${boot%%=*}" = "FILE" ]; then
 fi
 
 debug_msg "Unique identifier for this client: ${MACHINE_UID:-NOT AVAILABLE}"
+
+# Zenith: logo lo antes posible (antes de load_modules y check_disks), con el fotograma del propio initramfs
+zenith_logo && ZENITH_LOGO=1
 
 # main boot sequence
 for BOOT_STEP in \
