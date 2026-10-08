@@ -1,0 +1,256 @@
+From: Zenith
+Subject: es-audio-idle-close: close the SDL audio device after ~5 s of silence, reopen on demand
+
+Motivo: con el menu parado, el flujo de silencio del dispositivo de audio
+(hilos PulseMainloop/SDLAudio de ES mas pipewire) gasta ~9% de un nucleo.
+
+Cambios:
+- AudioManager: nuevo estado mIdleSuspended / mIdleMs. touch() reinicia el
+  temporizador; suspendIdle() cierra el dispositivo (libera los Mix_Chunk de
+  los Sound, Mix_CloseAudio, SDL_QuitSubSystem) solo si no suena nada;
+  wake() lo reabre con la misma logica que init() y recarga los sonidos.
+  mInitialized se mantiene a true mientras esta suspendido.
+- AudioManager::update(): acumula el tiempo en silencio antes del return por
+  BackgroundMusic; pasados 5000 ms llama a suspendIdle().
+- playMusic() hace wake()+touch() (unico punto donde se carga musica en el mixer;
+  playRandomMusic/playSong/changePlaylist llegan ahi).
+- deinit()/init() siguen funcionando estando suspendido (init() llama a wake()).
+- Sound::play() hace wake() si hace falta y touch() tras reproducir;
+  Sound::init() no carga nada mientras esta suspendido.
+
+Probado en la Ultra: ver el commit.
+primer sonido tras el silencio, y que lanzar un juego (deinit/init) no se rompa.
+
+--- a/es-core/src/AudioManager.h	2026-10-04 04:02:59.000956425 +0200
++++ b/es-core/src/AudioManager.h	2026-10-09 00:18:35.559164000 +0200
+@@ -72,6 +72,14 @@
+ 
+ 	static int getMaxMusicVolume();
+ 
++	// Idle audio: after ~5 s without sound or music the SDL audio device is closed
++	// (saves the PulseAudio/PipeWire wakeups while the menu sits idle).
++	// touch() resets the idle timer; wake() reopens the device before playback.
++	static void touch();
++	static bool isSuspended();
++	void suspendIdle();
++	void wake();
++
+ 	//  New function to get the full path of the currently playing song
+ 
+ private:
+@@ -81,6 +89,9 @@
+ 	bool songWasPlayedRecently(const std::string& song);
+ 
+ 	bool mSongNameChanged;
++
++	bool mIdleSuspended;	// true while the device is closed for idleness (mInitialized stays true)
++	int mIdleMs;		// ms since the last touch(), clamped just above the threshold
+ };
+ 
+ #endif // ES_CORE_AUDIO_MANAGER_H
+--- a/es-core/src/AudioManager.cpp	2026-10-09 00:17:35.508140150 +0200
++++ b/es-core/src/AudioManager.cpp	2026-10-09 00:21:29.628134300 +0200
+@@ -29,10 +29,13 @@
+ // Size of last played music history as a percentage of file total
+ #define LAST_PLAYED_SIZE 0.4
+ 
++// Close the audio device after this much time without any sound or music
++#define IDLE_CLOSE_MS 5000
++
+ AudioManager* AudioManager::sInstance = NULL;
+ std::vector<std::shared_ptr<Sound>> AudioManager::sSoundVector;
+ 
+-AudioManager::AudioManager() : mInitialized(false), mCurrentMusic(nullptr), mMusicVolume(MIX_MAX_VOLUME), mVideoPlaying(false)
++AudioManager::AudioManager() : mInitialized(false), mCurrentMusic(nullptr), mMusicVolume(MIX_MAX_VOLUME), mVideoPlaying(false), mIdleSuspended(false), mIdleMs(0)
+ {
+ 	init();
+ }
+@@ -61,9 +64,16 @@
+ 
+ void AudioManager::init()
+ {
++	// Device was closed for idleness (mInitialized stays true): reopen it instead
++	if (mIdleSuspended)
++	{
++		wake();
++		return;
++	}
++
+ 	if (mInitialized)
+ 		return;
+-	
++
+ 	mSongNameChanged = false;
+ 	mPlayingSystemThemeSong = "none";
+ 	std::deque<std::string> mLastPlayed;
+@@ -85,6 +95,8 @@
+ 	{
+ 		LOG(LogInfo) << "SDL AUDIO Initialized";
+ 		mInitialized = true;
++		mIdleSuspended = false;
++		mIdleMs = 0;	// do not inherit idle time from before deinit()/init() (e.g. a game launch)
+ 
+ 		// Reload known sounds
+ 		for (unsigned int i = 0; i < sSoundVector.size(); i++)
+@@ -113,6 +125,14 @@
+ 	for (unsigned int i = 0; i < sSoundVector.size(); i++)
+ 		sSoundVector[i]->deinit();
+ 
++	// The device was already closed by suspendIdle(): nothing more to tear down
++	if (mIdleSuspended)
++	{
++		mIdleSuspended = false;
++		LOG(LogInfo) << "SDL AUDIO Deinitialized (was idle)";
++		return;
++	}
++
+ 	Mix_HookMusicFinished(nullptr);
+ 	Mix_HaltMusic();
+ 
+@@ -123,6 +143,77 @@
+ 	LOG(LogInfo) << "SDL AUDIO Deinitialized";
+ }
+ 
++void AudioManager::touch()
++{
++	if (sInstance != nullptr)
++		sInstance->mIdleMs = 0;
++}
++
++bool AudioManager::isSuspended()
++{
++	return sInstance != nullptr && sInstance->mIdleSuspended;
++}
++
++// Close the SDL audio device after a long silence. Chunks are freed and reloaded by wake().
++void AudioManager::suspendIdle()
++{
++	if (!mInitialized || mIdleSuspended)
++		return;
++
++	// Music playing (or just finished and not yet stopped) keeps the device in use
++	if (mCurrentMusic != nullptr || Mix_PlayingMusic() != 0)
++		return;
++
++	if (Mix_Playing(-1) != 0)
++		return;
++
++	LOG(LogInfo) << "SDL AUDIO idle, closing device";
++
++	for (unsigned int i = 0; i < sSoundVector.size(); i++)
++		sSoundVector[i]->deinit();
++
++	Mix_HookMusicFinished(nullptr);
++	Mix_CloseAudio();
++	SDL_QuitSubSystem(SDL_INIT_AUDIO);
++
++	mIdleSuspended = true;
++}
++
++// Reopen the device closed by suspendIdle(), same open logic as init()
++void AudioManager::wake()
++{
++	if (!mIdleSuspended)
++		return;
++
++	LOG(LogInfo) << "SDL AUDIO waking up";
++
++	if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0)
++	{
++		LOG(LogError) << "Error initializing SDL audio!\n" << SDL_GetError();
++		mIdleSuspended = false;
++		mInitialized = false;
++		return;
++	}
++
++	if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 4096) < 0 && Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
++	{
++		LOG(LogError) << "MUSIC Error - Unable to reopen SDLMixer audio: " << SDL_GetError() << std::endl;
++		SDL_QuitSubSystem(SDL_INIT_AUDIO);
++		mIdleSuspended = false;
++		mInitialized = false;
++		return;
++	}
++
++	mIdleSuspended = false;
++	mIdleMs = 0;
++
++	// Reload known sounds (Sound::init() does nothing while suspended)
++	for (unsigned int i = 0; i < sSoundVector.size(); i++)
++		sSoundVector[i]->init();
++
++	Mix_VolumeMusic((int)mMusicVolume);
++}
++
+ void AudioManager::registerSound(std::shared_ptr<Sound> & sound)
+ {
+ 	getInstance();
+@@ -413,6 +504,12 @@
+ 	if (!Settings::BackgroundMusic())
+ 		return;
+ 
++	// Music is the only path that loads into the mixer: reopen the device if it was idle-closed
++	wake();
++	if (!mInitialized)
++		return;
++	touch();
++
+ 	// load a new music
+ 	mCurrentMusic = Mix_LoadMUS(path.c_str());
+ 	if (mCurrentMusic == NULL)
+@@ -711,7 +808,20 @@
+ 
+ void AudioManager::update(int deltaTime)
+ {
+-	if (sInstance == nullptr || !sInstance->mInitialized || !Settings::BackgroundMusic())
++	if (sInstance == nullptr || !sInstance->mInitialized)
++		return;
++
++	// Idle timer runs even with BackgroundMusic off; the clamp avoids int overflow
++	if (!sInstance->mIdleSuspended)
++	{
++		if (sInstance->mIdleMs <= IDLE_CLOSE_MS)
++			sInstance->mIdleMs += deltaTime;
++
++		if (sInstance->mIdleMs > IDLE_CLOSE_MS)
++			sInstance->suspendIdle();	// refused while music plays; retried on the next frame
++	}
++
++	if (sInstance->mIdleSuspended || !Settings::BackgroundMusic())
+ 		return;
+ 
+ 	float deltaVol = deltaTime / 8.0f;
+--- a/es-core/src/Sound.cpp	2026-10-04 04:02:59.006889677 +0200
++++ b/es-core/src/Sound.cpp	2026-10-09 00:19:04.942998900 +0200
+@@ -64,6 +64,10 @@
+ 	if (!AudioManager::isInitialized())
+ 		return;
+ 
++	// Device closed for idleness: wake() reloads every sound when it reopens
++	if (AudioManager::isSuspended())
++		return;
++
+ 	if (mPath.empty() || !Utils::FileSystem::exists(mPath))
+ 		return;
+ 
+@@ -91,13 +95,18 @@
+ 
+ void Sound::play()
+ {
+-	if (mSampleData == nullptr)
++	if (!Settings::getInstance()->getBool("EnableSounds"))
+ 		return;
+ 
+-	if (!Settings::getInstance()->getBool("EnableSounds"))
++	// Reopen the audio device (and reload the sounds) if it was closed for idleness
++	if (AudioManager::isSuspended())
++		AudioManager::getInstance()->wake();
++
++	if (mSampleData == nullptr)
+ 		return;
+ 
+ 	mPlayingChannel = Mix_PlayChannel(-1, mSampleData, 0);
++	AudioManager::touch();
+ }
+ 
+ bool Sound::isPlaying() const
