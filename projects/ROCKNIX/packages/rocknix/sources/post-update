@@ -304,6 +304,8 @@ if [ -e "/storage/.config/duckstation/settings.ini" ]; then
   sed -i 's/ConfirmPowerOff = true/ConfirmPowerOff = false/' /storage/.config/duckstation/settings.ini
 fi
 
+cp -rf /usr/config/eka2l1/eka2l1_sdl2 /storage/.config/eka2l1/eka2l1_sdl2
+cp -rf /usr/config/eka2l1/eka2l1.gptk /storage/.config/eka2l1/eka2l1.gptk
 cp -rf /usr/config/mrp/* /storage/.config/mrp/
 cp -rf /usr/config/java/* /storage/.config/java/
 cp -rf /usr/config/ruffle/* /storage/.config/ruffle/

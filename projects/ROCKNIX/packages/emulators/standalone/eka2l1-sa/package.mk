@@ -18,6 +18,10 @@ makeinstall_target() {
   mkdir -p ${INSTALL}/usr/bin
   ln -sf /storage/.config/eka2l1/scripts/start_eka2l1.sh ${INSTALL}/usr/bin/start_eka2l1.sh
 
+  mkdir -p ${INSTALL}/usr/config/modules
+  cp -f "${PKG_DIR}/modules/Start EKA2L1.sh" ${INSTALL}/usr/config/modules/
+  chmod 0755 "${INSTALL}/usr/config/modules/Start EKA2L1.sh"
+
   cp -rf ${PKG_DIR}/sources/* ${INSTALL}/usr/config/eka2l1/
   cp -rf ${PKG_BUILD}/* ${INSTALL}/usr/config/eka2l1/
 }

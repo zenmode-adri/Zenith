@@ -8,7 +8,7 @@ PKG_SECTION="emulation" # Do not change to virtual or makeinstall_target will no
 PKG_LONGDESC="Emulation metapackage."
 PKG_TOOLCHAIN="manual"
 
-PKG_EMUS="amiberry flycast-sa flycast2022-sa gzdoom-sa hatarisa hypseus-singe moonlight mupen64plus-sa openbor openbor-ff free-j2me pico-8 ppsspp-sa vice-sa wine cpymo mrp-sa krkr2-sa onscripter-sa ruffle-sa"
+PKG_EMUS="amiberry flycast-sa flycast2022-sa gzdoom-sa hatarisa hypseus-singe moonlight mupen64plus-sa openbor openbor-ff free-j2me eka2l1-sa pico-8 ppsspp-sa vice-sa wine cpymo mrp-sa krkr2-sa onscripter-sa ruffle-sa"
 EMUS_32BIT=""
 
 PKG_RETROARCH="core-info libretro-database retroarch retroarch-assets retroarch-joypads retroarch-overlays slang-shaders"
@@ -981,7 +981,7 @@ makeinstall_target() {
   add_emu_core krkr2 krkr2 krkr2 true
   add_es_system krkr2
 
-  ### EKA2L1 (Symbian) removed in Zenith: not used
+  ### EKA2L1 (Symbian): no ES system of its own in Zenith; "Start EKA2L1" lives in Tools (see eka2l1-sa package)
 
   ### RPG MKAER XP
   add_emu_core mkxp-z retroarch mkxp-z true
