@@ -1,0 +1,79 @@
+#!/bin/bash
+# Zenith: pantalla de primer arranque (mpv sobre DRM, un solo proceso, fotogramas por IPC).
+#   zenith-splash start <fotograma>   arranca mpv mostrando /usr/lib/autostart/firstboot/<fotograma>.png
+#   zenith-splash show  <fotograma>   cambia de fotograma (si mpv no esta, lo arranca)
+#   zenith-splash stop                cierra mpv y libera la pantalla
+# Nunca falla (exit 0): una pantalla de bienvenida no debe romper el primer arranque.
+
+DIR="/usr/lib/autostart/firstboot"
+SOCK="/run/zenith-splash.sock"
+PIDF="/run/zenith-splash.pid"
+LOG="/var/log/mpv-firstboot.log"
+
+rotation() {
+  local r=0
+  if [ -r /sys/class/graphics/fbcon/rotate ]; then
+    read -r r </sys/class/graphics/fbcon/rotate
+  fi
+  case "$r" in
+    1) echo 90 ;;
+    2) echo 180 ;;
+    3) echo 270 ;;
+    *) echo 0 ;;
+  esac
+}
+
+is_running() {
+  [ -s "${PIDF}" ] && kill -0 "$(cat "${PIDF}" 2>/dev/null)" 2>/dev/null
+}
+
+do_stop() {
+  if is_running; then
+    local pid
+    pid="$(cat "${PIDF}")"
+    [ -S "${SOCK}" ] && echo '{"command":["quit"]}' | socat - "UNIX-CONNECT:${SOCK}" >/dev/null 2>&1
+    local i
+    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+      kill -0 "${pid}" 2>/dev/null || break
+      sleep 0.2
+    done
+    kill -0 "${pid}" 2>/dev/null && kill -9 "${pid}" 2>/dev/null
+  fi
+  rm -f "${SOCK}" "${PIDF}"
+}
+
+do_start() {
+  local png="${DIR}/$1.png"
+  [ -f "${png}" ] || return 0
+  do_stop
+  env -u WAYLAND_DISPLAY -u DISPLAY -u SDL_VIDEODRIVER \
+    XDG_RUNTIME_DIR=/var/run/0-runtime-dir \
+    mpv --no-config --osc=no --vo=drm --fullscreen --no-terminal \
+        --idle=yes --keep-open=always --image-display-duration=inf \
+        --input-ipc-server="${SOCK}" --video-rotate="$(rotation)" \
+        --msg-level=all=info --log-file="${LOG}" "${png}" >/dev/null 2>&1 &
+  echo $! >"${PIDF}"
+  local i
+  for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
+    [ -S "${SOCK}" ] && break
+    sleep 0.1
+  done
+}
+
+do_show() {
+  local png="${DIR}/$1.png"
+  [ -f "${png}" ] || return 0
+  if is_running && [ -S "${SOCK}" ]; then
+    echo "{\"command\":[\"loadfile\",\"${png}\"]}" | socat - "UNIX-CONNECT:${SOCK}" >/dev/null 2>&1 || do_start "$1"
+  else
+    do_start "$1"
+  fi
+}
+
+case "$1" in
+  start) do_start "$2" ;;
+  show)  do_show "$2" ;;
+  stop)  do_stop ;;
+  *) echo "uso: zenith-splash start|show <fotograma> | stop" >&2 ;;
+esac
+exit 0
