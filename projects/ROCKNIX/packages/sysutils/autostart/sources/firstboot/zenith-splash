@@ -1,11 +1,12 @@
 #!/bin/bash
 # Zenith: pantalla de primer arranque escrita directamente en el framebuffer (/dev/fb0).
-#   zenith-splash start|show <fotograma>   pinta zenith-N-nombre (p. ej. zenith-1-install)
-#   zenith-splash stop                     no hace nada (sway/ES toman la pantalla); se conserva por compatibilidad
+#   zenith-splash start <fotograma>   pinta zenith-N-nombre (p. ej. zenith-1-install) y desvincula fbcon
+#   zenith-splash show <fotograma>    pinta otro fotograma
+#   zenith-splash stop                no hace nada (sway/ES toman la pantalla); se conserva por compatibilidad
 # Elige el fichero segun la resolucion del panel: <fotograma>-<ancho>x<alto>.bgra (crudo BGRA, se vuelca con cat,
 # sin procesos ni parpadeo). Si no hay uno a medida, convierte el PNG de 640x480 con ImageMagick (mas lento).
 # Nunca falla (exit 0): una pantalla de bienvenida no debe romper el primer arranque.
-# Variables de prueba: ZSPLASH_DIR, ZSPLASH_FB, ZSPLASH_NO_RAW=1 (fuerza el camino de conversion).
+# Variables de prueba: ZSPLASH_DIR, ZSPLASH_FB, ZSPLASH_NO_RAW=1 (fuerza la conversion), ZSPLASH_NO_UNBIND=1.
 
 DIR="${ZSPLASH_DIR:-/usr/lib/autostart/firstboot}"
 FB="${ZSPLASH_FB:-/dev/fb0}"
@@ -25,15 +26,16 @@ fbcon_rotate() {
   case "$r" in 1) echo 90 ;; 2) echo 180 ;; 3) echo 270 ;; *) echo 0 ;; esac
 }
 
+# Devuelve 0 SOLO si se ha pintado algo.
 do_show() {
-  local frame="$1" m w h bpp stride raw rot
-  [ -c "${FB}" ] || [ -n "${ZSPLASH_FB}" ] || return 0
-  m="$(mode)" || return 0
-  w="${m%x*}"; h="${m#*x}"
+  local frame="$1" m w bpp stride raw rot
+  [ -c "${FB}" ] || [ -n "${ZSPLASH_FB}" ] || return 1
+  m="$(mode)" || return 1
+  w="${m%x*}"
   read -r bpp <"${SYS}/bits_per_pixel" 2>/dev/null
   read -r stride <"${SYS}/stride" 2>/dev/null
   # solo se pinta si el framebuffer es BGRA de 32 bits y sin relleno de fila
-  [ "${bpp}" = "32" ] && [ "${stride}" = "$((w * 4))" ] || return 0
+  [ "${bpp}" = "32" ] && [ "${stride}" = "$((w * 4))" ] || return 1
   raw="${DIR}/${frame}-${m}.bgra"
   rot="$(fbcon_rotate)"
   if [ -z "${ZSPLASH_NO_RAW}" ] && [ -f "${raw}" ] && [ "${rot}" = "0" ]; then
@@ -41,12 +43,29 @@ do_show() {
   elif command -v convert >/dev/null 2>&1 && [ -f "${DIR}/${frame}-640x480.png" ]; then
     convert "${DIR}/${frame}-640x480.png" -rotate "${rot}" -resize "${m}" -background "${BG}" \
             -gravity center -extent "${m}" -depth 8 bgra:- >"${FB}" 2>/dev/null
+  else
+    return 1
   fi
 }
 
+# Desvincula fbcon: el texto de la consola comparte fb0 y se pintaria encima de la imagen (avisos,
+# errores, cursor). NO se vuelve a vincular al terminar: fbcon repintaria el texto justo antes de que sway
+# coja la pantalla. Esa sesion se queda sin consola de texto en pantalla (queda ttyS2); la siguiente arranca normal.
+unbind_fbcon() {
+  [ -n "${ZSPLASH_NO_UNBIND}" ] && return 0
+  local d
+  for d in /sys/class/vtconsole/vtcon*; do
+    case "$(cat "${d}/name" 2>/dev/null)" in
+      *"frame buffer"*) [ -w "${d}/bind" ] && echo 0 >"${d}/bind" 2>/dev/null ;;
+    esac
+  done
+  return 0
+}
+
 case "$1" in
-  start|show) do_show "$2" ;;
-  stop) : ;;
+  start) do_show "$2" && unbind_fbcon ;;
+  show)  do_show "$2" ;;
+  stop)  : ;;
   *) echo "uso: zenith-splash start|show <fotograma> | stop" >&2 ;;
 esac
 exit 0
