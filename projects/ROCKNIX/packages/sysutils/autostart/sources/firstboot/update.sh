@@ -169,16 +169,18 @@ function Setup_drastic_cheat() {
 
 
 # Zenith: pantalla de primer arranque (fotogramas zenith-*.png y script zenith-splash junto a este fichero).
-# El trap EXIT cierra mpv en cualquier salida (incluido el exit 1 de Set_ra_ext): un mpv vivo se queda con la pantalla.
+# El trap EXIT hace sync al salir en cualquier caso (incluido el exit 1 de Set_ra_ext).
 ZSPLASH="/usr/lib/autostart/firstboot/zenith-splash"
+TTY0="/dev/tty0"
 if [ "$UPDATE_MODE" != "device_change" ] && [ -x "$ZSPLASH" ]; then
     trap '"$ZSPLASH" stop; sync' EXIT
     echo "$(date): firstboot: zenith-splash start" >>/var/log/boot.log
     "$ZSPLASH" start zenith-1-install
+    TTY0="/dev/null"   # los avisos de texto en tty0 se pintarian encima de la imagen (fbcon comparte fb0)
 fi
 
 if [ ! -e "/roms/bios/jdk" ]; then
-  echo "Installing JDK." >/dev/tty0
+  echo "Installing JDK." >"$TTY0"
   unzip -oq /usr/share/java/jdk.zip -d /roms/bios &>/dev/null
   chmod +x /roms/bios/jdk/bin/*
 fi
@@ -187,13 +189,13 @@ ln -sf /roms/bios/jdk /storage/jdk
 # User manuals (PDF shipped in squashfs) -> persistent roms path for ebook reader
 DOC_PDF_SRC="/usr/share/misc/doc/rocknix-user-man"
 if [ -d "${DOC_PDF_SRC}" ] && compgen -G "${DOC_PDF_SRC}"/*.pdf >/dev/null 2>&1; then
-  echo "Installing user manual PDFs to /roms/ebook." >/dev/tty0
+  echo "Installing user manual PDFs to /roms/ebook." >"$TTY0"
   mkdir -p /roms/ebook
   cp -f "${DOC_PDF_SRC}"/*.pdf /roms/ebook/
 fi
 
 if [ ! -e "/storage/bezels" ]; then
-  echo "Copy bezels." >/dev/tty0
+  echo "Copy bezels." >"$TTY0"
   mkdir -p /storage/bezels
   cp /usr/share/misc/bezels_*.zip /storage/bezels/
 fi

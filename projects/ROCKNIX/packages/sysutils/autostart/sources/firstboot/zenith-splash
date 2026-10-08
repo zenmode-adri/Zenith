@@ -1,79 +1,52 @@
 #!/bin/bash
-# Zenith: pantalla de primer arranque (mpv sobre DRM, un solo proceso, fotogramas por IPC).
-#   zenith-splash start <fotograma>   arranca mpv mostrando /usr/lib/autostart/firstboot/<fotograma>.png
-#   zenith-splash show  <fotograma>   cambia de fotograma (si mpv no esta, lo arranca)
-#   zenith-splash stop                cierra mpv y libera la pantalla
+# Zenith: pantalla de primer arranque escrita directamente en el framebuffer (/dev/fb0).
+#   zenith-splash start|show <fotograma>   pinta zenith-N-nombre (p. ej. zenith-1-install)
+#   zenith-splash stop                     no hace nada (sway/ES toman la pantalla); se conserva por compatibilidad
+# Elige el fichero segun la resolucion del panel: <fotograma>-<ancho>x<alto>.bgra (crudo BGRA, se vuelca con cat,
+# sin procesos ni parpadeo). Si no hay uno a medida, convierte el PNG de 640x480 con ImageMagick (mas lento).
 # Nunca falla (exit 0): una pantalla de bienvenida no debe romper el primer arranque.
+# Variables de prueba: ZSPLASH_DIR, ZSPLASH_FB, ZSPLASH_NO_RAW=1 (fuerza el camino de conversion).
 
 DIR="${ZSPLASH_DIR:-/usr/lib/autostart/firstboot}"
-SOCK="/run/zenith-splash.sock"
-PIDF="/run/zenith-splash.pid"
-LOG="/var/log/mpv-firstboot.log"
+FB="${ZSPLASH_FB:-/dev/fb0}"
+SYS="/sys/class/graphics/fb0"
+BG="#0e1220"
 
-rotation() {
+mode() {   # "U:720x720p-0" -> "720x720"
+  local m
+  read -r m <"${SYS}/modes" 2>/dev/null || return 1
+  m="${m#*:}"; m="${m%%p*}"; m="${m%%i*}"
+  case "$m" in [0-9]*x[0-9]*) echo "$m" ;; *) return 1 ;; esac
+}
+
+fbcon_rotate() {
   local r=0
-  if [ -r /sys/class/graphics/fbcon/rotate ]; then
-    read -r r </sys/class/graphics/fbcon/rotate
-  fi
-  case "$r" in
-    1) echo 90 ;;
-    2) echo 180 ;;
-    3) echo 270 ;;
-    *) echo 0 ;;
-  esac
-}
-
-is_running() {
-  [ -s "${PIDF}" ] && kill -0 "$(cat "${PIDF}" 2>/dev/null)" 2>/dev/null
-}
-
-do_stop() {
-  if is_running; then
-    local pid
-    pid="$(cat "${PIDF}")"
-    [ -S "${SOCK}" ] && echo '{"command":["quit"]}' | socat - "UNIX-CONNECT:${SOCK}" >/dev/null 2>&1
-    local i
-    for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
-      kill -0 "${pid}" 2>/dev/null || break
-      sleep 0.2
-    done
-    kill -0 "${pid}" 2>/dev/null && kill -9 "${pid}" 2>/dev/null
-  fi
-  rm -f "${SOCK}" "${PIDF}"
-}
-
-do_start() {
-  local png="${DIR}/$1.png"
-  [ -f "${png}" ] || return 0
-  do_stop
-  env -u WAYLAND_DISPLAY -u DISPLAY -u SDL_VIDEODRIVER \
-    XDG_RUNTIME_DIR=/var/run/0-runtime-dir \
-    mpv --no-config --osc=no --vo=drm --fullscreen --no-terminal \
-        --idle=yes --keep-open=always --image-display-duration=inf \
-        --input-ipc-server="${SOCK}" --video-rotate="$(rotation)" \
-        --msg-level=all=info --log-file="${LOG}" "${png}" >/dev/null 2>&1 &
-  echo $! >"${PIDF}"
-  local i
-  for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do
-    [ -S "${SOCK}" ] && break
-    sleep 0.1
-  done
+  [ -r /sys/class/graphics/fbcon/rotate ] && read -r r </sys/class/graphics/fbcon/rotate
+  case "$r" in 1) echo 90 ;; 2) echo 180 ;; 3) echo 270 ;; *) echo 0 ;; esac
 }
 
 do_show() {
-  local png="${DIR}/$1.png"
-  [ -f "${png}" ] || return 0
-  if is_running && [ -S "${SOCK}" ]; then
-    echo "{\"command\":[\"loadfile\",\"${png}\"]}" | socat - "UNIX-CONNECT:${SOCK}" >/dev/null 2>&1 || do_start "$1"
-  else
-    do_start "$1"
+  local frame="$1" m w h bpp stride raw rot
+  [ -c "${FB}" ] || [ -n "${ZSPLASH_FB}" ] || return 0
+  m="$(mode)" || return 0
+  w="${m%x*}"; h="${m#*x}"
+  read -r bpp <"${SYS}/bits_per_pixel" 2>/dev/null
+  read -r stride <"${SYS}/stride" 2>/dev/null
+  # solo se pinta si el framebuffer es BGRA de 32 bits y sin relleno de fila
+  [ "${bpp}" = "32" ] && [ "${stride}" = "$((w * 4))" ] || return 0
+  raw="${DIR}/${frame}-${m}.bgra"
+  rot="$(fbcon_rotate)"
+  if [ -z "${ZSPLASH_NO_RAW}" ] && [ -f "${raw}" ] && [ "${rot}" = "0" ]; then
+    cat "${raw}" >"${FB}" 2>/dev/null
+  elif command -v convert >/dev/null 2>&1 && [ -f "${DIR}/${frame}-640x480.png" ]; then
+    convert "${DIR}/${frame}-640x480.png" -rotate "${rot}" -resize "${m}" -background "${BG}" \
+            -gravity center -extent "${m}" -depth 8 bgra:- >"${FB}" 2>/dev/null
   fi
 }
 
 case "$1" in
-  start) do_start "$2" ;;
-  show)  do_show "$2" ;;
-  stop)  do_stop ;;
+  start|show) do_show "$2" ;;
+  stop) : ;;
   *) echo "uso: zenith-splash start|show <fotograma> | stop" >&2 ;;
 esac
 exit 0
