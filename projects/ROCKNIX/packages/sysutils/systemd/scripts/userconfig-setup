@@ -48,7 +48,7 @@ then
   then
     tocon "Installing themes..."
     mkdir -p /storage/.config/emulationstation/themes  >/dev/null
-    ### Zenith bundles several themes (Art Book Next is the stock one); link each so it shows up in the ES theme menu (default: es-theme-iconic).
+    ### Zenith bundles several themes (Art Book Next is the stock one); link each so it shows up in the ES theme menu (default: es-theme-art-book-next).
     rm -f /storage/.config/emulationstation/themes/system-theme  >/dev/null 2>&1
     for es_theme in es-theme-art-book-next es-theme-iconic es-theme-xmb-fcamod es-theme-techdweeb
     do

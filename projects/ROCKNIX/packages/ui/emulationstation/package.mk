@@ -83,7 +83,7 @@ makeinstall_target() {
     ${INSTALL}/usr/config/emulationstation/es_settings.cfg
 
   # Zenith: default theme (the others are linked by userconfig-setup and selectable in the menu)
-  sed -i 's|</config>|  <string name="ThemeSet" value="es-theme-iconic" />\n</config>|' \
+  sed -i 's|</config>|  <string name="ThemeSet" value="es-theme-art-book-next" />\n</config>|' \
     ${INSTALL}/usr/config/emulationstation/es_settings.cfg
 
   # Add device-specific settings for S905
