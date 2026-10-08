@@ -223,12 +223,63 @@ if [ "$UPDATE_MODE" != "device_change" ] && [ -x "$ZSPLASH" ]; then
     "$ZSPLASH" show zenith-2-apply
 fi
 
-# Zenith: sin pregunta de idioma (ingles por defecto, viene de la plantilla system.cfg).
-# Se conserva la marca /flash/zh_CN para quien quiera chino.
-if [ "$UPDATE_MODE" != "device_change" ] && [ -e "/flash/zh_CN" ]; then
-    sed -i -e '/system\.language\=/c system\.language\=zh_CN' /storage/.config/system/configs/system.cfg
-    sed -i -e '/system\.timezone\=/c system\.timezone\=Asia/Shanghai' /storage/.config/system/configs/system.cfg
+# Zenith: pregunta de idioma como pantalla (fotograma zenith-lang). Botones: A = English, B = Chinese, X = Espanol.
+# Sin mando o sin pantalla: ingles. A los 59 s sin pulsar: ingles. (La deteccion del mando es la del original.)
+event_type="EV_KEY"
+event_btn_a="BTN_EAST"
+event_btn_b="BTN_SOUTH"
+event_btn_x="BTN_NORTH"
+
+event_dev=""
+
+if [ -e /dev/input/by-path/platform-*event-joystick ]; then
+    joystick_dev=$(eval echo /dev/input/by-path/platform-*event-joystick)
+    if [ -e "$joystick_dev" ]; then
+        event_dev=$(readlink -f "$joystick_dev")
+    fi
+elif [ -e /dev/input/by-path/platform-*-event-mouse ]; then
+    mouse_dev=$(eval echo /dev/input/by-path/platform-*-event-mouse)
+    if [ -e "$mouse_dev" ]; then
+        event_dev=$(readlink -f "$mouse_dev")
+    fi
+fi
+
+function Test_Button_X(){
+  evtest --query $event_dev $event_type $event_btn_x
+}
+
+function Zenith_set_language() {
+    local cfg="/storage/.config/system/configs/system.cfg"
+    sed -i -e '/system\.language\=/c system\.language\='"$1" "${cfg}"
+    if [ -n "$2" ]; then
+        sed -i -e '/system\.timezone\=/c system\.timezone\='"$2" "${cfg}"
+    fi
     sync
+}
+
+if [ "$UPDATE_MODE" != "device_change" ]; then
+    if [ -z "$event_dev" ] || [ ! -x "$ZSPLASH" ] || ! "$ZSPLASH" show zenith-lang; then
+        # sin mando o sin poder pintar la pantalla: no se puede preguntar
+        if [ -e "/flash/zh_CN" ]; then
+            Zenith_set_language zh_CN Asia/Shanghai
+        else
+            Zenith_set_language en_US
+        fi
+    else
+        zenith_lang_t0=$SECONDS
+        while true
+        do
+            Test_Button_A
+            if [ "$?" -eq "10" ]; then Zenith_set_language en_US; break; fi
+            Test_Button_B
+            if [ "$?" -eq "10" ]; then Zenith_set_language zh_CN Asia/Shanghai; break; fi
+            Test_Button_X
+            if [ "$?" -eq "10" ]; then Zenith_set_language es_ES; break; fi
+            if [ $((SECONDS - zenith_lang_t0)) -ge 59 ]; then Zenith_set_language en_US; break; fi
+            sleep 0.1
+        done
+        "$ZSPLASH" show zenith-2-apply
+    fi
 fi
 
 Setup_drastic_cheat

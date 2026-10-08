@@ -93,6 +93,9 @@ EOF
   ### Guarda el log de arranque en la FAT (/flash/bootlog) para depurar desde Windows
   enable_service bootlog.service
 
+  ### Zenith: pantalla del primer arranque durante la configuracion inicial (solo si /storage/.configured no existe)
+  enable_service zenith-splash.service
+
   ### Apaga de forma limpia si la bateria baja de ~3,2 V sin cargar (proteccion de la bateria)
   enable_service battery-guard.service
 

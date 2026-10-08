@@ -1,0 +1,14 @@
+[Unit]
+Description=Zenith first-start screen (covers the long first configuration)
+DefaultDependencies=no
+RequiresMountsFor=/storage
+Before=userconfig.service
+ConditionPathExists=!/storage/.configured
+ConditionPathExists=!/storage/.please_resize_me
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/autostart/firstboot/zenith-splash start zenith-0-prepare
+
+[Install]
+WantedBy=sysinit.target

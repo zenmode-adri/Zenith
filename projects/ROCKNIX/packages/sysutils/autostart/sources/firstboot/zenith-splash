@@ -5,7 +5,7 @@
 #   zenith-splash stop                no hace nada (sway/ES toman la pantalla); se conserva por compatibilidad
 # Elige el fichero segun la resolucion del panel: <fotograma>-<ancho>x<alto>.bgra (crudo BGRA, se vuelca con cat,
 # sin procesos ni parpadeo). Si no hay uno a medida, convierte el PNG de 640x480 con ImageMagick (mas lento).
-# Nunca falla (exit 0): una pantalla de bienvenida no debe romper el primer arranque.
+# Sale con 0 si ha pintado algo y con 1 si no (no rompe el arranque: nadie lo llama con set -e).
 # Variables de prueba: ZSPLASH_DIR, ZSPLASH_FB, ZSPLASH_NO_RAW=1 (fuerza la conversion), ZSPLASH_NO_UNBIND=1.
 
 DIR="${ZSPLASH_DIR:-/usr/lib/autostart/firstboot}"
@@ -62,10 +62,13 @@ unbind_fbcon() {
   return 0
 }
 
+rc=0
 case "$1" in
-  start) do_show "$2" && unbind_fbcon ;;
-  show)  do_show "$2" ;;
+  start) do_show "$2" && unbind_fbcon; rc=$? ;;
+  show)  do_show "$2"; rc=$? ;;
   stop)  : ;;
   *) echo "uso: zenith-splash start|show <fotograma> | stop" >&2 ;;
 esac
-exit 0
+# El codigo de salida solo dice si se pinto algo (para que update.sh sepa si puede preguntar el idioma);
+# nunca rompe el arranque: quien lo llama no usa set -e.
+exit ${rc}
