@@ -1,0 +1,27 @@
+From: Zenith
+Subject: es-idle-sleepwait: sleep in 25 ms steps while idle
+
+Idle 1 Hz mode used SDL_WaitEventTimeout(1000), which polls every ~1 ms on this video driver: ~900 main-thread
+wakeups/s (~4.7% of a core) with nothing to draw. Sleep in 25 ms steps and peek events instead.
+---
+--- a/es-app/src/main.cpp	2026-10-09 00:25:44.019129837 +0200
++++ b/es-app/src/main.cpp	2026-10-09 00:25:44.212831283 +0200
+@@ -765,7 +765,17 @@
+ 		if (screenSaverWait)
+ 			eventResult = SDL_WaitEventTimeout(&event, screenSaverTimeout);
+ 		else if (idle)
+-			eventResult = SDL_WaitEventTimeout(&event, 1000); // at most one update+render+swap per second
++		{
++			// at most one update+render+swap per second. SDL_WaitEventTimeout() polls every ~1 ms with some video
++			// drivers (~900 wakeups/s even when idle), so sleep in coarse steps instead (<= 25 ms wake latency).
++			const unsigned int idleWaitStart = SDL_GetTicks();
++			SDL_PumpEvents();
++			while (!(eventResult = SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT)) && SDL_GetTicks() - idleWaitStart < 1000)
++			{
++				SDL_Delay(25);
++				SDL_PumpEvents();
++			}
++		}
+ 		else if (ps_standby)
+ 			eventResult = SDL_WaitEventTimeout(&event, PowerSaver::getTimeout());
+ 		else
