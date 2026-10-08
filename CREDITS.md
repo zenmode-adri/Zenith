@@ -21,6 +21,9 @@ which descends from JELOS and EmuELEC. Zenith would not exist without them.
 - The EmulationStation theme **es-theme-zenith** is a derivative of **Art Book Next** by Anthony Caccese
   (https://github.com/anthonycaccese/art-book-next-es, via the AveyondFly fork), licensed CC BY-NC-SA.
   The derivative keeps that license: credit the original author, share alike, non-commercial use only.
+- Bundled EmulationStation themes: **iconic-es** by Delgan (CC0), **es-theme-xmb-fcamod** by jovemlcxx (CC BY-NC-SA 4.0,
+  with small layout fixes by zenmode-adri) and **techdweeb-es** by Anthony Caccese (CC BY-NC-SA 2.0). Each theme keeps its
+  license and a `NOTICE.md` in `/usr/share/themes/<theme>/`.
 - Zenith's own changes are published under the same licenses as the files they modify.
 
 Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors.

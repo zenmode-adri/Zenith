@@ -4,6 +4,6 @@
 PKG_NAME="es-themes"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://rocknix.org"
-PKG_DEPENDS_TARGET="es-theme-zenith"
+PKG_DEPENDS_TARGET="es-theme-iconic es-theme-xmb-fcamod es-theme-techdweeb"
 PKG_SECTION="virtual"
 PKG_LONGDESC="EmulationStation themes package."
