@@ -5,7 +5,7 @@
 #   zenith-splash stop                cierra mpv y libera la pantalla
 # Nunca falla (exit 0): una pantalla de bienvenida no debe romper el primer arranque.
 
-DIR="/usr/lib/autostart/firstboot"
+DIR="${ZSPLASH_DIR:-/usr/lib/autostart/firstboot}"
 SOCK="/run/zenith-splash.sock"
 PIDF="/run/zenith-splash.pid"
 LOG="/var/log/mpv-firstboot.log"

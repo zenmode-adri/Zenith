@@ -172,7 +172,7 @@ function Setup_drastic_cheat() {
 # El trap EXIT cierra mpv en cualquier salida (incluido el exit 1 de Set_ra_ext): un mpv vivo se queda con la pantalla.
 ZSPLASH="/usr/lib/autostart/firstboot/zenith-splash"
 if [ "$UPDATE_MODE" != "device_change" ] && [ -x "$ZSPLASH" ]; then
-    trap '"$ZSPLASH" stop' EXIT
+    trap '"$ZSPLASH" stop; sync' EXIT
     echo "$(date): firstboot: zenith-splash start" >>/var/log/boot.log
     "$ZSPLASH" start zenith-1-install
 fi
