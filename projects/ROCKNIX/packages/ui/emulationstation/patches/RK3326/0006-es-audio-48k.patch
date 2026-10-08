@@ -1,0 +1,18 @@
+From: Zenith
+Subject: es-audio-48k: open the SDL_mixer device at 48 kHz
+
+The RK3326 audio sink runs at 48000 Hz. ES opened its mixer at 44100 Hz, so pipewire resampled the stream on every
+cycle (the open stream feeds silence even when nothing plays): ~9.6% of a core between pipewire and pipewire-pulse
+while the menu was idle. Measured: forcing the sink to 44100 Hz halves that cost. Opening at 48000 Hz avoids the resampling.
+---
+--- a/es-core/src/AudioManager.cpp	2026-10-08 23:34:42.349963815 +0200
++++ b/es-core/src/AudioManager.cpp	2026-10-08 23:34:42.837039840 +0200
+@@ -75,7 +75,7 @@
+ 	}
+ 
+ 	// Open the audio device and pause
+-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
++	if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 4096) < 0)
+ 	{
+ 		mMusicVolume = 0;
+ 		LOG(LogError) << "MUSIC Error - Unable to open SDLMixer audio: " << SDL_GetError() << std::endl;
