@@ -82,6 +82,10 @@ makeinstall_target() {
   sed -i 's|</config>|  <bool name="EnableSounds" value="true" />\n</config>|' \
     ${INSTALL}/usr/config/emulationstation/es_settings.cfg
 
+  # Zenith: shorter fade when launching a game (user can change it in the menu)
+  sed -i 's|</config>|  <string name="GameTransitionStyle" value="fast fade" />\n</config>|' \
+    ${INSTALL}/usr/config/emulationstation/es_settings.cfg
+
   # Add device-specific settings for S905
   if [ "${DEVICE}" = "S905" ]; then
     sed -i 's|</config>|  <bool name="BackgroundJoystickInput" value="true" />\n</config>|' \

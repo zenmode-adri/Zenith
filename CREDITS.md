@@ -18,6 +18,9 @@ which descends from JELOS and EmuELEC. Zenith would not exist without them.
 - ROCKNIX branding and images: CC BY-NC-SA 4.0 (see `LICENSE.md`).
   The first-start screens and the boot banner of Zenith are Zenith's own.
   The early boot logo still comes from the upstream `rocknix-splash` package.
+- The EmulationStation theme **es-theme-zenith** is a derivative of **Art Book Next** by Anthony Caccese
+  (https://github.com/anthonycaccese/art-book-next-es, via the AveyondFly fork), licensed CC BY-NC-SA.
+  The derivative keeps that license: credit the original author, share alike, non-commercial use only.
 - Zenith's own changes are published under the same licenses as the files they modify.
 
 Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors.
