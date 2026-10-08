@@ -64,7 +64,7 @@ post_install() {
 
   # Issue banner
   cat <<EOF >> ${INSTALL}/etc/issue
-... Version: ${OS_VERSION} (aurknix-from-kk)
+... Zenith ${OS_VERSION} (based on AURKNIX)
 ... Built: ${BUILD_DATE}
 
 EOF
