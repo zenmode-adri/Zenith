@@ -186,14 +186,6 @@ if [ ! -e "/roms/bios/jdk" ]; then
 fi
 ln -sf /roms/bios/jdk /storage/jdk
 
-# User manuals (PDF shipped in squashfs) -> persistent roms path for ebook reader
-DOC_PDF_SRC="/usr/share/misc/doc/rocknix-user-man"
-if [ -d "${DOC_PDF_SRC}" ] && compgen -G "${DOC_PDF_SRC}"/*.pdf >/dev/null 2>&1; then
-  echo "Installing user manual PDFs to /roms/ebook." >"$TTY0"
-  mkdir -p /roms/ebook
-  cp -f "${DOC_PDF_SRC}"/*.pdf /roms/ebook/
-fi
-
 if [ ! -e "/storage/bezels" ]; then
   echo "Copy bezels." >"$TTY0"
   mkdir -p /storage/bezels
