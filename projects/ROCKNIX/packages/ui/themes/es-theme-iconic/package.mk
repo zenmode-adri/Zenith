@@ -18,5 +18,7 @@ makeinstall_target() {
     if [ -d ${PKG_DIR}/overlay ]; then
       cp -rf ${PKG_DIR}/overlay/* ${INSTALL}/usr/share/themes/${PKG_NAME}/
     fi
+    # Zenith: fade transition instead of instant
+    sed -i 's/<theme defaultTransition="instant">/<theme defaultTransition="fade">/' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
     cp -f ${PKG_DIR}/NOTICE.md ${INSTALL}/usr/share/themes/${PKG_NAME}/NOTICE.md
 }

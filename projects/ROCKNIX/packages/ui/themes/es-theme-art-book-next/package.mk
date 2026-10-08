@@ -14,4 +14,8 @@ makeinstall_target() {
     cp -rf * ${INSTALL}/usr/share/themes/${PKG_NAME}
     rm -rf ${INSTALL}/usr/share/themes/${PKG_NAME}/_inc/systems/{artwork-circuit,artwork-classic,artwork-nintendont,artwork-noir,artwork-outline}
     sed -i '/<include name="\(noir\|nintendont\|circuit\|outline\)"/d' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
+    # Zenith: only the splash screen is replaced (logo, no progress bar); the theme itself is the stock one
+    if [ -d ${PKG_DIR}/overlay ]; then
+      cp -rf ${PKG_DIR}/overlay/* ${INSTALL}/usr/share/themes/${PKG_NAME}/
+    fi
 }
