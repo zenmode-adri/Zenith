@@ -464,25 +464,50 @@ hdmi_con() {
   fi
 }
 
+# Zenith: pinta el fotograma de arranque zenith-boot-<ancho>x<alto>.bgra (crudo BGRA, se vuelca en fb0).
+# Devuelve 0 SOLO si ha pintado; si falta el fichero o el framebuffer no es de 32 bits sin relleno de fila,
+# devuelve 1 y load_splash cae al splash de siempre. ZENITH_BOOT_DIR solo se usa para probar a mano.
+zenith_logo() {
+  local m w bpp stride f
+  read -r m < /sys/class/graphics/fb0/modes 2>/dev/null || return 1
+  m="${m#*:}"; m="${m%%p*}"
+  case "${m}" in [0-9]*x[0-9]*) ;; *) return 1 ;; esac
+  w="${m%x*}"
+  read -r bpp < /sys/class/graphics/fb0/bits_per_pixel 2>/dev/null
+  read -r stride < /sys/class/graphics/fb0/stride 2>/dev/null
+  [ "${bpp}" = "32" ] && [ "${stride}" = "$((w * 4))" ] || return 1
+  f="${ZENITH_BOOT_DIR:-/sysroot/usr/lib/autostart/firstboot}/zenith-boot-${m}.bgra"
+  [ -f "${f}" ] || return 1
+  cat "${f}" > /dev/fb0 2>/dev/null
+}
+
 load_splash() {
   if [ "@DEVICENAME@" = "S905" ]; then
     clear >/dev/console
     cat /sysroot/etc/motd >/dev/console
     echo "" >/dev/console
   elif [ -e /dev/fb0 ]; then
-    /usr/bin/rocknix-splash 2>/dev/null
-    echo -en "\033[1000H\033[2K$(cat /sysroot/etc/issue)\n\n" >/dev/console
+    if zenith_logo; then
+      ZENITH_LOGO=1
+    else
+      /usr/bin/rocknix-splash 2>/dev/null
+      echo -en "\033[1000H\033[2K$(cat /sysroot/etc/issue)\n\n" >/dev/console
+    fi
   elif [ -f /sysroot/etc/motd ]; then
     clear >/dev/console
     cat /sysroot/etc/motd >/dev/console
     echo "" >/dev/console
   fi
 
-  if [ -f "/storage/.configured" ]
+  # con el logo Zenith no se escribe texto encima (los errores reales de init siguen saliendo por /dev/console)
+  if [ -z "${ZENITH_LOGO}" ]
   then
-    echo -ne "\033[1000H\033[2K==> Loading, please wait..." >/dev/console
-  else
-    echo -ne "\033[1000H\033[2K==> Initializing, please wait..." >/dev/console
+    if [ -f "/storage/.configured" ]
+    then
+      echo -ne "\033[1000H\033[2K==> Loading, please wait..." >/dev/console
+    else
+      echo -ne "\033[1000H\033[2K==> Initializing, please wait..." >/dev/console
+    fi
   fi
 }
 

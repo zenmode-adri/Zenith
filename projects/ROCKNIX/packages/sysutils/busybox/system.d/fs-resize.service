@@ -4,6 +4,7 @@ DefaultDependencies=no
 
 [Service]
 Type=idle
+ExecStartPre=-/usr/lib/autostart/firstboot/zenith-splash start zenith-resize
 ExecStart=/usr/lib/rocknix/fs-resize
 StandardInput=tty-force
 StandardOutput=inherit
