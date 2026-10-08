@@ -3,7 +3,24 @@
 # Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
 
 PICO_DIR="/storage/roms/pico-8"
-if [ -d "${PICO_DIR}" ] && [ ! -f "${PICO_DIR}/.disable_splore" ]
+
+# Zenith: "Splore" needs the official (commercial) PICO-8 binary, which is not shipped with the image.
+# Only offer the Splore entry when the user installed the binary; otherwise it does nothing and it
+# makes the whole PICO-8 system show up in EmulationStation with a dummy entry.
+HAS_PICO8_BIN=0
+for b in "${PICO_DIR}/pico8_64" "${PICO_DIR}/aarch64/pico8_64" "${PICO_DIR}/pico8_dyn" "${PICO_DIR}/aarch64/pico8_dyn"
+do
+  [ -f "${b}" ] && HAS_PICO8_BIN=1
+done
+
+if [ -d "${PICO_DIR}" ]
 then
-  touch "${PICO_DIR}/Splore.png"
+  if [ "${HAS_PICO8_BIN}" = "1" ] && [ ! -f "${PICO_DIR}/.disable_splore" ]
+  then
+    touch "${PICO_DIR}/Splore.png"
+  elif [ ! -s "${PICO_DIR}/Splore.png" ]
+  then
+    # remove the empty placeholder left by older versions (a real cart is never empty)
+    rm -f "${PICO_DIR}/Splore.png"
+  fi
 fi
