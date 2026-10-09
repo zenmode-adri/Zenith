@@ -7,7 +7,7 @@ PKG_SITE="https://rocknix.org"
 PKG_SECTION="virtual"
 PKG_LONGDESC="Game support software metapackage."
 
-PKG_GAMESUPPORT="sixaxis rocknix-hotkey jstest-sdl gamecontrollerdb sdljoytest control-gen sdl2text"
+PKG_GAMESUPPORT="sixaxis rocknix-hotkey jstest-sdl gamecontrollerdb sdljoytest control-gen sdl2text r36-tuner"
 
 # Touch-screen SDL test: SM* Snapdragon handhelds only
 [[ "${DEVICE}" == SM* ]] && PKG_GAMESUPPORT+=" sdltouchtest"
