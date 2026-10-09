@@ -7,7 +7,7 @@
 #include <time.h>
 
 #define SZ (128 * 1024 * 1024)
-#define BENCH_SECS 10
+#define BENCH_SECS 15
 
 static double now(void) {
     struct timespec t;
