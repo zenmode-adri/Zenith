@@ -380,7 +380,7 @@
 +
 +		snprintf(name, sizeof(name), "L%d", pvtm_sel);
 +		ret = dev_pm_opp_set_prop_name(cpu_dev, name);
-+		if (ret)
++		if (ret < 0)
 +			pr_warn("set_prop_name(%s) failed: %d\n", name, ret);
 +		else {
 +			pr_info("CPU OPP voltage bin %s active\n", name);
@@ -412,7 +412,7 @@
 +
 +	snprintf(name, sizeof(name), "L%d", pvtm_sel);
 +	ret = dev_pm_opp_set_prop_name(&pdev->dev, name);
-+	if (ret)
++	if (ret < 0)
 +		pr_warn("GPU set_prop_name(%s) failed: %d\n", name, ret);
 +	else
 +		pr_info("GPU OPP voltage bin %s active\n", name);
