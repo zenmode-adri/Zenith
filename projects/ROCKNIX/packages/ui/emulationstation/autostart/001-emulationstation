@@ -11,3 +11,12 @@ then
   ln -sf /storage/.config/emulationstation /storage/.emulationstation
 fi
 
+# Zenith: link the ES event scripts (screensaver backlight off/on) next to the user's own scripts
+for ev in screensaver-start screensaver-stop
+do
+  mkdir -p /storage/.config/emulationstation/scripts/${ev}
+  for f in /usr/share/zenith/es-scripts/${ev}/*.sh
+  do
+    ln -sf "${f}" /storage/.config/emulationstation/scripts/${ev}/$(basename "${f}")
+  done
+done

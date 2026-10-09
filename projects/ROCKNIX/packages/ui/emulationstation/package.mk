@@ -63,6 +63,11 @@ makeinstall_target() {
   cp ${PKG_BUILD}/es_settings ${INSTALL}/usr/bin
   chmod 0755 ${INSTALL}/usr/bin/es_settings
 
+  # Zenith: ES event scripts (screensaver start/stop switch the backlight); linked into /storage by autostart/001-emulationstation
+  mkdir -p ${INSTALL}/usr/share/zenith/es-scripts
+  cp -rf ${PKG_DIR}/sources/es-scripts/* ${INSTALL}/usr/share/zenith/es-scripts/
+  chmod 0755 ${INSTALL}/usr/share/zenith/es-scripts/*/*.sh
+
   cp ${PKG_BUILD}/start_es.sh ${INSTALL}/usr/bin
   chmod 0755 ${INSTALL}/usr/bin/start_es.sh
 
@@ -84,6 +89,10 @@ makeinstall_target() {
 
   # Zenith: default theme (the others are linked by userconfig-setup and selectable in the menu)
   sed -i 's|</config>|  <string name="ThemeSet" value="es-theme-art-book-next" />\n</config>|' \
+    ${INSTALL}/usr/config/emulationstation/es_settings.cfg
+
+  # Zenith: ES screensaver (black frame + backlight off via es-scripts) after 2 minutes instead of 5
+  sed -i 's|</config>|  <int name="ScreenSaverTime" value="120000" />\n</config>|' \
     ${INSTALL}/usr/config/emulationstation/es_settings.cfg
 
   # Add device-specific settings for S905
