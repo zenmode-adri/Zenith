@@ -873,7 +873,7 @@ static void screen_cpu_freq(void){
         FILE *cf = fopen(OC_DETECT_CACHE, "r");
         int cached = 0;
         if (cf) { int v=-1; fscanf(cf,"%d",&v); fclose(cf); cached=(v==0||v==1); }
-        if (!cached) show_info(S(STR_CPU_MAX_FREQ), "Detecting CPU OC...  (~4s)");
+        if (!cached) show_info(S(STR_CPU_MAX_FREQ), "Detecting CPU OC...  (~8s)");
         oc_real = detect_cpu_oc(cur_hz);
     }
 
@@ -925,8 +925,10 @@ static void screen_cpu_freq(void){
     }
     int chosen=submenu(S(STR_CPU_MAX_FREQ),S(STR_CORTEX_A35),items,n,&sel,NULL,0);
     if(chosen>=0 && chosen==turbo_idx){
-        /* ROCKNIX turbomode: sets cpufreq/boost and saves enable.turbo-mode (applied again at boot) */
-        system(boost_on ? "turbomode disable >/dev/null 2>&1" : "turbomode enable >/dev/null 2>&1");
+        /* sets cpufreq/boost and saves enable.turbo-mode, which autostart/095-turbo-mode applies again at boot */
+        /* (the stock turbomode script cannot save the setting: its child bash has no set_setting) */
+        system(boost_on ? "bash -c '. /etc/profile; echo 0 > " BOOST_FILE "; set_setting enable.turbo-mode 0' >/dev/null 2>&1"
+                        : "bash -c '. /etc/profile; echo 1 > " BOOST_FILE "; set_setting enable.turbo-mode 1' >/dev/null 2>&1");
         if (atoi(read_file(BOOST_FILE)) == boost_on) write_file(BOOST_FILE, boost_on ? "0" : "1");
         remove(OC_DETECT_CACHE);
         refresh_state();
