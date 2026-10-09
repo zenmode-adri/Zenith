@@ -38,6 +38,21 @@
 #define RAM_OC_ULTRA_MHZ 1032       /* RAM ultra OC (ATF delivers via 1040 MHz PLL) */
 #define LANG_FILE        TUNER_DATA_DIR "/lang"
 
+/* Benchmarks live in /usr/bin once installed; while testing, next to this executable. */
+static const char *bench_path(const char *name) {
+    static char buf[2][320]; static int slot;
+    char *b = buf[slot ^= 1];
+    snprintf(b, 320, "/usr/bin/%s", name);
+    if (access(b, X_OK) == 0) return b;
+    char self[256]; ssize_t n = readlink("/proc/self/exe", self, sizeof(self) - 1);
+    if (n > 0) {
+        self[n] = 0; char *sl = strrchr(self, '/');
+        if (sl) { *sl = 0; snprintf(b, 320, "%s/%s", self, name); if (access(b, X_OK) == 0) return b; }
+    }
+    snprintf(b, 320, "/usr/bin/%s", name);
+    return b;
+}
+
 /* ── Internationalization ───────────────────────────────────────────────── */
 #define LANG_EN 0
 #define LANG_ES 1
@@ -407,7 +422,7 @@ static const I18nEntry I18N[STR_COUNT] = {
     [STR_NODE_ACTIVE] = { "active", "activo" },
     [STR_CONTINUE] = { "Continue", "Continuar" },
     [STR_CPU_FREQ_FAKE_TAG]    = { "stock=1296", "stock=1296" },
-    [STR_CPU_FREQ_FAKE_DESC]   = { "stock kernel: silicon stays at 1296 MHz", "kernel stock: silicio queda en 1296 MHz" },
+    [STR_CPU_FREQ_FAKE_DESC]   = { "no speedup measured: stays at 1296 MHz", "sin mejora medida: se queda en 1296 MHz" },
     [STR_CPU_FREQ_SET_FAKE]    = { "SET (fake)", "CONF (falso)" },
     [STR_CPU_FREQ_SILICON_MAX] = { "kernel max", "max kernel" },
     [STR_CPU_FREQ_UNTESTED_TAG]  = { "untested", "sin probar" },
@@ -518,7 +533,7 @@ static void detect_os(void) {
             while (fgets(ln, sizeof(ln), rf)) {
                 if (strncmp(ln, "OS_NAME=\"", 9) == 0) {
                     char *e = strchr(ln + 9, '"');
-                    if (e) { *e = 0; snprintf(os_subtitle, sizeof(os_subtitle), "RK3326 | %s", ln + 9); fclose(rf); return; }
+                    if (e) { *e = 0; snprintf(os_subtitle, sizeof(os_subtitle), "RK3326 | %.40s", ln + 9); fclose(rf); return; }
                 }
             }
             fclose(rf);
@@ -734,7 +749,13 @@ static void screen_governor(void){
     }
     int chosen=submenu(S(STR_CPU_GOVERNOR),S(STR_CORTEX_A35),items,n,&sel,NULL,1);
     if(chosen>=0){
-        write_file(cp,items[chosen].label);
+        char cmd[200]; const char *g=items[chosen].label; int ok=1;
+        for(const char *c=g;*c;c++) if(!((*c>='a'&&*c<='z')||(*c>='0'&&*c<='9')||*c=='_')) ok=0;
+        if(ok){
+            snprintf(cmd,sizeof(cmd),"bash -c '. /etc/profile; set_setting system.cpugovernor %s; %s' >/dev/null 2>&1",g,g);
+            system(cmd);
+        }
+        if(strcmp(read_file(cp),g)) write_file(cp,g);   /* fallback: plain sysfs */
         refresh_state();
     }
 }
@@ -787,24 +808,26 @@ static int detect_cpu_oc(int cur_hz) {
     } else if (cur_hz <= CPU_STOCK_MAX_MHZ * 1000) {
         return -1;
     } else {
-        /* Fallback: LCG microbench — stock silicon scores below threshold
-           even if PLL is set above 1296 MHz. Pin governor to performance so
-           the CPU sustains the configured clock for the full run; a scaling
-           governor mid-ramp would sandbag the score into a false negative. */
-        char prev_gov[32];
-        snprintf(prev_gov, sizeof(prev_gov), "%s",
-                 read_file(CPU_POLICY "/scaling_governor"));
+        /* Pin governor to performance and compare the same loop capped at 1296 MHz vs at cur_hz.
+           A real clock gain scales the score with the frequency; a fake one leaves the ratio at 1. */
+        char mpath[256]; snprintf(mpath, sizeof(mpath), "%s/scaling_max_freq", CPU_POLICY);
+        char prev_gov[32], prev_max[32], v[32];
+        snprintf(prev_gov, sizeof(prev_gov), "%s", read_file(CPU_POLICY "/scaling_governor"));
+        snprintf(prev_max, sizeof(prev_max), "%s", read_file(mpath));
         write_file(CPU_POLICY "/scaling_governor", "performance");
-        long long score_M = quick_lcg_bench(4000) / 1000000LL;
-        if (prev_gov[0])
-            write_file(CPU_POLICY "/scaling_governor", prev_gov);
-        /* Threshold halfway between the stock reference and the score a real
-           OC would produce at cur_hz (linear scaling). A fixed +10% bar only
-           works for 1512 MHz; at 1368 MHz the whole gain is +5.5%. */
-        int cur_mhz = cur_hz / 1000;
-        long long threshold_M = OC_REF_STOCK_M * (CPU_STOCK_MAX_MHZ + cur_mhz)
-                                / (2LL * CPU_STOCK_MAX_MHZ);
-        result = (score_M > threshold_M) ? 1 : 0;
+        snprintf(v, sizeof(v), "%d", CPU_STOCK_MAX_MHZ * 1000);
+        write_file(mpath, v);
+        quick_lcg_bench(500);                       /* let the clock settle */
+        long long base = quick_lcg_bench(2500);
+        snprintf(v, sizeof(v), "%d", cur_hz);
+        write_file(mpath, v);
+        quick_lcg_bench(500);
+        long long fast = quick_lcg_bench(2500);
+        if (prev_max[0]) write_file(mpath, prev_max);
+        if (prev_gov[0]) write_file(CPU_POLICY "/scaling_governor", prev_gov);
+        double ratio = base > 0 ? (double)fast / (double)base : 1.0;
+        double expect = (double)(cur_hz / 1000) / CPU_STOCK_MAX_MHZ;
+        result = (ratio > 1.0 + (expect - 1.0) * 0.5) ? 1 : 0;
     }
 
     FILE *f = fopen(OC_DETECT_CACHE, "w");
@@ -895,14 +918,16 @@ static void screen_cpu_freq(void){
         turbo_idx = n;
         snprintf(items[n].label,sizeof(items[n].label),"Turbo (1416 / 1512 MHz)");
         snprintf(items[n].desc,sizeof(items[n].desc),
-                 boost_on ? "ON: turbo steps unlocked (1350 mV). Not kept after reboot"
-                          : "OFF: select to unlock turbo steps. Not kept after reboot");
+                 boost_on ? "ON: turbo steps unlocked (1350 mV). Saved, also at boot"
+                          : "OFF: select to unlock turbo steps. Saved, also at boot");
         snprintf(items[n].tag,sizeof(items[n].tag),"%s",boost_on?"ON":"OFF");
         n++;
     }
     int chosen=submenu(S(STR_CPU_MAX_FREQ),S(STR_CORTEX_A35),items,n,&sel,NULL,0);
     if(chosen>=0 && chosen==turbo_idx){
-        write_file(BOOST_FILE, boost_on ? "0" : "1");
+        /* ROCKNIX turbomode: sets cpufreq/boost and saves enable.turbo-mode (applied again at boot) */
+        system(boost_on ? "turbomode disable >/dev/null 2>&1" : "turbomode enable >/dev/null 2>&1");
+        if (atoi(read_file(BOOST_FILE)) == boost_on) write_file(BOOST_FILE, boost_on ? "0" : "1");
         remove(OC_DETECT_CACHE);
         refresh_state();
         screen_cpu_freq();   /* redraw with the new list */
@@ -2512,7 +2537,7 @@ static void screen_dtb_restore(const char *dtb) {
 }
 
 /* ── Benchmark helpers ───────────────────────────────────────────────────── */
-#define CPU_BENCH_BIN  "/usr/bin/r36_cpubench"
+#define CPU_BENCH_BIN  bench_path("r36_cpubench")
 
 static int check_cpu_bench(void) {
     return access(CPU_BENCH_BIN, X_OK) == 0;
@@ -2971,7 +2996,7 @@ static void screen_language(void){
 }
 
 /* ── RAM benchmark ───────────────────────────────────────────────────────── */
-#define RAM_BENCH_BIN "/usr/bin/r36_rambench"
+#define RAM_BENCH_BIN bench_path("r36_rambench")
 
 typedef struct {
     long long write_mbps;
