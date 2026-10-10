@@ -1,0 +1,62 @@
+Zenith 0010: show the distribution name from os-release (OS_NAME) in the main menu footer and update dialog
+instead of the hard-coded "ROCKNIX"; the footer reads "<name> <version>" (the internal build tag is not shown).
+
+diff -ruN a/es-app/src/ApiSystem.cpp b/es-app/src/ApiSystem.cpp
+--- a/es-app/src/ApiSystem.cpp	2026-10-10 15:20:14.632390223 +0200
++++ b/es-app/src/ApiSystem.cpp	2026-10-10 15:20:14.636378438 +0200
+@@ -1,4 +1,5 @@
+ #include "ApiSystem.h"
++#include <fstream>
+ #include "Settings.h"
+ #include "Log.h"
+ #include "HttpReq.h"
+@@ -173,7 +174,28 @@
+ 
+ std::string ApiSystem::getApplicationName()
+ {
+-	return "ROCKNIX";
++	// distribution name from /etc/os-release (OS_NAME); ROCKNIX only as a fallback
++	static std::string name;
++	if (name.empty())
++	{
++		std::ifstream f("/etc/os-release");
++		std::string line;
++		while (std::getline(f, line))
++		{
++			if (line.compare(0, 8, "OS_NAME=") != 0)
++				continue;
++
++			name = Utils::String::trim(line.substr(8));
++			if (name.size() >= 2 && (name.front() == '"' || name.front() == '\'') && name.back() == name.front())
++				name = name.substr(1, name.size() - 2);
++			break;
++		}
++
++		if (name.empty())
++			name = "ROCKNIX";
++	}
++
++	return name;
+ }
+ 
+ bool ApiSystem::setOverscan(bool enable) 
+diff -ruN a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+--- a/es-app/src/guis/GuiMenu.cpp	2026-10-10 15:20:14.633567784 +0200
++++ b/es-app/src/guis/GuiMenu.cpp	2026-10-10 15:20:14.638675574 +0200
+@@ -432,15 +432,7 @@
+ 	std::string label;
+ 
+ 	if (!ApiSystem::getInstance()->getVersion().empty())
+-	{
+-		if (ApiSystem::getInstance()->getApplicationName() == "ROCKNIX")
+-			label = "ROCKNIX " + ApiSystem::getInstance()->getVersion() + " (" + ApiSystem::getInstance()->getVersion(true) + ")";
+-		else
+-		{
+-			std::string aboutInfo = ApiSystem::getInstance()->getApplicationName() + " V" + ApiSystem::getInstance()->getVersion();
+-			label = aboutInfo + buildDate;
+-		}		
+-	}
++		label = ApiSystem::getInstance()->getApplicationName() + " " + ApiSystem::getInstance()->getVersion();
+ 		
+ 	if (!label.empty())
+ 	{
