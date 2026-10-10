@@ -2,7 +2,7 @@
    <formatVersion>7</formatVersion>
    <view name="screen">
       <text name="clock">
-         <pos>0.40 0.0125</pos>
+         <pos>0.47 0.0125</pos>
          <size>0.32 0.05</size>
          <fontSize>0.035</fontSize>
          <color>ffffff</color>
@@ -10,7 +10,7 @@
          <fontPath>./_inc/fonts/FOT-NewRodin Pro DB.otf</fontPath>
       </text>
       <batteryIndicator name="batteryIndicator">
-         <pos>0.86 0.015</pos>
+         <pos>0.929 0.015</pos>
          <size>0.044444444</size>
          <color>ffffff</color>
       </batteryIndicator>

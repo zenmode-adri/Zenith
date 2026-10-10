@@ -18,7 +18,7 @@ makeinstall_target() {
     if [ -d ${PKG_DIR}/overlay ]; then
       cp -rf ${PKG_DIR}/overlay/* ${INSTALL}/usr/share/themes/${PKG_NAME}/
     fi
-    # Zenith: lower the volume popup so it does not cover the clock / status icons at the top of this theme
-    sed -i 's#</theme>#  <view name="menu">\n    <menuVolume name="menuvolume">\n      <pos>0.5 0.085</pos>\n      <origin>0.5 0</origin>\n    </menuVolume>\n  </view>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
+    # Zenith: include the volume popup layout (kept clear of the clock / status icons, same row as them)
+    sed -i 's#</theme>#  <include>./zenith-volume.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
     cp -f ${PKG_DIR}/NOTICE.md ${INSTALL}/usr/share/themes/${PKG_NAME}/NOTICE.md
 }

@@ -1,0 +1,22 @@
+<theme>
+   <formatVersion>7</formatVersion>
+   <!-- Zenith: volume popup on the same row as the clock. The clock centre is y 0.045 in 4:3, 16:9 and 21:9 and
+        y 0.0375 in 1:1, where the popup is also a little smaller so it keeps a margin from the top edge. -->
+   <variables>
+      <zVolY>0.045</zVolY>
+      <zVolW>0</zVolW>
+      <zVolH>0</zVolH>
+   </variables>
+   <variables if="${screen.ratio} == '1/1'">
+      <zVolY>0.0375</zVolY>
+      <zVolW>0.2917</zVolW>
+      <zVolH>0.0472</zVolH>
+   </variables>
+   <view name="menu">
+      <menuVolume name="menuvolume">
+         <pos>0.5 ${zVolY}</pos>
+         <origin>0.5 0.5</origin>
+         <size>${zVolW} ${zVolH}</size>
+      </menuVolume>
+   </view>
+</theme>

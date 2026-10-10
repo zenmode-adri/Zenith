@@ -1,0 +1,20 @@
+<theme>
+   <formatVersion>7</formatVersion>
+   <!-- Zenith: volume popup on the same row as the status indicators (centre y 0.0667 in every aspect ratio).
+        In 1:1 the indicators are wide, so the popup moves a little to the left to stay clear of them. -->
+   <variables>
+      <zVolX>0.5</zVolX>
+   </variables>
+   <variables if="${screen.ratio} == '1/1'">
+      <zVolX>0.46</zVolX>
+   </variables>
+   <variables if="${screen.ratio} == '4/3'">
+      <zVolX>0.46</zVolX>
+   </variables>
+   <view name="menu">
+      <menuVolume name="menuvolume">
+         <pos>${zVolX} 0.0667</pos>
+         <origin>0.5 0.5</origin>
+      </menuVolume>
+   </view>
+</theme>
