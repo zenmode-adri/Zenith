@@ -65,7 +65,7 @@
     <lblW>0.125</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.34687</volW>
@@ -142,7 +142,7 @@
     <lblW>0.15972</lblW>
     <fMeta>0.02</fMeta>
     <descY>0.725</descY>
-    <descH>0.1625</descH>
+    <descH>0.18333</descH>
     <fDesc>0.02</fDesc>
     <descVisible>true</descVisible>
     <volW>0.29167</volW>
@@ -219,7 +219,7 @@
     <lblW>0.14583</lblW>
     <fMeta>0.03438</fMeta>
     <descY>0.86562</descY>
-    <descH>0.05586</descH>
+    <descH>0.06563</descH>
     <fDesc>0.03438</fDesc>
     <descVisible>false</descVisible>
     <volW>0.375</volW>
@@ -296,7 +296,7 @@
     <lblW>0.1171</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.25995</volW>
@@ -373,7 +373,7 @@
     <lblW>0.13021</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.28906</volW>
@@ -450,7 +450,7 @@
     <lblW>0.13158</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.29211</volW>
@@ -527,7 +527,7 @@
     <lblW>0.11806</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.2621</volW>
@@ -604,7 +604,7 @@
     <lblW>0.08929</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.19821</volW>
@@ -681,7 +681,7 @@
     <lblW>0.10417</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.23125</volW>
@@ -758,7 +758,7 @@
     <lblW>0.13333</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.37</volW>
@@ -835,7 +835,7 @@
     <lblW>0.12289</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
-    <descH>0.08464</descH>
+    <descH>0.0875</descH>
     <fDesc>0.02604</fDesc>
     <descVisible>true</descVisible>
     <volW>0.34101</volW>

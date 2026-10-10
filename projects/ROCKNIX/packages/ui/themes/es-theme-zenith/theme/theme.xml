@@ -415,6 +415,7 @@
   <view name="menu">
     <menuBackground name="menubg">
       <color>F7F7F9</color>
+      <fadePath>./assets/menu/fade.png</fadePath>
       <cornerSize>20 20</cornerSize>
     </menuBackground>
     <menuText name="menutitle">

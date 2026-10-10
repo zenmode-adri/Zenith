@@ -138,9 +138,10 @@ def variables(b):
     v['fMeta'] = b['fMeta'] / H
     descY = meta1 + 4 * b['metaPitch'] + b['gapRow']
     v['descY'] = descY / H
-    line = b['fDesc'] * 1.3
-    n = max(1, int((helpTop - descY) // (line * 1.25)))
-    v["descH"] = (n * line * 1.25) / H
+    # paso de linea real de ES (medido en la consola; ES redondea la fuente): 22 px con fuente 14.4 (720x720), 21 px con 12.5 (pantallas de 480 de alto)
+    line = 22.0 if b['fDesc'] > 13 else 21.0
+    n = max(1, int((helpTop - descY) // line))
+    v["descH"] = (n * line) / H
     v['fDesc'] = b['fDesc'] / H
     v['descVisible'] = 'true' if b['desc'] else 'false'
     v['volW'] = b['volW'] / W
