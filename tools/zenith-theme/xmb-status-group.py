@@ -69,6 +69,11 @@ for key, p in PARAMS.items():
     view = re.sub(r'\s*<batteryIndicator name="batteryIndicator">.*?</batteryIndicator>', '', view, flags=re.S)
     view = view.rstrip() + '\n' + BLOCK.format(font=FONT, **p) + '   '
     txt = txt[:a] + view + txt[b:]
+    if key == '1-1':
+        # el nombre del sistema ("Game Boy Advan...") no cabia en su caja de 468 px con la letra a 0.06
+        old = '<size>0.65 0.07</size>\n         <fontSize>0.06</fontSize>'
+        assert txt.count(old) == 1, txt.count(old)
+        txt = txt.replace(old, '<size>0.65 0.07</size>\n         <fontSize>0.045</fontSize>')
     open(f'{T}/overlay/aspect-ratio-{key}.xml', 'wb').write(txt.replace('\n', eol).encode('utf-8'))
     print('xmb', key, 'ok')
 

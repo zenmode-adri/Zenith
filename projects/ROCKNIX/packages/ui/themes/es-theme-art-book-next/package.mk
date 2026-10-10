@@ -18,6 +18,8 @@ makeinstall_target() {
     if [ -d ${PKG_DIR}/overlay ]; then
       cp -rf ${PKG_DIR}/overlay/* ${INSTALL}/usr/share/themes/${PKG_NAME}/
     fi
+    # Zenith: game list font a little smaller (default size) so long game names are not cut
+    sed -i '/<textlist name="gamelist">/,/<\/textlist>/s#<fontSize ifSubset="font-size:default">0.0375</fontSize>#<fontSize ifSubset="font-size:default">0.0333</fontSize>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
     # Zenith: menu icons for the entries this theme does not define (same line icons as the Zenith theme)
     cp -rf ${PKG_DIR}/../es-theme-zenith/theme/assets/menu ${INSTALL}/usr/share/themes/${PKG_NAME}/zenith-menu
     sed -i 's#</theme>#  <include>./zenith-menu-icons.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
