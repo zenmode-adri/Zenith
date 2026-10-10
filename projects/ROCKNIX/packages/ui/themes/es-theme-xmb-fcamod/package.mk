@@ -22,5 +22,7 @@ makeinstall_target() {
     sed -i 's#</theme>#  <include>./zenith-volume.xml</include>\n  <include>./zenith-menu-icons.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
     # Zenith: menu icons for the entries this theme does not define (same line icons as the Zenith theme)
     cp -rf ${PKG_DIR}/../es-theme-zenith/theme/assets/menu ${INSTALL}/usr/share/themes/${PKG_NAME}/zenith-menu
+    # Zenith: battery / Wi-Fi icons for the status group (same as the Zenith theme)
+    cp -rf ${PKG_DIR}/../es-theme-zenith/theme/assets/icons ${INSTALL}/usr/share/themes/${PKG_NAME}/zenith-status
     cp -f ${PKG_DIR}/NOTICE.md ${INSTALL}/usr/share/themes/${PKG_NAME}/NOTICE.md
 }
