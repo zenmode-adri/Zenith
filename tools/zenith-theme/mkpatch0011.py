@@ -5,7 +5,8 @@ import glob, os, shutil, subprocess, sys
 SRC = glob.glob('/home/epsil/r36s-fork/build.ROCKNIX-RK3326.aarch64/build/emulationstation-cada*/')[0].rstrip('/')
 WORK = '/home/epsil/es0011'
 shutil.rmtree(WORK, ignore_errors=True)
-files = ['es-core/src/ThemeData.h', 'es-core/src/ThemeData.cpp', 'es-core/src/components/SwitchComponent.cpp']
+files = ['es-core/src/ThemeData.h', 'es-core/src/ThemeData.cpp', 'es-core/src/components/SwitchComponent.cpp',
+         'es-core/src/components/ButtonComponent.cpp', 'es-core/src/components/MenuComponent.cpp']
 for d in ('a', 'b'):
     for f in files:
         os.makedirs(os.path.dirname(f'{WORK}/{d}/{f}'), exist_ok=True)
@@ -66,6 +67,24 @@ edit('es-core/src/components/SwitchComponent.cpp',
 edit('es-core/src/components/SwitchComponent.cpp',
      'GuiComponent(window), mImage(window), mState(state)',
      'GuiComponent(window), mImage(window, true), mState(state)')
+
+# boton con imagen propia del tema (esquinas redondeadas): mas margen interior y mas hueco entre botones
+edit('es-core/src/components/ButtonComponent.cpp',
+     '\tfloat padding = TEXT_PADDING;\n',
+     '\tfloat padding = TEXT_PADDING;\n\n'
+     '\t// a theme-provided (rounded) button image needs room for its corners\n'
+     '\tauto themeButton = ThemeData::getMenuTheme()->Button;\n'
+     '\tif (themeButton.path != ":/button.png")\n'
+     '\t\tpadding += themeButton.cornerSize.x();\n\n')
+edit('es-core/src/components/MenuComponent.cpp',
+     '\tfloat buttonGridWidth = (float)BUTTON_GRID_HORIZ_PADDING * buttons.size(); // initialize to padding\n',
+     '\tfloat hpad = (float)BUTTON_GRID_HORIZ_PADDING;\n'
+     '\tif (ThemeData::getMenuTheme()->Button.path != ":/button.png")\n'
+     '\t\thpad += ThemeData::getMenuTheme()->Button.cornerSize.x() * 0.5f;\n\n'
+     '\tfloat buttonGridWidth = hpad * buttons.size(); // initialize to padding\n')
+edit('es-core/src/components/MenuComponent.cpp',
+     '(buttons.at(i)->getSize().x() + BUTTON_GRID_HORIZ_PADDING) / buttonGridWidth',
+     '(buttons.at(i)->getSize().x() + hpad) / buttonGridWidth')
 
 r = subprocess.run(['diff', '-ruN', 'a', 'b'], cwd=WORK, capture_output=True, text=True)
 patch = r.stdout.replace('\r\n', '\n')

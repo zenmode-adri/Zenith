@@ -2,8 +2,8 @@ Zenith 0011: menu switch colours. <menuSwitch> accepts <colorOn> and <colorOff>:
 state (and keeps its colours when the row is selected), so a theme can draw a coloured on/off switch.
 
 diff -ruN a/es-core/src/ThemeData.cpp b/es-core/src/ThemeData.cpp
---- a/es-core/src/ThemeData.cpp	2026-10-10 15:33:30.685997871 +0200
-+++ b/es-core/src/ThemeData.cpp	2026-10-10 15:33:30.695273644 +0200
+--- a/es-core/src/ThemeData.cpp	2026-10-10 16:01:55.862470883 +0200
++++ b/es-core/src/ThemeData.cpp	2026-10-10 16:01:55.872529826 +0200
 @@ -649,7 +649,9 @@
  		{ "separatorColor", COLOR } } },
  	{ "menuSwitch",{
@@ -29,8 +29,8 @@ diff -ruN a/es-core/src/ThemeData.cpp b/es-core/src/ThemeData.cpp
  
  	elem = theme->getElement("menu", "menuslider", "menuSlider");
 diff -ruN a/es-core/src/ThemeData.h b/es-core/src/ThemeData.h
---- a/es-core/src/ThemeData.h	2026-10-10 15:33:30.686698648 +0200
-+++ b/es-core/src/ThemeData.h	2026-10-10 15:33:30.694353123 +0200
+--- a/es-core/src/ThemeData.h	2026-10-10 16:01:55.863221721 +0200
++++ b/es-core/src/ThemeData.h	2026-10-10 16:01:55.871567507 +0200
 @@ -170,6 +170,11 @@
  	std::string knob;
  	std::string textinput_ninepatch;
@@ -43,9 +43,50 @@ diff -ruN a/es-core/src/ThemeData.h b/es-core/src/ThemeData.h
  };
  
  struct VolumeElement
+diff -ruN a/es-core/src/components/ButtonComponent.cpp b/es-core/src/components/ButtonComponent.cpp
+--- a/es-core/src/components/ButtonComponent.cpp	2026-10-10 16:01:55.853989129 +0200
++++ b/es-core/src/components/ButtonComponent.cpp	2026-10-10 16:01:55.873656034 +0200
+@@ -76,6 +76,12 @@
+ 	mTextCache = std::unique_ptr<TextCache>(mFont->buildTextCache(mText, 0, 0, getCurTextColor()));
+ 
+ 	float padding = TEXT_PADDING;
++
++	// a theme-provided (rounded) button image needs room for its corners
++	auto themeButton = ThemeData::getMenuTheme()->Button;
++	if (themeButton.path != ":/button.png")
++		padding += themeButton.cornerSize.x();
++
+ 	float minWidth = mFont->sizeText("DELETE").x() + padding;
+ 	setSize(Math::max(mTextCache->metrics.size.x() + padding, minWidth), mTextCache->metrics.size.y());
+ 
+diff -ruN a/es-core/src/components/MenuComponent.cpp b/es-core/src/components/MenuComponent.cpp
+--- a/es-core/src/components/MenuComponent.cpp	2026-10-10 16:01:55.854402090 +0200
++++ b/es-core/src/components/MenuComponent.cpp	2026-10-10 16:01:55.874039216 +0200
+@@ -507,7 +507,11 @@
+ {
+ 	std::shared_ptr<ComponentGrid> buttonGrid = std::make_shared<ComponentGrid>(window, Vector2i((int)buttons.size(), 2));
+ 
+-	float buttonGridWidth = (float)BUTTON_GRID_HORIZ_PADDING * buttons.size(); // initialize to padding
++	float hpad = (float)BUTTON_GRID_HORIZ_PADDING;
++	if (ThemeData::getMenuTheme()->Button.path != ":/button.png")
++		hpad += ThemeData::getMenuTheme()->Button.cornerSize.x() * 0.5f;
++
++	float buttonGridWidth = hpad * buttons.size(); // initialize to padding
+ 	for(int i = 0; i < (int)buttons.size(); i++)
+ 	{
+ 		buttonGrid->setEntry(buttons.at(i), Vector2i(i, 0), true, false);
+@@ -515,7 +519,7 @@
+ 	}
+ 	for(unsigned int i = 0; i < buttons.size(); i++)
+ 	{
+-		buttonGrid->setColWidthPerc(i, (buttons.at(i)->getSize().x() + BUTTON_GRID_HORIZ_PADDING) / buttonGridWidth);
++		buttonGrid->setColWidthPerc(i, (buttons.at(i)->getSize().x() + hpad) / buttonGridWidth);
+ 	}
+ 
+ 	buttonGrid->setSize(buttonGridWidth, buttons.at(0)->getSize().y() + BUTTON_GRID_VERT_PADDING + 2);
 diff -ruN a/es-core/src/components/SwitchComponent.cpp b/es-core/src/components/SwitchComponent.cpp
---- a/es-core/src/components/SwitchComponent.cpp	2026-10-10 15:33:30.687740755 +0200
-+++ b/es-core/src/components/SwitchComponent.cpp	2026-10-10 15:33:30.696742526 +0200
+--- a/es-core/src/components/SwitchComponent.cpp	2026-10-10 16:01:55.864644869 +0200
++++ b/es-core/src/components/SwitchComponent.cpp	2026-10-10 16:01:55.873563602 +0200
 @@ -3,7 +3,7 @@
  #include "resources/Font.h"
  #include "LocaleES.h"
