@@ -6,7 +6,7 @@
   <formatVersion>7</formatVersion>
   <view name="splash">
     <splash name="splash">
-      <backgroundColor>EBEBED</backgroundColor>
+      <backgroundColor>26262A</backgroundColor>
     </splash>
     <image name="background">
       <origin>0.5 0.5</origin>

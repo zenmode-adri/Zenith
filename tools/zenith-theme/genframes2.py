@@ -12,11 +12,12 @@ os.makedirs(OUT, exist_ok=True)
 RUBIK = 'C:/Users/epsil/Documents/r36-kernel-mainline/SESION-2026-10-04-OS-DEFINITIVO/temas-zenith/zenith-switch-claro/assets/fonts/Rubik-Regular.ttf'
 CJK = 'C:/Windows/Fonts/msyh.ttc'
 S = 3
-BG = (235, 235, 237)
-TXT = (45, 45, 50)
-DIM = (125, 125, 130)
+# Paleta oscura (la misma que el tema Zenith oscuro: bg 26262A, txt F0F0F2, dim 8C8C94, pista 55555C)
+BG = (38, 38, 42)
+TXT = (240, 240, 242)
+DIM = (140, 140, 148)
 CY = (0, 195, 227)
-TRACK = (214, 214, 220)
+TRACK = (85, 85, 92)
 RED = (230, 40, 90)
 
 
