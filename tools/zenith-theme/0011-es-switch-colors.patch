@@ -1,0 +1,86 @@
+Zenith 0011: menu switch colours. <menuSwitch> accepts <colorOn> and <colorOff>: the switch image is tinted per
+state (and keeps its colours when the row is selected), so a theme can draw a coloured on/off switch.
+
+diff -ruN a/es-core/src/ThemeData.cpp b/es-core/src/ThemeData.cpp
+--- a/es-core/src/ThemeData.cpp	2026-10-10 15:33:30.685997871 +0200
++++ b/es-core/src/ThemeData.cpp	2026-10-10 15:33:30.695273644 +0200
+@@ -649,7 +649,9 @@
+ 		{ "separatorColor", COLOR } } },
+ 	{ "menuSwitch",{
+ 		{ "pathOn", PATH },
+-		{ "pathOff", PATH } } },
++		{ "pathOff", PATH },
++		{ "colorOn", COLOR },
++		{ "colorOff", COLOR } } },
+ 	{ "menuTextEdit",{
+ 		{ "active", PATH },
+ 		{ "inactive", PATH } } },
+@@ -2632,6 +2634,12 @@
+ 			Icons.on = elem->get<std::string>("pathOn");
+ 		if (elem->has("pathOff") && ResourceManager::getInstance()->fileExists(elem->get<std::string>("pathOff")))
+ 			Icons.off = elem->get<std::string>("pathOff");
++		if (elem->has("colorOn") && elem->has("colorOff"))
++		{
++			Icons.switchOnColor = elem->get<unsigned int>("colorOn");
++			Icons.switchOffColor = elem->get<unsigned int>("colorOff");
++			Icons.hasSwitchColors = true;
++		}
+ 	}
+ 
+ 	elem = theme->getElement("menu", "menuslider", "menuSlider");
+diff -ruN a/es-core/src/ThemeData.h b/es-core/src/ThemeData.h
+--- a/es-core/src/ThemeData.h	2026-10-10 15:33:30.686698648 +0200
++++ b/es-core/src/ThemeData.h	2026-10-10 15:33:30.694353123 +0200
+@@ -170,6 +170,11 @@
+ 	std::string knob;
+ 	std::string textinput_ninepatch;
+ 	std::string textinput_ninepatch_active;
++
++	// optional tint of the menu switch per state (<menuSwitch><colorOn/><colorOff>); 0 = use the menu text colour
++	bool hasSwitchColors = false;
++	unsigned int switchOnColor = 0xFFFFFFFF;
++	unsigned int switchOffColor = 0xFFFFFFFF;
+ };
+ 
+ struct VolumeElement
+diff -ruN a/es-core/src/components/SwitchComponent.cpp b/es-core/src/components/SwitchComponent.cpp
+--- a/es-core/src/components/SwitchComponent.cpp	2026-10-10 15:33:30.687740755 +0200
++++ b/es-core/src/components/SwitchComponent.cpp	2026-10-10 15:33:30.696742526 +0200
+@@ -3,7 +3,7 @@
+ #include "resources/Font.h"
+ #include "LocaleES.h"
+ 
+-SwitchComponent::SwitchComponent(Window* window, bool state, bool hasAuto, bool autoState) : GuiComponent(window), mImage(window), mState(state), mInitialState(state), mHasAuto(hasAuto), mAutoState(autoState), mInitialAutoState(autoState)
++SwitchComponent::SwitchComponent(Window* window, bool state, bool hasAuto, bool autoState) : GuiComponent(window), mImage(window, true), mState(state), mInitialState(state), mHasAuto(hasAuto), mAutoState(autoState), mInitialAutoState(autoState)
+ {
+ 	float height = Font::get(FONT_SIZE_MEDIUM)->getLetterHeight();
+ 
+@@ -12,7 +12,7 @@
+ 		height = menuTheme->Text.font->getHeight(1.1f);
+ 
+ 	mImage.setImage(menuTheme->Icons.off);
+-	mImage.setColorShift(menuTheme->Text.color);
++	mImage.setColorShift(menuTheme->Icons.hasSwitchColors ? menuTheme->Icons.switchOffColor : menuTheme->Text.color);
+ 	mImage.setResize(0, height);
+ 
+ 	if (EsLocale::isRTL())
+@@ -23,6 +23,10 @@
+ 
+ void SwitchComponent::setColor(unsigned int color) 
+ {
++	// themes that colour the switch per state keep their colours when the row is selected
++	if (ThemeData::getMenuTheme()->Icons.hasSwitchColors)
++		return;
++
+ 	mImage.setColorShift(color);
+ }
+ 
+@@ -147,6 +151,8 @@
+ {
+ 	auto theme = ThemeData::getMenuTheme();
+ 	mImage.setImage((mHasAuto && mAutoState) ? theme->Icons.onoffauto : (mState ? theme->Icons.on : theme->Icons.off));
++	if (theme->Icons.hasSwitchColors)
++		mImage.setColorShift(mState ? theme->Icons.switchOnColor : theme->Icons.switchOffColor);
+ 
+ 	if (mOnChangedCallback != nullptr)
+ 		mOnChangedCallback();

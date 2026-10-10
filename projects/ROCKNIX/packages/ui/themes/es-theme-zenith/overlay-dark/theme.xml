@@ -471,5 +471,23 @@
       <iconPlanemode>./assets/menu/menu-icon-planemode.svg</iconPlanemode>
       <searchIcon>./assets/menu/menu-icon-search.svg</searchIcon>
     </menuIcons>
+    <menuSwitch name="menuswitch">
+      <pathOn>./assets/menu/switch-on.svg</pathOn>
+      <pathOff>./assets/menu/switch-off.svg</pathOff>
+      <colorOn>${cyan}</colorOn>
+      <colorOff>5A5A62</colorOff>
+    </menuSwitch>
+    <menuSlider name="menuslider">
+      <path>./assets/menu/slider-knob.svg</path>
+    </menuSlider>
+    <menuButton name="menubutton">
+      <path>./assets/menu/button.png</path>
+      <filledPath>./assets/menu/button-filled.png</filledPath>
+      <cornerSize>16 16</cornerSize>
+    </menuButton>
+    <menuGroup name="menugroup">
+      <color>${cyan}</color>
+      <backgroundColor>FFFFFF0D</backgroundColor>
+    </menuGroup>
   </view>
 </theme>
