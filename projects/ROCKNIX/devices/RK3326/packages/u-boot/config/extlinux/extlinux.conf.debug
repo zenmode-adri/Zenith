@@ -1,9 +1,7 @@
 LABEL ROCKNIX
   LINUX /KERNEL
-  FDTDIR /
   ## DEBUG: kernel messages visible on screen and serial (loglevel=7, no 'quiet', cursor enabled).
   ## To use it, copy this file over extlinux.conf. If your device needs a fixed dtb, add the
   ## "FDT /your-device.dtb" line back (and remove the FDTDIR line), as in your old extlinux.conf.
-  # FDT /your-custom-devicetree.dtb
-  FDTOVERLAYS /overlays/mipi-panel.dtbo
-  APPEND boot=${partition_boot} disk=${partition_storage} console=ttyS2,1500000 console=tty0 systemd.debug_shell=ttyS2 loglevel=7 uboot.hwid_adc=${hwid_adc}
+  FDT /rk3326-gameconsole-r36ultra.dtb
+  APPEND boot=${partition_boot} disk=${partition_storage} console=ttyS2,1500000 console=tty0 systemd.debug_shell=ttyS2 loglevel=7 ssh uboot.hwid_adc=${hwid_adc}
