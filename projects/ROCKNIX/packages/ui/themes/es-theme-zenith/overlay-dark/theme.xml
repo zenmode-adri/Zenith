@@ -489,5 +489,9 @@
       <color>9A9AA2</color>
       <backgroundColor>FFFFFF0D</backgroundColor>
     </menuGroup>
+    <menuTextEdit name="menutextedit">
+      <active>./assets/menu/textinput-active.png</active>
+      <inactive>./assets/menu/textinput.png</inactive>
+    </menuTextEdit>
   </view>
 </theme>

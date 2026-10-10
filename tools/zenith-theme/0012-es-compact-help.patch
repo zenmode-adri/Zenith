@@ -1,0 +1,49 @@
+Zenith 0012: compact help bar on small screens (width <= 560 px): short labels (SEARCH, GAME OPTIONS/SAVE STATES without
+"/FAVORITE") and no "OPTIONS" entry, so the bar fits at 480x320 instead of overflowing and dropping entries.
+
+diff -ruN a/es-app/src/views/gamelist/ISimpleGameListView.cpp b/es-app/src/views/gamelist/ISimpleGameListView.cpp
+--- a/es-app/src/views/gamelist/ISimpleGameListView.cpp	2026-10-10 19:01:46.483778065 +0200
++++ b/es-app/src/views/gamelist/ISimpleGameListView.cpp	2026-10-10 19:01:46.488539144 +0200
+@@ -690,6 +690,9 @@
+ 
+ 	bool invertNorthButton = Settings::getInstance()->getBool("GameOptionsAtNorth");
+ 
++	// small screens (e.g. 480x320): the help bar overflows with the long labels, so use short ones and skip the rare "OPTIONS"
++	const bool compactHelp = Renderer::getScreenWidth() <= 560;
++
+ 	prompts.push_back(HelpPrompt(BUTTON_BACK, _("BACK"), [&] { goBack(); }));
+ 
+ 	if (invertNorthButton)
+@@ -697,7 +700,7 @@
+ 	else 
+ 		prompts.push_back(HelpPrompt(BUTTON_OK, _("GAME OPTIONS (HOLD)"), [&] { showSelectedGameOptions(); }));
+ 
+-	if (!UIModeController::getInstance()->isUIModeKid())
++	if (!compactHelp && !UIModeController::getInstance()->isUIModeKid())
+ 		prompts.push_back(HelpPrompt("select", _("OPTIONS"), [&] { showGamelistOptions(); }));
+ 
+ 	if (cursorHasSaveStatesEnabled())
+@@ -707,20 +710,20 @@
+ 			if (UIModeController::getInstance()->isUIModeKid())
+ 				prompts.push_back(HelpPrompt("x", _("GAME OPTIONS"), [&] { showSelectedGameOptions(); }));
+ 			else
+-				prompts.push_back(HelpPrompt("x", _("GAME OPTIONS") + std::string("/") + _("FAVORITE"), [&] { showSelectedGameOptions(); }));
++				prompts.push_back(HelpPrompt("x", compactHelp ? std::string(_("GAME OPTIONS")) : _("GAME OPTIONS") + std::string("/") + _("FAVORITE"), [&] { showSelectedGameOptions(); }));
+ 		}
+ 		else
+ 		{
+ 			if (UIModeController::getInstance()->isUIModeKid())
+ 				prompts.push_back(HelpPrompt("x", _("SAVE STATES"), [&] { showSelectedGameSaveSnapshots(); }));
+ 			else
+-				prompts.push_back(HelpPrompt("x", _("SAVE STATES") + std::string("/") + _("FAVORITE"), [&] { showSelectedGameSaveSnapshots(); }));
++				prompts.push_back(HelpPrompt("x", compactHelp ? std::string(_("SAVE STATES")) : _("SAVE STATES") + std::string("/") + _("FAVORITE"), [&] { showSelectedGameSaveSnapshots(); }));
+ 		}
+ 	}
+ 	else if (!UIModeController::getInstance()->isUIModeKid())
+ 		prompts.push_back(HelpPrompt("x", _("FAVORITE")));
+ 
+-	prompts.push_back(HelpPrompt("y", _("SEARCH") + std::string("/") + _("RANDOM"), [&] { showQuickSearch(); }));
++	prompts.push_back(HelpPrompt("y", compactHelp ? std::string(_("SEARCH")) : _("SEARCH") + std::string("/") + _("RANDOM"), [&] { showQuickSearch(); }));
+ 
+ 	return prompts;
+ }

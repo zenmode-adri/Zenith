@@ -15,7 +15,7 @@
     <stackSep>0.0125</stackSep>
     <fClock>0.03333</fClock>
     <fBatt>0.02708</fBatt>
-    <fHelp>0.03</fHelp>
+    <fHelp>0.02542</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.19531</cellW>
     <cellH>0.26042</cellH>
@@ -41,7 +41,7 @@
     <listW>0.52031</listW>
     <listH>0.7125</listH>
     <listWide>0.94375</listWide>
-    <fList>0.03854</fList>
+    <fList>0.03542</fList>
     <spacing>1.526</spacing>
     <selH>0.0625</selH>
     <listHM>0.02031</listHM>
@@ -167,7 +167,7 @@
     <stackSep>0.0125</stackSep>
     <fClock>0.04063</fClock>
     <fBatt>0.03438</fBatt>
-    <fHelp>0.0375</fHelp>
+    <fHelp>0.03188</fHelp>
     <helpY>0.9375</helpY>
     <cellW>0.2</cellW>
     <cellH>0.3</cellH>
@@ -190,15 +190,15 @@
     <fTitle>0.04688</fTitle>
     <listX>0.02917</listX>
     <listY>0.1625</listY>
-    <listW>0.55</listW>
+    <listW>0.57917</listW>
     <listH>0.7</listH>
     <listWide>0.94167</listWide>
-    <fList>0.05</fList>
-    <spacing>1.379</spacing>
+    <fList>0.04531</fList>
+    <spacing>1.524</spacing>
     <selH>0.08125</selH>
     <listHM>0.02083</listHM>
-    <colX>0.6125</colX>
-    <colW>0.35833</colW>
+    <colX>0.63333</colX>
+    <colW>0.3375</colW>
     <coverW>0.23958</coverW>
     <coverH>0.35938</coverH>
     <nameY>0.54688</nameY>
@@ -211,8 +211,8 @@
     <metaH>0.04375</metaH>
     <starH>0.04812</starH>
     <starY>0.79437</starY>
-    <valX>0.75833</valX>
-    <valW>0.2125</valW>
+    <valX>0.77917</valX>
+    <valW>0.19167</valW>
     <lblW>0.14583</lblW>
     <fMeta>0.03438</fMeta>
     <descY>0.86562</descY>
@@ -240,10 +240,10 @@
     <stackH>0.04375</stackH>
     <stackY>0.04896</stackY>
     <stackX>-0.02342</stackX>
-    <stackSep>0.00937</stackSep>
+    <stackSep>0.01171</stackSep>
     <fClock>0.03333</fClock>
     <fBatt>0.02708</fBatt>
-    <fHelp>0.03</fHelp>
+    <fHelp>0.02708</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.14637</cellW>
     <cellH>0.26042</cellH>

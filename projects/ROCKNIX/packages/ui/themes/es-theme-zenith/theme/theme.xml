@@ -11,7 +11,7 @@
   <variables>
     <bg>EBEBED</bg>
     <txt>2D2D32</txt>
-    <dim>7D7D82</dim>
+    <dim>6A6A70</dim>
     <dimDark>5F5F66</dimDark>
     <tileTxt>2D2D32</tileTxt>
     <cyan>00C3E3</cyan>
@@ -489,5 +489,9 @@
       <color>7D7D82</color>
       <backgroundColor>0000000A</backgroundColor>
     </menuGroup>
+    <menuTextEdit name="menutextedit">
+      <active>./assets/menu/textinput-active.png</active>
+      <inactive>./assets/menu/textinput.png</inactive>
+    </menuTextEdit>
   </view>
 </theme>

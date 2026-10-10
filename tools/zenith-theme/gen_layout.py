@@ -19,19 +19,19 @@ BUCKETS = {
                 metaPitch=29, descGap=14, desc=1, gapCol=36, labelW=115, fMenuTitle=24.5, fMenu=21.6,
                 fMenuSmall=17.3, fMenuFoot=15.8, fLogo=21.6, hm=16),
     '4x3': dict(key='4x3', volW=222, volH=38, volY=32, fVol=14, pitch=38, W=640, H=480, cond="${screen.ratio} == '4/3'",
-                M=18, D=28, sep=8, fClock=16, fBatt=13, fHelp=14.4, helpCY=455, T=125, carY=0.47, Y0=70, Y0L=70,
-                gapX=18, gapY=2, cols=4, rows=3, gp=5, fGrid=11.5, fTitle=18, fSys=13.5, fList=18.5, 
+                M=18, D=28, sep=8, fClock=16, fBatt=13, fHelp=12.2, helpCY=455, T=125, carY=0.47, Y0=70, Y0L=70,
+                gapX=18, gapY=2, cols=4, rows=3, gp=5, fGrid=11.5, fTitle=18, fSys=13.5, fList=17, 
                 selH=30, listW=0.52, fName=15.5, fMeta=12.5, fDesc=12.5, coverCap=170, nameGap=10, nameH=21, gapRow=10,
                 metaPitch=21, descGap=10, desc=1, gapCol=24, labelW=80, fMenuTitle=20, fMenu=18,
                 fMenuSmall=14.5, fMenuFoot=13, fLogo=18, hm=13),
     '3x2': dict(key='3x2', volW=180, volH=32, volY=56, fVol=12, pitch=32, W=480, H=320, cond="${screen.ratio} == '3/2'",
-                M=14, D=24, sep=6, fClock=13, fBatt=11, fHelp=12, helpCY=300, T=96, carY=0.46, Y0=52, Y0L=52,
-                gapX=12, gapY=2, cols=4, rows=2, gp=4, fGrid=10.5, fTitle=15, fSys=11.5, fList=16, 
-                selH=26, listW=0.55, fName=13, fMeta=11, fDesc=11, coverCap=115, nameGap=8, nameH=18, gapRow=8,
-                metaPitch=17, descGap=0, desc=0, gapCol=16, labelW=70, fMenuTitle=17, fMenu=15,
+                M=14, D=24, sep=6, fClock=13, fBatt=11, fHelp=10.2, helpCY=300, T=96, carY=0.46, Y0=52, Y0L=52,
+                gapX=12, gapY=2, cols=4, rows=2, gp=4, fGrid=10.5, fTitle=15, fSys=11.5, fList=14.5, 
+                selH=26, listW=0.58, fName=13, fMeta=11, fDesc=11, coverCap=115, nameGap=8, nameH=18, gapRow=8,
+                metaPitch=17, descGap=0, desc=0, gapCol=12, labelW=70, fMenuTitle=17, fMenu=15,
                 fMenuSmall=12, fMenuFoot=11, fLogo=14, hm=10),
     '16x9': dict(key='16x9', volW=222, volH=38, volY=34, fVol=14, pitch=38, W=854, H=480, cond="${screen.ratio} == '16/9'",
-                 M=20, D=28, sep=8, fClock=16, fBatt=13, fHelp=14.4, helpCY=455, T=125, carY=0.47, Y0=70, Y0L=70,
+                 M=20, D=28, sep=10, fClock=16, fBatt=13, fHelp=13, helpCY=455, T=125, carY=0.47, Y0=70, Y0L=70,
                  gapX=24, gapY=2, cols=5, rows=3, gp=5, fGrid=11.5, fTitle=18, fSys=13.5, fList=18.5, 
                  selH=30, listW=0.45, fName=15.5, fMeta=12.5, fDesc=12.5, coverCap=170, nameGap=10, nameH=21, gapRow=10,
                  metaPitch=21, descGap=10, desc=1, gapCol=28, labelW=100, fMenuTitle=20, fMenu=18,
@@ -91,7 +91,7 @@ def variables(b):
     v['listH'] = (rows_fit * pitch) / H
     v['listWide'] = (W - 2 * M) / W
     v['fList'] = b['fList'] / H
-    k = {'1x1': 23.2, '4x3': 24.9, '3x2': 23.2, '16x9': 24.9}[b['key']]
+    k = {'1x1': 23.2, '4x3': 24.9, '3x2': 21.0, '16x9': 24.9}[b['key']]
     pitch = b['pitch']
     v['spacing'] = round(pitch / k, 3)
     v['selH'] = b['selH'] / H
