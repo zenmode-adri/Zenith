@@ -836,6 +836,8 @@ static int detect_cpu_oc(int cur_hz) {
 }
 
 /* ── CPU max freq screen ────────────────────────────────────────────────── */
+static int confirm_turbo_on(void);
+
 static void screen_cpu_freq(void){
     char ap[256],mp[256];
     snprintf(ap,sizeof(ap),"%s/scaling_available_frequencies",CPU_POLICY);
@@ -925,6 +927,8 @@ static void screen_cpu_freq(void){
     }
     int chosen=submenu(S(STR_CPU_MAX_FREQ),S(STR_CORTEX_A35),items,n,&sel,NULL,0);
     if(chosen>=0 && chosen==turbo_idx){
+        /* turning turbo ON needs an explicit confirmation (1512 MHz with 4 cores rebooted the console) */
+        if (!boost_on && !confirm_turbo_on()) { screen_cpu_freq(); return; }
         /* sets cpufreq/boost and saves enable.turbo-mode, which autostart/095-turbo-mode applies again at boot */
         /* (the stock turbomode script cannot save the setting: its child bash has no set_setting) */
         system(boost_on ? "bash -c '. /etc/profile; echo 0 > " BOOST_FILE "; set_setting enable.turbo-mode 0' >/dev/null 2>&1"
@@ -1576,6 +1580,30 @@ static int confirm_ram_oc(int volt_uv, int cur_uv, int has_node, const char *dmc
                           S(STR_FREQUENCY), S(STR_ACTUAL_COL), S(STR_NEW_COL),
                           rows, nr, warnings, 2, infos, 2,
                           S(STR_APPLY), S(STR_CANCEL));
+}
+
+/* Zenith: warning before enabling the turbo steps (cpufreq boost). Measured on a R36 Ultra: 4 cores at 1416 MHz / 1350 mV
+   ran stable, 4 cores at 1512 MHz rebooted the console by itself. */
+static int confirm_turbo_on(void) {
+    ConfirmRow rows[2];
+    int nr = 0;
+    snprintf(rows[nr].col1, CONFIRM_COL_LEN, "%s", S(STR_FREQUENCY));
+    snprintf(rows[nr].col2, CONFIRM_COL_LEN, "1416 / 1512 %s", S(STR_MHZ)); nr++;
+    snprintf(rows[nr].col1, CONFIRM_COL_LEN, "%s", S(STR_VALUE));
+    snprintf(rows[nr].col2, CONFIRM_COL_LEN, "1350 %s", S(STR_MILLIVOLTS)); nr++;
+
+    const char *warnings[] = {
+        "The console may restart by itself under load on several cores",
+        "1416 MHz was stable on 4 cores; 1512 MHz was not (it rebooted)"
+    };
+    const char *infos[] = {
+        "Saved, also applied at boot. Turn it OFF here to go back"
+    };
+
+    return confirm_screen("TURBO - CONFIRM", "Unlocks the turbo steps (1416 / 1512 MHz)",
+                          S(STR_PARAMETER), S(STR_VALUE), NULL,
+                          rows, nr, warnings, 2, infos, 1,
+                          "Enable turbo", S(STR_CANCEL));
 }
 
 static int confirm_restore(void) {

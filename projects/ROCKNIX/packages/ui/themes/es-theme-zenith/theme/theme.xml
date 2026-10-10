@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Zenith (tema claro) - tema original de zenmode-adri para EmulationStation.
+  Teselas blancas con marco cian, logos de consola y mucho aire. Disenado para 1:1 (720x720), 4:3 (640x480),
+  3:2 (480x320) y 16:9 (854x480): la geometria sale de layout.xml (generado), el resto es comun.
+  Terceros: logos de consola de es-theme-iconic (CC0); fuente Rubik (SIL OFL). Ver NOTICE.md.
+-->
+<theme defaultTransition="instant">
+  <formatVersion>7</formatVersion>
+
+  <variables>
+    <bg>EBEBED</bg>
+    <txt>2D2D32</txt>
+    <dim>7D7D82</dim>
+    <dimDark>5F5F66</dimDark>
+    <tileTxt>2D2D32</tileTxt>
+    <cyan>00C3E3</cyan>
+    <cyanDark>00869F</cyanDark>
+    <cyanSoft>D6F2F8</cyanSoft>
+    <font>./assets/fonts/Rubik-Regular.ttf</font>
+  </variables>
+
+  <!-- Geometria por relacion de aspecto -->
+  <include>./layout.xml</include>
+
+  <!-- ===== Elementos comunes a todas las vistas ===== -->
+  <view name="screen">
+    <controllerActivity name="controllerActivity">
+      <visible>false</visible>
+    </controllerActivity>
+    <batteryIndicator name="batteryIndicator">
+      <visible>false</visible>
+    </batteryIndicator>
+    <text name="clock">
+      <pos>1 1</pos>
+    </text>
+    <image name="zs-avatar" extra="true">
+      <path>./assets/avatar.png</path>
+      <origin>0 0.5</origin>
+      <pos>${avX} ${avY}</pos>
+      <size>${avW} ${avH}</size>
+      <zIndex>90</zIndex>
+    </image>
+    <stackpanel name="zs-status" extra="true">
+      <h>${stackH}</h>
+      <w>1</w>
+      <pos>${stackX} ${stackY}</pos>
+      <separator>${stackSep}</separator>
+      <zIndex>100</zIndex>
+      <orientation>horizontal</orientation>
+      <reverse>true</reverse>
+      <clock name="zs-clock" extra="true">
+        <color>${txt}</color>
+        <fontSize>${fClock}</fontSize>
+        <lineSpacing>1</lineSpacing>
+        <fontPath>${font}</fontPath>
+      </clock>
+      <batteryText name="zs-battery-text" extra="true">
+        <color>${dim}</color>
+        <fontSize>${fBatt}</fontSize>
+        <lineSpacing>1</lineSpacing>
+        <fontPath>${font}</fontPath>
+      </batteryText>
+      <batteryIcon name="zs-battery-icon" extra="true">
+        <maxSize>1 1</maxSize>
+        <color>${txt}</color>
+        <full>./assets/icons/battery-icon-100.svg</full>
+        <at75>./assets/icons/battery-icon-75.svg</at75>
+        <at50>./assets/icons/battery-icon-50.svg</at50>
+        <at25>./assets/icons/battery-icon-25.svg</at25>
+        <empty>./assets/icons/battery-icon-0.svg</empty>
+        <incharge>./assets/icons/battery-icon-charging.svg</incharge>
+      </batteryIcon>
+      <networkIcon name="zs-network-icon" extra="true">
+        <maxSize>1 1</maxSize>
+        <color>${txt}</color>
+        <networkIcon>./assets/icons/network-icon-on.svg</networkIcon>
+        <planemodeIcon>./assets/icons/network-icon-off.svg</planemodeIcon>
+      </networkIcon>
+    </stackpanel>
+  </view>
+
+  <view name="system, basic, detailed, grid">
+    <image name="zs-bg" extra="true">
+      <path>./assets/px.png</path>
+      <origin>0 0</origin>
+      <pos>0 0</pos>
+      <size>1 1</size>
+      <color>${bg}</color>
+      <zIndex>0</zIndex>
+    </image>
+    <helpsystem name="help">
+      <origin>0.5 0.5</origin>
+      <pos>0.5 ${helpY}</pos>
+      <fontSize>${fHelp}</fontSize>
+      <fontPath>${font}</fontPath>
+      <textColor>${dimDark}</textColor>
+      <iconColor>${dimDark}</iconColor>
+      <iconA>./assets/help-A.png</iconA>
+      <iconB>./assets/help-B.png</iconB>
+      <iconX>./assets/help-X.png</iconX>
+      <iconY>./assets/help-Y.png</iconY>
+      <iconL>./assets/help-L.png</iconL>
+      <iconR>./assets/help-R.png</iconR>
+      <iconStart>./assets/help-start.png</iconStart>
+      <iconSelect>./assets/help-select.png</iconSelect>
+      <iconUpDown>./assets/help-updown.png</iconUpDown>
+      <iconLeftRight>./assets/help-leftright.png</iconLeftRight>
+      <iconUpDownLeftRight>./assets/help-dpad.png</iconUpDownLeftRight>
+    </helpsystem>
+  </view>
+
+  <!-- ===== Vista de sistemas: carrusel de teselas con logo ===== -->
+  <view name="system">
+    <image name="logo">
+      <path>./assets/logos/${system.theme}.webp</path>
+    </image>
+    <carousel name="systemcarousel">
+      <type>horizontal</type>
+      <origin>0.5 0.5</origin>
+      <pos>0.5 ${carY}</pos>
+      <size>${carW} 0.5</size>
+      <logoSize>${cellW} ${cellH}</logoSize>
+      <logoScale>1.23</logoScale>
+      <color>00000000</color>
+      <colorEnd>00000000</colorEnd>
+      <maxLogoCount>5</maxLogoCount>
+      <minLogoOpacity>1</minLogoOpacity>
+      <systemInfoDelay>0</systemInfoDelay>
+      <defaultTransition>slide</defaultTransition>
+      <itemTemplate>
+        <container>
+          <image name="zs-tile">
+            <pos>0.5 0.5</pos>
+            <origin>0.5 0.5</origin>
+            <size>1.5 1.5</size>
+            <path>./assets/tile.png</path>
+          </image>
+          <image name="zs-frame">
+            <pos>0.5 0.5</pos>
+            <origin>0.5 0.5</origin>
+            <size>1.5 1.5</size>
+            <path>./assets/frame.png</path>
+            <color>FFFFFF00</color>
+            <storyboard event="activate">
+              <animation property="color" from="FFFFFF00" to="FFFFFFFF" duration="120" mode="linear"/>
+            </storyboard>
+            <storyboard event="deactivate">
+              <animation property="color" from="FFFFFFFF" to="FFFFFF00" duration="120" mode="linear"/>
+            </storyboard>
+          </image>
+          <image name="zs-logo">
+            <pos>0.5 0.5</pos>
+            <origin>0.5 0.5</origin>
+            <maxSize>0.72 0.5</maxSize>
+            <linearSmooth>true</linearSmooth>
+            <path>{system:logo}</path>
+          </image>
+          <text name="zs-logo-text">
+            <visible>!exists("${themePath}/assets/logos/" + {system:theme} + ".webp")</visible>
+            <value>{system:fullName}</value>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <multiLine>true</multiLine>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.5</pos>
+            <size>0.8 0.7</size>
+            <fontSize>${fLogo}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+        </container>
+      </itemTemplate>
+    </carousel>
+    <text name="systemInfo">
+      <origin>0.5 0.5</origin>
+      <pos>0.5 ${sysInfoY}</pos>
+      <size>0.7 0.06</size>
+      <fontSize>${fSys}</fontSize>
+      <fontPath>${font}</fontPath>
+      <color>${dim}</color>
+      <alignment>center</alignment>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>50</zIndex>
+    </text>
+  </view>
+
+  <!-- ===== Cabecera comun de las vistas de juegos ===== -->
+  <view name="grid, basic, detailed">
+    <text name="logoText">
+      <visible>false</visible>
+    </text>
+    <text name="zs-sysname" extra="true">
+      <text>${system.fullName}</text>
+      <origin>0 0.5</origin>
+      <pos>${nameX} ${avY}</pos>
+      <size>0.6 0.07</size>
+      <fontSize>${fTitle}</fontSize>
+      <fontPath>${font}</fontPath>
+      <color>${txt}</color>
+      <alignment>left</alignment>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>90</zIndex>
+    </text>
+  </view>
+
+  <!-- ===== Cuadricula de caratulas ===== -->
+  <view name="grid">
+    <imagegrid name="gamegrid">
+      <pos>${gridX} ${gridY}</pos>
+      <size>${gridW} ${gridH}</size>
+      <cellProportion>1</cellProportion>
+      <margin>${gridMgX} ${gridMgY}</margin>
+      <padding>${gridPad} ${gridPad} ${gridPad} ${gridPad}</padding>
+      <autoLayout>${gridCols} ${gridRows}</autoLayout>
+      <autoLayoutSelectedZoom>1</autoLayoutSelectedZoom>
+      <imageSource>thumbnail</imageSource>
+      <animateSelection>false</animateSelection>
+      <centerSelection>false</centerSelection>
+      <zIndex>20</zIndex>
+    </imagegrid>
+    <gridtile name="default">
+      <backgroundColor>00000000</backgroundColor>
+      <selectionMode>image</selectionMode>
+      <imageSizeMode>maxSize</imageSizeMode>
+      <padding>${gridPad} ${gridPad}</padding>
+      <imageColor>FFFFFFFF</imageColor>
+    </gridtile>
+    <gridtile name="selected">
+      <backgroundImage>./assets/gridframe.png</backgroundImage>
+      <backgroundCornerSize>16 16</backgroundCornerSize>
+      <backgroundColor>FFFFFFFF</backgroundColor>
+      <selectionMode>image</selectionMode>
+      <imageSizeMode>maxSize</imageSizeMode>
+      <padding>${gridPad} ${gridPad}</padding>
+      <imageColor>FFFFFFFF</imageColor>
+    </gridtile>
+    <text name="gridtile">
+      <color>${dim}</color>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fGrid}</fontSize>
+      <padding>0 0.05 0 0</padding>
+      <alignment>center</alignment>
+      <verticalAlignment>top</verticalAlignment>
+      <lineSpacing>1</lineSpacing>
+    </text>
+    <text name="gridtile:selected">
+      <color>${txt}</color>
+    </text>
+  </view>
+
+  <!-- ===== Lista (basic / detailed) ===== -->
+  <view name="basic, detailed">
+    <textlist name="gamelist">
+      <pos>${listX} ${listY}</pos>
+      <size>${listW} ${listH}</size>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fList}</fontSize>
+      <primaryColor>${dimDark}</primaryColor>
+      <secondaryColor>${cyanDark}</secondaryColor>
+      <selectedColor>${cyanDark}</selectedColor>
+      <selectorImagePath>${pill}</selectorImagePath>
+      <selectorColor>FFFFFFFF</selectorColor>
+      <selectorHeight>${selH}</selectorHeight>
+      <horizontalMargin>${listHM}</horizontalMargin>
+      <alignment>left</alignment>
+      <lineSpacing>${spacing}</lineSpacing>
+      <zIndex>20</zIndex>
+    </textlist>
+    <image name="md_image">
+      <pos>${colX} ${listY}</pos>
+      <origin>0 0</origin>
+      <maxSize>${coverW} ${coverH}</maxSize>
+      <zIndex>30</zIndex>
+    </image>
+    <text name="md_name">
+      <pos>${colX} ${nameY}</pos>
+      <origin>0 0</origin>
+      <size>${colW} ${nameH}</size>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fName}</fontSize>
+      <color>${txt}</color>
+      <alignment>left</alignment>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>40</zIndex>
+    </text>
+    <text name="md_lbl_releasedate">
+      <visible>false</visible>
+    </text>
+    <datetime name="md_releasedate">
+      <pos>${valX} ${meta1}</pos>
+      <origin>0 0</origin>
+      <size>${valW} ${metaH}</size>
+      <alignment>left</alignment>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMeta}</fontSize>
+      <color>${txt}</color>
+      <format>%Y</format>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>40</zIndex>
+    </datetime>
+    <text name="md_lbl_genre">
+      <visible>false</visible>
+    </text>
+    <text name="md_genre">
+      <pos>${valX} ${meta2}</pos>
+      <origin>0 0</origin>
+      <size>${valW} ${metaH}</size>
+      <alignment>left</alignment>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMeta}</fontSize>
+      <color>${txt}</color>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>40</zIndex>
+    </text>
+    <text name="md_lbl_players">
+      <visible>false</visible>
+    </text>
+    <text name="md_players">
+      <pos>${valX} ${meta3}</pos>
+      <origin>0 0</origin>
+      <size>${valW} ${metaH}</size>
+      <alignment>left</alignment>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMeta}</fontSize>
+      <color>${txt}</color>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>40</zIndex>
+    </text>
+    <rating name="md_rating">
+      <pos>${valX} ${starY}</pos>
+      <origin>0 0</origin>
+      <size>0 ${starH}</size>
+      <filledPath>./assets/icons/icon-star-filled.svg</filledPath>
+      <unfilledPath>./assets/icons/icon-star-unfilled.svg</unfilledPath>
+      <color>${cyan}</color>
+      <zIndex>40</zIndex>
+    </rating>
+    <text name="md_description">
+      <visible>${descVisible}</visible>
+      <pos>${colX} ${descY}</pos>
+      <origin>0 0</origin>
+      <size>${colW} ${descH}</size>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fDesc}</fontSize>
+      <color>${dim}</color>
+      <lineSpacing>1.3</lineSpacing>
+      <zIndex>40</zIndex>
+    </text>
+  </view>
+
+  <view name="detailed">
+    <text name="zs-lbl-released" extra="true">
+      <text>Released</text>
+      <pos>${colX} ${meta1}</pos>
+      <origin>0 0</origin>
+      <size>${lblW} ${metaH}</size>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMeta}</fontSize>
+      <color>${dim}</color>
+      <alignment>left</alignment>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>40</zIndex>
+    </text>
+    <text name="zs-lbl-genre" extra="true">
+      <text>Genre</text>
+      <pos>${colX} ${meta2}</pos>
+      <origin>0 0</origin>
+      <size>${lblW} ${metaH}</size>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMeta}</fontSize>
+      <color>${dim}</color>
+      <alignment>left</alignment>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>40</zIndex>
+    </text>
+    <text name="zs-lbl-players" extra="true">
+      <text>Players</text>
+      <pos>${colX} ${meta3}</pos>
+      <origin>0 0</origin>
+      <size>${lblW} ${metaH}</size>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMeta}</fontSize>
+      <color>${dim}</color>
+      <alignment>left</alignment>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>40</zIndex>
+    </text>
+    <text name="zs-lbl-rating" extra="true">
+      <text>Rating</text>
+      <pos>${colX} ${meta4}</pos>
+      <origin>0 0</origin>
+      <size>${lblW} ${metaH}</size>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMeta}</fontSize>
+      <color>${dim}</color>
+      <alignment>left</alignment>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>40</zIndex>
+    </text>
+  </view>
+
+  <!-- basic: sin metadatos, la lista ocupa todo el ancho -->
+  <view name="basic">
+    <textlist name="gamelist">
+      <size>${listWide} ${listH}</size>
+      <selectorImagePath>${pillw}</selectorImagePath>
+    </textlist>
+  </view>
+
+  <!-- ===== Menus de ES ===== -->
+  <view name="menu">
+    <menuBackground name="menubg">
+      <color>F7F7F9</color>
+      <cornerSize>20 20</cornerSize>
+    </menuBackground>
+    <menuText name="menutitle">
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMenuTitle}</fontSize>
+      <color>${txt}</color>
+    </menuText>
+    <menuText name="menutext">
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMenu}</fontSize>
+      <color>${txt}</color>
+      <separatorColor>E1E1E6</separatorColor>
+      <selectedColor>${cyanDark}</selectedColor>
+      <selectorColor>${cyanSoft}</selectorColor>
+    </menuText>
+    <menuTextSmall name="menutextsmall">
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMenuSmall}</fontSize>
+      <color>${dim}</color>
+    </menuTextSmall>
+    <menuText name="menufooter">
+      <fontPath>${font}</fontPath>
+      <fontSize>${fMenuFoot}</fontSize>
+      <color>${dim}</color>
+    </menuText>
+    <menuVolume name="menuvolume">
+      <pos>0.5 ${volY}</pos>
+      <origin>0.5 0.5</origin>
+      <size>${volW} ${volH}</size>
+      <cornerRadius>0.5</cornerRadius>
+      <color>FFFFFF</color>
+      <barColor>${cyan}</barColor>
+      <trackColor>D6D6DC</trackColor>
+      <textColor>2D2D32</textColor>
+      <fontPath>${font}</fontPath>
+      <fontSize>${fVol}</fontSize>
+    </menuVolume>
+  </view>
+</theme>

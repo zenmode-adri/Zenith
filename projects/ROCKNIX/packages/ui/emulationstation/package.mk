@@ -88,7 +88,7 @@ makeinstall_target() {
     ${INSTALL}/usr/config/emulationstation/es_settings.cfg
 
   # Zenith: default theme (the others are linked by userconfig-setup and selectable in the menu)
-  sed -i 's|</config>|  <string name="ThemeSet" value="es-theme-art-book-next" />\n</config>|' \
+  sed -i 's|</config>|  <string name="ThemeSet" value="es-theme-zenith" />\n</config>|' \
     ${INSTALL}/usr/config/emulationstation/es_settings.cfg
 
   # Zenith: ES screensaver (black frame + backlight off via es-scripts) after 2 minutes instead of 5

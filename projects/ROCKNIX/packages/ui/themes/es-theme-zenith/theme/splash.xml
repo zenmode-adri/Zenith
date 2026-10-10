@@ -1,0 +1,37 @@
+<!--
+  Zenith splash screen: logo only (no progress bar, no loading text).
+  Literal values on purpose: theme color variables are not resolved reliably in the splash view.
+-->
+<theme>
+  <formatVersion>7</formatVersion>
+  <view name="splash">
+    <splash name="splash">
+      <backgroundColor>EBEBED</backgroundColor>
+    </splash>
+    <image name="background">
+      <origin>0.5 0.5</origin>
+      <pos>0.5 0.5</pos>
+      <maxSize>1 1</maxSize>
+      <path>./assets/zenith-splash.png</path>
+    </image>
+    <image name="progressbar">
+      <origin>0.5 0.5</origin>
+      <pos>2 2</pos>
+      <size>0.001 0.001</size>
+      <color>00000000</color>
+      <colorEnd>00000000</colorEnd>
+    </image>
+    <image name="progressbar:active">
+      <color>00000000</color>
+      <colorEnd>00000000</colorEnd>
+    </image>
+    <text name="label">
+      <origin>0.5 0.5</origin>
+      <pos>2 2</pos>
+      <size>0.001 0.001</size>
+      <alignment>center</alignment>
+      <fontSize>0.001</fontSize>
+      <color>00000000</color>
+    </text>
+  </view>
+</theme>

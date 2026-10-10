@@ -32,7 +32,7 @@ DEFAULT=(
     /storage/.emulationstation/es_*.cfg
     /storage/.emulationstation/scripts/*
     /storage/.emulationstation/themesettings/*
-    $(find /storage/.emulationstation/themes/* -type d -maxdepth 0 -not -path "*es-theme-art-book-next" -not -path "*es-theme-zenith" -not -path "*es-theme-iconic" -not -path "*es-theme-xmb-fcamod" -not -path "*es-theme-techdweeb" -not -path "*system-theme")
+    $(find /storage/.emulationstation/themes/* -type d -maxdepth 0 -not -path "*es-theme-art-book-next" -not -path "*es-theme-zenith" -not -path "*es-theme-zenith-dark" -not -path "*es-theme-iconic" -not -path "*es-theme-xmb-fcamod" -not -path "*es-theme-techdweeb" -not -path "*system-theme")
 )
 
 if [ -e "/storage/.config/backuptool.conf" ]

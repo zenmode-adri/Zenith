@@ -1,0 +1,469 @@
+Zenith 0009: volume popup redesign. Default: a pill at the top center (icon, bar, percentage) coloured from the
+menu theme; themes can restyle it with <menuVolume name="menuvolume"> in the menu view (pos, origin, size,
+cornerRadius, color, barColor, trackColor, textColor, fontPath, fontSize).
+
+diff -ruN a/es-core/src/ThemeData.cpp b/es-core/src/ThemeData.cpp
+--- a/es-core/src/ThemeData.cpp	2026-10-10 13:37:48.698170228 +0200
++++ b/es-core/src/ThemeData.cpp	2026-10-10 13:37:48.706413825 +0200
+@@ -655,6 +655,17 @@
+ 		{ "inactive", PATH } } },
+ 	{ "menuSlider",{
+ 		{ "path", PATH } } },
++	{ "menuVolume",{
++		{ "pos", NORMALIZED_PAIR },
++		{ "origin", NORMALIZED_PAIR },
++		{ "size", NORMALIZED_PAIR },
++		{ "cornerRadius", FLOAT },
++		{ "color", COLOR },
++		{ "barColor", COLOR },
++		{ "trackColor", COLOR },
++		{ "textColor", COLOR },
++		{ "fontPath", PATH },
++		{ "fontSize", FLOAT } } },
+ 	{ "menuButton",{
+ 		{ "cornerSize", NORMALIZED_PAIR },
+ 		{ "path", PATH },
+@@ -2639,6 +2650,36 @@
+ 		}
+ 	}
+ 
++	// Volume popup: colours derived from the menu theme, optionally overridden by <menuVolume name="menuvolume">
++	Volume.color = (((Background.centerColor & 0xFF) ? Background.centerColor : Background.color) & 0xFFFFFF00) | 0xFF;
++	Volume.textColor = (Title.color & 0xFFFFFF00) | 0xFF;
++	Volume.barColor = (Text.selectedColor & 0xFFFFFF00) | 0xFF;
++	Volume.trackColor = (Title.color & 0xFFFFFF00) | 0x33;
++	Volume.font = TextSmall.font;
++
++	elem = theme->getElement("menu", "menuvolume", "menuVolume");
++	if (elem)
++	{
++		if (elem->has("pos"))
++			Volume.pos = elem->get<Vector2f>("pos");
++		if (elem->has("origin"))
++			Volume.origin = elem->get<Vector2f>("origin");
++		if (elem->has("size"))
++			Volume.size = elem->get<Vector2f>("size");
++		if (elem->has("cornerRadius"))
++			Volume.radius = elem->get<float>("cornerRadius");
++		if (elem->has("color"))
++			Volume.color = elem->get<unsigned int>("color");
++		if (elem->has("barColor"))
++			Volume.barColor = elem->get<unsigned int>("barColor");
++		if (elem->has("trackColor"))
++			Volume.trackColor = elem->get<unsigned int>("trackColor");
++		if (elem->has("textColor"))
++			Volume.textColor = elem->get<unsigned int>("textColor");
++		if (elem->has("fontPath") || elem->has("fontSize"))
++			Volume.font = Font::getFromTheme(elem, ThemeFlags::ALL, TextSmall.font, true);
++	}
++
+ 	// switch auto
+ 	std::string language = SystemConf::getInstance()->get("system.language");
+ 	std::string auto_lang = ":/auto_" + language + ".svg";
+diff -ruN a/es-core/src/ThemeData.h b/es-core/src/ThemeData.h
+--- a/es-core/src/ThemeData.h	2026-10-10 13:37:48.698962363 +0200
++++ b/es-core/src/ThemeData.h	2026-10-10 13:37:48.705523325 +0200
+@@ -172,6 +172,19 @@
+ 	std::string textinput_ninepatch_active;
+ };
+ 
++struct VolumeElement
++{
++	Vector2f		pos;
++	Vector2f		origin;
++	Vector2f		size;		// 0 0 = automatic size
++	float			radius;		// fraction of the height (0.5 = pill)
++	unsigned int	color;		// background
++	unsigned int	barColor;
++	unsigned int	trackColor;
++	unsigned int	textColor;
++	std::shared_ptr<Font> font;
++};
++
+ struct ButtonElement
+ {
+ 	std::string path;
+@@ -197,6 +210,7 @@
+ 		MenuGroupElement Group{ 0x777777FF, 0x00000010, 0xC6C7C6FF, 2.0, "", nullptr, 0 /*ALIGN_LEFT*/, false };
+ 		IconElement Icons { ":/on.svg", ":/off.svg", ":/auto.svg", ":/option_arrow.svg", ":/arrow.svg", ":/slider_knob.svg", ":/textinput_ninepatch.png", ":/textinput_ninepatch_active.png" };
+ 		ButtonElement Button { ":/button.png", ":/button_filled.png", Vector2f(16,16) };
++		VolumeElement Volume { Vector2f(0.5f, 0.054f), Vector2f(0.5f, 0.0f), Vector2f(0, 0), 0.5f, 0x111111FF, 0xFFFFFFFF, 0xFFFFFF33, 0xFFFFFFFF, nullptr };
+ 		GridElement Grid { false, 0xC6C7C6FF };
+ 
+ 		std::string getMenuIcon(const std::string name)
+diff -ruN a/es-core/src/components/VolumeInfoComponent.cpp b/es-core/src/components/VolumeInfoComponent.cpp
+--- a/es-core/src/components/VolumeInfoComponent.cpp	2026-10-10 13:37:48.699636919 +0200
++++ b/es-core/src/components/VolumeInfoComponent.cpp	2026-10-10 13:37:48.717145301 +0200
+@@ -1,143 +1,186 @@
+-#include "VolumeInfoComponent.h"
+-#include "ThemeData.h"
+-#include "PowerSaver.h"
+-#include "components/ComponentGrid.h"
+-#include "components/NinePatchComponent.h"
+-#include "components/TextComponent.h"
+-#include "LocaleES.h"
+-#include "VolumeControl.h"
+-#include "Window.h"
+-
+-#define PADDING_PX			(Renderer::getScreenWidth()*0.006)
+-#define PADDING_BAR			(Renderer::isSmallScreen() ? Renderer::getScreenWidth()*0.02 : Renderer::getScreenWidth()*0.006)
+-
+-#define VISIBLE_TIME		2650
+-#define FADE_TIME			250
+-#define CHECKVOLUMEDELAY	40
+-
+-VolumeInfoComponent::VolumeInfoComponent(Window* window, bool actionLine)
+-	: GuiComponent(window)
+-{
+-	mDisplayTime = -1;
+-	mVolume = -1;
+-	mCheckTime = 0;
+-
+-	auto theme = ThemeData::getMenuTheme();	
+-
+-	auto font = theme->TextSmall.font;
+-	if (Renderer::isSmallScreen())
+-		font = theme->Text.font;
+-
+-	Vector2f fullSize(
+-		2 * PADDING_PX + font->sizeText("100%").x(),
+-		2 * PADDING_PX + Renderer::getScreenHeight() * 0.20f);
+-	
+-	fullSize.y() = fullSize.x() * 2.5f;
+-
+-	setSize(fullSize);
+-
+-	mFrame = new NinePatchComponent(window);
+-	mFrame->setImagePath(theme->Background.path);
+-	mFrame->setEdgeColor(theme->Background.color);
+-	mFrame->setCenterColor(theme->Background.centerColor);
+-	mFrame->setCornerSize(theme->Background.cornerSize);
+-	mFrame->setPostProcessShader(theme->Background.menuShader, false);
+-	mFrame->fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
+-	addChild(mFrame);
+-
+-	mLabel = new TextComponent(mWindow, "", font, theme->Text.color, ALIGN_CENTER);
+-	
+-	int h = font->sizeText("100%").y() + PADDING_PX;
+-	mLabel->setPosition(0, fullSize.y() - h);
+-	mLabel->setSize(fullSize.x(), h);
+-	addChild(mLabel);
+-
+-	// FCA TopLeft
+-	float posX = Renderer::getScreenWidth() * 0.02f;
+-	float posY = Renderer::getScreenHeight() * 0.04f;
+-
+-	setPosition(posX, posY, 0);
+-}
+-
+-VolumeInfoComponent::~VolumeInfoComponent()
+-{
+-	delete mLabel;
+-	delete mFrame;
+-}
+-
+-void VolumeInfoComponent::update(int deltaTime)
+-{
+-	GuiComponent::update(deltaTime);
+-
+-	if (mDisplayTime >= 0)
+-	{
+-		mDisplayTime += deltaTime;
+-		if (mDisplayTime > VISIBLE_TIME + FADE_TIME)
+-		{
+-			mDisplayTime = -1;
+-
+-			if (isVisible())
+-			{
+-				setVisible(false);
+-				PowerSaver::resume();
+-			}
+-		}
+-	}
+-
+-	mCheckTime += deltaTime;
+-	if (mCheckTime < CHECKVOLUMEDELAY)
+-		return;
+-
+-	mCheckTime = 0;
+-
+-	int volume = VolumeControl::getInstance()->getVolume();
+-	if (volume != mVolume)
+-	{
+-		bool firstTime = (mVolume < 0);
+-
+-		mVolume = volume;
+-
+-		if (mVolume == 0)
+-			mLabel->setText("X");
+-		else
+-			mLabel->setText(std::to_string(mVolume) + "%");
+-
+-		if (!firstTime)
+-		{
+-			mDisplayTime = 0;
+-
+-			if (!isVisible())
+-			{
+-				setVisible(true);
+-				PowerSaver::pause();
+-			}
+-		}
+-	}
+-}
+-
+-void VolumeInfoComponent::render(const Transform4x4f& parentTrans)
+-{
+-	if (!mVisible || mDisplayTime < 0)
+-		return;
+-
+-	auto theme = ThemeData::getMenuTheme();
+-
+-	int opacity = 255 - Math::max(0, (mDisplayTime - VISIBLE_TIME) * 255 / FADE_TIME);
+-	setOpacity(opacity);
+-	setScale(opacity / 255.0f);
+-
+-	GuiComponent::render(parentTrans);
+-
+-	Transform4x4f trans = parentTrans * getTransform();
+-	Renderer::setMatrix(trans);
+-
+-	float x = PADDING_PX + PADDING_BAR;
+-	float y = PADDING_PX * 2;
+-	float w = getSize().x() - 2 * PADDING_PX - 2 * PADDING_BAR;
+-	float h = getSize().y() - mLabel->getSize().y() - PADDING_PX - PADDING_PX;
+-	
+-	Renderer::drawRect(x, y, w, h, (theme->Text.color & 0xFFFFFF00) | (opacity / 2));
+-
+-	float px = (h*mVolume) / 100;
+-	Renderer::drawRect(x, y + h - px, w, px, (theme->TextSmall.color & 0xFFFFFF00) | opacity);
+-}
++#include "VolumeInfoComponent.h"
++#include "ThemeData.h"
++#include "PowerSaver.h"
++#include "components/TextComponent.h"
++#include "LocaleES.h"
++#include "VolumeControl.h"
++#include "Window.h"
++#include "renderers/Renderer.h"
++#include "resources/Font.h"
++
++#define VISIBLE_TIME		2650
++#define FADE_TIME			250
++#define CHECKVOLUMEDELAY	40
++
++// Colour with its alpha multiplied by opacity (0-255).
++static unsigned int withOpacity(unsigned int color, int opacity)
++{
++	unsigned int a = ((color & 0xFF) * (unsigned int)opacity) / 255;
++	return (color & 0xFFFFFF00) | a;
++}
++
++static const char* volumeGlyph(int volume)
++{
++	// FontAwesome 4: f026 volume-off, f027 volume-down, f028 volume-up
++	if (volume <= 0)
++		return "\xEF\x80\xA6";
++	if (volume < 50)
++		return "\xEF\x80\xA7";
++	return "\xEF\x80\xA8";
++}
++
++VolumeInfoComponent::VolumeInfoComponent(Window* window, bool actionLine)
++	: GuiComponent(window)
++{
++	mDisplayTime = -1;
++	mVolume = -1;
++	mCheckTime = 0;
++
++	auto theme = ThemeData::getMenuTheme();
++	const auto& vt = theme->Volume;
++
++	const float sw = (float) Renderer::getScreenWidth();
++	const float sh = (float) Renderer::getScreenHeight();
++
++	float w, h;
++	if (vt.size.x() > 0 && vt.size.y() > 0)
++	{
++		w = vt.size.x() * sw;
++		h = vt.size.y() * sh;
++	}
++	else
++	{
++		h = Math::max(30.0f, sh * 0.058f);
++		w = Math::max(h * 5.0f, sw * 0.30f);
++	}
++	setSize(w, h);
++
++	float radius = Math::min(0.5f, Math::max(0.0f, vt.radius));
++	mRadius = h * radius;
++
++	mBgColor = vt.color;
++	mBarColor = vt.barColor;
++	mTrackColor = vt.trackColor;
++
++	mPad = h * 0.5f;
++	mBarH = Math::max(4.0f, h * 0.14f);
++
++	auto font = vt.font;
++	if (font == nullptr)
++		font = theme->TextSmall.font;
++
++	// icon (FontAwesome glyph) on the left
++	const float iconSize = Math::round(h * 0.46f);
++	auto iconFont = Font::get((int) iconSize, ":/fontawesome-webfont.ttf");
++	const float iconW = Math::round(iconSize * 1.25f);
++	mIcon = new TextComponent(mWindow, volumeGlyph(100), iconFont, vt.textColor, ALIGN_CENTER);
++	mIcon->setPosition(mPad * 0.8f, 0);
++	mIcon->setSize(iconW, h);
++	addChild(mIcon);
++
++	// percentage on the right
++	const float labelW = font->sizeText("100%").x() + 2;
++	mLabel = new TextComponent(mWindow, "", font, vt.textColor, ALIGN_RIGHT);
++	mLabel->setVerticalAlignment(ALIGN_CENTER);
++	mLabel->setPosition(w - mPad - labelW, 0);
++	mLabel->setSize(labelW, h);
++	addChild(mLabel);
++
++	mBarX0 = mPad * 0.8f + iconW + h * 0.28f;
++	mBarX1 = w - mPad - labelW - h * 0.28f;
++
++	const float posX = vt.pos.x() * sw - vt.origin.x() * w;
++	const float posY = vt.pos.y() * sh - vt.origin.y() * h;
++	setPosition(posX, posY, 0);
++}
++
++VolumeInfoComponent::~VolumeInfoComponent()
++{
++	delete mLabel;
++	delete mIcon;
++}
++
++void VolumeInfoComponent::update(int deltaTime)
++{
++	GuiComponent::update(deltaTime);
++
++	if (mDisplayTime >= 0)
++	{
++		mDisplayTime += deltaTime;
++		if (mDisplayTime > VISIBLE_TIME + FADE_TIME)
++		{
++			mDisplayTime = -1;
++
++			if (isVisible())
++			{
++				setVisible(false);
++				PowerSaver::resume();
++			}
++		}
++	}
++
++	mCheckTime += deltaTime;
++	if (mCheckTime < CHECKVOLUMEDELAY)
++		return;
++
++	mCheckTime = 0;
++
++	int volume = VolumeControl::getInstance()->getVolume();
++	if (volume != mVolume)
++	{
++		bool firstTime = (mVolume < 0);
++
++		mVolume = volume;
++
++		mLabel->setText(std::to_string(mVolume) + "%");
++		mIcon->setText(volumeGlyph(mVolume));
++
++		if (!firstTime)
++		{
++			mDisplayTime = 0;
++
++			if (!isVisible())
++			{
++				setVisible(true);
++				PowerSaver::pause();
++			}
++		}
++	}
++}
++
++void VolumeInfoComponent::render(const Transform4x4f& parentTrans)
++{
++	if (!mVisible || mDisplayTime < 0)
++		return;
++
++	int opacity = 255 - Math::max(0, (mDisplayTime - VISIBLE_TIME) * 255 / FADE_TIME);
++	setOpacity(opacity);
++
++	Transform4x4f trans = parentTrans * getTransform();
++	Renderer::setMatrix(trans);
++
++	const float w = getSize().x();
++	const float h = getSize().y();
++
++	// soft shadow: a few expanding translucent layers
++	for (int i = 3; i >= 1; i--)
++		Renderer::drawRoundRect(-i * 2.0f, i * 2.0f - 1.0f, w + i * 4.0f, h + i * 4.0f - 2.0f, mRadius + i * 2.0f, withOpacity(0x00000012, opacity));
++
++	Renderer::drawRoundRect(0, 0, w, h, mRadius, withOpacity(mBgColor, opacity));
++
++	// bar: track and fill
++	const float by = (h - mBarH) * 0.5f;
++	const float bw = mBarX1 - mBarX0;
++	if (bw > 0)
++	{
++		Renderer::drawRoundRect(mBarX0, by, bw, mBarH, mBarH * 0.5f, withOpacity(mTrackColor, opacity));
++
++		float fill = bw * Math::max(0, Math::min(100, mVolume)) / 100.0f;
++		if (fill >= mBarH)
++			Renderer::drawRoundRect(mBarX0, by, fill, mBarH, mBarH * 0.5f, withOpacity(mBarColor, opacity));
++		else if (fill > 0.5f)
++			Renderer::drawRoundRect(mBarX0, by, mBarH, mBarH, mBarH * 0.5f, withOpacity(mBarColor, opacity));
++	}
++
++	GuiComponent::render(parentTrans);
++}
+diff -ruN a/es-core/src/components/VolumeInfoComponent.h b/es-core/src/components/VolumeInfoComponent.h
+--- a/es-core/src/components/VolumeInfoComponent.h	2026-10-10 13:37:48.700317860 +0200
++++ b/es-core/src/components/VolumeInfoComponent.h	2026-10-10 13:37:48.709462901 +0200
+@@ -3,11 +3,11 @@
+ #include <mutex>
+ #include "GuiComponent.h"
+ 
+-class ComponentGrid;
+-class NinePatchComponent;
+ class TextComponent;
+ class Window;
+ 
++// Volume popup. Zenith 0009: horizontal pill (icon, bar, percentage) at the top center by default, coloured from the
++// menu theme; a theme can fully restyle it with <menuVolume name="menuvolume"> in the "menu" view.
+ class VolumeInfoComponent : public GuiComponent
+ {
+ public:
+@@ -20,11 +20,21 @@
+ 	void reset() { mVolume = -1; }
+ 
+ private:
+-	NinePatchComponent* mFrame;
+-	TextComponent*		mLabel;
++	TextComponent*	mLabel;
++	TextComponent*	mIcon;
+ 
+ 	int mVolume;
+ 
+ 	int mCheckTime;
+ 	int mDisplayTime;
+-};
+\ No newline at end of file
++
++	float mPad;
++	float mBarX0;
++	float mBarX1;
++	float mBarH;
++	float mRadius;
++
++	unsigned int mBgColor;
++	unsigned int mBarColor;
++	unsigned int mTrackColor;
++};

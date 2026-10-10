@@ -11,7 +11,7 @@
 DIR="${ZSPLASH_DIR:-/usr/lib/autostart/firstboot}"
 FB="${ZSPLASH_FB:-/dev/fb0}"
 SYS="/sys/class/graphics/fb0"
-BG="#0e1220"
+BG="#ebebed"
 
 mode() {   # "U:720x720p-0" -> "720x720"
   local m
