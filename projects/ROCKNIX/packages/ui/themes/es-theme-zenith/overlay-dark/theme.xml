@@ -474,7 +474,7 @@
     <menuSwitch name="menuswitch">
       <pathOn>./assets/menu/switch-on.svg</pathOn>
       <pathOff>./assets/menu/switch-off.svg</pathOff>
-      <colorOn>${cyan}</colorOn>
+      <colorOn>4C97A8</colorOn>
       <colorOff>5A5A62</colorOff>
     </menuSwitch>
     <menuSlider name="menuslider">
@@ -486,7 +486,7 @@
       <cornerSize>16 16</cornerSize>
     </menuButton>
     <menuGroup name="menugroup">
-      <color>${cyan}</color>
+      <color>9A9AA2</color>
       <backgroundColor>FFFFFF0D</backgroundColor>
     </menuGroup>
   </view>

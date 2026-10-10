@@ -9,12 +9,12 @@ for f in sorted(os.listdir(SRC)):
     shutil.copy(f'{SRC}/{f}', f'{B}/theme/assets/menu/{f}')
 
 
-def block(cyan_group, off, band, selbtn):
+def block(group, on, off, band):
     return [
         '    <menuSwitch name="menuswitch">',
         '      <pathOn>./assets/menu/switch-on.svg</pathOn>',
         '      <pathOff>./assets/menu/switch-off.svg</pathOff>',
-        '      <colorOn>${cyan}</colorOn>',
+        f'      <colorOn>{on}</colorOn>',
         f'      <colorOff>{off}</colorOff>',
         '    </menuSwitch>',
         '    <menuSlider name="menuslider">',
@@ -26,15 +26,15 @@ def block(cyan_group, off, band, selbtn):
         '      <cornerSize>16 16</cornerSize>',
         '    </menuButton>',
         '    <menuGroup name="menugroup">',
-        f'      <color>{cyan_group}</color>',
+        f'      <color>{group}</color>',
         f'      <backgroundColor>{band}</backgroundColor>',
         '    </menuGroup>',
     ]
 
 
 variants = {
-    f'{B}/theme/theme.xml': block('${cyanDark}', 'C9C9CF', '0000000A', None),
-    f'{B}/overlay-dark/theme.xml': block('${cyan}', '5A5A62', 'FFFFFF0D', None),
+    f'{B}/theme/theme.xml': block('7D7D82', '5CA0AF', 'C9C9CF', '0000000A'),
+    f'{B}/overlay-dark/theme.xml': block('9A9AA2', '4C97A8', '5A5A62', 'FFFFFF0D'),
 }
 for path, blk in variants.items():
     raw = open(path, 'rb').read().decode('utf-8')
