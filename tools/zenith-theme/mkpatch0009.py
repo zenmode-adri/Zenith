@@ -19,7 +19,10 @@ for f in files:
 
 # el arbol de build ya lleva 0009: se revierte en las copias para tener la base sin 0009
 OLD = '/mnt/c/tmp/zt/es/0009-es-volume-osd.patch'
+LATER = ['/mnt/c/tmp/zt/es/0011-es-switch-colors.patch']  # parches posteriores que tocan los mismos ficheros (se revierten primero)
 for d in ('a', 'b'):
+    for lp in LATER:
+        subprocess.run(['patch', '-R', '-p1', '-s', '-f', '-i', lp], cwd=f'{WORK}/{d}', check=False)
     subprocess.run(['patch', '-R', '-p1', '-s', '-i', OLD], cwd=f'{WORK}/{d}', check=False)
 
 def edit(path, old, new, count=1):
@@ -77,6 +80,38 @@ edit('es-core/src/ThemeData.cpp',
 	Volume.barColor = (Text.selectedColor & 0xFFFFFF00) | 0xFF;
 	Volume.trackColor = (Title.color & 0xFFFFFF00) | 0x33;
 	Volume.font = TextSmall.font;
+
+	// themes differ (e.g. selected text can be white on a dark selector band): keep the pill readable on its own background
+	{
+		auto lum = [](unsigned int c)
+		{
+			auto ch = [](unsigned int v) { float f = v / 255.0f; return f <= 0.03928f ? f / 12.92f : std::pow((f + 0.055f) / 1.055f, 2.4f); };
+			return 0.2126f * ch((c >> 24) & 0xFF) + 0.7152f * ch((c >> 16) & 0xFF) + 0.0722f * ch((c >> 8) & 0xFF);
+		};
+		auto contrast = [&](unsigned int a, unsigned int b)
+		{
+			float la = lum(a), lb = lum(b);
+			return (std::max(la, lb) + 0.05f) / (std::min(la, lb) + 0.05f);
+		};
+
+		if (contrast(Volume.textColor, Volume.color) < 3.0f)
+			Volume.textColor = lum(Volume.color) > 0.5f ? 0x222222FF : 0xF0F0F0FF;
+
+		const unsigned int candidates[] = { Text.selectedColor, Text.selectorColor, Title.color, Text.color };
+		unsigned int bar = Volume.textColor;
+		for (unsigned int c : candidates)
+		{
+			c = (c & 0xFFFFFF00) | 0xFF;
+			if (contrast(c, Volume.color) >= 3.0f)
+			{
+				bar = c;
+				break;
+			}
+		}
+
+		Volume.barColor = bar;
+		Volume.trackColor = (Volume.textColor & 0xFFFFFF00) | 0x33;
+	}
 
 	elem = theme->getElement("menu", "menuvolume", "menuVolume");
 	if (elem)
