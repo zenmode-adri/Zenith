@@ -2,7 +2,7 @@
    <formatVersion>7</formatVersion>
    <view name="screen">
       <text name="clock">
-         <pos>0.40 0.02</pos>
+         <pos>0.40 0.0125</pos>
          <size>0.32 0.05</size>
          <fontSize>0.035</fontSize>
          <color>ffffff</color>
