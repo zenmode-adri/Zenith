@@ -450,5 +450,26 @@
       <fontPath>${font}</fontPath>
       <fontSize>${fVol}</fontSize>
     </menuVolume>
+    <menuIcons name="menuicons">
+      <iconSystem>./assets/menu/menu-icon-system.svg</iconSystem>
+      <iconUpdates>./assets/menu/menu-icon-update.svg</iconUpdates>
+      <iconControllers>./assets/menu/menu-icon-controller.svg</iconControllers>
+      <iconGames>./assets/menu/menu-icon-games.svg</iconGames>
+      <iconUI>./assets/menu/menu-icon-ui.svg</iconUI>
+      <iconSound>./assets/menu/menu-icon-sound.svg</iconSound>
+      <iconNetwork>./assets/menu/menu-icon-network.svg</iconNetwork>
+      <iconScraper>./assets/menu/menu-icon-scraper.svg</iconScraper>
+      <iconAdvanced>./assets/menu/menu-icon-advanced.svg</iconAdvanced>
+      <iconQuit>./assets/menu/menu-icon-quit.svg</iconQuit>
+      <iconRetroachievements>./assets/menu/menu-icon-achievements.svg</iconRetroachievements>
+      <iconKodi>./assets/menu/menu-icon-kodi.svg</iconKodi>
+      <iconRestart>./assets/menu/menu-icon-restart.svg</iconRestart>
+      <iconShutdown>./assets/menu/menu-icon-shutdown.svg</iconShutdown>
+      <iconFastShutdown>./assets/menu/menu-icon-shutdown.svg</iconFastShutdown>
+      <iconNetplay>./assets/menu/menu-icon-netplay.svg</iconNetplay>
+      <iconManual>./assets/menu/menu-icon-manual.svg</iconManual>
+      <iconPlanemode>./assets/menu/menu-icon-planemode.svg</iconPlanemode>
+      <searchIcon>./assets/menu/menu-icon-search.svg</searchIcon>
+    </menuIcons>
   </view>
 </theme>

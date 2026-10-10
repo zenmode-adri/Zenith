@@ -2,6 +2,7 @@
 
 Zenith (light and dark) is an original EmulationStation theme by **zenmode-adri**, released under **GPL-2.0**
 like the rest of this tree. It is not derived from any other theme.
+The EmulationStation menu icons (`assets/menu/*.svg`) are original line icons drawn for this theme.
 
 ## Third-party parts bundled inside
 - **Console logos** (`assets/logos/*.webp`, except the Tools, Music, Books, Favorites, All games, Last played,
