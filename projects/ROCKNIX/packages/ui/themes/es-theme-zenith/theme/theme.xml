@@ -38,7 +38,7 @@
       <path>./assets/avatar.png</path>
       <origin>0 0.5</origin>
       <pos>${avX} ${avY}</pos>
-      <size>${avW} ${avH}</size>
+      <maxSize>${avW} ${avH}</maxSize>
       <zIndex>90</zIndex>
     </image>
     <stackpanel name="zs-status" extra="true">
@@ -255,6 +255,7 @@
     <textlist name="gamelist">
       <pos>${listX} ${listY}</pos>
       <size>${listW} ${listH}</size>
+      <lines>${listLines}</lines>
       <fontPath>${font}</fontPath>
       <fontSize>${fList}</fontSize>
       <primaryColor>${dimDark}</primaryColor>
@@ -405,6 +406,7 @@
   <view name="basic">
     <textlist name="gamelist">
       <size>${listWide} ${listH}</size>
+      <lines>${listLines}</lines>
       <selectorImagePath>${pillw}</selectorImagePath>
     </textlist>
   </view>

@@ -40,6 +40,7 @@
     <listY>0.14583</listY>
     <listW>0.52031</listW>
     <listH>0.7125</listH>
+    <listLines>9</listLines>
     <listWide>0.94375</listWide>
     <fList>0.03542</fList>
     <spacing>1.526</spacing>
@@ -116,6 +117,7 @@
     <listY>0.13056</listY>
     <listW>0.51944</listW>
     <listH>0.73333</listH>
+    <listLines>12</listLines>
     <listWide>0.93889</listWide>
     <fList>0.03</fList>
     <spacing>1.897</spacing>
@@ -192,6 +194,7 @@
     <listY>0.1625</listY>
     <listW>0.57917</listW>
     <listH>0.7</listH>
+    <listLines>7</listLines>
     <listWide>0.94167</listWide>
     <fList>0.04531</fList>
     <spacing>1.524</spacing>
@@ -268,13 +271,14 @@
     <listY>0.14583</listY>
     <listW>0.44965</listW>
     <listH>0.7125</listH>
+    <listLines>9</listLines>
     <listWide>0.95316</listWide>
     <fList>0.03854</fList>
     <spacing>1.526</spacing>
     <selH>0.0625</selH>
     <listHM>0.01639</listHM>
-    <colX>0.50585</colX>
-    <colW>0.47073</colW>
+    <colX>0.54333</colX>
+    <colW>0.43326</colW>
     <coverW>0.19906</coverW>
     <coverH>0.35417</coverH>
     <nameY>0.52083</nameY>
@@ -287,8 +291,8 @@
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
     <starY>0.72188</starY>
-    <valX>0.62295</valX>
-    <valW>0.35363</valW>
+    <valX>0.66042</valX>
+    <valW>0.31616</valW>
     <lblW>0.1171</lblW>
     <fMeta>0.02604</fMeta>
     <descY>0.78125</descY>
@@ -305,5 +309,544 @@
     <fMenuFoot>0.02708</fMenuFoot>
     <pill>./assets/pill-16x9.png</pill>
     <pillw>./assets/pillw-16x9.png</pillw>
+  </variables>
+  <!-- r16x10: 768x480 -->
+  <variables if="${screen.ratio} == '16/10'">
+    <mx>0.02604</mx>
+    <avX>0.02604</avX>
+    <avY>0.07083</avY>
+    <avW>0.03646</avW>
+    <avH>0.05833</avH>
+    <stackH>0.04375</stackH>
+    <stackY>0.04896</stackY>
+    <stackX>-0.02604</stackX>
+    <stackSep>0.01302</stackSep>
+    <fClock>0.03333</fClock>
+    <fBatt>0.02708</fBatt>
+    <fHelp>0.02208</fHelp>
+    <helpY>0.94792</helpY>
+    <cellW>0.16276</cellW>
+    <cellH>0.26042</cellH>
+    <carW>0.93343</carW>
+    <carY>0.47</carY>
+    <sysInfoY>0.72738</sysInfoY>
+    <fSys>0.02813</fSys>
+    <fLogo>0.0375</fLogo>
+    <gridX>0.02604</gridX>
+    <gridY>0.14583</gridY>
+    <gridW>0.94792</gridW>
+    <gridH>0.76042</gridH>
+    <gridCols>5</gridCols>
+    <gridRows>3</gridRows>
+    <gridMgX>0.03125</gridMgX>
+    <gridMgY>0.00417</gridMgY>
+    <gridPad>5</gridPad>
+    <fGrid>0.02396</fGrid>
+    <nameX>0.07292</nameX>
+    <fTitle>0.0375</fTitle>
+    <listX>0.02604</listX>
+    <listY>0.14583</listY>
+    <listW>0.48047</listW>
+    <listH>0.7125</listH>
+    <listLines>9</listLines>
+    <listWide>0.94792</listWide>
+    <fList>0.03854</fList>
+    <spacing>1.526</spacing>
+    <selH>0.0625</selH>
+    <listHM>0.01823</listHM>
+    <colX>0.55859</colX>
+    <colW>0.41536</colW>
+    <coverW>0.22135</coverW>
+    <coverH>0.35417</coverH>
+    <nameY>0.52083</nameY>
+    <nameH>0.04375</nameH>
+    <fName>0.03229</fName>
+    <meta1>0.58542</meta1>
+    <meta2>0.62917</meta2>
+    <meta3>0.67292</meta3>
+    <meta4>0.71667</meta4>
+    <metaH>0.0375</metaH>
+    <starH>0.03646</starH>
+    <starY>0.72188</starY>
+    <valX>0.6888</valX>
+    <valW>0.28516</valW>
+    <lblW>0.13021</lblW>
+    <fMeta>0.02604</fMeta>
+    <descY>0.78125</descY>
+    <descH>0.08464</descH>
+    <fDesc>0.02604</fDesc>
+    <descVisible>true</descVisible>
+    <volW>0.28906</volW>
+    <volH>0.07917</volH>
+    <volY>0.07083</volY>
+    <fVol>0.02917</fVol>
+    <fMenuTitle>0.04167</fMenuTitle>
+    <fMenu>0.0375</fMenu>
+    <fMenuSmall>0.03021</fMenuSmall>
+    <fMenuFoot>0.02708</fMenuFoot>
+    <pill>./assets/pill-r16x10.png</pill>
+    <pillw>./assets/pillw-r16x10.png</pillw>
+  </variables>
+  <!-- r19x12: 760x480 -->
+  <variables if="${screen.ratio} == '19/12'">
+    <mx>0.02632</mx>
+    <avX>0.02632</avX>
+    <avY>0.07083</avY>
+    <avW>0.03684</avW>
+    <avH>0.05833</avH>
+    <stackH>0.04375</stackH>
+    <stackY>0.04896</stackY>
+    <stackX>-0.02632</stackX>
+    <stackSep>0.01316</stackSep>
+    <fClock>0.03333</fClock>
+    <fBatt>0.02708</fBatt>
+    <fHelp>0.02208</fHelp>
+    <helpY>0.94792</helpY>
+    <cellW>0.16447</cellW>
+    <cellH>0.26042</cellH>
+    <carW>0.94326</carW>
+    <carY>0.47</carY>
+    <sysInfoY>0.72738</sysInfoY>
+    <fSys>0.02813</fSys>
+    <fLogo>0.0375</fLogo>
+    <gridX>0.02632</gridX>
+    <gridY>0.14583</gridY>
+    <gridW>0.94737</gridW>
+    <gridH>0.76042</gridH>
+    <gridCols>5</gridCols>
+    <gridRows>3</gridRows>
+    <gridMgX>0.03158</gridMgX>
+    <gridMgY>0.00417</gridMgY>
+    <gridPad>5</gridPad>
+    <fGrid>0.02396</fGrid>
+    <nameX>0.07368</nameX>
+    <fTitle>0.0375</fTitle>
+    <listX>0.02632</listX>
+    <listY>0.14583</listY>
+    <listW>0.48026</listW>
+    <listH>0.7125</listH>
+    <listLines>9</listLines>
+    <listWide>0.94737</listWide>
+    <fList>0.03854</fList>
+    <spacing>1.526</spacing>
+    <selH>0.0625</selH>
+    <listHM>0.01842</listHM>
+    <colX>0.55921</colX>
+    <colW>0.41447</colW>
+    <coverW>0.22368</coverW>
+    <coverH>0.35417</coverH>
+    <nameY>0.52083</nameY>
+    <nameH>0.04375</nameH>
+    <fName>0.03229</fName>
+    <meta1>0.58542</meta1>
+    <meta2>0.62917</meta2>
+    <meta3>0.67292</meta3>
+    <meta4>0.71667</meta4>
+    <metaH>0.0375</metaH>
+    <starH>0.03646</starH>
+    <starY>0.72188</starY>
+    <valX>0.69079</valX>
+    <valW>0.28289</valW>
+    <lblW>0.13158</lblW>
+    <fMeta>0.02604</fMeta>
+    <descY>0.78125</descY>
+    <descH>0.08464</descH>
+    <fDesc>0.02604</fDesc>
+    <descVisible>true</descVisible>
+    <volW>0.29211</volW>
+    <volH>0.07917</volH>
+    <volY>0.07083</volY>
+    <fVol>0.02917</fVol>
+    <fMenuTitle>0.04167</fMenuTitle>
+    <fMenu>0.0375</fMenu>
+    <fMenuSmall>0.03021</fMenuSmall>
+    <fMenuFoot>0.02708</fMenuFoot>
+    <pill>./assets/pill-r19x12.png</pill>
+    <pillw>./assets/pillw-r19x12.png</pillw>
+  </variables>
+  <!-- r30x17: 847x480 -->
+  <variables if="${screen.ratio} == '30/17'">
+    <mx>0.02361</mx>
+    <avX>0.02361</avX>
+    <avY>0.07083</avY>
+    <avW>0.03306</avW>
+    <avH>0.05833</avH>
+    <stackH>0.04375</stackH>
+    <stackY>0.04896</stackY>
+    <stackX>-0.02361</stackX>
+    <stackSep>0.01181</stackSep>
+    <fClock>0.03333</fClock>
+    <fBatt>0.02708</fBatt>
+    <fHelp>0.02708</fHelp>
+    <helpY>0.94792</helpY>
+    <cellW>0.14758</cellW>
+    <cellH>0.26042</cellH>
+    <carW>0.84637</carW>
+    <carY>0.47</carY>
+    <sysInfoY>0.72738</sysInfoY>
+    <fSys>0.02813</fSys>
+    <fLogo>0.0375</fLogo>
+    <gridX>0.02361</gridX>
+    <gridY>0.14583</gridY>
+    <gridW>0.95277</gridW>
+    <gridH>0.76042</gridH>
+    <gridCols>5</gridCols>
+    <gridRows>3</gridRows>
+    <gridMgX>0.02834</gridMgX>
+    <gridMgY>0.00417</gridMgY>
+    <gridPad>5</gridPad>
+    <fGrid>0.02396</fGrid>
+    <nameX>0.06612</nameX>
+    <fTitle>0.0375</fTitle>
+    <listX>0.02361</listX>
+    <listY>0.14583</listY>
+    <listW>0.44982</listW>
+    <listH>0.7125</listH>
+    <listLines>9</listLines>
+    <listWide>0.95277</listWide>
+    <fList>0.03854</fList>
+    <spacing>1.526</spacing>
+    <selH>0.0625</selH>
+    <listHM>0.01653</listHM>
+    <colX>0.54427</colX>
+    <colW>0.43211</colW>
+    <coverW>0.20071</coverW>
+    <coverH>0.35417</coverH>
+    <nameY>0.52083</nameY>
+    <nameH>0.04375</nameH>
+    <fName>0.03229</fName>
+    <meta1>0.58542</meta1>
+    <meta2>0.62917</meta2>
+    <meta3>0.67292</meta3>
+    <meta4>0.71667</meta4>
+    <metaH>0.0375</metaH>
+    <starH>0.03646</starH>
+    <starY>0.72188</starY>
+    <valX>0.66234</valX>
+    <valW>0.31405</valW>
+    <lblW>0.11806</lblW>
+    <fMeta>0.02604</fMeta>
+    <descY>0.78125</descY>
+    <descH>0.08464</descH>
+    <fDesc>0.02604</fDesc>
+    <descVisible>true</descVisible>
+    <volW>0.2621</volW>
+    <volH>0.07917</volH>
+    <volY>0.07083</volY>
+    <fVol>0.02917</fVol>
+    <fMenuTitle>0.04167</fMenuTitle>
+    <fMenu>0.0375</fMenu>
+    <fMenuSmall>0.03021</fMenuSmall>
+    <fMenuFoot>0.02708</fMenuFoot>
+    <pill>./assets/pill-r30x17.png</pill>
+    <pillw>./assets/pillw-r30x17.png</pillw>
+  </variables>
+  <!-- r21x9: 1120x480 -->
+  <variables if="${screen.ratio} == '21/9'">
+    <mx>0.01786</mx>
+    <avX>0.01786</avX>
+    <avY>0.07083</avY>
+    <avW>0.025</avW>
+    <avH>0.05833</avH>
+    <stackH>0.04375</stackH>
+    <stackY>0.04896</stackY>
+    <stackX>-0.01786</stackX>
+    <stackSep>0.00893</stackSep>
+    <fClock>0.03333</fClock>
+    <fBatt>0.02708</fBatt>
+    <fHelp>0.02708</fHelp>
+    <helpY>0.94792</helpY>
+    <cellW>0.11161</cellW>
+    <cellH>0.26042</cellH>
+    <carW>0.64007</carW>
+    <carY>0.47</carY>
+    <sysInfoY>0.72738</sysInfoY>
+    <fSys>0.02813</fSys>
+    <fLogo>0.0375</fLogo>
+    <gridX>0.01786</gridX>
+    <gridY>0.14583</gridY>
+    <gridW>0.96429</gridW>
+    <gridH>0.76042</gridH>
+    <gridCols>6</gridCols>
+    <gridRows>3</gridRows>
+    <gridMgX>0.02143</gridMgX>
+    <gridMgY>0.00417</gridMgY>
+    <gridPad>5</gridPad>
+    <fGrid>0.02396</fGrid>
+    <nameX>0.05</nameX>
+    <fTitle>0.0375</fTitle>
+    <listX>0.01786</listX>
+    <listY>0.14583</listY>
+    <listW>0.36964</listW>
+    <listH>0.7125</listH>
+    <listLines>9</listLines>
+    <listWide>0.96429</listWide>
+    <fList>0.03854</fList>
+    <spacing>1.526</spacing>
+    <selH>0.0625</selH>
+    <listHM>0.0125</listHM>
+    <colX>0.44107</colX>
+    <colW>0.54107</colW>
+    <coverW>0.15179</coverW>
+    <coverH>0.35417</coverH>
+    <nameY>0.52083</nameY>
+    <nameH>0.04375</nameH>
+    <fName>0.03229</fName>
+    <meta1>0.58542</meta1>
+    <meta2>0.62917</meta2>
+    <meta3>0.67292</meta3>
+    <meta4>0.71667</meta4>
+    <metaH>0.0375</metaH>
+    <starH>0.03646</starH>
+    <starY>0.72188</starY>
+    <valX>0.53036</valX>
+    <valW>0.45179</valW>
+    <lblW>0.08929</lblW>
+    <fMeta>0.02604</fMeta>
+    <descY>0.78125</descY>
+    <descH>0.08464</descH>
+    <fDesc>0.02604</fDesc>
+    <descVisible>true</descVisible>
+    <volW>0.19821</volW>
+    <volH>0.07917</volH>
+    <volY>0.07083</volY>
+    <fVol>0.02917</fVol>
+    <fMenuTitle>0.04167</fMenuTitle>
+    <fMenu>0.0375</fMenu>
+    <fMenuSmall>0.03021</fMenuSmall>
+    <fMenuFoot>0.02708</fMenuFoot>
+    <pill>./assets/pill-r21x9.png</pill>
+    <pillw>./assets/pillw-r21x9.png</pillw>
+  </variables>
+  <!-- r2x1: 960x480 -->
+  <variables if="${screen.ratio} == '2/1'">
+    <mx>0.02083</mx>
+    <avX>0.02083</avX>
+    <avY>0.07083</avY>
+    <avW>0.02917</avW>
+    <avH>0.05833</avH>
+    <stackH>0.04375</stackH>
+    <stackY>0.04896</stackY>
+    <stackX>-0.02083</stackX>
+    <stackSep>0.01042</stackSep>
+    <fClock>0.03333</fClock>
+    <fBatt>0.02708</fBatt>
+    <fHelp>0.02708</fHelp>
+    <helpY>0.94792</helpY>
+    <cellW>0.13021</cellW>
+    <cellH>0.26042</cellH>
+    <carW>0.74674</carW>
+    <carY>0.47</carY>
+    <sysInfoY>0.72738</sysInfoY>
+    <fSys>0.02813</fSys>
+    <fLogo>0.0375</fLogo>
+    <gridX>0.02083</gridX>
+    <gridY>0.14583</gridY>
+    <gridW>0.95833</gridW>
+    <gridH>0.76042</gridH>
+    <gridCols>5</gridCols>
+    <gridRows>3</gridRows>
+    <gridMgX>0.025</gridMgX>
+    <gridMgY>0.00417</gridMgY>
+    <gridPad>5</gridPad>
+    <fGrid>0.02396</fGrid>
+    <nameX>0.05833</nameX>
+    <fTitle>0.0375</fTitle>
+    <listX>0.02083</listX>
+    <listY>0.14583</listY>
+    <listW>0.4</listW>
+    <listH>0.7125</listH>
+    <listLines>9</listLines>
+    <listWide>0.95833</listWide>
+    <fList>0.03854</fList>
+    <spacing>1.526</spacing>
+    <selH>0.0625</selH>
+    <listHM>0.01458</listHM>
+    <colX>0.48333</colX>
+    <colW>0.49583</colW>
+    <coverW>0.17708</coverW>
+    <coverH>0.35417</coverH>
+    <nameY>0.52083</nameY>
+    <nameH>0.04375</nameH>
+    <fName>0.03229</fName>
+    <meta1>0.58542</meta1>
+    <meta2>0.62917</meta2>
+    <meta3>0.67292</meta3>
+    <meta4>0.71667</meta4>
+    <metaH>0.0375</metaH>
+    <starH>0.03646</starH>
+    <starY>0.72188</starY>
+    <valX>0.5875</valX>
+    <valW>0.39167</valW>
+    <lblW>0.10417</lblW>
+    <fMeta>0.02604</fMeta>
+    <descY>0.78125</descY>
+    <descH>0.08464</descH>
+    <fDesc>0.02604</fDesc>
+    <descVisible>true</descVisible>
+    <volW>0.23125</volW>
+    <volH>0.07917</volH>
+    <volY>0.07083</volY>
+    <fVol>0.02917</fVol>
+    <fMenuTitle>0.04167</fMenuTitle>
+    <fMenu>0.0375</fMenu>
+    <fMenuSmall>0.03021</fMenuSmall>
+    <fMenuFoot>0.02708</fMenuFoot>
+    <pill>./assets/pill-r2x1.png</pill>
+    <pillw>./assets/pillw-r2x1.png</pillw>
+  </variables>
+  <!-- r5x4: 600x480 -->
+  <variables if="${screen.ratio} == '5/4'">
+    <mx>0.03</mx>
+    <avX>0.03</avX>
+    <avY>0.06667</avY>
+    <avW>0.04667</avW>
+    <avH>0.05833</avH>
+    <stackH>0.04375</stackH>
+    <stackY>0.04479</stackY>
+    <stackX>-0.03</stackX>
+    <stackSep>0.01333</stackSep>
+    <fClock>0.03333</fClock>
+    <fBatt>0.02708</fBatt>
+    <fHelp>0.02542</fHelp>
+    <helpY>0.94792</helpY>
+    <cellW>0.20833</cellW>
+    <cellH>0.26042</cellH>
+    <carW>1.19479</carW>
+    <carY>0.47</carY>
+    <sysInfoY>0.72738</sysInfoY>
+    <fSys>0.02813</fSys>
+    <fLogo>0.0375</fLogo>
+    <gridX>0.03</gridX>
+    <gridY>0.14583</gridY>
+    <gridW>0.94</gridW>
+    <gridH>0.76042</gridH>
+    <gridCols>4</gridCols>
+    <gridRows>3</gridRows>
+    <gridMgX>0.03</gridMgX>
+    <gridMgY>0.00417</gridMgY>
+    <gridPad>5</gridPad>
+    <fGrid>0.02396</fGrid>
+    <nameX>0.09</nameX>
+    <fTitle>0.0375</fTitle>
+    <listX>0.03</listX>
+    <listY>0.14583</listY>
+    <listW>0.52</listW>
+    <listH>0.7125</listH>
+    <listLines>9</listLines>
+    <listWide>0.94</listWide>
+    <fList>0.03542</fList>
+    <spacing>1.526</spacing>
+    <selH>0.0625</selH>
+    <listHM>0.02167</listHM>
+    <colX>0.59</colX>
+    <colW>0.38</colW>
+    <coverW>0.28333</coverW>
+    <coverH>0.35417</coverH>
+    <nameY>0.52083</nameY>
+    <nameH>0.04375</nameH>
+    <fName>0.03229</fName>
+    <meta1>0.58542</meta1>
+    <meta2>0.62917</meta2>
+    <meta3>0.67292</meta3>
+    <meta4>0.71667</meta4>
+    <metaH>0.0375</metaH>
+    <starH>0.03646</starH>
+    <starY>0.72188</starY>
+    <valX>0.72333</valX>
+    <valW>0.24667</valW>
+    <lblW>0.13333</lblW>
+    <fMeta>0.02604</fMeta>
+    <descY>0.78125</descY>
+    <descH>0.08464</descH>
+    <fDesc>0.02604</fDesc>
+    <descVisible>true</descVisible>
+    <volW>0.37</volW>
+    <volH>0.07917</volH>
+    <volY>0.06667</volY>
+    <fVol>0.02917</fVol>
+    <fMenuTitle>0.04167</fMenuTitle>
+    <fMenu>0.0375</fMenu>
+    <fMenuSmall>0.03021</fMenuSmall>
+    <fMenuFoot>0.02708</fMenuFoot>
+    <pill>./assets/pill-r5x4.png</pill>
+    <pillw>./assets/pillw-r5x4.png</pillw>
+  </variables>
+  <!-- r19x14: 651x480 -->
+  <variables if="${screen.ratio} == '19/14'">
+    <mx>0.02765</mx>
+    <avX>0.02765</avX>
+    <avY>0.06667</avY>
+    <avW>0.04301</avW>
+    <avH>0.05833</avH>
+    <stackH>0.04375</stackH>
+    <stackY>0.04479</stackY>
+    <stackX>-0.02765</stackX>
+    <stackSep>0.01229</stackSep>
+    <fClock>0.03333</fClock>
+    <fBatt>0.02708</fBatt>
+    <fHelp>0.02542</fHelp>
+    <helpY>0.94792</helpY>
+    <cellW>0.19201</cellW>
+    <cellH>0.26042</cellH>
+    <carW>1.10119</carW>
+    <carY>0.47</carY>
+    <sysInfoY>0.72738</sysInfoY>
+    <fSys>0.02813</fSys>
+    <fLogo>0.0375</fLogo>
+    <gridX>0.02765</gridX>
+    <gridY>0.14583</gridY>
+    <gridW>0.9447</gridW>
+    <gridH>0.76042</gridH>
+    <gridCols>4</gridCols>
+    <gridRows>3</gridRows>
+    <gridMgX>0.02765</gridMgX>
+    <gridMgY>0.00417</gridMgY>
+    <gridPad>5</gridPad>
+    <fGrid>0.02396</fGrid>
+    <nameX>0.08295</nameX>
+    <fTitle>0.0375</fTitle>
+    <listX>0.02765</listX>
+    <listY>0.14583</listY>
+    <listW>0.52074</listW>
+    <listH>0.7125</listH>
+    <listLines>9</listLines>
+    <listWide>0.9447</listWide>
+    <fList>0.03542</fList>
+    <spacing>1.526</spacing>
+    <selH>0.0625</selH>
+    <listHM>0.01997</listHM>
+    <colX>0.58525</colX>
+    <colW>0.3871</colW>
+    <coverW>0.26114</coverW>
+    <coverH>0.35417</coverH>
+    <nameY>0.52083</nameY>
+    <nameH>0.04375</nameH>
+    <fName>0.03229</fName>
+    <meta1>0.58542</meta1>
+    <meta2>0.62917</meta2>
+    <meta3>0.67292</meta3>
+    <meta4>0.71667</meta4>
+    <metaH>0.0375</metaH>
+    <starH>0.03646</starH>
+    <starY>0.72188</starY>
+    <valX>0.70814</valX>
+    <valW>0.26421</valW>
+    <lblW>0.12289</lblW>
+    <fMeta>0.02604</fMeta>
+    <descY>0.78125</descY>
+    <descH>0.08464</descH>
+    <fDesc>0.02604</fDesc>
+    <descVisible>true</descVisible>
+    <volW>0.34101</volW>
+    <volH>0.07917</volH>
+    <volY>0.06667</volY>
+    <fVol>0.02917</fVol>
+    <fMenuTitle>0.04167</fMenuTitle>
+    <fMenu>0.0375</fMenu>
+    <fMenuSmall>0.03021</fMenuSmall>
+    <fMenuFoot>0.02708</fMenuFoot>
+    <pill>./assets/pill-r19x14.png</pill>
+    <pillw>./assets/pillw-r19x14.png</pillw>
   </variables>
 </theme>

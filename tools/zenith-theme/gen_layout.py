@@ -34,9 +34,25 @@ BUCKETS = {
                  M=20, D=28, sep=10, fClock=16, fBatt=13, fHelp=13, helpCY=455, T=125, carY=0.47, Y0=70, Y0L=70,
                  gapX=24, gapY=2, cols=5, rows=3, gp=5, fGrid=11.5, fTitle=18, fSys=13.5, fList=18.5, 
                  selH=30, listW=0.45, fName=15.5, fMeta=12.5, fDesc=12.5, coverCap=170, nameGap=10, nameH=21, gapRow=10,
-                 metaPitch=21, descGap=10, desc=1, gapCol=28, labelW=100, fMenuTitle=20, fMenu=18,
+                 metaPitch=21, descGap=10, desc=1, gapCol=60, labelW=100, fMenuTitle=20, fMenu=18,
                  fMenuSmall=14.5, fMenuFoot=13, fLogo=18, hm=14),
 }
+# Relaciones intermedias que ES distingue (nombre de ES, bloque base, ancho a H del bloque base, cambios)
+EXTRA = [
+    ('16/10', '16x9', 768, dict(listW=0.48, fHelp=10.6, gapCol=40)),
+    ('19/12', '16x9', 760, dict(listW=0.48, fHelp=10.6, gapCol=40)),
+    ('30/17', '16x9', 847, {}),
+    ('21/9', '16x9', 1120, dict(listW=0.37, cols=6, gapCol=60)),
+    ('2/1', '16x9', 960, dict(listW=0.40, cols=5, gapCol=60)),
+    ('5/4', '4x3', 600, {}),
+    ('19/14', '4x3', 651, {}),
+]
+for _name, _base, _w, _over in EXTRA:
+    _b = dict(BUCKETS[_base])
+    _b.update(_over)
+    _b['W'] = _w
+    _b['cond'] = "${screen.ratio} == '%s'" % _name
+    BUCKETS['r' + _name.replace('/', 'x')] = _b
 DEFAULT = '4x3'   # para relaciones no previstas (16:10, 5:3...)
 
 
@@ -89,6 +105,7 @@ def variables(b):
     pitch = b['pitch']
     rows_fit = max(1, int((helpTop - b['Y0L']) // pitch))
     v['listH'] = (rows_fit * pitch) / H
+    v['listLines'] = rows_fit
     v['listWide'] = (W - 2 * M) / W
     v['fList'] = b['fList'] / H
     k = {'1x1': 23.2, '4x3': 24.9, '3x2': 21.0, '16x9': 24.9}[b['key']]
