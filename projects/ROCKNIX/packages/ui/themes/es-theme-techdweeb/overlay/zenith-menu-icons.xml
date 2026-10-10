@@ -1,0 +1,27 @@
+<theme>
+   <formatVersion>7</formatVersion>
+   <!-- Zenith: line icons for the menu entries this theme does not define (menuIcons can be extended) -->
+   <view name="menu">
+      <menuIcons name="menuicons">
+         <iconSystem>./zenith-menu/menu-icon-system.svg</iconSystem>
+         <iconUpdates>./zenith-menu/menu-icon-update.svg</iconUpdates>
+         <iconControllers>./zenith-menu/menu-icon-controller.svg</iconControllers>
+         <iconGames>./zenith-menu/menu-icon-games.svg</iconGames>
+         <iconUI>./zenith-menu/menu-icon-ui.svg</iconUI>
+         <iconSound>./zenith-menu/menu-icon-sound.svg</iconSound>
+         <iconNetwork>./zenith-menu/menu-icon-network.svg</iconNetwork>
+         <iconScraper>./zenith-menu/menu-icon-scraper.svg</iconScraper>
+         <iconAdvanced>./zenith-menu/menu-icon-advanced.svg</iconAdvanced>
+         <iconQuit>./zenith-menu/menu-icon-quit.svg</iconQuit>
+         <iconRetroachievements>./zenith-menu/menu-icon-achievements.svg</iconRetroachievements>
+         <iconKodi>./zenith-menu/menu-icon-kodi.svg</iconKodi>
+         <iconRestart>./zenith-menu/menu-icon-restart.svg</iconRestart>
+         <iconShutdown>./zenith-menu/menu-icon-shutdown.svg</iconShutdown>
+         <iconFastShutdown>./zenith-menu/menu-icon-shutdown.svg</iconFastShutdown>
+         <iconNetplay>./zenith-menu/menu-icon-netplay.svg</iconNetplay>
+         <iconManual>./zenith-menu/menu-icon-manual.svg</iconManual>
+         <iconPlanemode>./zenith-menu/menu-icon-planemode.svg</iconPlanemode>
+         <searchIcon>./zenith-menu/menu-icon-search.svg</searchIcon>
+      </menuIcons>
+   </view>
+</theme>

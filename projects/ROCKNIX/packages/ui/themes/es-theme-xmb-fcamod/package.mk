@@ -19,6 +19,8 @@ makeinstall_target() {
       cp -rf ${PKG_DIR}/overlay/* ${INSTALL}/usr/share/themes/${PKG_NAME}/
     fi
     # Zenith: include the volume popup layout (kept clear of the clock / status icons, same row as them)
-    sed -i 's#</theme>#  <include>./zenith-volume.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
+    sed -i 's#</theme>#  <include>./zenith-volume.xml</include>\n  <include>./zenith-menu-icons.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
+    # Zenith: menu icons for the entries this theme does not define (same line icons as the Zenith theme)
+    cp -rf ${PKG_DIR}/../es-theme-zenith/theme/assets/menu ${INSTALL}/usr/share/themes/${PKG_NAME}/zenith-menu
     cp -f ${PKG_DIR}/NOTICE.md ${INSTALL}/usr/share/themes/${PKG_NAME}/NOTICE.md
 }

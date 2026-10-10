@@ -21,8 +21,8 @@
       <confirmButtonLabel>Confirm Button (A/B)</confirmButtonLabel>
       <darkLabel>Dark</darkLabel>
       <lightLabel>Light</lightLabel>
-      <helpTextColor>ffffff66</helpTextColor>
-      <helpIconColor>ffffff66</helpIconColor>
+      <helpTextColor>ffffffAA</helpTextColor>
+      <helpIconColor>ffffffAA</helpIconColor>
       <menuBackgroundColor>111111EE</menuBackgroundColor>
       <menuTextColor>ffffffAA</menuTextColor>
       <menuTextSelectedColor>ffffff</menuTextSelectedColor>

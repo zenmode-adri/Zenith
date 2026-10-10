@@ -1,0 +1,12 @@
+<theme>
+   <formatVersion>7</formatVersion>
+   <!-- Zenith: line icons for the menu entries this theme does not define (menuIcons can be extended) -->
+   <view name="menu">
+      <menuIcons name="menuicons">
+         <iconNetplay>./zenith-menu/menu-icon-netplay.svg</iconNetplay>
+         <iconManual>./zenith-menu/menu-icon-manual.svg</iconManual>
+         <iconPlanemode>./zenith-menu/menu-icon-planemode.svg</iconPlanemode>
+         <searchIcon>./zenith-menu/menu-icon-search.svg</searchIcon>
+      </menuIcons>
+   </view>
+</theme>

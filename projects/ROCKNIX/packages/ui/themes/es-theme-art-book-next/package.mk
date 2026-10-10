@@ -18,4 +18,7 @@ makeinstall_target() {
     if [ -d ${PKG_DIR}/overlay ]; then
       cp -rf ${PKG_DIR}/overlay/* ${INSTALL}/usr/share/themes/${PKG_NAME}/
     fi
+    # Zenith: menu icons for the entries this theme does not define (same line icons as the Zenith theme)
+    cp -rf ${PKG_DIR}/../es-theme-zenith/theme/assets/menu ${INSTALL}/usr/share/themes/${PKG_NAME}/zenith-menu
+    sed -i 's#</theme>#  <include>./zenith-menu-icons.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
 }
