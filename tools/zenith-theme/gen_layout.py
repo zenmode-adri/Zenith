@@ -12,7 +12,7 @@ OUT = sys.argv[1]
 A = os.path.join(OUT, 'assets')
 
 BUCKETS = {
-    '1x1': dict(key='1x1', volW=262, volH=44, volY=38, fVol=16, pitch=44, W=720, H=720, cond="${screen.ratio} == '1/1'",
+    '1x1': dict(key='1x1', volW=210, volH=36, volY=38, fVol=16, pitch=44, W=720, H=720, cond="${screen.ratio} == '1/1'",
                 M=22, D=32, sep=10, fClock=19, fBatt=16, fHelp=16.6, helpCY=684, T=150, carY=0.47, Y0=94, Y0L=94,
                 gapX=24, gapY=3, cols=4, rows=3, gp=6, fGrid=13, fTitle=21.6, fSys=15.8, fList=21.6, 
                 selH=36, listW=0.52, fName=18.7, fMeta=14.4, fDesc=14.4, coverCap=245, nameGap=14, nameH=25, gapRow=14,

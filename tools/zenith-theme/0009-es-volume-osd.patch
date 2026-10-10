@@ -3,8 +3,8 @@ menu theme; themes can restyle it with <menuVolume name="menuvolume"> in the men
 cornerRadius, color, barColor, trackColor, textColor, fontPath, fontSize).
 
 diff -ruN a/es-core/src/ThemeData.cpp b/es-core/src/ThemeData.cpp
---- a/es-core/src/ThemeData.cpp	2026-10-10 13:37:48.698170228 +0200
-+++ b/es-core/src/ThemeData.cpp	2026-10-10 13:37:48.706413825 +0200
+--- a/es-core/src/ThemeData.cpp	2026-10-10 15:06:11.979413952 +0200
++++ b/es-core/src/ThemeData.cpp	2026-10-10 15:06:11.989462575 +0200
 @@ -655,6 +655,17 @@
  		{ "inactive", PATH } } },
  	{ "menuSlider",{
@@ -61,8 +61,8 @@ diff -ruN a/es-core/src/ThemeData.cpp b/es-core/src/ThemeData.cpp
  	std::string language = SystemConf::getInstance()->get("system.language");
  	std::string auto_lang = ":/auto_" + language + ".svg";
 diff -ruN a/es-core/src/ThemeData.h b/es-core/src/ThemeData.h
---- a/es-core/src/ThemeData.h	2026-10-10 13:37:48.698962363 +0200
-+++ b/es-core/src/ThemeData.h	2026-10-10 13:37:48.705523325 +0200
+--- a/es-core/src/ThemeData.h	2026-10-10 15:06:11.980402139 +0200
++++ b/es-core/src/ThemeData.h	2026-10-10 15:06:11.988619015 +0200
 @@ -172,6 +172,19 @@
  	std::string textinput_ninepatch_active;
  };
@@ -92,9 +92,9 @@ diff -ruN a/es-core/src/ThemeData.h b/es-core/src/ThemeData.h
  
  		std::string getMenuIcon(const std::string name)
 diff -ruN a/es-core/src/components/VolumeInfoComponent.cpp b/es-core/src/components/VolumeInfoComponent.cpp
---- a/es-core/src/components/VolumeInfoComponent.cpp	2026-10-10 13:37:48.699636919 +0200
-+++ b/es-core/src/components/VolumeInfoComponent.cpp	2026-10-10 13:37:48.717145301 +0200
-@@ -1,143 +1,186 @@
+--- a/es-core/src/components/VolumeInfoComponent.cpp	2026-10-10 15:06:11.981355025 +0200
++++ b/es-core/src/components/VolumeInfoComponent.cpp	2026-10-10 15:06:12.000914127 +0200
+@@ -1,143 +1,189 @@
 -#include "VolumeInfoComponent.h"
 -#include "ThemeData.h"
 -#include "PowerSaver.h"
@@ -402,9 +402,12 @@ diff -ruN a/es-core/src/components/VolumeInfoComponent.cpp b/es-core/src/compone
 +	const float w = getSize().x();
 +	const float h = getSize().y();
 +
-+	// soft shadow: a few expanding translucent layers
-+	for (int i = 3; i >= 1; i--)
-+		Renderer::drawRoundRect(-i * 2.0f, i * 2.0f - 1.0f, w + i * 4.0f, h + i * 4.0f - 2.0f, mRadius + i * 2.0f, withOpacity(0x00000012, opacity));
++	// soft shadow: many thin, very translucent layers (smooth falloff, no visible steps)
++	for (int i = 8; i >= 1; i--)
++	{
++		const float g = i * 1.2f;
++		Renderer::drawRoundRect(-g, 3.0f - g, w + 2.0f * g, h + 2.0f * g, mRadius + g, withOpacity(0x00000004, opacity));
++	}
 +
 +	Renderer::drawRoundRect(0, 0, w, h, mRadius, withOpacity(mBgColor, opacity));
 +
@@ -425,8 +428,8 @@ diff -ruN a/es-core/src/components/VolumeInfoComponent.cpp b/es-core/src/compone
 +	GuiComponent::render(parentTrans);
 +}
 diff -ruN a/es-core/src/components/VolumeInfoComponent.h b/es-core/src/components/VolumeInfoComponent.h
---- a/es-core/src/components/VolumeInfoComponent.h	2026-10-10 13:37:48.700317860 +0200
-+++ b/es-core/src/components/VolumeInfoComponent.h	2026-10-10 13:37:48.709462901 +0200
+--- a/es-core/src/components/VolumeInfoComponent.h	2026-10-10 15:06:11.982037686 +0200
++++ b/es-core/src/components/VolumeInfoComponent.h	2026-10-10 15:06:11.994094212 +0200
 @@ -3,11 +3,11 @@
  #include <mutex>
  #include "GuiComponent.h"

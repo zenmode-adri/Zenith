@@ -162,9 +162,12 @@ void VolumeInfoComponent::render(const Transform4x4f& parentTrans)
 	const float w = getSize().x();
 	const float h = getSize().y();
 
-	// soft shadow: a few expanding translucent layers
-	for (int i = 3; i >= 1; i--)
-		Renderer::drawRoundRect(-i * 2.0f, i * 2.0f - 1.0f, w + i * 4.0f, h + i * 4.0f - 2.0f, mRadius + i * 2.0f, withOpacity(0x00000012, opacity));
+	// soft shadow: many thin, very translucent layers (smooth falloff, no visible steps)
+	for (int i = 8; i >= 1; i--)
+	{
+		const float g = i * 1.2f;
+		Renderer::drawRoundRect(-g, 3.0f - g, w + 2.0f * g, h + 2.0f * g, mRadius + g, withOpacity(0x00000004, opacity));
+	}
 
 	Renderer::drawRoundRect(0, 0, w, h, mRadius, withOpacity(mBgColor, opacity));
 
