@@ -131,6 +131,15 @@
 		
 	};
 	
+	joyleds {
+		compatible = "r36ultra,led";
+		pulse-gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
+		irq-gpios = <&gpio0 RK_PB4 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&joyled_pins>;
+		status = "okay";
+	};
+
 	spk_amp: audio-amplifier {
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&gpio3 RK_PA7 GPIO_ACTIVE_HIGH>;
@@ -828,6 +837,14 @@ thumbr  { gpios = <&gpio2 RK_PB6 GPIO_ACTIVE_LOW>; };
 		};
 	};
 	
+	joyled {
+		joyled_pins: joyled-pins {
+			rockchip,pins =
+			<0 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>,
+			<0 RK_PB4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
 	pmic {
 		dc_det: dc-det {
 			rockchip,pins = <0 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;

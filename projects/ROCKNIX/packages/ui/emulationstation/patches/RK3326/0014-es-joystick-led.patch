@@ -1,0 +1,59 @@
+Zenith 0014: "JOYSTICK LED" entry in the system settings. Shown only when the device defines DEVICE_ANALOG_STICKS_LED_SINGLE
+(R36 Ultra: RGB LEDs of the joysticks driven by a single-wire pulse controller with fixed modes). The list comes from the device's
+analog_sticks_ledcontrol_single (list), the choice is applied at once and stored in analogsticks.led.color (re-applied at boot by
+the 500-enable-led quirk).
+
+diff -ruN a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+--- a/es-app/src/guis/GuiMenu.cpp	2026-10-11 18:42:38.960403601 +0200
++++ b/es-app/src/guis/GuiMenu.cpp	2026-10-11 18:42:38.963305305 +0200
+@@ -2231,6 +2231,50 @@
+ 		});
+ 	}
+ 
++	if (Utils::Platform::GetEnv("DEVICE_ANALOG_STICKS_LED_SINGLE") == "true"){
++		// Zenith: RGB LEDs of the joysticks (fixed preset modes listed by the device's analog_sticks_ledcontrol_single)
++		auto optionsSticksLed = std::make_shared<OptionListComponent<std::string> >(mWindow, _("JOYSTICK LED"), false);
++		std::string selectedSticksLed = SystemConf::getInstance()->get("analogsticks.led.color");
++		if (selectedSticksLed.empty())
++			selectedSticksLed = "off";
++		auto fillSticksLed = [selectedSticksLed](OptionListComponent<std::string>* list, const std::vector<std::string>& modes)
++		{
++			bool found = false;
++			for (auto it = modes.begin(); it != modes.end(); it++)
++			{
++				list->add((*it), (*it), selectedSticksLed == (*it));
++				if (selectedSticksLed == (*it))
++					found = true;
++			}
++			if (!found)
++				list->add(selectedSticksLed, selectedSticksLed, true);
++		};
++		fillSticksLed(optionsSticksLed.get(), std::vector<std::string>());
++		optionsSticksLed->populateAsync<std::vector<std::string>>([] {
++			std::vector<std::string> modes;
++			std::string line;
++			for (std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/sh -lc "/usr/bin/analog_sticks_ledcontrol_single list")")); getline(ss, line); )
++			{
++				while (!line.empty() && (line.back() == '\r' || line.back() == ' '))
++					line.pop_back();
++				if (!line.empty())
++					modes.push_back(line);
++			}
++			return modes;
++		}, fillSticksLed);
++		s->addWithLabel(_("JOYSTICK LED"), optionsSticksLed);
++
++		optionsSticksLed->setSelectedChangedCallback([](const std::string& newMode) {
++			SystemConf::getInstance()->set("analogsticks.led.color", newMode);
++			SystemConf::getInstance()->saveSystemConf();
++			Utils::Platform::runSystemCommand("/usr/bin/sh -lc \"/usr/bin/analog_sticks_ledcontrol_single " + newMode + "\"", "", nullptr);
++		});
++
++		s->addSaveFunc([optionsSticksLed] {
++			SystemConf::getInstance()->set("analogsticks.led.color", optionsSticksLed->getSelected());
++		});
++	}
++
+ 	if (Utils::Platform::GetEnv("DEVICE_LED_BRIGHTNESS") == "true"){
+ 	        // Sets LED brightness
+ 	        auto optionsLEDBrightness = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED BRIGHTNESS"), false);

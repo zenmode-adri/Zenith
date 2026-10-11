@@ -1,88 +1,71 @@
 #!/bin/bash
 
-# 获取脚本的第一个参数，即颜色名称
+. /etc/profile
+
 COLOR=$1
+LED_PULSE="/sys/class/leds/joyled/pulse"
 
-# 定义每个颜色对应的 LED 路径
-LED_BLUE="/sys/class/leds/blue:status/brightness"
-LED_GREEN="/sys/class/leds/green:status/brightness"
-LED_RED="/sys/class/leds/red:charging/brightness"
+set_led_pulse() {
+	local pulse=$1
 
-# 定义一个函数来设置 LED 的亮度
-set_led_brightness() {
-    local led=$1
-    local brightness=$2
-    if [ -w "$led" ]; then
-        echo "$brightness" > "$led"
-    else
-        echo "Error: Unable to write to $led"
-    fi
+	if [ -w "${LED_PULSE}" ]; then
+		echo "${pulse}" > "${LED_PULSE}"
+	else
+		echo "Error: Unable to write to ${LED_PULSE}" >&2
+		return 1
+	fi
 }
 
-# 根据颜色名称设置 LED 状态
-case $COLOR in
-    battery)
-        # 假设 battery 对应绿色（可以根据实际需求调整）
-        set_led_brightness "$LED_BLUE" 0
-        set_led_brightness "$LED_GREEN" 1
-        set_led_brightness "$LED_RED" 0
+case ${COLOR} in
+	battery)
+		set_led_pulse 3
 		systemctl restart batteryledstatus.service
-        ;;
-    red)
-        set_led_brightness "$LED_BLUE" 0
-        set_led_brightness "$LED_GREEN" 0
-        set_led_brightness "$LED_RED" 1
-        ;;
-    green)
-        set_led_brightness "$LED_BLUE" 0
-        set_led_brightness "$LED_GREEN" 1
-        set_led_brightness "$LED_RED" 0
-        ;;
-    blue)
-        set_led_brightness "$LED_BLUE" 1
-        set_led_brightness "$LED_GREEN" 0
-        set_led_brightness "$LED_RED" 0
-        ;;
-    white)
-        set_led_brightness "$LED_BLUE" 1
-        set_led_brightness "$LED_GREEN" 1
-        set_led_brightness "$LED_RED" 1
-        ;;
-    orange)
-        # 红色和绿色混合为橙色
-        set_led_brightness "$LED_BLUE" 0
-        set_led_brightness "$LED_GREEN" 1
-        set_led_brightness "$LED_RED" 1
-        ;;
-    yellow)
-        # 红色和绿色混合（通常黄色是红色和绿色，但根据硬件可能不同）
-        set_led_brightness "$LED_BLUE" 0
-        set_led_brightness "$LED_GREEN" 1
-        set_led_brightness "$LED_RED" 1  # 通常绿色和红色亮一些为黄色，根据需要可以调整比例（硬件限制）
-        ;;
-    purple)
-        # 红色和蓝色混合为紫色
-        set_led_brightness "$LED_BLUE" 1
-        set_led_brightness "$LED_GREEN" 0
-        set_led_brightness "$LED_RED" 1
-        ;;
-    off)
-        # 红色和蓝色混合为紫色
-        set_led_brightness "$LED_BLUE" 0
-        set_led_brightness "$LED_GREEN" 0
-        set_led_brightness "$LED_RED" 0
-    ;;
-    list)
-cat <<EOF
+		;;
+	red)
+		set_led_pulse 1
+		;;
+	yellow)
+		set_led_pulse 2
+		;;
+	green)
+		set_led_pulse 3
+		;;
+	cyan)
+		set_led_pulse 4
+		;;
+	blue)
+		set_led_pulse 5
+		;;
+	purple)
+		set_led_pulse 6
+		;;
+	white)
+		set_led_pulse 7
+		;;
+	heartbeat|breath|breath_red|breath_green|breath_blue|breath_white|breath_orange|breath_purple|breath_cyan)
+		set_led_pulse 8
+		;;
+	rainbow|flow)
+		set_led_pulse 9
+		;;
+	orange)
+		set_led_pulse 2
+		;;
+	off)
+		set_led_pulse 10
+		;;
+	list)
+		cat <<EOF
 off
-battery
 red
-green
-blue
-white
-orange
 yellow
+green
+cyan
+blue
 purple
+white
+heartbeat
+rainbow
 EOF
-  ;;
+		;;
 esac
