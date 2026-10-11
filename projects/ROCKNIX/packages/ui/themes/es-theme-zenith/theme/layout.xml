@@ -39,6 +39,8 @@
     <listX>0.02813</listX>
     <listY>0.14583</listY>
     <listW>0.52031</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.94375</listWide>
@@ -59,7 +61,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.71094</valX>
     <valW>0.26094</valW>
     <lblW>0.125</lblW>
@@ -116,6 +118,8 @@
     <listX>0.03056</listX>
     <listY>0.13056</listY>
     <listW>0.51944</listW>
+    <listPosY>0.125</listPosY>
+    <selOffY>0.00556</selOffY>
     <listH>0.73333</listH>
     <listLines>12</listLines>
     <listWide>0.93889</listWide>
@@ -136,7 +140,7 @@
     <meta4>0.66528</meta4>
     <metaH>0.03611</metaH>
     <starH>0.028</starH>
-    <starY>0.66928</starY>
+    <starY>0.66933</starY>
     <valX>0.75972</valX>
     <valW>0.20972</valW>
     <lblW>0.15972</lblW>
@@ -193,6 +197,8 @@
     <listX>0.02917</listX>
     <listY>0.1625</listY>
     <listW>0.57917</listW>
+    <listPosY>0.15313</listPosY>
+    <selOffY>0.00937</selOffY>
     <listH>0.7</listH>
     <listLines>7</listLines>
     <listWide>0.94167</listWide>
@@ -213,10 +219,10 @@
     <meta4>0.7875</meta4>
     <metaH>0.04375</metaH>
     <starH>0.04812</starH>
-    <starY>0.79437</starY>
-    <valX>0.77917</valX>
-    <valW>0.19167</valW>
-    <lblW>0.14583</lblW>
+    <starY>0.78531</starY>
+    <valX>0.75417</valX>
+    <valW>0.21667</valW>
+    <lblW>0.12083</lblW>
     <fMeta>0.03438</fMeta>
     <descY>0.86562</descY>
     <descH>0.06563</descH>
@@ -270,6 +276,8 @@
     <listX>0.02342</listX>
     <listY>0.14583</listY>
     <listW>0.44965</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.95316</listWide>
@@ -290,7 +298,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.66042</valX>
     <valW>0.31616</valW>
     <lblW>0.1171</lblW>
@@ -347,6 +355,8 @@
     <listX>0.02604</listX>
     <listY>0.14583</listY>
     <listW>0.48047</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.94792</listWide>
@@ -367,7 +377,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.6888</valX>
     <valW>0.28516</valW>
     <lblW>0.13021</lblW>
@@ -424,6 +434,8 @@
     <listX>0.02632</listX>
     <listY>0.14583</listY>
     <listW>0.48026</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.94737</listWide>
@@ -444,7 +456,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.69079</valX>
     <valW>0.28289</valW>
     <lblW>0.13158</lblW>
@@ -501,6 +513,8 @@
     <listX>0.02361</listX>
     <listY>0.14583</listY>
     <listW>0.44982</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.95277</listWide>
@@ -521,7 +535,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.66234</valX>
     <valW>0.31405</valW>
     <lblW>0.11806</lblW>
@@ -578,6 +592,8 @@
     <listX>0.01786</listX>
     <listY>0.14583</listY>
     <listW>0.36964</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.96429</listWide>
@@ -598,7 +614,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.53036</valX>
     <valW>0.45179</valW>
     <lblW>0.08929</lblW>
@@ -655,6 +671,8 @@
     <listX>0.02083</listX>
     <listY>0.14583</listY>
     <listW>0.4</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.95833</listWide>
@@ -675,7 +693,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.5875</valX>
     <valW>0.39167</valW>
     <lblW>0.10417</lblW>
@@ -732,6 +750,8 @@
     <listX>0.03</listX>
     <listY>0.14583</listY>
     <listW>0.52</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.94</listWide>
@@ -752,7 +772,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.72333</valX>
     <valW>0.24667</valW>
     <lblW>0.13333</lblW>
@@ -809,6 +829,8 @@
     <listX>0.02765</listX>
     <listY>0.14583</listY>
     <listW>0.52074</listW>
+    <listPosY>0.1375</listPosY>
+    <selOffY>0.00833</selOffY>
     <listH>0.7125</listH>
     <listLines>9</listLines>
     <listWide>0.9447</listWide>
@@ -829,7 +851,7 @@
     <meta4>0.71667</meta4>
     <metaH>0.0375</metaH>
     <starH>0.03646</starH>
-    <starY>0.72188</starY>
+    <starY>0.71719</starY>
     <valX>0.70814</valX>
     <valW>0.26421</valW>
     <lblW>0.12289</lblW>

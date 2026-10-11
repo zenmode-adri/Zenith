@@ -1,6 +1,7 @@
 """Genera las variables de geometria del tema Zenith para las resoluciones habituales de las consolas compatibles:
   1:1  720x720 (R36 Ultra)      4:3  640x480 (R36S y clones, RG351V...)
   3:2  480x320 (RG351P/OGA...)  16:9 854x480 (RGB10 Max 2...)
+  y las relaciones intermedias de EXTRA (16:10, 19:12, 30:17, 21:9, 2:1, 5:4, 19:14).
 Salida: layout.xml (bloques <variables if=...>) y las pastillas pill-<cubo>.png / pillw-<cubo>.png con medidas exactas.
 Uso: python gen_layout.py <carpeta del tema>
 """
@@ -28,7 +29,7 @@ BUCKETS = {
                 M=14, D=24, sep=6, fClock=13, fBatt=11, fHelp=10.2, helpCY=300, T=96, carY=0.46, Y0=52, Y0L=52,
                 gapX=12, gapY=2, cols=4, rows=2, gp=4, fGrid=10.5, fTitle=15, fSys=11.5, fList=14.5, 
                 selH=26, listW=0.58, fName=13, fMeta=11, fDesc=11, coverCap=115, nameGap=8, nameH=18, gapRow=8,
-                metaPitch=17, descGap=0, desc=0, gapCol=12, labelW=70, fMenuTitle=17, fMenu=15,
+                metaPitch=17, descGap=0, desc=0, gapCol=12, labelW=58, fMenuTitle=17, fMenu=15,
                 fMenuSmall=12, fMenuFoot=11, fLogo=14, hm=10),
     '16x9': dict(key='16x9', volW=222, volH=38, volY=34, fVol=14, pitch=38, W=854, H=480, cond="${screen.ratio} == '16/9'",
                  M=20, D=28, sep=10, fClock=16, fBatt=13, fHelp=13, helpCY=455, T=125, carY=0.47, Y0=70, Y0L=70,
@@ -53,7 +54,7 @@ for _name, _base, _w, _over in EXTRA:
     _b['W'] = _w
     _b['cond'] = "${screen.ratio} == '%s'" % _name
     BUCKETS['r' + _name.replace('/', 'x')] = _b
-DEFAULT = '4x3'   # para relaciones no previstas (16:10, 5:3...)
+DEFAULT = '4x3'   # para relaciones no previstas por ES-next (16:15, 6:5, 8:7, 8:3, 4:1, 32:9 y las verticales)
 
 
 def f(v, n=5):
@@ -100,9 +101,15 @@ def variables(b):
     v['fTitle'] = b['fTitle'] / H
     listW_px = round(b['listW'] * W)
     v['listX'] = M / W
-    v['listY'] = b['Y0L'] / H
+    v['listY'] = b['Y0L'] / H   # borde superior de la caratula y de la pastilla de seleccion
     v['listW'] = listW_px / W
     pitch = b['pitch']
+    # ES pinta la pastilla (selH) en el borde superior de la fila (alto = pitch) y centra el texto en la fila: el texto queda
+    # (pitch-selH)/2 mas bajo que el centro de la pastilla (medido en la consola a 720x720: 14 px de aire arriba y 7 abajo).
+    # Se sube la lista esa cantidad y se baja la pastilla otro tanto (selectorOffsetY): la pastilla no se mueve, el texto queda centrado.
+    selOff = (pitch - b['selH']) / 2
+    v['listPosY'] = (b['Y0L'] - selOff) / H
+    v['selOffY'] = selOff / H
     rows_fit = max(1, int((helpTop - b['Y0L']) // pitch))
     v['listH'] = (rows_fit * pitch) / H
     v['listLines'] = rows_fit
@@ -131,7 +138,8 @@ def variables(b):
     v['meta4'] = (meta1 + 3 * b['metaPitch']) / H
     v['metaH'] = (b['metaPitch'] - 3) / H
     v['starH'] = (b['fMeta'] * 1.4) / H
-    v['starY'] = (meta1 + 3 * b['metaPitch'] + b['fMeta'] * 0.2) / H
+    # estrellas centradas en la fila del rating (la caja del texto mide metaPitch-3 y ES centra el texto en vertical)
+    v['starY'] = (meta1 + 3 * b['metaPitch'] + (b['metaPitch'] - 3 - b['fMeta'] * 1.4) / 2) / H
     v['valX'] = (colX + b['labelW']) / W
     v['valW'] = (colW - b['labelW']) / W
     v['lblW'] = b['labelW'] / W
