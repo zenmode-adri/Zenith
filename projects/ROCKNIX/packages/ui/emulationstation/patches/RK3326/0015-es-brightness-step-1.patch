@@ -1,0 +1,14 @@
+Zenith 0015: the SCREEN BRIGHTNESS slider moves 1% per step (was 5%), in line with the brightness script (1% steps, minimum stays 5%).
+
+diff -ruN a/es-app/src/guis/GuiMenu.cpp b/es-app/src/guis/GuiMenu.cpp
+--- a/es-app/src/guis/GuiMenu.cpp	2026-10-11 18:46:40.123501172 +0200
++++ b/es-app/src/guis/GuiMenu.cpp	2026-10-11 18:46:40.129624378 +0200
+@@ -2054,7 +2054,7 @@
+ 	    n++;
+             if (n > 1 && !dualScreen)
+               break;
+-	    auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 5.f, 100.f, 5.f, "%");
++	    auto brightnessComponent = std::make_shared<SliderComponent>(mWindow, 5.f, 100.f, 1.f, "%");
+ 	    brightnessComponent->setValue(brightness.value);
+ 	    brightnessComponent->setOnValueChanged([n, brightness](const float &newVal)
+ 	    {
