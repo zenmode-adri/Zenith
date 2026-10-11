@@ -76,11 +76,37 @@ _write_brightness() {
   set_setting "${CURRENT_SETTING_KEY}" "${percentage}"
 }
 
+# Step size for up/down: 1% per press. Holding the key (calls less than 0.4s
+# apart) accelerates: 1% for the first 3, 2% up to the 9th, then 5%.
+# Computed once per call so that several screens get the same step.
+STEP=1
+_pick_step() {
+  local state="/tmp/.brightness_repeat" now last=0 streak=0
+  read -r now _ < /proc/uptime
+  now=$((10#${now/./}))
+  [ -r "${state}" ] && read -r last streak < "${state}"
+  last=$((10#${last:-0}))
+  streak=$((10#${streak:-0}))
+  if (("${now}" - "${last}" <= 40)); then
+    streak=$((streak + 1))
+  else
+    streak=1
+  fi
+  echo "${now} ${streak}" > "${state}" 2>/dev/null
+  if (("${streak}" >= 10)); then
+    STEP=5
+  elif (("${streak}" >= 4)); then
+    STEP=2
+  else
+    STEP=1
+  fi
+}
+
 stepUp() {
   local current_percent
   current_percent="$(get_setting "${CURRENT_SETTING_KEY}")"
 
-  local next_percent=$((current_percent + 5))
+  local next_percent=$((current_percent + STEP))
   if (("${next_percent}" > 100)); then
     next_percent=100
   fi
@@ -104,7 +130,7 @@ stepDown() {
   local current_percent
   current_percent="$(get_setting "${CURRENT_SETTING_KEY}")"
 
-  local next_percent=$((current_percent - 5))
+  local next_percent=$((current_percent - STEP))
 
   if (("${next_percent}" < 5)); then
     next_percent=5
@@ -161,6 +187,7 @@ ACTION="${1:-}"
 case "${ACTION}" in
   "up"|"down")
     SCREEN_INPUT_ARG="${2:-all}"
+    _pick_step
 
     if [ "${SCREEN_INPUT_ARG}" = "all" ]; then
       _apply_all "${ACTION}"
