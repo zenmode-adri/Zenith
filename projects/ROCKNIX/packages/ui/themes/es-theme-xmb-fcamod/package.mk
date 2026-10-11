@@ -18,6 +18,10 @@ makeinstall_target() {
     if [ -d ${PKG_DIR}/overlay ]; then
       cp -rf ${PKG_DIR}/overlay/* ${INSTALL}/usr/share/themes/${PKG_NAME}/
     fi
+    # Zenith: "Vertical Arcade" (varcade) has no logo upstream; reuse the Arcade one (same as upstream does for hbmame = mame)
+    for d in controller physical-media; do
+      cp -f ${INSTALL}/usr/share/themes/${PKG_NAME}/_inc/systems/${d}/arcade.png ${INSTALL}/usr/share/themes/${PKG_NAME}/_inc/systems/${d}/varcade.png
+    done
     # Zenith: include the volume popup layout (kept clear of the clock / status icons, same row as them)
     sed -i 's#</theme>#  <include>./zenith-volume.xml</include>\n  <include>./zenith-menu-icons.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
     # Zenith: menu icons for the entries this theme does not define (same line icons as the Zenith theme)
