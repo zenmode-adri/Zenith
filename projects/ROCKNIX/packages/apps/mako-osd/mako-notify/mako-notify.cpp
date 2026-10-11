@@ -38,15 +38,17 @@ void ensure_mako_config() {
         ofs <<
 "max-visible=1\n"
 "layer=overlay\n"
-"font=monospace 30\n"
-"text-color=#ffffff\n"
+"font=DejaVu Sans Condensed 17\n"
+"text-color=#F0F0F2\n"
 "text-alignment=center\n"
-"background-color=#000000\n"
+"background-color=#2F2F34F2\n"
 "border-size=0\n"
-"border-radius=10\n"
+"border-radius=18\n"
+"padding=9,22\n"
+"margin=18,0,0,0\n"
 "default-timeout=1500\n"
 "anchor=top-center\n"
-"width=500\n";
+"width=230\n";
 
         ofs.close();
     }

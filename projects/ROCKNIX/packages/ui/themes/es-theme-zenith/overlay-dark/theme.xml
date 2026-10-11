@@ -116,6 +116,7 @@
       <path>./assets/logos/${system.theme}.webp</path>
     </image>
     <carousel name="systemcarousel">
+      <scrollSound>./assets/sounds/scroll.wav</scrollSound>
       <type>horizontal</type>
       <origin>0.5 0.5</origin>
       <pos>0.5 ${carY}</pos>
@@ -188,6 +189,15 @@
 
   <!-- ===== Cabecera comun de las vistas de juegos ===== -->
   <view name="grid, basic, detailed">
+    <sound name="launch">
+      <path>./assets/sounds/launch.wav</path>
+    </sound>
+    <sound name="back">
+      <path>./assets/sounds/back.wav</path>
+    </sound>
+    <sound name="menuOpen">
+      <path>./assets/sounds/menuOpen.wav</path>
+    </sound>
     <text name="logoText">
       <visible>false</visible>
     </text>
@@ -208,6 +218,7 @@
   <!-- ===== Cuadricula de caratulas ===== -->
   <view name="grid">
     <imagegrid name="gamegrid">
+      <scrollSound>./assets/sounds/scroll.wav</scrollSound>
       <pos>${gridX} ${gridY}</pos>
       <size>${gridW} ${gridH}</size>
       <cellProportion>1</cellProportion>
@@ -253,6 +264,7 @@
   <!-- ===== Lista (basic / detailed) ===== -->
   <view name="basic, detailed">
     <textlist name="gamelist">
+      <scrollSound>./assets/sounds/scroll.wav</scrollSound>
       <pos>${listX} ${listY}</pos>
       <size>${listW} ${listH}</size>
       <lines>${listLines}</lines>
@@ -405,6 +417,7 @@
   <!-- basic: sin metadatos, la lista ocupa todo el ancho -->
   <view name="basic">
     <textlist name="gamelist">
+      <scrollSound>./assets/sounds/scroll.wav</scrollSound>
       <size>${listWide} ${listH}</size>
       <lines>${listLines}</lines>
       <selectorImagePath>${pillw}</selectorImagePath>
