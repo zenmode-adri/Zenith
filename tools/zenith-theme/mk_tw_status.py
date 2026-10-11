@@ -25,6 +25,16 @@ PAD = 7.0     # relleno a cada lado del grupo (a 480 de alto)
 lines = ['<theme>', '  <formatVersion>7</formatVersion>',
          '  <!-- Zenith: translucent dark pill behind the clock/wifi/battery group so it stays readable over light covers.',
          '       One pill image per aspect ratio (exact aspect, so the ends stay round); right edge and width measured per ratio. -->']
+# bloque de reserva para cualquier otra proporcion (5/4, 21/9, 30/17, 19/12...): el tema cae al diseno 16:9; va ANTES de los
+# bloques por proporcion (las definiciones posteriores ganan)
+_r169 = [x for x in RATIOS if x[0] == '16/9'][0]
+lines += ['  <!-- Fallback for any other ratio (5/4, 21/9, 30/17, 19/12...): the theme itself falls back to its 16:9 layout there, so use the 16:9 pill.',
+          '       Must stay BEFORE the per-ratio blocks (later definitions win). -->',
+          '  <variables>',
+          '    <zsbX>%.5f</zsbX>' % _r169[4],
+          '    <zsbW>%.5f</zsbW>' % ((_r169[3] + 2 * PAD) / _r169[2]),
+          '    <zsbImg>./zenith-statusbg-16x9.png</zsbImg>',
+          '  </variables>']
 for r, tag, w480, g480, right in RATIOS:
     pill_w480 = g480 + 2 * PAD
     wpng = round(H_PX * pill_w480 / PILL_H480)

@@ -2,6 +2,13 @@
   <formatVersion>7</formatVersion>
   <!-- Zenith: translucent dark pill behind the clock/wifi/battery group so it stays readable over light covers.
        One pill image per aspect ratio (exact aspect, so the ends stay round); right edge and width measured per ratio. -->
+  <!-- Fallback for any other ratio (5/4, 21/9, 30/17, 19/12...): the theme itself falls back to its 16:9 layout there, so use the 16:9 pill.
+       Must stay BEFORE the per-ratio blocks (later definitions win). -->
+  <variables>
+    <zsbX>0.98040</zsbX>
+    <zsbW>0.25791</zsbW>
+    <zsbImg>./zenith-statusbg-16x9.png</zsbImg>
+  </variables>
   <variables if="${screen.ratio} == '1/1'">
     <zsbX>0.97010</zsbX>
     <zsbW>0.37708</zsbW>

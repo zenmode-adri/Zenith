@@ -2,6 +2,20 @@
   <formatVersion>7</formatVersion>
   <!-- Zenith: grid view designed on a grid (px at 480 high): margin 20, header 0-90, grid 88-426 with 3 rows and gap 8, name band 436-460.
        Grid width = usable width (aligned with the logo and the status indicators); columns = the fewest that keep square tiles within 3 rows. -->
+  <!-- Fallback for any other ratio (5/4, 21/9, 30/17, 19/12...): without it the grid variables stay unresolved (grid at 0,0 with size 0).
+       Uses the 16:9 values, the layout the theme itself falls back to. Must stay BEFORE the per-ratio blocks (later definitions win). -->
+  <variables>
+    <zgX>0.02345</zgX>
+    <zgY>0.22305</zgY>
+    <zgW>0.95311</zgW>
+    <zgH>0.62474</zgH>
+    <zgGX>0.00938</zgGX>
+    <zgGY>0.01667</zgGY>
+    <zgLogoW>0.26260</zgLogoW>
+    <zgNameCY>0.93333</zgNameCY>
+    <zgNameW>0.95311</zgNameW>
+    <zgCols>8</zgCols>
+  </variables>
   <variables if="${screen.ratio} == '1/1'">
     <zgX>0.04167</zgX>
     <zgY>0.19375</zgY>

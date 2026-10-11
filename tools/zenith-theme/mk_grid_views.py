@@ -63,6 +63,8 @@ lines = ['<theme>', '  <formatVersion>7</formatVersion>',
          % (CFG['Y0'], CFG['GB'], ROWS, CFG['NB0'], CFG['NB1']),
          '       Grid width = usable width (aligned with the logo and the status indicators); columns = the fewest that keep square tiles within 3 rows. -->']
 report = []
+_first_block = len(lines)   # posicion donde empiezan los bloques por proporcion
+_fallback = None
 for ratio, W, lw_tw, lw_ab in RATIOS:
     Wg = W - 2 * M
     C = math.ceil((Wg + GAP) / (t_max + GAP))
@@ -71,13 +73,24 @@ for ratio, W, lw_tw, lw_ab in RATIOS:
     y0 = CFG['Y0'] + (Hg - blockH) / 2
     lw = lw_tw if THEME == 'techdweeb' else lw_ab
     name_cy = (CFG['NB0'] + CFG['NB1']) / 2
+    _blk0 = len(lines)
     lines.append('  <variables if="${screen.ratio} == \'%s\'">' % ratio)
     for k, v in (('zgX', M / W), ('zgY', y0 / H), ('zgW', Wg / W), ('zgH', blockH / H), ('zgGX', GAP / W), ('zgGY', GAP / H),
                  ('zgLogoW', lw / W), ('zgNameCY', name_cy / H), ('zgNameW', Wg / W)):
         lines.append('    <%s>%.5f</%s>' % (k, v, k))
     lines.append('    <zgCols>%d</zgCols>' % C)
     lines.append('  </variables>')
+    if ratio == '16/9':
+        _fallback = lines[_blk0 + 1:]   # las variables de 16:9 (sin la linea de apertura)
     report.append((ratio, W, C, round(t, 1), round(blockH, 1), round(y0, 1)))
+
+if THEME == 'techdweeb' and _fallback:
+    # reserva para cualquier otra proporcion (5/4, 21/9, 30/17, 19/12...): sin ella las variables del grid quedan sin resolver
+    # (grid en 0,0 con tamano 0). Usa los valores de 16:9, el diseno al que cae el propio tema. Va ANTES de los bloques por proporcion.
+    lines[_first_block:_first_block] = [
+        '  <!-- Fallback for any other ratio (5/4, 21/9, 30/17, 19/12...): without it the grid variables stay unresolved (grid at 0,0 with size 0).',
+        '       Uses the 16:9 values, the layout the theme itself falls back to. Must stay BEFORE the per-ratio blocks (later definitions win). -->',
+        '  <variables>'] + _fallback
 
 bgxml = ''
 if CFG['bg_view']:

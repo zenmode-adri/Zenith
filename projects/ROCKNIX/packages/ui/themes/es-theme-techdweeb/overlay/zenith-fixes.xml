@@ -1,0 +1,11 @@
+<theme>
+  <formatVersion>7</formatVersion>
+  <!-- Zenith: release date shown as "year-month" (as the upstream 4:3 and 1:1 layouts already do) in the 3:2, 16:9 and 16:10 layouts.
+       There the box is only 87-110 px (at 480 high) and "year-month-day" did not fit: real capture at 480x320 shows "2001-01-" cut.
+       Included last so it overrides the aspect-ratio files. Large font already uses year-month in theme.xml. -->
+  <customView name="detailed-metadata">
+    <text name="gamelist-game-release-date" extra="true">
+      <text ifSubset="aspect-ratio:3-2|3-2-auto|16-9|16-9-auto|16-10|16-10-auto,font-size:small|default">year({game:releasedate}) + "-" + month({game:releasedate})</text>
+    </text>
+  </customView>
+</theme>
