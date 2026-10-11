@@ -1,0 +1,121 @@
+<theme>
+  <formatVersion>7</formatVersion>
+  <!-- Zenith: grid view designed on a grid (px at 480 high): margin 20, header 0-90, grid 88-426 with 3 rows and gap 8, name band 436-460.
+       Grid width = usable width (aligned with the logo and the status indicators); columns = the fewest that keep square tiles within 3 rows. -->
+  <variables if="${screen.ratio} == '1/1'">
+    <zgX>0.04167</zgX>
+    <zgY>0.19375</zgY>
+    <zgW>0.91667</zgW>
+    <zgH>0.68333</zgH>
+    <zgGX>0.01667</zgGX>
+    <zgGY>0.01667</zgGY>
+    <zgLogoW>0.40417</zgLogoW>
+    <zgNameCY>0.93333</zgNameCY>
+    <zgNameW>0.91667</zgNameW>
+    <zgCols>4</zgCols>
+  </variables>
+  <variables if="${screen.ratio} == '4/3'">
+    <zgX>0.03125</zgX>
+    <zgY>0.22708</zgY>
+    <zgW>0.93750</zgW>
+    <zgH>0.61667</zgH>
+    <zgGX>0.01250</zgGX>
+    <zgGY>0.01667</zgGY>
+    <zgLogoW>0.35000</zgLogoW>
+    <zgNameCY>0.93333</zgNameCY>
+    <zgNameW>0.93750</zgNameW>
+    <zgCols>6</zgCols>
+  </variables>
+  <variables if="${screen.ratio} == '3/2'">
+    <zgX>0.02778</zgX>
+    <zgY>0.18542</zgY>
+    <zgW>0.94444</zgW>
+    <zgH>0.70000</zgH>
+    <zgGX>0.01111</zgGX>
+    <zgGY>0.01667</zgGY>
+    <zgLogoW>0.31111</zgLogoW>
+    <zgNameCY>0.93333</zgNameCY>
+    <zgNameW>0.94444</zgNameW>
+    <zgCols>6</zgCols>
+  </variables>
+  <variables if="${screen.ratio} == '16/10'">
+    <zgX>0.02604</zgX>
+    <zgY>0.21518</zgY>
+    <zgW>0.94792</zgW>
+    <zgH>0.64048</zgH>
+    <zgGX>0.01042</zgGX>
+    <zgGY>0.01667</zgGY>
+    <zgLogoW>0.29167</zgLogoW>
+    <zgNameCY>0.93333</zgNameCY>
+    <zgNameW>0.94792</zgNameW>
+    <zgCols>7</zgCols>
+  </variables>
+  <variables if="${screen.ratio} == '16/9'">
+    <zgX>0.02345</zgX>
+    <zgY>0.22305</zgY>
+    <zgW>0.95311</zgW>
+    <zgH>0.62474</zgH>
+    <zgGX>0.00938</zgGX>
+    <zgGY>0.01667</zgGY>
+    <zgLogoW>0.26260</zgLogoW>
+    <zgNameCY>0.93333</zgNameCY>
+    <zgNameW>0.95311</zgNameW>
+    <zgCols>8</zgCols>
+  </variables>
+  <view name="grid">
+    <!-- background: shared gamelist-background of the theme -->
+    <image name="logo">
+      <origin>0 0.5</origin>
+      <pos>${zgX} 0.100000</pos>
+      <maxSize>${zgLogoW} 0.125000</maxSize>
+      <path>./_inc/systems/logos/${system.theme}.png</path>
+      <color>${systemLogoColor}</color>
+      <zIndex>5</zIndex>
+    </image>
+    <text name="logoText">
+      <visible>false</visible>
+    </text>
+    <imagegrid name="gamegrid">
+      <pos>${zgX} ${zgY}</pos>
+      <size>${zgW} ${zgH}</size>
+      <cellProportion>1</cellProportion>
+      <margin>${zgGX} ${zgGY}</margin>
+      <autoLayout>${zgCols} 3</autoLayout>
+      <autoLayoutSelectedZoom>1</autoLayoutSelectedZoom>
+      <imageSource>thumbnail</imageSource>
+      <animateSelection>false</animateSelection>
+      <centerSelection>false</centerSelection>
+      <zIndex>20</zIndex>
+    </imagegrid>
+    <gridtile name="default">
+      <backgroundColor>171717FF</backgroundColor>
+      <selectionMode>image</selectionMode>
+      <imageSizeMode>maxSize</imageSizeMode>
+      <padding>6 6</padding>
+      <imageColor>B8B8B8FF</imageColor>
+    </gridtile>
+    <gridtile name="selected">
+      <backgroundImage>./zenith-gridframe.png</backgroundImage>
+      <backgroundCornerSize>8 8</backgroundCornerSize>
+      <backgroundColor>FFFFFFFF</backgroundColor>
+      <selectionMode>image</selectionMode>
+      <imageSizeMode>maxSize</imageSizeMode>
+      <padding>6 6</padding>
+      <imageColor>FFFFFFFF</imageColor>
+    </gridtile>
+    <text name="gridtile">
+      <visible>false</visible>
+    </text>
+    <text name="md_name">
+      <origin>0 0.5</origin>
+      <pos>${zgX} ${zgNameCY}</pos>
+      <size>${zgNameW} 0.050000</size>
+      <fontPath>${metadataFont}</fontPath>
+      <fontSize>0.029167</fontSize>
+      <color>${gamelistTextlistPrimaryColor}</color>
+      <alignment>left</alignment>
+      <lineSpacing>1</lineSpacing>
+      <zIndex>30</zIndex>
+    </text>
+  </view>
+</theme>

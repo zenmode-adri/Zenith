@@ -20,7 +20,10 @@ makeinstall_target() {
     fi
     # Zenith: game list font a little smaller (default size) so long game names are not cut
     sed -i '/<textlist name="gamelist">/,/<\/textlist>/s#<fontSize ifSubset="font-size:default">0.0375</fontSize>#<fontSize ifSubset="font-size:default">0.0315</fontSize>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
+    # Zenith: the theme has no grid view. Add "grid" to the shared view (status indicators, background, help bar) so the grid
+    # designed in zenith-grid.xml gets them; the default (automatic) view is not changed.
+    sed -i 's#<view name="system,basic,detailed">#<view name="system,basic,detailed,grid">#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml ${INSTALL}/usr/share/themes/${PKG_NAME}/aspect-ratio-*.xml
     # Zenith: menu icons for the entries this theme does not define (same line icons as the Zenith theme)
     cp -rf ${PKG_DIR}/../es-theme-zenith/theme/assets/menu ${INSTALL}/usr/share/themes/${PKG_NAME}/zenith-menu
-    sed -i 's#</theme>#  <include>./zenith-menu-icons.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
+    sed -i 's#</theme>#  <include>./zenith-menu-icons.xml</include>\n  <include>./zenith-grid.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
 }

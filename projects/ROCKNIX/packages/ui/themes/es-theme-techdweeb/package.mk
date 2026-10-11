@@ -20,7 +20,12 @@ makeinstall_target() {
     fi
     # Zenith: include the volume popup layout (kept clear of the clock / status icons, same row as them) and a translucent
     # dark pill behind the status icons (they were unreadable over light covers)
-    sed -i 's#</theme>#  <include>./zenith-volume.xml</include>\n  <include>./zenith-menu-icons.xml</include>\n  <include>./zenith-status.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
+    sed -i 's#</theme>#  <include>./zenith-volume.xml</include>\n  <include>./zenith-menu-icons.xml</include>\n  <include>./zenith-status.xml</include>\n  <include>./zenith-grid.xml</include>\n</theme>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
+    # Zenith: the theme has no grid view. Add "grid" to the shared views (status indicators, help, gamelist background and
+    # logo) so the grid designed in zenith-grid.xml gets them too; the default (automatic) view is not changed.
+    sed -i 's#<view name="system,basic,detailed,gamecarousel">#<view name="system,basic,detailed,gamecarousel,grid">#;s#<view name="basic,detailed,gamecarousel">#<view name="basic,detailed,gamecarousel,grid">#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml ${INSTALL}/usr/share/themes/${PKG_NAME}/aspect-ratio-*.xml ${INSTALL}/usr/share/themes/${PKG_NAME}/zenith-status.xml
+    # Zenith: game list font 0.0229 -> 0.019 (the theme's own "small" size) so 30-character names are not cut
+    sed -i '/<textlist name="gamelist">/,/<\/textlist>/s#<fontSize ifSubset="font-size:default">0.02291667</fontSize>#<fontSize ifSubset="font-size:default">0.019</fontSize>#' ${INSTALL}/usr/share/themes/${PKG_NAME}/theme.xml
     # Zenith: menu icons for the entries this theme does not define (same line icons as the Zenith theme)
     cp -rf ${PKG_DIR}/../es-theme-zenith/theme/assets/menu ${INSTALL}/usr/share/themes/${PKG_NAME}/zenith-menu
     cp -f ${PKG_DIR}/NOTICE.md ${INSTALL}/usr/share/themes/${PKG_NAME}/NOTICE.md
