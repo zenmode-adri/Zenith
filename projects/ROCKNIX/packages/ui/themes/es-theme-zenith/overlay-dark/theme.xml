@@ -153,7 +153,8 @@
           <image name="zs-logo">
             <pos>0.5 0.5</pos>
             <origin>0.5 0.5</origin>
-            <maxSize>0.72 0.5</maxSize>
+            <!-- logo box 90 % wide x 50 % tall of the tile (was 72 %); near-square icons stay height-limited, so they do not change -->
+            <maxSize>0.90 0.5</maxSize>
             <linearSmooth>true</linearSmooth>
             <path>{system:logo}</path>
           </image>
