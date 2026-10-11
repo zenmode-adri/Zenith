@@ -44,7 +44,7 @@ EXTRA = [
     ('30/17', '16x9', 847, {}),
     ('21/9', '16x9', 1120, dict(listW=0.37, cols=6, gapCol=60)),
     ('2/1', '16x9', 960, dict(listW=0.40, cols=5, gapCol=60)),
-    ('5/4', '4x3', 600, {}),
+    ('5/4', '4x3', 600, dict(fList=16.0, fName=14.3)),   # pantalla estrecha: sin esto 'Kirby: Nightmare in Dream Land' y el titulo de la ficha se cortan
     ('19/14', '4x3', 651, {}),
 ]
 for _name, _base, _w, _over in EXTRA:

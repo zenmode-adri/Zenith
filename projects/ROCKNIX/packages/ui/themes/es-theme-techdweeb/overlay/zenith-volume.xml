@@ -6,7 +6,7 @@
       <zVolX>0.5</zVolX>
    </variables>
    <variables if="${screen.ratio} == '1/1'">
-      <zVolX>0.46</zVolX>
+      <zVolX>0.435</zVolX>
    </variables>
    <variables if="${screen.ratio} == '4/3'">
       <zVolX>0.46</zVolX>

@@ -1,0 +1,22 @@
+Zenith 0013: help bar width. HelpComponent added the width of the entry that did not fit before dropping it, so the grid kept a
+width larger than the entries actually shown and the bar (centred on that box) appeared shifted to the left, e.g. at 640x480 where
+"SAVE STATES" is dropped. Only entries that fit are now counted.
+
+diff -ruN a/es-core/src/components/HelpComponent.cpp b/es-core/src/components/HelpComponent.cpp
+--- a/es-core/src/components/HelpComponent.cpp	2026-10-11 14:22:32.804461201 +0200
++++ b/es-core/src/components/HelpComponent.cpp	2026-10-11 14:22:32.808519893 +0200
+@@ -121,9 +121,12 @@
+ 
+ 		auto lbl = std::make_shared<TextComponent>(mWindow, text, font, mStyle.textColor);
+ 		
+-		width += icon->getSize().x() + lbl->getSize().x() + ICON_TEXT_SPACING + ENTRY_SPACING;
+-		if (width >= maxWidth)
++		// Zenith: only count an entry that fits. Before, the width of the entry that did NOT fit was added too, so the bar
++		// kept a box wider than its visible entries and, being centred on the box, looked pushed to the left.
++		const float entryWidth = icon->getSize().x() + lbl->getSize().x() + ICON_TEXT_SPACING + ENTRY_SPACING;
++		if (width + entryWidth >= maxWidth)
+ 			break;
++		width += entryWidth;
+ 
+ 		if (mStyle.glowSize)
+ 		{

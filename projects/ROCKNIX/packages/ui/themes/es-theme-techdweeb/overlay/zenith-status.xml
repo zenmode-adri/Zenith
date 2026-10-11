@@ -1,0 +1,39 @@
+<theme>
+  <formatVersion>7</formatVersion>
+  <!-- Zenith: translucent dark pill behind the clock/wifi/battery group so it stays readable over light covers.
+       One pill image per aspect ratio (exact aspect, so the ends stay round); right edge and width measured per ratio. -->
+  <variables if="${screen.ratio} == '1/1'">
+    <zsbX>0.97010</zsbX>
+    <zsbW>0.37708</zsbW>
+    <zsbImg>./zenith-statusbg-1x1.png</zsbImg>
+  </variables>
+  <variables if="${screen.ratio} == '4/3'">
+    <zsbX>0.97580</zsbX>
+    <zsbW>0.34375</zsbW>
+    <zsbImg>./zenith-statusbg-4x3.png</zsbImg>
+  </variables>
+  <variables if="${screen.ratio} == '3/2'">
+    <zsbX>0.97330</zsbX>
+    <zsbW>0.29722</zsbW>
+    <zsbImg>./zenith-statusbg-3x2.png</zsbImg>
+  </variables>
+  <variables if="${screen.ratio} == '16/10'">
+    <zsbX>0.98140</zsbX>
+    <zsbW>0.30208</zsbW>
+    <zsbImg>./zenith-statusbg-16x10.png</zsbImg>
+  </variables>
+  <variables if="${screen.ratio} == '16/9'">
+    <zsbX>0.98040</zsbX>
+    <zsbW>0.25791</zsbW>
+    <zsbImg>./zenith-statusbg-16x9.png</zsbImg>
+  </variables>
+  <view name="system,basic,detailed,gamecarousel">
+    <image name="zenith-status-bg" extra="true">
+      <path>${zsbImg}</path>
+      <origin>1 0.5</origin>
+      <pos>${zsbX} 0.0690</pos>
+      <size>${zsbW} 0.066</size>
+      <zIndex>5</zIndex>
+    </image>
+  </view>
+</theme>

@@ -91,7 +91,7 @@ based on 640x480
          <x>0.25</x><!-- 25% -->
       </text>
       <textlist name="gamelist">
-         <w>0.390625</w><!-- 250 -->
+         <w>0.445</w><!-- 285 (wider so that long titles fit; was 250) -->
       </textlist>
    </view>
 
