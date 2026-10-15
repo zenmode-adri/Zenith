@@ -18,4 +18,5 @@ post_makeinstall_target() {
 
   mkdir -p ${INSTALL}/usr/bin
     cp -P ${PKG_DIR}/scripts/iwd_get-networks ${INSTALL}/usr/bin
+    cp -P ${PKG_DIR}/scripts/iwd_get-networks.py ${INSTALL}/usr/bin
 }

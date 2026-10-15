@@ -1,20 +1,28 @@
-#!/usr/bin/python3
+#!/bin/bash
+# Reemplazo rapido de /usr/bin/iwd_get-networks (python3 + ravel tardaba ~2 s en el RK3326; busctl ~0.15 s).
+# Imprime el SSID de cada red visible/conocida, ordenadas por señal (igual que GetOrderedNetworks).
+# iwd codifica el SSID en hexadecimal en la ruta del objeto D-Bus: /net/connman/iwd/<phy>/<dev>/<hex(ssid)>_<seguridad>.
+# Si algo falla (sin estacion, modo AP, iwd parado...), cae al script Python original (IWD_PY lo puede sustituir para pruebas).
+PY="${IWD_PY:-/usr/bin/iwd_get-networks.py}"
+fallback() {
+  [ -x "${PY}" ] && exec "${PY}" "$@"
+  exit 1
+}
 
-import sys
-import ravel
+SP="${IWD_SP:-$(busctl --no-pager tree net.connman.iwd 2>/dev/null | grep -o '/net/connman/iwd/[0-9]*/[0-9]*$' | head -1)}"
+[ -z "$SP" ] && fallback
+OUT=$(busctl --no-pager call net.connman.iwd "$SP" net.connman.iwd.Station GetOrderedNetworks 2>/dev/null) || fallback
 
-gbus = ravel.system_bus()
+hexdec() {
+  local h=$1 i
+  for ((i = 0; i < ${#h}; i += 2)); do
+    printf "\\x${h:i:2}"
+  done
+  printf '\n'
+}
 
-# Get all iwd objects at once
-iwd_iface = gbus.get_proxy_object("net.connman.iwd", "/").get_interface("org.freedesktop.DBus.ObjectManager")
-objects = iwd_iface.GetManagedObjects()[0]
-
-# Find the first station's path using a generator expression
-station_path = next(k for k in objects.keys() if "net.connman.iwd.Station" in objects[k])
-
-# Get the station interface
-station = gbus.get_proxy_object("net.connman.iwd", station_path).get_interface("net.connman.iwd.Station")
-
-# Get the sorted network list and print the SSID for each one
-for path, _ in station.GetOrderedNetworks()[0]:
-    print(objects[path]['net.connman.iwd.Network']['Name'][1])
+for p in $(printf '%s\n' "$OUT" | grep -o '"/net/connman/iwd/[^"]*"' | tr -d '"'); do
+  h=${p##*/}
+  h=${h%_*}
+  hexdec "$h"
+done

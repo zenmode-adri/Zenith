@@ -1,0 +1,18 @@
+Zenith 0016: escaneo WiFi anticipado. Al abrir NETWORK SETTINGS (con WiFi activo y sin modo adhoc) se ejecuta en segundo plano "wifictl prescan"; WI-FI NETWORKS
+reutiliza ese escaneo una sola vez si tiene menos de 6 s. Medido: la lista sale en 0,2 s en vez de 2 s; sin tirones de red porque prescan se salta si la red esta ocupada.
+
+--- a/es-app/src/guis/GuiMenu.cpp	2026-10-15 13:43:05.581513696 +0200
++++ b/es-app/src/guis/GuiMenu.cpp	2026-10-15 13:43:05.581997636 +0200
+@@ -5915,6 +5915,12 @@
+ 	auto enable_adhoc = std::make_shared<SwitchComponent>(mWindow);
+ 	enable_adhoc->setState(baseAdhocEnabled);
+ 
++	// Zenith 0016: escaneo WiFi anticipado. Al abrir NETWORK SETTINGS se lanza en segundo plano "wifictl prescan"; asi, cuando el usuario
++	// entra en WI-FI NETWORKS el escaneo (~1,8 s) ya esta hecho o a medias. wifictl lo salta solo si la red esta ocupada, si ya se hizo
++	// hace poco o si iwd esta escaneando, y su resultado solo se reutiliza UNA vez (REFRESH siempre escanea de nuevo).
++	if (baseWifiEnabled && !baseAdhocEnabled)
++		std::thread([] { Utils::Platform::runSystemCommand("wifictl prescan", "", nullptr); }).detach();
++
+ 	if (baseWifiEnabled)
+ 	{
+ 		if (!baseAdhocEnabled)

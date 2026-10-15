@@ -3,6 +3,77 @@
 if [ "$1" = "has_ap_mode" ] && [ -r /run/wifictl.apmode ]; then
   read -r _rc < /run/wifictl.apmode && exit "${_rc}"
 fi
+# camino rapido de prescan/list/scanlist con iwd (sin connman): evita cargar /etc/profile y los get_setting de la cabecera.
+# - scanlist lanza un escaneo nuevo y espera a que iwd lo termine (~1,8 s en el RK3326, suelo fisico: 13 canales). Solo reutiliza,
+#   UNA vez, el escaneo anticipado (prescan) de hace menos de 6 s; despues siempre escanea de nuevo (REFRESH nunca da datos viejos).
+# - prescan lo llama ES al abrir NETWORK SETTINGS: escanea en segundo plano para que WI-FI NETWORKS salga casi al instante.
+#   Se salta solo si ya se hizo hace <15 s, si iwd ya esta escaneando o si la red esta ocupada (>~60 KB/s medidos en 0,25 s: descarga, streaming...).
+# - list_saved no esta implementado en este script (no imprime nada): salida inmediata en vez de cargar el perfil (0,5 s).
+# Si hay connman-wifi, modo AP o no hay estacion, se sigue por el camino normal de abajo.
+if [ "$1" = "list_saved" ]; then
+  exit 0
+fi
+if [ "$1" = "prescan" ] || [ "$1" = "list" ] || [ "$1" = "scanlist" ]; then
+  _dev="$(ls /sys/class/net | grep -m1 ^wlan)"
+  [ -z "${_dev}" ] && exit 0
+  if ! connmanctl technologies 2>/dev/null | grep -q '/technology/wifi'; then
+    _sp=$(busctl --no-pager tree net.connman.iwd 2>/dev/null | grep -o '/net/connman/iwd/[0-9]*/[0-9]*$' | head -1)
+    if [ -n "${_sp}" ]; then
+      _scanning() {
+        local v
+        v=$(busctl --no-pager get-property net.connman.iwd "${_sp}" net.connman.iwd.Station Scanning 2>/dev/null)
+        [[ "${v}" == *true* ]]
+      }
+      _age_lt() { # _age_lt FICHERO SEGUNDOS : el fichero contiene un uptime y tiene menos de SEGUNDOS
+        local f=$1 n l
+        [ -r "${f}" ] || return 1
+        n=$(cut -d' ' -f1 /proc/uptime)
+        l=$(cat "${f}" 2>/dev/null)
+        [ -n "${l}" ] && awk -v n="${n}" -v l="${l}" -v m="$2" 'BEGIN { exit !(n - l < m) }'
+      }
+      _plog() { echo "$(cut -d' ' -f1 /proc/uptime) prescan: $*" >> /run/wifictl.log; tail -n 40 /run/wifictl.log > /run/wifictl.log.t 2>/dev/null && mv -f /run/wifictl.log.t /run/wifictl.log; }
+      if [ "$1" = "prescan" ]; then
+        _age_lt /run/wifictl.prescan.last 15 && { _plog "salta: hay un prescan de hace <15 s"; exit 0; }
+        _scanning && { _plog "salta: iwd ya esta escaneando"; exit 0; }
+        _b1=$(( $(cat /sys/class/net/${_dev}/statistics/rx_bytes) + $(cat /sys/class/net/${_dev}/statistics/tx_bytes) ))
+        sleep 0.25
+        _b2=$(( $(cat /sys/class/net/${_dev}/statistics/rx_bytes) + $(cat /sys/class/net/${_dev}/statistics/tx_bytes) ))
+        [ $(( _b2 - _b1 )) -gt 15000 ] && { _plog "salta: red ocupada ($(( _b2 - _b1 )) bytes en 0,25 s)"; exit 0; }
+        cut -d' ' -f1 /proc/uptime > /run/wifictl.prescan.last
+        if iwctl station "${_dev}" scan 2>/dev/null; then
+          cp /run/wifictl.prescan.last /run/wifictl.prescan
+          _plog "escaneo lanzado ($(( _b2 - _b1 )) bytes en 0,25 s)"
+        else
+          _plog "iwctl scan fallo"
+        fi
+        exit 0
+      fi
+      if [ "$1" = "scanlist" ]; then
+        _plog "scanlist: inicio"
+        _reuse=no
+        if _age_lt /run/wifictl.prescan 6; then
+          _reuse=yes
+        fi
+        rm -f /run/wifictl.prescan   # se consume: solo vale para la primera lista tras el prescan
+        if [ "${_reuse}" = "no" ]; then
+          iwctl station "${_dev}" scan 2>/dev/null
+          # espera a que arranque (max ~0,6 s)
+          for ((_i = 0; _i < 20; _i++)); do
+            _scanning && break
+            sleep 0.03
+          done
+        fi
+        # espera a que termine (tope ~5 s)
+        for ((_i = 0; _i < 100; _i++)); do
+          _scanning || break
+          sleep 0.05
+        done
+      fi
+      [ "$1" = "scanlist" ] && _plog "scanlist: escaneo listo (reutilizado=${_reuse}), leyendo redes"
+      IWD_SP="${_sp}" exec /usr/bin/iwd_get-networks
+    fi
+  fi
+fi
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
 # Copyright (C) 2022 kkoshelev (https://github.com/kkoshelev)
@@ -111,6 +182,21 @@ wait_for_wifi() {
   for i in $(seq 1 5); do
     iwctl device list 2>/dev/null | grep -q "${WIFI_DEV}" && break
     sleep 1
+  done
+}
+
+# espera a que iwd termine de escanear (Station.Scanning=false) en vez de dormir un tiempo fijo; tope ~3 s
+wait_scan_done() {
+  local sp i
+  sp=$(busctl --no-pager tree net.connman.iwd 2>/dev/null | grep -o '/net/connman/iwd/[0-9]*/[0-9]*$' | head -1)
+  if [ -z "${sp}" ]; then
+    sleep 2
+    return
+  fi
+  sleep 0.3
+  for i in $(seq 1 27); do
+    busctl --no-pager get-property net.connman.iwd "${sp}" net.connman.iwd.Station Scanning 2>/dev/null | grep -q true || break
+    sleep 0.1
   done
 }
 
@@ -261,7 +347,7 @@ case "${1}" in
       connman_list_wifi_services
     else
       iwctl station ${WIFI_DEV} scan 2>/dev/null
-      sleep 2
+      wait_scan_done
       list_wifi
     fi
     ;;
