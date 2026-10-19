@@ -1,0 +1,49 @@
+--- a/es-core/src/Window.h
++++ b/es-core/src/Window.h
+@@ -60,6 +60,9 @@
+ 	// centro vertical (px) de un elemento de la capa "screen" del tema, por su nombre; -1 si no existe
+ 	float getScreenExtraCenterY(const std::string& tag) const;
+ 
++	// oculta los elementos "screen" del tema (logo Z, hora, bateria...) p. ej. en el visor de imagenes a pantalla completa
++	void setHideScreenExtras(bool hide) { mHideScreenExtras = hide; }
++
+ 	void textInput(const char* text);
+ 	void input(InputConfig* config, Input input);
+ 	void update(int deltaTime);
+@@ -156,6 +159,7 @@
+ 	bool			mRenderScreenSaver;
+ 
+ 	std::vector<GuiComponent*> mScreenExtras;
++	bool mHideScreenExtras = false;
+ 	std::vector<GuiComponent*> mGuiStack;
+ 
+ 	typedef std::pair<std::string, int> NotificationMessage;
+--- a/es-core/src/Window.cpp
++++ b/es-core/src/Window.cpp
+@@ -787,7 +787,7 @@
+ 	// or not because it may perform a fade on transition
+ 	renderScreenSaver();
+ 
+-	if (!mRenderScreenSaver)
++	if (!mRenderScreenSaver && !mHideScreenExtras)
+ 	{
+ 		for (auto extra : mScreenExtras)
+ 			extra->render(transform);
+--- a/es-app/src/guis/GuiImageViewer.cpp
++++ b/es-app/src/guis/GuiImageViewer.cpp
+@@ -274,6 +274,7 @@
+ 	GuiComponent(window), mGrid(window), mPdfThreads(nullptr)
+ {
+ 	g_isGuiImageViewerRunning = true;
++	mWindow->setHideScreenExtras(true); // imagen a pantalla completa: sin logo Z ni barra de estado encima
+ 
+ 	setPosition(0, 0);
+ 	setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+@@ -540,6 +541,7 @@
+ GuiImageViewer::~GuiImageViewer()
+ {
+ 	g_isGuiImageViewerRunning = false;
++	mWindow->setHideScreenExtras(false);
+ 
+ 	if (mPdfThreads != nullptr)
+ 	{
