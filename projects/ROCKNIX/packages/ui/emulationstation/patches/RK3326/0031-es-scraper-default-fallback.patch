@@ -1,0 +1,30 @@
+--- a/es-app/src/scrapers/Scraper.cpp
++++ b/es-app/src/scrapers/Scraper.cpp
+@@ -74,6 +74,12 @@
+ 		if (scrap.first == scraper)
+ 			return scrap.second;
+ 
++	// El ajuste por defecto es "ScreenScraper", pero en este build ese scraper no esta compilado (sin clave de desarrollador):
++	// la lista mostraba IGDB (primer elemento) pero getScraper() devolvia nullptr y SCRAPE NOW se cerraba con SIGSEGV.
++	// Si el configurado no existe, se usa el primero de la lista, que es lo que muestra el menu.
++	if (name.empty() && !Scraper::scrapers.empty())
++		return Scraper::scrapers.front().second;
++
+ 	return nullptr;
+ }
+ 
+--- a/es-app/src/scrapers/ThreadedScraper.cpp
++++ b/es-app/src/scrapers/ThreadedScraper.cpp
+@@ -265,6 +265,12 @@
+ 	if (ThreadedScraper::mInstance != nullptr)
+ 		return;
+ 
++	if (Scraper::getScraper() == nullptr)
++	{
++		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURRED") + std::string(" :\r\n") + _("NO SCRAPER AVAILABLE")));
++		return;
++	}
++
+ 	std::string error;
+ 	int threadCount = Scraper::getScraper()->getThreadCount(error);
+ 	if (threadCount < 0)
