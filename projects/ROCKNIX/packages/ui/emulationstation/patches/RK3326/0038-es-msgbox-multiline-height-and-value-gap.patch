@@ -1,0 +1,46 @@
+--- a/es-app/src/guis/GuiSettings.cpp
++++ b/es-app/src/guis/GuiSettings.cpp
+@@ -193,7 +193,7 @@
+ 	row.addElement(ed, false);
+ 
+ 	auto spacer = std::make_shared<GuiComponent>(mWindow);
+-	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
++	spacer->setSize(Renderer::getScreenWidth() * 0.014f, 0); // separacion valor-flecha (0.005 dejaba el valor pegado)
+ 	row.addElement(spacer, false);
+ 
+ 	auto bracket = std::make_shared<ImageComponent>(mWindow);
+@@ -279,7 +279,7 @@
+ 	row.addElement(ed, false);
+ 
+ 	auto spacer = std::make_shared<GuiComponent>(mWindow);
+-	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
++	spacer->setSize(Renderer::getScreenWidth() * 0.014f, 0); // separacion valor-flecha (0.005 dejaba el valor pegado)
+ 	row.addElement(spacer, false);
+ 
+ 	auto bracket = std::make_shared<ImageComponent>(mWindow);
+@@ -347,7 +347,7 @@
+ 	row.addElement(ed, true);
+ 
+ 	auto spacer = std::make_shared<GuiComponent>(window);
+-	spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
++	spacer->setSize(Renderer::getScreenWidth() * 0.014f, 0); // separacion valor-flecha (0.005 dejaba el valor pegado)
+ 	row.addElement(spacer, false);
+ 
+ 	auto bracket = std::make_shared<ImageComponent>(window);
+--- a/es-core/src/guis/GuiMsgBox.cpp
++++ b/es-core/src/guis/GuiMsgBox.cpp
+@@ -253,6 +253,14 @@
+ 		const float availW = width - Renderer::getScreenWidth() * 0.03f;
+ 		const std::string wrapped = msgFont->wrapText(softenUpperCase(text), availW);
+ 		msgHeight = msgFont->sizeText(wrapped, 1.2f).y() + Renderer::getScreenHeight() * 0.07f;
++		{
++			// el texto se dibuja con interlineado 1.5: se anade lo que falta respecto al calculo con 1.2, descontando lo que ya
++			// absorbe el aire de un cuadro de 2 lineas (asi los cuadros cortos no cambian y los largos no pisan los botones)
++			const float extra = (msgFont->sizeText(wrapped, 1.5f).y() - msgFont->sizeText(wrapped, 1.2f).y())
++					- (msgFont->sizeText("X\nX", 1.5f).y() - msgFont->sizeText("X\nX", 1.2f).y());
++			if (extra > 0)
++				msgHeight += extra;
++		}
+ 		if (mImage != nullptr)
+ 			msgHeight += msgFont->getLetterHeight() * 2.0f + Renderer::getScreenHeight() * 0.035f; // fila del icono: icono + margen superior igual al aire del texto
+ 	}
