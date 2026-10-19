@@ -34,6 +34,13 @@
     <text name="clock">
       <pos>1 1</pos>
     </text>
+    <image name="zs-avatar" extra="true">
+      <path>./assets/avatar.png</path>
+      <origin>0 0.5</origin>
+      <pos>${avX} ${avY}</pos>
+      <maxSize>${avW} ${avH}</maxSize>
+      <zIndex>90</zIndex>
+    </image>
     <stackpanel name="zs-status" extra="true">
       <h>${stackH}</h>
       <w>1</w>
@@ -74,14 +81,6 @@
   </view>
 
   <view name="system, basic, detailed, grid">
-    <!-- Logo Z: dentro de las vistas (no en "screen") para que paneles como la barra de navegacion (B) lo tapen en vez de quedar debajo del logo -->
-    <image name="zs-avatar" extra="true">
-      <path>./assets/avatar.png</path>
-      <origin>0 0.5</origin>
-      <pos>${avX} ${avY}</pos>
-      <maxSize>${avW} ${avH}</maxSize>
-      <zIndex>90</zIndex>
-    </image>
     <image name="zs-bg" extra="true">
       <path>./assets/px.png</path>
       <origin>0 0</origin>
