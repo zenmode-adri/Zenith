@@ -1,0 +1,181 @@
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -179,6 +179,68 @@
+ }
+ #endif
+ 
++// Zenith: punto de color que muestra el modo elegido del LED (rojo, verde... arcoiris); gris hueco si esta apagado
++class LedSwatchComponent : public GuiComponent
++{
++public:
++	LedSwatchComponent(Window* window) : GuiComponent(window) { }
++
++	void setMode(const std::string& mode) { mMode = Utils::String::toLower(mode); }
++
++	void render(const Transform4x4f& parentTrans) override
++	{
++		if (mSize.y() <= 0)
++			return;
++
++		Renderer::setMatrix(parentTrans * getTransform());
++
++		const unsigned int rainbow[6] = { 0xF04438FF, 0xFF9500FF, 0xFFD60AFF, 0x34C759FF, 0x2F7BFFFF, 0xA855F7FF };
++		unsigned int color = 0;
++		bool isRainbow = false, hollow = false;
++
++		if (mMode == "red" || mMode == "heartbeat" || mMode == "breath" || mMode == "breath_red") color = 0xF04438FF;
++		else if (mMode == "yellow") color = 0xFFD60AFF;
++		else if (mMode == "orange" || mMode == "breath_orange") color = 0xFF9500FF;
++		else if (mMode == "green" || mMode == "battery" || mMode == "breath_green") color = 0x34C759FF;
++		else if (mMode == "cyan" || mMode == "breath_cyan") color = 0x00C2D8FF;
++		else if (mMode == "blue" || mMode == "breath_blue") color = 0x2F7BFFFF;
++		else if (mMode == "purple" || mMode == "breath_purple") color = 0xA855F7FF;
++		else if (mMode == "white" || mMode == "breath_white") color = 0xFFFFFFFF;
++		else if (mMode == "rainbow" || mMode == "flow") isRainbow = true;
++		else hollow = true; // off / default / desconocido
++
++		const float d = mSize.y();
++		const float r = d / 2.0f;
++
++		for (int row = 0; row < (int)d; row++)
++		{
++			const float dy = row + 0.5f - r;
++			const float half = sqrtf(Math::max(0.0f, r * r - dy * dy));
++			// borde (circulo completo, gris oscuro) y relleno (circulo 1.5 px mas pequeno)
++			Renderer::drawRect(r - half, (float)row, 2.0f * half, 1.0f, 0x5F5F66FF);
++
++			const float ri = r - 1.5f;
++			const float halfIn = sqrtf(Math::max(0.0f, ri * ri - dy * dy));
++			if (halfIn <= 0.0f)
++				continue;
++
++			if (hollow)
++				Renderer::drawRect(r - halfIn, (float)row, 2.0f * halfIn, 1.0f, 0xE4E4E9FF);
++			else if (isRainbow)
++			{
++				const float w = 2.0f * halfIn / 6.0f;
++				for (int k = 0; k < 6; k++)
++					Renderer::drawRect(r - halfIn + k * w, (float)row, w + 0.5f, 1.0f, rainbow[k]);
++			}
++			else
++				Renderer::drawRect(r - halfIn, (float)row, 2.0f * halfIn, 1.0f, color);
++		}
++	}
++
++private:
++	std::string mMode;
++};
++
+ GuiMenu::GuiMenu(Window *window, bool animate) : GuiComponent(window), mMenu(window, _("MAIN MENU").c_str())
+ {
+ #if !WIN32
+@@ -2186,7 +2248,28 @@
+         });
+     }
+ 
++	auto addLedRow = [this, s](const std::string& label, const std::shared_ptr<LedSwatchComponent>& swatch, const std::shared_ptr<GuiComponent>& comp)
++	{
++		auto theme = ThemeData::getMenuTheme();
++		ComponentListRow row;
++		auto text = std::make_shared<TextComponent>(mWindow, Utils::String::toUpper(label), theme->Text.font, theme->Text.color);
++		text->setShrinkToFit(true);
++		row.addElement(text, true);
++		const float d = theme->Text.font->getLetterHeight() * 1.05f;
++		swatch->setSize(d, d);
++		row.addElement(swatch, false);
++		auto spacer = std::make_shared<GuiComponent>(mWindow);
++		spacer->setSize(Renderer::getScreenWidth() * 0.012f, 0);
++		row.addElement(spacer, false);
++		row.addElement(comp, false);
++		s->addRow(row);
++	};
++
++	bool ledGroupAdded = false; // cabecera "LEDS" propia (antes estos ajustes quedaban dentro de "PANEL ADJUSTMENT")
++	auto ensureLedGroup = [&]() { if (!ledGroupAdded) { s->addGroup(_("LEDS")); ledGroupAdded = true; } };
++
+ 	if (Utils::Platform::GetEnv("DEVICE_PWR_LED_CONTROL") == "true") {
++		ensureLedGroup();
+ 		// Disable Power LED
+ 		auto pwr_led_disabled = std::make_shared<SwitchComponent>(mWindow);
+ 		bool pwrleddisabled = SystemConf::getInstance()->get("powerled.disabled") == "1";
+@@ -2199,11 +2282,14 @@
+ 	}
+ 
+ 	if (Utils::Platform::GetEnv("DEVICE_LED_CONTROL") == "true"){
++		ensureLedGroup();
+ 		// Provides LED management
+ 		auto optionsColors = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED COLOR"), false);
+ 		std::string selectedColors = SystemConf::getInstance()->get("led.color");
+ 		if (selectedColors.empty())
+ 			selectedColors = "default";
++		auto ledSwatch = std::make_shared<LedSwatchComponent>(mWindow);
++		ledSwatch->setMode(selectedColors);
+ 		auto fillColors = [selectedColors](OptionListComponent<std::string>* list, const std::vector<std::string>& availableColors)
+ 		{
+ 			bool lfound = false;
+@@ -2218,9 +2304,10 @@
+ 		};
+ 		fillColors(optionsColors.get(), std::vector<std::string>());
+ 		optionsColors->populateAsync<std::vector<std::string>>([] { return ApiSystem::getInstance()->getAvailableColors(); }, fillColors);
+-		s->addWithLabel(_("LED COLOR"), optionsColors);
++		addLedRow(_("LED COLOR"), ledSwatch, optionsColors);
+ 
+-		optionsColors->setSelectedChangedCallback([](const std::string& newColor) {
++		optionsColors->setSelectedChangedCallback([ledSwatch](const std::string& newColor) {
++			ledSwatch->setMode(newColor);
+ 			SystemConf::getInstance()->set("led.color", newColor);
+ 			SystemConf::getInstance()->saveSystemConf();
+ 			Utils::Platform::runSystemCommand("/usr/bin/sh -lc \"/usr/bin/ledcontrol " + newColor + "\"", "", nullptr);
+@@ -2232,11 +2319,14 @@
+ 	}
+ 
+ 	if (Utils::Platform::GetEnv("DEVICE_ANALOG_STICKS_LED_SINGLE") == "true"){
++		ensureLedGroup();
+ 		// Zenith: RGB LEDs of the joysticks (fixed preset modes listed by the device's analog_sticks_ledcontrol_single)
+ 		auto optionsSticksLed = std::make_shared<OptionListComponent<std::string> >(mWindow, _("JOYSTICK LED"), false);
+ 		std::string selectedSticksLed = SystemConf::getInstance()->get("analogsticks.led.color");
+ 		if (selectedSticksLed.empty())
+ 			selectedSticksLed = "off";
++		auto sticksSwatch = std::make_shared<LedSwatchComponent>(mWindow);
++		sticksSwatch->setMode(selectedSticksLed);
+ 		auto fillSticksLed = [selectedSticksLed](OptionListComponent<std::string>* list, const std::vector<std::string>& modes)
+ 		{
+ 			bool found = false;
+@@ -2253,7 +2343,7 @@
+ 		optionsSticksLed->populateAsync<std::vector<std::string>>([] {
+ 			std::vector<std::string> modes;
+ 			std::string line;
+-			for (std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/sh -lc "/usr/bin/analog_sticks_ledcontrol_single list")")); getline(ss, line); )
++			for (std::stringstream ss(Utils::Platform::GetShOutput(R"(/usr/bin/sh -lc "/usr/bin/analog_sticks_ledcontrol_single list | tr '\n' ' '")")); ss >> line; )
+ 			{
+ 				while (!line.empty() && (line.back() == '\r' || line.back() == ' '))
+ 					line.pop_back();
+@@ -2262,9 +2352,10 @@
+ 			}
+ 			return modes;
+ 		}, fillSticksLed);
+-		s->addWithLabel(_("JOYSTICK LED"), optionsSticksLed);
++		addLedRow(_("JOYSTICK LED"), sticksSwatch, optionsSticksLed);
+ 
+-		optionsSticksLed->setSelectedChangedCallback([](const std::string& newMode) {
++		optionsSticksLed->setSelectedChangedCallback([sticksSwatch](const std::string& newMode) {
++			sticksSwatch->setMode(newMode);
+ 			SystemConf::getInstance()->set("analogsticks.led.color", newMode);
+ 			SystemConf::getInstance()->saveSystemConf();
+ 			Utils::Platform::runSystemCommand("/usr/bin/sh -lc \"/usr/bin/analog_sticks_ledcontrol_single " + newMode + "\"", "", nullptr);
+@@ -2276,6 +2367,7 @@
+ 	}
+ 
+ 	if (Utils::Platform::GetEnv("DEVICE_LED_BRIGHTNESS") == "true"){
++		ensureLedGroup();
+ 	        // Sets LED brightness
+ 	        auto optionsLEDBrightness = std::make_shared<OptionListComponent<std::string> >(mWindow, _("LED BRIGHTNESS"), false);
+ 	        std::string selectedLEDBrightness = SystemConf::getInstance()->get("led.brightness");
+@@ -2298,6 +2390,7 @@
+ 	}
+ 
+ 	if (Utils::Platform::GetEnv("DEVICE_ANALOG_STICKS_LED_CONTROL") == "true"){
++		ensureLedGroup();
+ 		s->addEntry(_("ANALOG STICKS LED COLOR"), true, [this] { openAnalogSticksLedControls(); });
+ 	}
+ 
