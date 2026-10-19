@@ -1,0 +1,114 @@
+--- a/es-core/src/guis/GuiMsgBox.cpp
++++ b/es-core/src/guis/GuiMsgBox.cpp
+@@ -20,10 +20,10 @@
+ 		if (c >= 'a' && c <= 'z') hasLower = true;
+ 		if (c >= 'A' && c <= 'Z') hasUpper = true;
+ 	}
+-	if (hasLower || !hasUpper || s.size() > 120)
++	if (hasLower || !hasUpper || s.size() > 400)
+ 		return s;
+ 
+-	static const char* keep[] = { "BIOS", "WIFI", "SSID", "USB", "NFS", "SMB", "ROM", "ROMS", "GPU", "CPU", "IP", "OK", "SD", "SSH", "PSP", "PS1", "N64", "DNS", nullptr };
++	static const char* keep[] = { "BIOS", "WIFI", "SSID", "USB", "NFS", "SMB", "ROM", "ROMS", "GPU", "CPU", "IP", "OK", "SD", "SSH", "PSP", "PS1", "N64", "DNS", "NFC", "RGB", "LED", "HDMI", "ROCKNIX", nullptr };
+ 	std::string out, word;
+ 	bool sentenceStart = true;
+ 
+@@ -39,6 +39,8 @@
+ 
+ 		if (word == "EMULATIONSTATION")
+ 			out += "EmulationStation";
++		else if (word == "RETROARCH")
++			out += "RetroArch";
+ 		else if (kept)
+ 			out += word;
+ 		else
+@@ -72,6 +74,31 @@
+ 	return out;
+ }
+ 
++// Rejilla de botones del cuadro: botones centrados, separacion fija entre ellos y un margen inferior; sin las
++// holguras de los botones de menu (que llevan imagen y sombra).
++static std::shared_ptr<ComponentGrid> makeDialogButtonGrid(Window* window, const std::vector< std::shared_ptr<ButtonComponent> >& buttons)
++{
++	auto grid = std::make_shared<ComponentGrid>(window, Vector2i((int)buttons.size(), 2));
++
++	const float gap = Renderer::getScreenWidth() * 0.018f;
++	const float bottom = Renderer::getScreenHeight() * 0.036f;
++
++	float total = 0;
++	for (auto& btn : buttons)
++		total += btn->getSize().x() + gap;
++
++	for (int i = 0; i < (int)buttons.size(); i++)
++	{
++		grid->setEntry(buttons.at(i), Vector2i(i, 0), true, false);
++		grid->setColWidthPerc(i, (buttons.at(i)->getSize().x() + gap) / total);
++	}
++
++	const float height = buttons.at(0)->getSize().y() + bottom;
++	grid->setSize(total, height);
++	grid->setRowHeightPerc(1, bottom / height);
++	return grid;
++}
++
+ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text, const std::string& name1, const std::function<void()>& func1, GuiMsgBoxIcon icon) 
+ 	: GuiMsgBox(window, text, name1, func1, "", nullptr, "", nullptr, icon) { }
+ 
+@@ -167,13 +194,17 @@
+ 	if(!name3.empty())
+ 		mButtons.push_back(std::make_shared<ButtonComponent>(mWindow, name3, name3, std::bind(&GuiMsgBox::deleteMeAndCall, this, func3)));
+ 
+-	// botones del mismo ancho (el mayor, con un minimo) para que no queden desparejos
++	// botones planos (mismo estilo que las teclas del teclado), del mismo ancho (el mayor, con un minimo) y mas altos
+ 	{
+-		float bw = Renderer::getScreenWidth() * 0.17f;
++		float bw = Renderer::getScreenWidth() * 0.16f;
+ 		for (auto& btn : mButtons)
+ 			bw = Math::max(bw, btn->getSize().x());
++		const float bh = Renderer::getScreenHeight() * 0.054f;
+ 		for (auto& btn : mButtons)
+-			btn->setSize(bw, btn->getSize().y());
++		{
++			btn->setRenderNonFocusedBackground(false);
++			btn->setSize(bw, bh);
++		}
+ 	}
+ 
+ 	// set accelerator automatically (button to press when BUTTON_BACK is pressed)
+@@ -197,8 +228,8 @@
+ 	}
+ 
+ 	// put the buttons into a ComponentGrid
+-	mButtonGrid = makeButtonGrid(mWindow, mButtons);
+-	mGrid.setEntry(mButtonGrid, Vector2i(0, 1), true, false, Vector2i(2, 1), GridFlags::BORDER_TOP);
++	mButtonGrid = makeDialogButtonGrid(mWindow, mButtons);
++	mGrid.setEntry(mButtonGrid, Vector2i(0, 1), true, false, Vector2i(2, 1), GridFlags::BORDER_NONE);
+ 
+ 	// confirmaciones SI/NO: el foco empieza en NO (opcion segura); el boton de atras ya equivale a NO
+ 	if (mButtons.size() == 2 && Utils::String::toUpper(mButtons[1]->getText()) == _("NO"))
+@@ -208,7 +239,7 @@
+ 	if(mMsg->getSize().x() < width && mButtonGrid->getSize().x() < width)
+ 	{
+ 		// mMsg and buttons are narrower than width
+-		width = Math::max(mButtonGrid->getSize().x(), mMsg->getSize().x() + 3 * HORIZONTAL_PADDING_PX);
++		width = Math::max(mButtonGrid->getSize().x(), mMsg->getSize().x() + 8 * HORIZONTAL_PADDING_PX);
+ 
+ 		if (mImage != nullptr)
+ 			width += mImage->getSize().x() + 2 * HORIZONTAL_PADDING_PX;
+@@ -219,7 +250,15 @@
+ 	// now that we know width, we can find height
+ 	mMsg->setSize(width, 0); // mMsg->getSize.y() now returns the proper length
+ 	
+-	float msgHeight = Math::max(Font::get(FONT_SIZE_LARGE)->getHeight(), mMsg->getSize().y()*1.225f) + Renderer::getScreenHeight() * 0.05f;
++	float msgHeight;
++	{
++		// altura real del texto ya ajustado por lineas (mMsg->getSize().y() no refleja el ajuste a varias lineas)
++		auto msgFont = ThemeData::getMenuTheme()->Text.font;
++		const float availW = width - Renderer::getScreenWidth() * 0.03f;
++		const std::string wrapped = msgFont->wrapText(softenUpperCase(text), availW);
++		msgHeight = msgFont->sizeText(wrapped, 1.2f).y() + Renderer::getScreenHeight() * 0.07f;
++	}
++
+ 	
+ 	if (msgHeight + mButtonGrid->getSize().y() > Renderer::getScreenHeight())
+ 	{
