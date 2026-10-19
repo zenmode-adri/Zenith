@@ -1,0 +1,112 @@
+--- a/es-core/src/Window.h
++++ b/es-core/src/Window.h
+@@ -57,6 +57,9 @@
+ 	GuiComponent* peekGui();
+ 	inline int getGuiStackSize() { return (int)mGuiStack.size(); }
+ 
++	// centro vertical (px) de un elemento de la capa "screen" del tema, por su nombre; -1 si no existe
++	float getScreenExtraCenterY(const std::string& tag) const;
++
+ 	void textInput(const char* text);
+ 	void input(InputConfig* config, Input input);
+ 	void update(int deltaTime);
+--- a/es-core/src/Window.cpp
++++ b/es-core/src/Window.cpp
+@@ -670,6 +670,18 @@
+ 	}
+ }
+ 
++float Window::getScreenExtraCenterY(const std::string& tag) const
++{
++	for (auto extra : mScreenExtras)
++		if (extra->getTag() == tag)
++	{
++			const Vector2f origin = extra->getOrigin();
++			return extra->getPosition().y() + (0.5f - origin.y()) * extra->getSize().y();
++		}
++
++	return -1.0f;
++}
++
+ void Window::render()
+ {
+ 	Transform4x4f transform = Transform4x4f::Identity();
+--- a/es-core/src/components/MenuComponent.h
++++ b/es-core/src/components/MenuComponent.h
+@@ -91,6 +91,7 @@
+ 	virtual void OnTabChanged(int newIndex) { if (mOnTabIndexChanged != nullptr) mOnTabIndexChanged();  };
+ 
+ private:
++	float mTitleExtra = 0;
+ 	void updateGrid();
+ 
+ 	NinePatchComponent mBackground;
+--- a/es-core/src/components/MenuComponent.cpp
++++ b/es-core/src/components/MenuComponent.cpp
+@@ -1,4 +1,5 @@
+ #include "components/MenuComponent.h"
++#include "Window.h"
+ #include "components/ButtonComponent.h"
+ #include "components/MultiLineMenuEntry.h"
+ #include "TextToSpeech.h"
+@@ -6,7 +7,8 @@
+ #define BUTTON_GRID_VERT_PADDING  (Renderer::getScreenHeight()*0.0296296)
+ #define BUTTON_GRID_HORIZ_PADDING (Renderer::getScreenWidth()*0.0052083333)
+ 
+-#define TITLE_HEIGHT (mTitle->getFont()->getLetterHeight() + (mSubtitle ? TITLE_WITHSUB_VERT_PADDING : TITLE_VERT_PADDING) + (mSubtitle ? mSubtitle->getSize().y() + SUBTITLE_VERT_PADDING : 0))
++#define TITLE_HEIGHT_BASE (mTitle->getFont()->getLetterHeight() + (mSubtitle ? TITLE_WITHSUB_VERT_PADDING : TITLE_VERT_PADDING) + (mSubtitle ? mSubtitle->getSize().y() + SUBTITLE_VERT_PADDING : 0))
++#define TITLE_HEIGHT (TITLE_HEIGHT_BASE + mTitleExtra)
+ 
+ MenuComponent::MenuComponent(Window* window, 
+ 	const std::string& title, const std::shared_ptr<Font>& titleFont,
+@@ -381,6 +383,15 @@
+ 
+ void MenuComponent::updateSize()
+ {
++	// pantallas pequenas (menus a pantalla completa): el titulo se centra en la misma linea que el logo Z y los iconos de estado del tema
++	mTitleExtra = 0;
++	if (Renderer::ScreenSettings::fullScreenMenus())
++	{
++		const float headerCenter = mWindow->getScreenExtraCenterY("zs-avatar");
++		if (headerCenter > 0)
++			mTitleExtra = Math::max(0.0f, headerCenter * 2.0f - TITLE_HEIGHT_BASE);
++	}
++
+ 	// GPI
+ 	if (Renderer::ScreenSettings::fullScreenMenus())
+ 	{
+--- a/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
++++ b/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
+@@ -1,4 +1,5 @@
+ #include "guis/GuiTextEditPopupKeyboard.h"
++#include "Window.h"
+ #include "components/MenuComponent.h"
+ #include "utils/StringUtil.h"
+ #include "Log.h"
+@@ -327,15 +328,23 @@
+ 	mText->setSize(mSize.x() - (2 * OSK_PADDINGX), mText->getSize().y());
+ 
+ 	// update grid
+-	mGrid.setRowHeight(0, mTitle->getFont()->getHeight() + OSK_PADDINGY);
++	float titleExtra = 0;
++	if (Renderer::ScreenSettings::fullScreenMenus())
++	{
++		const float headerCenter = mWindow->getScreenExtraCenterY("zs-avatar");
++		if (headerCenter > 0)
++			titleExtra = Math::max(0.0f, headerCenter * 2.0f - (mTitle->getFont()->getHeight() + OSK_PADDINGY));
++	}
++
++	mGrid.setRowHeight(0, mTitle->getFont()->getHeight() + OSK_PADDINGY + titleExtra);
+ 	mGrid.setRowHeight(1, mText->getSize().y() + 2 * OSK_PADDINGY);
+-	mGrid.setRowHeight(2, mKeyboardGrid->getSize().y());
++	mGrid.setRowHeight(2, mKeyboardGrid->getSize().y() - titleExtra);
+ 	mGrid.setSize(mSize);
+ 
+ 	auto pos = mKeyboardGrid->getPosition();
+ 	auto sz = mKeyboardGrid->getSize();
+ 
+-	mKeyboardGrid->setSize(mSize.x() - OSK_PADDINGX - OSK_PADDINGX, sz.y() - OSK_PADDINGY); // Small margin between buttons
++	mKeyboardGrid->setSize(mSize.x() - OSK_PADDINGX - OSK_PADDINGX, sz.y() - OSK_PADDINGY - titleExtra); // Small margin between buttons
+ 	mKeyboardGrid->setPosition(OSK_PADDINGX, pos.y());	
+ }
+ 
