@@ -432,6 +432,10 @@
       <color>F7F7F9</color>
       <fadePath>./assets/menu/fade.png</fadePath>
       <cornerSize>20 20</cornerSize>
+      <scrollbarColor>2D2D3260</scrollbarColor>
+      <scrollbarSize>0.007</scrollbarSize>
+      <scrollbarCorner>0.5</scrollbarCorner>
+      <scrollbarAlignment>right</scrollbarAlignment>
     </menuBackground>
     <menuText name="menutitle">
       <fontPath>${font}</fontPath>
@@ -504,7 +508,7 @@
       <cornerSize>16 16</cornerSize>
     </menuButton>
     <menuGroup name="menugroup">
-      <color>7D7D82</color>
+      <color>5F5F66</color>
       <backgroundColor>0000000A</backgroundColor>
     </menuGroup>
     <menuTextEdit name="menutextedit">

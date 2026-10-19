@@ -1,0 +1,24 @@
+--- a/es-core/src/guis/GuiMsgBox.cpp
++++ b/es-core/src/guis/GuiMsgBox.cpp
+@@ -124,6 +124,10 @@
+ 	mButtonGrid = makeButtonGrid(mWindow, mButtons);
+ 	mGrid.setEntry(mButtonGrid, Vector2i(0, 1), true, false, Vector2i(2, 1), GridFlags::BORDER_TOP);
+ 
++	// confirmaciones SI/NO: el foco empieza en NO (opcion segura); el boton de atras ya equivale a NO
++	if (mButtons.size() == 2 && Utils::String::toUpper(mButtons[1]->getText()) == _("NO"))
++		mButtonGrid->setCursorTo(mButtons[1]);
++
+ 	// decide final width
+ 	if(mMsg->getSize().x() < width && mButtonGrid->getSize().x() < width)
+ 	{
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -1844,7 +1844,7 @@
+ 	std::string kbHelpText = _("Select the physical keyboard layout. A reboot may be required for changes to take full effect.");
+ 	
+ 	s->addWithDescription(_("KEYBOARD LAYOUT"), kbHelpText, keyboard_layout);
+-	s->addWithDescription(_("KEYBOARD VARIANT"), kbHelpText, keyboard_variant);
++	s->addWithDescription(_("KEYBOARD VARIANT"), _("Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."), keyboard_variant);
+ 
+ 	s->addSaveFunc([keyboard_layout, keyboard_variant, s] {
+ 		if (keyboard_layout->changed() || keyboard_variant->changed())
