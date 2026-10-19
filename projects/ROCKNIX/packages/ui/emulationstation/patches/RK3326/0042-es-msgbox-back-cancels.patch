@@ -1,0 +1,31 @@
+--- a/es-core/src/guis/GuiMsgBox.cpp
++++ b/es-core/src/guis/GuiMsgBox.cpp
+@@ -213,9 +213,12 @@
+ 	}
+ 	else if (mButtons.size() > 0)
+ 	{
++		// "atras" (B) siempre significa salir sin hacer nada: si hay un boton de NO o CANCELAR, B lo pulsa (antes, con OK/CANCELAR,
++		// B pulsaba OK y aceptaba al intentar salir). Sin boton de cancelar se mantiene el comportamiento anterior (OK).
+ 		for(auto it = mButtons.cbegin(); it != mButtons.cend(); it++)
+ 		{
+-			if(Utils::String::toUpper((*it)->getText()) == _("OK") || Utils::String::toUpper((*it)->getText()) == _("NO"))
++			const std::string label = Utils::String::toUpper((*it)->getText());
++			if(label == _("NO") || label == _("CANCEL"))
+ 			{
+ 				mAcceleratorFunc = (*it)->getPressedFunc();
+ 				break;
+@@ -223,6 +226,14 @@
+ 		}
+ 
+ 		if (mAcceleratorFunc == nullptr)
++			for(auto it = mButtons.cbegin(); it != mButtons.cend(); it++)
++				if(Utils::String::toUpper((*it)->getText()) == _("OK"))
++				{
++					mAcceleratorFunc = (*it)->getPressedFunc();
++					break;
++				}
++
++		if (mAcceleratorFunc == nullptr)
+ 			mAcceleratorFunc = mButtons.back()->getPressedFunc();
+ 	}
+ 
