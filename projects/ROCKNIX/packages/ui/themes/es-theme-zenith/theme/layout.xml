@@ -14,7 +14,7 @@
     <stackX>-0.02813</stackX>
     <stackSep>0.0125</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02542</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.19531</cellW>
@@ -93,7 +93,7 @@
     <stackX>-0.03056</stackX>
     <stackSep>0.01389</stackSep>
     <fClock>0.02639</fClock>
-    <fBatt>0.02222</fBatt>
+    <fBatt>0.02375</fBatt>
     <fHelp>0.02306</fHelp>
     <helpY>0.95</helpY>
     <cellW>0.20833</cellW>
@@ -172,7 +172,7 @@
     <stackX>-0.02917</stackX>
     <stackSep>0.01042</stackSep>
     <fClock>0.03438</fClock>
-    <fBatt>0.02969</fBatt>
+    <fBatt>0.03094</fBatt>
     <fHelp>0.03188</fHelp>
     <helpY>0.9375</helpY>
     <cellW>0.2</cellW>
@@ -251,7 +251,7 @@
     <stackX>-0.02342</stackX>
     <stackSep>0.01171</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02708</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.14637</cellW>
@@ -330,7 +330,7 @@
     <stackX>-0.02604</stackX>
     <stackSep>0.01302</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02208</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.16276</cellW>
@@ -409,7 +409,7 @@
     <stackX>-0.02632</stackX>
     <stackSep>0.01316</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02208</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.16447</cellW>
@@ -488,7 +488,7 @@
     <stackX>-0.02361</stackX>
     <stackSep>0.01181</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02708</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.14758</cellW>
@@ -567,7 +567,7 @@
     <stackX>-0.01786</stackX>
     <stackSep>0.00893</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02708</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.11161</cellW>
@@ -646,7 +646,7 @@
     <stackX>-0.02083</stackX>
     <stackSep>0.01042</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02708</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.13021</cellW>
@@ -725,7 +725,7 @@
     <stackX>-0.03</stackX>
     <stackSep>0.01333</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02542</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.20833</cellW>
@@ -804,7 +804,7 @@
     <stackX>-0.02765</stackX>
     <stackSep>0.01229</stackSep>
     <fClock>0.03333</fClock>
-    <fBatt>0.02708</fBatt>
+    <fBatt>0.03</fBatt>
     <fHelp>0.02542</fHelp>
     <helpY>0.94792</helpY>
     <cellW>0.19201</cellW>

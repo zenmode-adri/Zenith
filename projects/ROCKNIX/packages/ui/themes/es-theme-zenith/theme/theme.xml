@@ -56,7 +56,7 @@
         <fontPath>${font}</fontPath>
       </clock>
       <batteryText name="zs-battery-text" extra="true">
-        <color>${dim}</color>
+        <color>${txt}</color>
         <fontSize>${fBatt}</fontSize>
         <lineSpacing>1</lineSpacing>
         <fontPath>${font}</fontPath>
