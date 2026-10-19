@@ -1,0 +1,93 @@
+--- a/es-app/src/guis/GuiThemeInstaller.cpp
++++ b/es-app/src/guis/GuiThemeInstaller.cpp
+@@ -1,4 +1,5 @@
+ #include "guis/GuiThemeInstaller.h"
++#include "Window.h"
+ 
+ #include "ApiSystem.h"
+ #include "components/OptionListComponent.h"
+@@ -93,7 +94,13 @@
+ 	const float subtitleHeight = mSubtitle->getFont()->getLetterHeight();
+ 	const float titleSubtitleSpacing = mSize.y() * 0.03f;
+ 
+-	mGrid.setRowHeight(0, titleHeight + titleSubtitleSpacing + subtitleHeight + (Renderer::getScreenHeight()*0.05f));
++	const float headerCenter = Renderer::ScreenSettings::fullScreenMenus() ? mWindow->getScreenExtraCenterY("zs-avatar") : -1.0f;
++	mCompactHeader = headerCenter > 0;
++	mSubtitle->setText(mCompactHeader ? "" : _("SELECT THEMES TO INSTALL/REMOVE"));
++	if (mCompactHeader)
++		mGrid.setRowHeight(0, headerCenter * 2.0f);
++	else
++		mGrid.setRowHeight(0, titleHeight + titleSubtitleSpacing + subtitleHeight + (Renderer::getScreenHeight()*0.05f));
+ 
+ 	if (mTabs->size() == 0)
+ 		mGrid.setRowHeight(1, 0.00001f);
+@@ -103,8 +110,8 @@
+ 	mGrid.setRowHeight(3, mButtonGrid->getSize().y());
+ 
+ 	mHeaderGrid->setRowHeight(1, titleHeight);
+-	mHeaderGrid->setRowHeight(2, titleSubtitleSpacing);
+-	mHeaderGrid->setRowHeight(3, subtitleHeight);
++	mHeaderGrid->setRowHeight(2, mCompactHeader ? 0.00001f : titleSubtitleSpacing);
++	mHeaderGrid->setRowHeight(3, mCompactHeader ? 0.00001f : subtitleHeight);
+ }
+ 
+ GuiThemeInstaller::~GuiThemeInstaller()
+@@ -243,7 +250,7 @@
+ 	if (Renderer::ScreenSettings::fullScreenMenus())
+ 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+ 	else
+-		setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.875f);
++		setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.85f); // 0.875 invadia el logo Z / la barra de estado
+ 
+ 	setPosition((Renderer::getScreenWidth() - getSize().x()) / 2, (Renderer::getScreenHeight() - getSize().y()) / 2);
+ }
+@@ -388,7 +395,12 @@
+ 	}
+ 
+ 	details = details + "\r\n";
+-	details = details + _U("\uf0AC  ") + entry.url;
++	// sin esquema ni dominio de github la URL cabe casi siempre en una linea
++	std::string shownUrl = entry.url;
++	if (shownUrl.rfind("https://", 0) == 0) shownUrl = shownUrl.substr(8);
++	else if (shownUrl.rfind("http://", 0) == 0) shownUrl = shownUrl.substr(7);
++	if (shownUrl.rfind("github.com/", 0) == 0) shownUrl = shownUrl.substr(11); // basta con usuario/repositorio
++	details = details + _U("\uf0AC  ") + shownUrl;
+ 
+ 	if (mIsCurrentTheme)
+ 		details = _U("\uf05A  ") + _("CURRENT THEME") + std::string("  ") + details;
+@@ -407,6 +419,13 @@
+ 	float itemHeight = (theme->Text.font->getHeight() + theme->TextSmall.font->getHeight() * 3) * 1.15f;
+ 	itemHeight = Math::max(itemHeight, Renderer::getScreenHeight() * 0.132f);
+ 
++	// la fila debe caber de verdad: titulo + todas las lineas del detalle (la URL puede partirse en dos).
++	// Se mide con el texto ya partido al ancho de la columna (con la imagen al maximo, el caso mas estrecho).
++	const float realWidth = Renderer::ScreenSettings::fullScreenMenus() ? (float)Renderer::getScreenWidth() : windowWidth;
++	const float textColWidth = (realWidth - 42.0f - realWidth * 0.017f - realWidth * 0.24f) * 0.95f;
++	const float subHeight = theme->TextSmall.font->sizeText(theme->TextSmall.font->wrapText(details, textColWidth)).y();
++	itemHeight = Math::max(itemHeight, (mText->getSize().y() + subHeight) * 1.15f);
++
+ 	float refImageWidth = (itemHeight / windowWidth) * 1.7777f; // 16:9
+ 	refImageWidth = Math::min(refImageWidth, 0.24);
+ 
+@@ -415,9 +434,9 @@
+ 	setColWidthPerc(3, 0.002f, false);
+ 	setColWidthPerc(4, refImageWidth, false);
+ 
+-	setRowHeightPerc(0, (itemHeight - mText->getSize().y() - mSubstring->getSize().y()) / itemHeight / 2.0f, false);
++	setRowHeightPerc(0, (itemHeight - mText->getSize().y() - subHeight) / itemHeight / 2.0f, false);
+ 	setRowHeightPerc(1, mText->getSize().y() / itemHeight, false);
+-	setRowHeightPerc(2, mSubstring->getSize().y() / itemHeight, false);
++	setRowHeightPerc(2, subHeight / itemHeight, false);
+ 
+ 	if (mIsPending)
+ 	{
+--- a/es-app/src/guis/GuiThemeInstaller.h
++++ b/es-app/src/guis/GuiThemeInstaller.h
+@@ -60,6 +60,7 @@
+ 	void processTheme(BatoceraTheme theme, bool isCurrentTheme);
+ 
+ 	int				mReloadList;
++	bool			mCompactHeader = false;
+ 	int				mTabFilter;
+ 	//MenuComponent	mMenu;
+ 
