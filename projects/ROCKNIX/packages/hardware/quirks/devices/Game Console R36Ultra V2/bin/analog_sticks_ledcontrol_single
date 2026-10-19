@@ -1,6 +1,5 @@
 #!/bin/bash
 
-. /etc/profile
 
 COLOR=$1
 LED_PULSE="/sys/class/leds/joyled/pulse"

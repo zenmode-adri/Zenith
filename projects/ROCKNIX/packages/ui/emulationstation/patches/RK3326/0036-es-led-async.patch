@@ -1,0 +1,51 @@
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -179,6 +179,30 @@
+ }
+ #endif
+ 
++// Zenith: aplicar el LED sin bloquear la interfaz. runSystemCommand() espera a que acabe el comando (script con `sh -lc`:
++// ~150 ms por pulsacion, la interfaz se quedaba parada). Ahora se lanza en segundo plano y con COALESCENCIA: se guarda el
++// ultimo modo pedido y un solo trabajador aplica siempre el ultimo (si el usuario pulsa varias veces seguidas no se acumulan
++// scripts ni se aplican colores intermedios).
++static void applyJoystickLedAsync(const std::string& mode)
++{
++	std::string safe;
++	for (char c : mode)
++		if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')
++			safe += c;
++
++	if (safe.empty())
++		return;
++
++	const std::string cmd =
++		"echo " + safe + " > /run/joyled.want; "
++		"( flock -n 9 || exit 0; cur=; "
++		"while w=$(cat /run/joyled.want); [ \"$w\" != \"$cur\" ]; do "
++		"/usr/bin/analog_sticks_ledcontrol_single \"$w\"; cur=\"$w\"; done "
++		") 9>/run/joyled.lock >/dev/null 2>&1 &";
++
++	Utils::Platform::runSystemCommand(cmd, "", nullptr);
++}
++
+ // Zenith: punto de color que muestra el modo elegido del LED (rojo, verde... arcoiris); gris hueco si esta apagado
+ class LedSwatchComponent : public GuiComponent
+ {
+@@ -2310,7 +2334,7 @@
+ 			ledSwatch->setMode(newColor);
+ 			SystemConf::getInstance()->set("led.color", newColor);
+ 			SystemConf::getInstance()->saveSystemConf();
+-			Utils::Platform::runSystemCommand("/usr/bin/sh -lc \"/usr/bin/ledcontrol " + newColor + "\"", "", nullptr);
++			Utils::Platform::runSystemCommand("/usr/bin/sh -lc \"/usr/bin/ledcontrol " + newColor + "\" >/dev/null 2>&1 &", "", nullptr);
+ 		});
+ 
+ 		s->addSaveFunc([optionsColors] {
+@@ -2358,7 +2382,7 @@
+ 			sticksSwatch->setMode(newMode);
+ 			SystemConf::getInstance()->set("analogsticks.led.color", newMode);
+ 			SystemConf::getInstance()->saveSystemConf();
+-			Utils::Platform::runSystemCommand("/usr/bin/sh -lc \"/usr/bin/analog_sticks_ledcontrol_single " + newMode + "\"", "", nullptr);
++			applyJoystickLedAsync(newMode);
+ 		});
+ 
+ 		s->addSaveFunc([optionsSticksLed] {
