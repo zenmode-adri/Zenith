@@ -1,0 +1,101 @@
+--- a/es-core/src/components/ComponentTab.cpp
++++ b/es-core/src/components/ComponentTab.cpp
+@@ -7,6 +7,21 @@
+ #define PADDING_PX (Renderer::getScreenWidth() * 0.015f)
+ #define SELECTOR_PX (Renderer::getScreenWidth() * 0.0025f)
+ 
++static float tabLuminance(unsigned int c)
++{
++	auto f = [](float v) { v /= 255.0f; return v <= 0.03928f ? v / 12.92f : powf((v + 0.055f) / 1.055f, 2.4f); };
++	return 0.2126f * f((float)((c >> 24) & 0xFF)) + 0.7152f * f((float)((c >> 16) & 0xFF)) + 0.0722f * f((float)((c >> 8) & 0xFF));
++}
++
++// color del subrayado de la pestana activa: el acento del menu si contrasta >= 3:1 con el panel; si no, el selector del tema
++static unsigned int tabUnderlineColor(unsigned int fallback)
++{
++	auto menuTheme = ThemeData::getMenuTheme();
++	const unsigned int accent = menuTheme->Text.selectedColor;
++	const float a = tabLuminance(accent) + 0.05f, b = tabLuminance(menuTheme->Background.color) + 0.05f;
++	return (a > b ? a / b : b / a) >= 3.0f ? accent : fallback;
++}
++
+ ComponentTab::ComponentTab(Window* window) : IList<ComponentTabItem, std::string>(window, LIST_SCROLL_STYLE_SLOW, LIST_NEVER_LOOP)
+ {
+ 	mHotTab = -1;
+@@ -218,8 +233,10 @@
+ 		}
+ 		else
+ 		{
+-			Renderer::drawRect(mSelectorBarOffset, mSize.y() - SELECTOR_PX, selectedTabWidth, SELECTOR_PX, bgColor, Renderer::Blend::ZERO, Renderer::Blend::ONE_MINUS_SRC_COLOR);
+-			Renderer::drawRect(mSelectorBarOffset, mSize.y() - SELECTOR_PX, selectedTabWidth, SELECTOR_PX, selectorColor, selectorColor, selectorGradientHorz, Renderer::Blend::ONE, Renderer::Blend::ONE);
++			const float barH = Math::max(2.0f, SELECTOR_PX * 1.6f);
++			const unsigned int barColor = tabUnderlineColor(selectorColor);
++			Renderer::drawRect(mSelectorBarOffset, mSize.y() - barH, selectedTabWidth, barH, bgColor, Renderer::Blend::ZERO, Renderer::Blend::ONE_MINUS_SRC_COLOR);
++			Renderer::drawRect(mSelectorBarOffset, mSize.y() - barH, selectedTabWidth, barH, barColor, barColor, selectorGradientHorz, Renderer::Blend::ONE, Renderer::Blend::ONE);
+ 		}
+ 	}
+ 
+--- a/es-core/src/components/ButtonComponent.cpp
++++ b/es-core/src/components/ButtonComponent.cpp
+@@ -79,6 +79,8 @@
+ 	mTextColorUnfocused = btnLuminance(accent) > 0.35f ? 0x000000FF : 0xFFFFFFFF;
+ 	if (mTextCache)
+ 		mTextCache->setColor(getCurTextColor());
++
++	updateImage();
+ }
+ 
+ void ButtonComponent::fitText()
+@@ -189,6 +191,15 @@
+ 		return;
+ 	}
+ 
++	if (mPrimary && !mFocused)
++	{
++		const unsigned int bg = Utils::HtmlColor::applyColorOpacity(mPrimaryBg, getOpacity());
++		mBox.setImagePath(ThemeData::getMenuTheme()->Button.filledPath);
++		mBox.setCenterColor(bg);
++		mBox.setEdgeColor(bg);
++		return;
++	}
++
+ 	mBox.setCenterColor(getCurBackColor());
+ 	mBox.setEdgeColor(getCurBackColor());
+ 	mBox.setImagePath(mFocused ? ThemeData::getMenuTheme()->Button.filledPath : ThemeData::getMenuTheme()->Button.path);
+--- a/es-core/src/components/MenuComponent.h
++++ b/es-core/src/components/MenuComponent.h
+@@ -40,7 +40,7 @@
+ 	void removeLastRowIfGroup(bool doUpdateSize = true) { mList->removeLastRowIfGroup(); if (doUpdateSize) updateSize(); }
+ 	void removeEntry(const std::string& userData, bool doUpdateSize = true) { mList->remove(userData); if (doUpdateSize) updateSize(); }
+ 
+-	void addButton(const std::string& label, const std::string& helpText, const std::function<void()>& callback);
++	void addButton(const std::string& label, const std::string& helpText, const std::function<void()>& callback, bool primary = false);
+ 
+ 	void setButtonGrid(std::shared_ptr<GuiComponent> grid);
+ 
+--- a/es-core/src/components/MenuComponent.cpp
++++ b/es-core/src/components/MenuComponent.cpp
+@@ -456,9 +456,11 @@
+ 	updateSize();
+ }
+ 
+-void MenuComponent::addButton(const std::string& name, const std::string& helpText, const std::function<void()>& callback)
++void MenuComponent::addButton(const std::string& name, const std::string& helpText, const std::function<void()>& callback, bool primary)
+ {
+ 	mButtons.push_back(std::make_shared<ButtonComponent>(mWindow, Utils::String::toUpper(name), helpText, callback));
++	if (primary)
++		mButtons.back()->setPrimaryStyle();
+ 	updateGrid();
+ 	updateSize();
+ }
+--- a/es-app/src/guis/GuiScraperStart.cpp
++++ b/es-app/src/guis/GuiScraperStart.cpp
+@@ -138,7 +138,7 @@
+ 	addWithLabel(_("SYSTEMS INCLUDED"), mSystems);
+ 
+ 	mMenu.clearButtons();
+-	mMenu.addButton(_("SCRAPE NOW"), _("START"), std::bind(&GuiScraperStart::pressedStart, this));
++	mMenu.addButton(_("SCRAPE NOW"), _("START"), std::bind(&GuiScraperStart::pressedStart, this), true);
+ 
+ 	scraper_list->setSelectedChangedCallback([this, scraperName, scraper_list](std::string value) { Settings::getInstance()->setString("Scraper", value); });
+ }

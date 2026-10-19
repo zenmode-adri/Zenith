@@ -1,0 +1,117 @@
+--- a/es-core/src/guis/GuiMsgBox.cpp
++++ b/es-core/src/guis/GuiMsgBox.cpp
+@@ -9,6 +9,69 @@
+ 
+ #define HORIZONTAL_PADDING_PX  (Renderer::getScreenWidth()*0.01)
+ 
++// Mensajes escritos todo en mayusculas ("REALLY RESTART EMULATIONSTATION?") -> frase normal. Se respetan las siglas
++// conocidas y EmulationStation; si el texto lleva caracteres no ASCII (traducciones) o es largo, se deja tal cual.
++static std::string softenUpperCase(const std::string& s)
++{
++	bool hasLower = false, hasUpper = false;
++	for (unsigned char c : s)
++	{
++		if (c >= 0x80) return s;
++		if (c >= 'a' && c <= 'z') hasLower = true;
++		if (c >= 'A' && c <= 'Z') hasUpper = true;
++	}
++	if (hasLower || !hasUpper || s.size() > 120)
++		return s;
++
++	static const char* keep[] = { "BIOS", "WIFI", "SSID", "USB", "NFS", "SMB", "ROM", "ROMS", "GPU", "CPU", "IP", "OK", "SD", "SSH", "PSP", "PS1", "N64", "DNS", nullptr };
++	std::string out, word;
++	bool sentenceStart = true;
++
++	auto flush = [&]()
++	{
++		if (word.empty())
++			return;
++
++		bool kept = false;
++		for (int i = 0; keep[i]; i++)
++			if (word == keep[i])
++				kept = true;
++
++		if (word == "EMULATIONSTATION")
++			out += "EmulationStation";
++		else if (kept)
++			out += word;
++		else
++		{
++			std::string w;
++			for (char c : word)
++				w += (char)tolower((unsigned char)c);
++			if (sentenceStart)
++				w[0] = (char)toupper((unsigned char)w[0]);
++			out += w;
++		}
++
++		sentenceStart = false;
++		word.clear();
++	};
++
++	for (char c : s)
++	{
++		if (isalpha((unsigned char)c))
++			word += c;
++		else
++		{
++			flush();
++			out += c;
++			if (c == '.' || c == '?' || c == '!' || c == '\n')
++				sentenceStart = true;
++		}
++	}
++
++	flush();
++	return out;
++}
++
+ GuiMsgBox::GuiMsgBox(Window* window, const std::string& text, const std::string& name1, const std::function<void()>& func1, GuiMsgBoxIcon icon) 
+ 	: GuiMsgBox(window, text, name1, func1, "", nullptr, "", nullptr, icon) { }
+ 
+@@ -72,6 +135,10 @@
+ 		break;
+ 	}
+ 
++	// las confirmaciones no llevan icono (los botones ya aclaran la pregunta): texto centrado
++	if (imageFile == ":/question.svg")
++		imageFile.clear();
++
+   // ensure the tailscale message doesn't wrap, and no icon (for more room)
+ 	if (text.find("tailscale.com") != std::string::npos)
+ 	{
+@@ -88,7 +155,7 @@
+ 		mGrid.setEntry(mImage, Vector2i(0, 0), false, false);
+ 	}
+ 
+-	mMsg = std::make_shared<TextComponent>(mWindow, text, ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, mImage == nullptr || Renderer::isSmallScreen() ? ALIGN_CENTER : ALIGN_LEFT); // CENTER
++	mMsg = std::make_shared<TextComponent>(mWindow, softenUpperCase(text), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, mImage == nullptr || Renderer::isSmallScreen() ? ALIGN_CENTER : ALIGN_LEFT); // CENTER
+ 	mMsg->setPadding(Vector4f(Renderer::getScreenWidth()*0.015f, 0, Renderer::getScreenWidth()*0.015f, 0));
+ 	
+ 	mGrid.setEntry(mMsg, Vector2i(mImage == nullptr ? 0 : 1, 0), false, false, Vector2i(mImage == nullptr ? 2 : 1, 1));
+@@ -100,6 +167,15 @@
+ 	if(!name3.empty())
+ 		mButtons.push_back(std::make_shared<ButtonComponent>(mWindow, name3, name3, std::bind(&GuiMsgBox::deleteMeAndCall, this, func3)));
+ 
++	// botones del mismo ancho (el mayor, con un minimo) para que no queden desparejos
++	{
++		float bw = Renderer::getScreenWidth() * 0.17f;
++		for (auto& btn : mButtons)
++			bw = Math::max(bw, btn->getSize().x());
++		for (auto& btn : mButtons)
++			btn->setSize(bw, btn->getSize().y());
++	}
++
+ 	// set accelerator automatically (button to press when BUTTON_BACK is pressed)
+ 	if(mButtons.size() == 1)
+ 	{
+@@ -143,7 +219,7 @@
+ 	// now that we know width, we can find height
+ 	mMsg->setSize(width, 0); // mMsg->getSize.y() now returns the proper length
+ 	
+-	float msgHeight = Math::max(Font::get(FONT_SIZE_LARGE)->getHeight(), mMsg->getSize().y()*1.225f);
++	float msgHeight = Math::max(Font::get(FONT_SIZE_LARGE)->getHeight(), mMsg->getSize().y()*1.225f) + Renderer::getScreenHeight() * 0.05f;
+ 	
+ 	if (msgHeight + mButtonGrid->getSize().y() > Renderer::getScreenHeight())
+ 	{
