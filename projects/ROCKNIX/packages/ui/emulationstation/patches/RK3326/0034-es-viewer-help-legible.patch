@@ -1,0 +1,67 @@
+--- a/es-core/src/Window.h
++++ b/es-core/src/Window.h
+@@ -62,6 +62,7 @@
+ 
+ 	// oculta los elementos "screen" del tema (logo Z, hora, bateria...) p. ej. en el visor de imagenes a pantalla completa
+ 	void setHideScreenExtras(bool hide) { mHideScreenExtras = hide; }
++	HelpComponent* getHelpComponent() { return mHelp; }
+ 
+ 	void textInput(const char* text);
+ 	void input(InputConfig* config, Input input);
+--- a/es-app/src/guis/GuiImageViewer.h
++++ b/es-app/src/guis/GuiImageViewer.h
+@@ -21,6 +21,8 @@
+ 
+ 	bool input(InputConfig* config, Input input) override;
+ 	virtual std::vector<HelpPrompt> getHelpPrompts() override;
++	HelpStyle getHelpStyle() override;
++	void render(const Transform4x4f& parentTrans) override;
+ 
+ 	void add(const std::string imagePath);
+ 	void setCursor(const std::string imagePath);
+--- a/es-app/src/guis/GuiImageViewer.cpp
++++ b/es-app/src/guis/GuiImageViewer.cpp
+@@ -605,6 +605,43 @@
+ 	return GuiComponent::input(config, input);
+ }
+ 
++// La pista de ayuda (B CERRAR) se dibuja sobre la imagen a pantalla completa: texto claro sobre una pastilla oscura
++// semitransparente, del tamano justo de la pista, para que se lea sea cual sea la imagen (clara u oscura).
++HelpStyle GuiImageViewer::getHelpStyle()
++{
++	HelpStyle style = GuiComponent::getHelpStyle();
++	style.textColor = 0xFFFFFFFF;
++	style.iconColor = 0xFFFFFFFF;
++	return style;
++}
++
++void GuiImageViewer::render(const Transform4x4f& parentTrans)
++{
++	GuiComponent::render(parentTrans);
++
++	HelpComponent* help = mWindow->getHelpComponent();
++	if (help == nullptr || help->getGrid() == nullptr)
++		return;
++
++	auto grid = help->getGrid();
++	const float padX = Renderer::getScreenHeight() * 0.016f;
++	const float padY = Renderer::getScreenHeight() * 0.006f;
++	const float w = grid->getSize().x() + 2.0f * padX;
++	const float h = grid->getSize().y() + 2.0f * padY;
++	const float x0 = grid->getPosition().x() - grid->getOrigin().x() * grid->getSize().x() - padX;
++	const float y0 = grid->getPosition().y() - grid->getOrigin().y() * grid->getSize().y() - padY;
++
++	Renderer::setMatrix(parentTrans * getTransform());
++	// pastilla (extremos redondeados) dibujada en franjas de 1 px
++	const float r = h / 2.0f;
++	for (int row = 0; row < (int)h; row++)
++	{
++		const float dy = fabsf(row + 0.5f - r);
++		const float inset = r - sqrtf(Math::max(0.0f, r * r - dy * dy));
++		Renderer::drawRect(x0 + inset, y0 + row, w - 2.0f * inset, 1.0f, 0x0000009E);
++	}
++}
++
+ std::vector<HelpPrompt> GuiImageViewer::getHelpPrompts()
+ {
+ 	std::vector<HelpPrompt> prompts;
