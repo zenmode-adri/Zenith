@@ -1,0 +1,23 @@
+--- a/es-core/src/components/TextEditComponent.cpp
++++ b/es-core/src/components/TextEditComponent.cpp
+@@ -25,6 +25,10 @@
+ 	mBox.setImagePath(ThemeData::getMenuTheme()->Icons.textinput_ninepatch);
+ 
+ 	addChild(&mBox);
++
++	// la esquina de la caja escala con la pantalla (igual que las teclas del teclado): 16 px de referencia a 720 px de alto
++	const float boxScale = Renderer::getScreenHeight() / 720.0f;
++	mBox.setCornerSize(Vector2f(16.0f * boxScale, 16.0f * boxScale));
+ 	
+ 	onFocusLost();
+ 
+@@ -50,7 +54,8 @@
+ void TextEditComponent::onSizeChanged()
+ {
+ 	GuiComponent::onSizeChanged();
+-	mBox.fitTo(mSize, Vector3f::Zero(), Vector2f(-34, -32 - TEXT_PADDING_VERT));
++	const Vector2f boxCorner = mBox.getCornerSize();
++	mBox.fitTo(mSize, Vector3f::Zero(), Vector2f(-(boxCorner.x() * 2 + 2), -boxCorner.y() * 2 - TEXT_PADDING_VERT));
+ 	onTextChanged(); // wrap point probably changed
+ }
+ 
