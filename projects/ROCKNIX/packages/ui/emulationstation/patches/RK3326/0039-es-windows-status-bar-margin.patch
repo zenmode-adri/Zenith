@@ -1,0 +1,124 @@
+--- a/es-core/src/Window.h
++++ b/es-core/src/Window.h
+@@ -64,6 +64,10 @@
+ 	void setHideScreenExtras(bool hide) { mHideScreenExtras = hide; }
+ 	HelpComponent* getHelpComponent() { return mHelp; }
+ 
++	// altura maxima de las ventanas flotantes: simetrica, deja bajo el logo Z / la barra de estado el mismo aire (por arriba y por abajo)
++	// que mide la propia barra; escala con la pantalla y con el tema
++	float getWindowMaxHeight() const;
++
+ 	void textInput(const char* text);
+ 	void input(InputConfig* config, Input input);
+ 	void update(int deltaTime);
+--- a/es-core/src/Window.cpp
++++ b/es-core/src/Window.cpp
+@@ -682,6 +682,15 @@
+ 	return -1.0f;
+ }
+ 
++float Window::getWindowMaxHeight() const
++{
++	const float H = (float)Renderer::getScreenHeight();
++	// borde inferior de la barra de estado = 2 x su centro (el aire de arriba es el mismo que el de abajo)
++	const float center = getScreenExtraCenterY("zs-avatar");
++	const float margin = center > 0 ? center * 2.0f : H * 0.0625f; // sin barra en el tema: el 0.875 original
++	return Math::max(H * 0.5f, H - 2.0f * margin);
++}
++
+ void Window::render()
+ {
+ 	Transform4x4f transform = Transform4x4f::Identity();
+--- a/es-app/src/guis/GuiBios.cpp
++++ b/es-app/src/guis/GuiBios.cpp
+@@ -208,7 +208,7 @@
+ 	if (Renderer::ScreenSettings::fullScreenMenus())
+ 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+ 	else
+-		setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.85f); // 0.875 invadia el logo Z / la barra de estado
++		setSize(WINDOW_WIDTH, mWindow->getWindowMaxHeight()); // simetrica bajo la barra de estado del tema (antes 0.875 / 0.85 de la pantalla: pisaba o tocaba el logo Z)
+ 
+ 	setPosition((Renderer::getScreenWidth() - getSize().x()) / 2, (Renderer::getScreenHeight() - getSize().y()) / 2);
+ }
+--- a/es-app/src/guis/GuiBatoceraStore.cpp
++++ b/es-app/src/guis/GuiBatoceraStore.cpp
+@@ -158,7 +158,7 @@
+ 	if (Renderer::ScreenSettings::fullScreenMenus())
+ 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+ 	else
+-		setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.85f); // 0.875 invadia el logo Z / la barra de estado
++		setSize(WINDOW_WIDTH, mWindow->getWindowMaxHeight()); // simetrica bajo la barra de estado del tema (antes 0.875 / 0.85 de la pantalla: pisaba o tocaba el logo Z)
+ 
+ 	setPosition((Renderer::getScreenWidth() - getSize().x()) / 2, (Renderer::getScreenHeight() - getSize().y()) / 2);
+ }
+--- a/es-app/src/guis/GuiKeyMappingEditor.cpp
++++ b/es-app/src/guis/GuiKeyMappingEditor.cpp
+@@ -206,7 +206,7 @@
+ 	if (Renderer::ScreenSettings::fullScreenMenus())
+ 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+ 	else
+-		setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.85f); // 0.875 invadia el logo Z / la barra de estado
++		setSize(WINDOW_WIDTH, mWindow->getWindowMaxHeight()); // simetrica bajo la barra de estado del tema (antes 0.875 / 0.85 de la pantalla: pisaba o tocaba el logo Z)
+ 
+ 	setPosition((Renderer::getScreenWidth() - getSize().x()) / 2, (Renderer::getScreenHeight() - getSize().y()) / 2);
+ }
+--- a/es-app/src/guis/GuiFileBrowser.cpp
++++ b/es-app/src/guis/GuiFileBrowser.cpp
+@@ -144,7 +144,7 @@
+ 		mMenu.setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+ 	else
+ 	{
+-		mMenu.setSize(mMenu.getSize().x(), Renderer::getScreenHeight() * 0.85f); // 0.875 invadia el logo Z / la barra de estado
++		mMenu.setSize(mMenu.getSize().x(), mWindow->getWindowMaxHeight()); // simetrica bajo la barra de estado del tema (antes 0.875 / 0.85 de la pantalla: pisaba o tocaba el logo Z)
+ 		mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
+ 	}
+ }
+--- a/es-app/src/guis/GuiBezelInstaller.cpp
++++ b/es-app/src/guis/GuiBezelInstaller.cpp
+@@ -121,7 +121,7 @@
+ 	if (Renderer::ScreenSettings::fullScreenMenus())
+ 		mMenu.setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+ 	else
+-		mMenu.setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.85f); // 0.875 invadia el logo Z / la barra de estado
++		mMenu.setSize(WINDOW_WIDTH, mWindow->getWindowMaxHeight()); // simetrica bajo la barra de estado del tema (antes 0.875 / 0.85 de la pantalla: pisaba o tocaba el logo Z)
+ 
+ 	mMenu.setPosition((Renderer::getScreenWidth() - mMenu.getSize().x()) / 2, (Renderer::getScreenHeight() - mMenu.getSize().y()) / 2);
+ }
+--- a/es-app/src/guis/GuiThemeInstaller.cpp
++++ b/es-app/src/guis/GuiThemeInstaller.cpp
+@@ -250,7 +250,7 @@
+ 	if (Renderer::ScreenSettings::fullScreenMenus())
+ 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+ 	else
+-		setSize(WINDOW_WIDTH, Renderer::getScreenHeight() * 0.85f); // 0.875 invadia el logo Z / la barra de estado
++		setSize(WINDOW_WIDTH, mWindow->getWindowMaxHeight()); // simetrica bajo la barra de estado del tema (antes 0.875 / 0.85 de la pantalla: pisaba o tocaba el logo Z)
+ 
+ 	setPosition((Renderer::getScreenWidth() - getSize().x()) / 2, (Renderer::getScreenHeight() - getSize().y()) / 2);
+ }
+--- a/es-app/src/guis/GuiGamelistOptions.cpp
++++ b/es-app/src/guis/GuiGamelistOptions.cpp
+@@ -272,7 +272,7 @@
+ 		}
+ 	}
+ 
+-	mMenu.setMaxHeight(Renderer::getScreenHeight() * 0.85f);
++	mMenu.setMaxHeight(mWindow->getWindowMaxHeight());
+ 
+ 	// center the menu
+ 	setSize((float)Renderer::getScreenWidth(), (float)Renderer::getScreenHeight());
+--- a/es-app/src/guis/GuiGameScraper.cpp
++++ b/es-app/src/guis/GuiGameScraper.cpp
+@@ -1,3 +1,4 @@
++#include "Window.h"
+ #include "guis/GuiGameScraper.h"
+ 
+ #include "components/ButtonComponent.h"
+@@ -52,7 +53,7 @@
+ 	if (Renderer::ScreenSettings::fullScreenMenus())
+ 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+ 	else
+-		setSize(Renderer::getScreenWidth() * 0.90f, Renderer::getScreenHeight() * 0.85f);
++		setSize(Renderer::getScreenWidth() * 0.90f, mWindow->getWindowMaxHeight());
+ 		
+ 	setPosition((Renderer::getScreenWidth() - mSize.x()) / 2, (Renderer::getScreenHeight() - mSize.y()) / 2);	
+ 
