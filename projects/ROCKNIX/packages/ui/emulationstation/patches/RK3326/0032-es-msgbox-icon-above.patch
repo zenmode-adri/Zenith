@@ -1,0 +1,134 @@
+--- a/es-core/src/guis/GuiMsgBox.cpp
++++ b/es-core/src/guis/GuiMsgBox.cpp
+@@ -113,7 +113,7 @@
+ 	const std::string& name2, const std::function<void()>& func2, 
+ 	const std::string& name3, const std::function<void()>& func3,
+ 	GuiMsgBoxIcon icon) : GuiComponent(window),
+-	mBackground(window, ":/frame.png"), mGrid(window, Vector2i(2, 2))
++	mBackground(window, ":/frame.png"), mGrid(window, Vector2i(2, 3))
+ 	
+ {
+ 	auto theme = ThemeData::getMenuTheme();
+@@ -154,7 +154,7 @@
+ 		else if (name1 == _("OK"))
+ 		{
+ 			if (name2.empty())
+-				imageFile = ":/info.svg";
++				imageFile.clear(); // sin icono: texto centrado, como las confirmaciones
+ 			else
+ 				imageFile = ":/question.svg";
+ 		}
+@@ -179,13 +179,12 @@
+ 		mImage->setOrigin(0.5f, 0.5f);
+ 		mImage->setMaxSize(theme->Text.font->getLetterHeight() * 2.0f, theme->Text.font->getLetterHeight() * 2.0f);		
+ 
+-		mGrid.setEntry(mImage, Vector2i(0, 0), false, false);
+ 	}
+ 
+-	mMsg = std::make_shared<TextComponent>(mWindow, softenUpperCase(text), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, mImage == nullptr || Renderer::isSmallScreen() ? ALIGN_CENTER : ALIGN_LEFT); // CENTER
++	mMsg = std::make_shared<TextComponent>(mWindow, softenUpperCase(text), ThemeData::getMenuTheme()->Text.font, ThemeData::getMenuTheme()->Text.color, ALIGN_CENTER);
+ 	mMsg->setPadding(Vector4f(Renderer::getScreenWidth()*0.015f, 0, Renderer::getScreenWidth()*0.015f, 0));
+ 	
+-	mGrid.setEntry(mMsg, Vector2i(mImage == nullptr ? 0 : 1, 0), false, false, Vector2i(mImage == nullptr ? 2 : 1, 1));
++	mGrid.setEntry(mMsg, Vector2i(0, 1), false, false, Vector2i(2, 1));
+ 
+ 	// create the buttons
+ 	mButtons.push_back(std::make_shared<ButtonComponent>(mWindow, name1, name1, std::bind(&GuiMsgBox::deleteMeAndCall, this, func1)));
+@@ -229,7 +228,7 @@
+ 
+ 	// put the buttons into a ComponentGrid
+ 	mButtonGrid = makeDialogButtonGrid(mWindow, mButtons);
+-	mGrid.setEntry(mButtonGrid, Vector2i(0, 1), true, false, Vector2i(2, 1), GridFlags::BORDER_NONE);
++	mGrid.setEntry(mButtonGrid, Vector2i(0, 2), true, false, Vector2i(2, 1), GridFlags::BORDER_NONE);
+ 
+ 	// confirmaciones SI/NO: el foco empieza en NO (opcion segura); el boton de atras ya equivale a NO
+ 	if (mButtons.size() == 2 && Utils::String::toUpper(mButtons[1]->getText()) == _("NO"))
+@@ -241,9 +240,6 @@
+ 		// mMsg and buttons are narrower than width
+ 		width = Math::max(mButtonGrid->getSize().x(), mMsg->getSize().x() + 8 * HORIZONTAL_PADDING_PX);
+ 
+-		if (mImage != nullptr)
+-			width += mImage->getSize().x() + 2 * HORIZONTAL_PADDING_PX;
+-
+ 		width = Math::max(width, minWidth);
+ 	}
+ 	
+@@ -257,14 +253,15 @@
+ 		const float availW = width - Renderer::getScreenWidth() * 0.03f;
+ 		const std::string wrapped = msgFont->wrapText(softenUpperCase(text), availW);
+ 		msgHeight = msgFont->sizeText(wrapped, 1.2f).y() + Renderer::getScreenHeight() * 0.07f;
++		if (mImage != nullptr)
++			msgHeight += msgFont->getLetterHeight() * 2.0f + Renderer::getScreenHeight() * 0.035f; // fila del icono: icono + margen superior igual al aire del texto
+ 	}
+ 
+ 	
+ 	if (msgHeight + mButtonGrid->getSize().y() > Renderer::getScreenHeight())
+ 	{
+ 		setSize(Renderer::getScreenWidth(), Renderer::getScreenHeight());
+-		if (mImage != nullptr)
+-			mMsg->setSize(Renderer::getScreenWidth() - mImage->getSize().x() - 4* HORIZONTAL_PADDING_PX, 0);
++		mMsg->setSize(Renderer::getScreenWidth() - 4 * HORIZONTAL_PADDING_PX, 0);
+ 	}
+ 	else
+ 		setSize(width + HORIZONTAL_PADDING_PX*2, msgHeight + mButtonGrid->getSize().y());
+@@ -274,6 +271,8 @@
+ 
+ 	addChild(&mBackground);
+ 	addChild(&mGrid);
++	if (mImage != nullptr)
++		addChild(mImage.get()); // despues del fondo y la rejilla
+ 
+ 	TextToSpeech::getInstance()->say(text);
+ 
+@@ -313,15 +312,15 @@
+ 
+ 	mGrid.setSize(mSize);
+ 
++	const float iconH = ThemeData::getMenuTheme()->Text.font->getLetterHeight() * 2.0f;
++	const float iconTop = Renderer::getScreenHeight() * 0.035f; // margen superior = aire por encima del texto = aire hasta el icono
++	const float iconRow = mImage != nullptr ? iconTop + iconH : 0.0f;
+ 	if (mImage != nullptr)
+-	{
+-		auto width = mImage->getSize().x() + (Renderer::isSmallScreen() ? 5 : 2) * HORIZONTAL_PADDING_PX;
+-		mGrid.setColWidthPerc(0, width / mSize.x(), true);
+-	}
++		mImage->setPosition(mSize.x() / 2.0f, iconTop + iconH / 2.0f);
++	mGrid.setRowHeightPerc(0, iconRow > 0 ? iconRow / mSize.y() : 0.00001f);
++	mGrid.setRowHeightPerc(2, mButtonGrid->getSize().y() / mSize.y());
+ 
+-	mGrid.setRowHeightPerc(1, mButtonGrid->getSize().y() / mSize.y());
+-			
+-	mMsg->setSize(mSize.x() - HORIZONTAL_PADDING_PX*2, mGrid.getRowHeight(0));
++	mMsg->setSize(mSize.x() - HORIZONTAL_PADDING_PX*2, mGrid.getRowHeight(1));
+ 	mGrid.onSizeChanged();
+ 
+ 	mBackground.fitTo(mSize, Vector3f::Zero(), Vector2f(-32, -32));
+--- a/es-app/src/scrapers/ThreadedScraper.cpp
++++ b/es-app/src/scrapers/ThreadedScraper.cpp
+@@ -267,7 +267,7 @@
+ 
+ 	if (Scraper::getScraper() == nullptr)
+ 	{
+-		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURRED") + std::string(" :\r\n") + _("NO SCRAPER AVAILABLE")));
++		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURRED") + std::string(":\r\n") + _("NO SCRAPER AVAILABLE"), _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
+ 		return;
+ 	}
+ 
+@@ -275,7 +275,7 @@
+ 	int threadCount = Scraper::getScraper()->getThreadCount(error);
+ 	if (threadCount < 0)
+ 	{
+-		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURRED") + std::string(" :\r\n") + error));
++		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURRED") + std::string(":\r\n") + error, _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
+ 		return;
+ 	}
+ 
+@@ -290,7 +290,7 @@
+ 	}
+ 	catch (const std::exception& e)
+ 	{
+-		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURRED") + std::string(" :\r\n") + e.what()));
++		window->pushGui(new GuiMsgBox(window, _("AN ERROR OCCURRED") + std::string(":\r\n") + e.what(), _("OK"), nullptr, GuiMsgBoxIcon::ICON_ERROR));
+ 		delete ThreadedScraper::mInstance;
+ 		ThreadedScraper::mInstance = nullptr;
+ 	}
