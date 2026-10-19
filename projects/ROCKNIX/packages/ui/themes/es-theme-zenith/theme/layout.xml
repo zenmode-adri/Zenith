@@ -170,9 +170,9 @@
     <stackH>0.05625</stackH>
     <stackY>0.05312</stackY>
     <stackX>-0.02917</stackX>
-    <stackSep>0.0125</stackSep>
-    <fClock>0.04063</fClock>
-    <fBatt>0.03438</fBatt>
+    <stackSep>0.01042</stackSep>
+    <fClock>0.03438</fClock>
+    <fBatt>0.02969</fBatt>
     <fHelp>0.03188</fHelp>
     <helpY>0.9375</helpY>
     <cellW>0.2</cellW>
