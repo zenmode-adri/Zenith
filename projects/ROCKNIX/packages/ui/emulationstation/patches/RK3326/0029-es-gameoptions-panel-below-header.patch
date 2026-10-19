@@ -1,0 +1,30 @@
+--- a/es-app/src/guis/GuiGameOptions.cpp
++++ b/es-app/src/guis/GuiGameOptions.cpp
+@@ -1,3 +1,4 @@
++#include "Window.h"
+ #include "GuiGameOptions.h"
+ #include "guis/GuiGamelistFilter.h"
+ #include "scrapers/Scraper.h"
+@@ -480,14 +481,19 @@
+ 		float w = Math::min(Renderer::getScreenWidth() * 0.5, ThemeData::getMenuTheme()->Text.font->sizeText("S").x() * 33.0f);
+ 		w = Math::max(w, Renderer::getScreenWidth() / 3.0f);
+ 
+-		mMenu.setSize(w, Renderer::getScreenHeight() + 2);
++		// el panel lateral empieza justo debajo de la barra de estado del tema (logo Z, wifi, bateria, hora):
++		// antes llegaba hasta arriba del todo y su titulo se pisaba con los iconos
++		const float headerCenter = mWindow->getScreenExtraCenterY("zs-avatar");
++		const float topInset = headerCenter > 0 ? Math::round(headerCenter * 2.0f) : 0.0f;
++
++		mMenu.setSize(w, Renderer::getScreenHeight() + 2 - topInset);
+ 		/*mMenu.animateTo(
+ 			Vector2f(-w, -1),
+ 			Vector2f(-1, -1), AnimateFlags::OPACITY | AnimateFlags::POSITION);
+ 			*/
+ 		mMenu.animateTo(
+-			Vector2f(Renderer::getScreenWidth(), -1),
+-			Vector2f(Renderer::getScreenWidth() - w -1, -1), AnimateFlags::OPACITY | AnimateFlags::POSITION);
++			Vector2f(Renderer::getScreenWidth(), topInset - 1),
++			Vector2f(Renderer::getScreenWidth() - w -1, topInset - 1), AnimateFlags::OPACITY | AnimateFlags::POSITION);
+ 	}
+ }
+ 
