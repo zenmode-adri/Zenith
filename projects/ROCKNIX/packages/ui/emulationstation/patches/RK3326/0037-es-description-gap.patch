@@ -1,0 +1,17 @@
+--- a/es-core/src/components/MenuComponent.cpp
++++ b/es-core/src/components/MenuComponent.cpp
+@@ -214,6 +214,14 @@
+ 			mList->setUpdateType(ComponentListFlags::UpdateType::UPDATE_ALWAYS);			
+ 
+ 		row.addElement(std::make_shared<MultiLineMenuEntry>(mWindow, Utils::String::toUpper(label), description, multiLine), true);
++
++		// el texto de la descripcion llegaba hasta pegarse al interruptor/valor de la derecha: se deja un hueco
++		if (comp != nullptr)
++		{
++			auto gap = std::make_shared<GuiComponent>(mWindow);
++			gap->setSize(Renderer::getScreenWidth() * 0.02f, 0);
++			row.addElement(gap, false);
++		}
+ 	}
+ 	else
+ 	{
