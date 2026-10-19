@@ -1,0 +1,34 @@
+--- a/es-core/src/components/BusyComponent.cpp
++++ b/es-core/src/components/BusyComponent.cpp
+@@ -105,8 +105,9 @@
+ 	if (mSize.x() == 0 || mSize.y() == 0)
+ 		return;
+ 
+-	const float middleSpacerWidth = 0.01f * Renderer::getScreenWidth();
++	const float middleSpacerWidth = 0.019f * Renderer::getScreenWidth();
+ 	const float letterHeight = mText->getFont()->getLetterHeight();
++	const float iconSize = letterHeight * 1.7f;            // indicador mas grande que la letra
+ 
+ 	float textHeight = mText->getFont()->getLetterHeight();
+ 	if (mText->getText().find("\r") != std::string::npos)
+@@ -116,15 +117,16 @@
+ 
+ 	const float textWidth = mText->getSize().x() + 4;
+ 
+-	mGrid.setColWidth(1, letterHeight); // animation is square
++	mGrid.setColWidth(1, iconSize); // animation is square
+ 	mGrid.setColWidth(2, middleSpacerWidth);
+ 	mGrid.setColWidth(3, textWidth);
+-	mGrid.setRowHeight(1, textHeight);
++	const float rowHeight = Math::max(textHeight, iconSize);
++	mGrid.setRowHeight(1, rowHeight);
+ 	mGrid.setSize(mSize);
+ 	
+ 	mBackground.fitTo(
+-		Vector2f(mGrid.getColWidth(1) + mGrid.getColWidth(2) + mGrid.getColWidth(3), textHeight + 2),
+-		mAnimation->getPosition(), Vector2f(0, 0));
++		Vector2f(mGrid.getColWidth(1) + mGrid.getColWidth(2) + mGrid.getColWidth(3), rowHeight + 2),
++		mAnimation->getPosition(), Vector2f(Renderer::getScreenHeight() * 0.022f, Renderer::getScreenHeight() * 0.022f)); // mas aire alrededor
+ 		
+ }
+ 
