@@ -1,0 +1,20 @@
+--- a/es-app/src/guis/GuiMetaDataEd.cpp
++++ b/es-app/src/guis/GuiMetaDataEd.cpp
+@@ -276,7 +276,7 @@
+ 			row.addElement(ed, true);
+ 
+ 			auto spacer = std::make_shared<GuiComponent>(mWindow);
+-			spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
++			spacer->setSize(Renderer::getScreenWidth() * 0.014f, 0); // separacion valor-flecha (0.005 dejaba el valor pegado a la flecha)
+ 			row.addElement(spacer, false);
+ 
+ 			auto bracket = std::make_shared<ImageComponent>(mWindow);
+@@ -322,7 +322,7 @@
+ 				row.addElement(ed, true);
+ 
+ 				auto spacer = std::make_shared<GuiComponent>(mWindow);
+-				spacer->setSize(Renderer::getScreenWidth() * 0.005f, 0);
++				spacer->setSize(Renderer::getScreenWidth() * 0.014f, 0); // separacion valor-flecha (0.005 dejaba el valor pegado a la flecha)
+ 				row.addElement(spacer, false);
+ 
+ 				auto bracket = std::make_shared<ImageComponent>(mWindow);
