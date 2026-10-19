@@ -14,7 +14,7 @@ new file mode 100644
 index 000000000000..111111111111
 --- /dev/null
 +++ b/drivers/leds/leds-r36ultra.c
-@@ -0,0 +1,414 @@
+@@ -0,0 +1,412 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * R36Ultra RGB LED driver - single-wire pulse protocol
@@ -42,7 +42,7 @@ index 000000000000..111111111111
 + * Zenith rework (fixes "the LEDs light up for a moment and go off"):
 + *   - the pulse train is bit-banged with udelay(), so any delay stretches a 1 ms gap and the controller counts a
 + *     different number of pulses (a corrupted "off" train shows up as a random colour until the next refresh).
-+ *     The train now runs with preemption disabled and the data pulses with local IRQs disabled.
++ *     The train now runs with preemption disabled.
 + *   - sysfs writes and the refresh used to run concurrently with no lock and could interleave their pulses:
 + *     everything is now serialised by a mutex and the refresh is a delayed work (process context).
 + *   - the controller is not latching, so a lit mode is re-sent every 2 s, but "off" is NOT re-sent any more:
@@ -117,12 +117,12 @@ index 000000000000..111111111111
 + *   3. pulse_count data pulses (high, delay, low, delay)
 + *   4. end gap, GPIO low
 + *
-+ * Preemption is off for the whole train and IRQs are off for the data pulses (the part where a stretched 1 ms
-+ * gap would change the pulse count). Worst case ~35 ms (rainbow); IRQs are only masked for up to ~18 ms.
++ * Preemption is off for the whole train (a task switch is what can stretch a 1 ms gap by whole milliseconds and change the
++ * pulse count). IRQs are NOT masked: hard IRQ handlers are far shorter than a pulse and masking them for up to ~18 ms every
++ * 2 s while a colour is lit would risk audio crackle / input hitches in games. Worst case ~35 ms (rainbow).
 + */
 +static void send_pulse_count(int pulse_gpio, int pulse_count)
 +{
-+    unsigned long flags;
 +    int i;
 +
 +    preempt_disable();
@@ -134,14 +134,12 @@ index 000000000000..111111111111
 +    gpio_set_value(pulse_gpio, 0);
 +    udelay(PULSE_DELAY_US);
 +
-+    local_irq_save(flags);
 +    for (i = 0; i < pulse_count; i++) {
 +        gpio_set_value(pulse_gpio, 1);
 +        udelay(PULSE_DELAY_US);
 +        gpio_set_value(pulse_gpio, 0);
 +        udelay(PULSE_DELAY_US);
 +    }
-+    local_irq_restore(flags);
 +
 +    udelay(PULSE_GAP_US);
 +    gpio_set_value(pulse_gpio, 0);
