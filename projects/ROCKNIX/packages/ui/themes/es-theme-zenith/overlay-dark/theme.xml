@@ -492,7 +492,7 @@
       <pathOn>./assets/menu/switch-on.svg</pathOn>
       <pathOff>./assets/menu/switch-off.svg</pathOff>
       <colorOn>4C97A8</colorOn>
-      <colorOff>5A5A62</colorOff>
+      <colorOff>6C6C76</colorOff>
     </menuSwitch>
     <menuSlider name="menuslider">
       <path>./assets/menu/slider-knob.svg</path>

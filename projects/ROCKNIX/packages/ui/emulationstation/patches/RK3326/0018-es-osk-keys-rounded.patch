@@ -1,0 +1,149 @@
+--- a/es-core/src/components/ButtonComponent.h
++++ b/es-core/src/components/ButtonComponent.h
+@@ -28,6 +28,10 @@
+ 	void onFocusGained() override;
+ 	void onFocusLost() override;
+ 	void onOpacityChanged() override;
++
++	// teclado en pantalla: texto de las teclas largas (RESET, CANCEL) mas pequeno, y tecla principal (OK) con fondo de acento
++	void setTextScale(float scale);
++	void setPrimaryStyle();
+         
+ 	void setColorShift(unsigned int color) { mModdedColor = color; mNewColor = true; updateImage(); }
+ 	void removeColorShift() { mNewColor = false; updateImage(); }
+@@ -52,6 +56,10 @@
+ 	unsigned int mModdedColor; 
+ 	unsigned int mTextColorFocused;
+ 	unsigned int mTextColorUnfocused;
++	float mTextScale = 1.0f;
++	bool mPrimary = false;
++	unsigned int mPrimaryBg = 0;
++	void fitText();
+ 	
+ 	unsigned int getCurTextColor() const;
+ 	unsigned int getCurBackColor()  const;
+--- a/es-core/src/components/ButtonComponent.cpp
++++ b/es-core/src/components/ButtonComponent.cpp
+@@ -9,6 +9,12 @@
+ 
+ #define TEXT_PADDING Math::max(12, Renderer::getScreenWidth() * 0.014)
+ 
++static float btnLuminance(unsigned int c)
++{
++	auto f = [](float v) { v /= 255.0f; return v <= 0.03928f ? v / 12.92f : powf((v + 0.055f) / 1.055f, 2.4f); };
++	return 0.2126f * f((float)((c >> 24) & 0xFF)) + 0.7152f * f((float)((c >> 16) & 0xFF)) + 0.0722f * f((float)((c >> 8) & 0xFF));
++}
++
+ ButtonComponent::ButtonComponent(Window* window, const std::string& text, const std::string& helpText, const std::function<void()>& func, bool upperCase) : GuiComponent(window),
+ 	mBox(window, ThemeData::getMenuTheme()->Button.path),	
+ 	mFocused(false), 
+@@ -34,6 +40,9 @@
+ {
+ 	GuiComponent::onSizeChanged();
+ 
++	if (mTextScale != 1.0f)
++		fitText();
++
+ 	auto sz = mBox.getCornerSize();
+ 
+ 	mBox.fitTo(
+@@ -47,6 +56,54 @@
+ 	mPressedFunc = f;
+ }
+ 
++void ButtonComponent::setTextScale(float scale)
++{
++	auto menuFont = ThemeData::getMenuTheme()->Text.font;
++	mTextScale = scale;
++	mFont = Font::get((int)(menuFont->getSize() * scale), menuFont->getPath());
++	setText(mText, mHelpText, false);
++}
++
++// Tecla principal: fondo con el color de acento del menu, solo si contrasta >= 3:1 con el panel (si no, queda como las demas)
++void ButtonComponent::setPrimaryStyle()
++{
++	auto menuTheme = ThemeData::getMenuTheme();
++	const unsigned int accent = menuTheme->Text.selectedColor;
++	const float la = btnLuminance(accent) + 0.05f, lb = btnLuminance(menuTheme->Background.color) + 0.05f;
++	const float ratio = la > lb ? la / lb : lb / la;
++	if (ratio < 3.0f)
++		return;
++
++	mPrimary = true;
++	mPrimaryBg = accent;
++	mTextColorUnfocused = btnLuminance(accent) > 0.35f ? 0x000000FF : 0xFFFFFFFF;
++	if (mTextCache)
++		mTextCache->setColor(getCurTextColor());
++}
++
++void ButtonComponent::fitText()
++{
++	// ajusta el tamano del texto para que quepa dentro de la tecla (pantallas pequenas)
++	const float avail = mSize.x() - mPadding.x() - mPadding.z() - 6.0f;
++	if (avail <= 0 || mText.empty())
++		return;
++
++	auto menuFont = ThemeData::getMenuTheme()->Text.font;
++	float scale = mTextScale;
++	std::shared_ptr<Font> font = Font::get((int)(menuFont->getSize() * scale), menuFont->getPath());
++	while (scale > 0.45f && font->sizeText(mText).x() > avail)
++	{
++		scale -= 0.05f;
++		font = Font::get((int)(menuFont->getSize() * scale), menuFont->getPath());
++	}
++
++	if (font != mFont)
++	{
++		mFont = font;
++		mTextCache = std::unique_ptr<TextCache>(mFont->buildTextCache(mText, 0, 0, getCurTextColor()));
++	}
++}
++
+ bool ButtonComponent::input(InputConfig* config, Input input)
+ {
+ 	if (config->isMappedTo(BUTTON_OK, input) && input.value != 0)
+@@ -141,12 +198,17 @@
+ {
+ 	Transform4x4f trans = parentTrans * getTransform();
+ 
+-	if (mRenderNonFocusedBackground || mFocused)
++	if (mRenderNonFocusedBackground)
+ 		mBox.render(trans);
+ 	else
+ 	{
+ 		Renderer::setMatrix(trans);
+-		Renderer::drawRect(mPadding.x(), mPadding.y(), mSize.x() - mPadding.x() - mPadding.z(), mSize.y() - mPadding.y() - mPadding.w(), 0x60606025);
++		// teclas planas (teclado en pantalla): misma forma en reposo y con foco, esquinas poco redondeadas
++		const float flatW = mSize.x() - mPadding.x() - mPadding.z();
++		const float flatH = mSize.y() - mPadding.y() - mPadding.w();
++		const float flatR = Math::max(3.0f, Math::min(flatW, flatH) * 0.14f);
++		const unsigned int flatColor = mFocused ? getCurBackColor() : (mPrimary ? Utils::HtmlColor::applyColorOpacity(mPrimaryBg, getOpacity()) : 0x60606025);
++		Renderer::drawRoundRect(mPadding.x(), mPadding.y(), flatW, flatH, flatR, flatColor);
+ 	}
+ 
+ 	if (mMousePressed && mIsMouseOver)
+--- a/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
++++ b/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
+@@ -175,7 +175,7 @@
+ 				}
+ 				else if (lower == "OK")
+ 				{
+-					lower = _U("\uF058");
++					lower = _U("\uF00C");
+ 
+ 					if (mMultiLine)
+ 					{
+@@ -219,6 +219,13 @@
+ 
+ 				button->setPadding(Vector4f(BUTTON_GRID_HORIZ_PADDING / 4.0f, BUTTON_GRID_HORIZ_PADDING / 4.0f, BUTTON_GRID_HORIZ_PADDING / 4.0f, BUTTON_GRID_HORIZ_PADDING / 4.0f));
+ 				button->setRenderNonFocusedBackground(false);
++				{
++					const std::string rawKey = (*layout)[BUTTON_LAYER_SIZE * i][j];
++					if (rawKey == "OK")
++						button->setPrimaryStyle();
++					else if (rawKey == "RESET" || rawKey == "CANCEL")
++						button->setTextScale(Renderer::getScreenHeight() <= 400 ? 0.62f : 0.8f);
++				}
+ 				buttons.push_back(button);
+ 
+ 				int colSpan = 1;

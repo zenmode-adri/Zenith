@@ -492,8 +492,8 @@
     <menuSwitch name="menuswitch">
       <pathOn>./assets/menu/switch-on.svg</pathOn>
       <pathOff>./assets/menu/switch-off.svg</pathOff>
-      <colorOn>5CA0AF</colorOn>
-      <colorOff>C9C9CF</colorOff>
+      <colorOn>3A8CA0</colorOn>
+      <colorOff>A9A9B2</colorOff>
     </menuSwitch>
     <menuSlider name="menuslider">
       <path>./assets/menu/slider-knob.svg</path>

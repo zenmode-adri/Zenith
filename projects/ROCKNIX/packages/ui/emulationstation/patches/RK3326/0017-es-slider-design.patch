@@ -1,0 +1,95 @@
+--- a/es-core/src/components/SliderComponent.cpp
++++ b/es-core/src/components/SliderComponent.cpp
+@@ -8,6 +8,24 @@
+ #define MOVE_REPEAT_DELAY 500
+ #define MOVE_REPEAT_RATE 40
+ 
++static float sliderLuminance(unsigned int c)
++{
++	auto f = [](float v) { v /= 255.0f; return v <= 0.03928f ? v / 12.92f : powf((v + 0.055f) / 1.055f, 2.4f); };
++	return 0.2126f * f((float)((c >> 24) & 0xFF)) + 0.7152f * f((float)((c >> 16) & 0xFF)) + 0.0722f * f((float)((c >> 8) & 0xFF));
++}
++
++// Color de acento del menu (el del elemento seleccionado) para la parte rellena y la perilla; solo si tiene
++// contraste >= 3:1 con el fondo del panel. En temas de terceros con un acento que se pierde sobre el panel
++// (p. ej. blanco sobre panel claro) se usa el color del texto de la fila.
++static unsigned int sliderAccent(unsigned int rowColor)
++{
++	auto menuTheme = ThemeData::getMenuTheme();
++	unsigned int accent = menuTheme->Text.selectedColor;
++	float a = sliderLuminance(accent) + 0.05f, b = sliderLuminance(menuTheme->Background.color) + 0.05f;
++	float ratio = a > b ? a / b : b / a;
++	return ratio >= 3.0f ? accent : rowColor;
++}
++
+ SliderComponent::SliderComponent(Window* window, float min, float max, float increment, const std::string& suffix, bool isAuto)
+ 	: GuiComponent(window),
+ 	mMin(min),
+@@ -33,7 +51,7 @@
+ 
+ 	mKnob.setOrigin(0.5f, 0.5f);
+ 	mKnob.setImage(ThemeData::getMenuTheme()->Icons.knob);
+-	mKnob.setColorShift(mColor);
++	mKnob.setColorShift(sliderAccent(mColor));
+ 	
+ 	if (Renderer::isSmallScreen())
+ 		setSize(Renderer::getScreenWidth() * 0.25f, menuTheme->Text.font->getLetterHeight());
+@@ -111,7 +129,7 @@
+ void SliderComponent::setColor(unsigned int color) 
+ {
+ 	mColor = color;
+-	mKnob.setColorShift(mColor);
++	mKnob.setColorShift(sliderAccent(mColor));
+ 	onValueChanged();
+ }
+ 
+@@ -221,9 +239,19 @@
+ 
+ 	float width = mSize.x() - mKnob.getSize().x() - (mValueCache ? mValueCache->metrics.size.x() + 4 : 0);
+ 
+-	//render line
+-	const float lineWidth = 2;
+-	Renderer::drawRect(mKnob.getSize().x() / 2, mSize.y() / 2 - lineWidth / 2, width, lineWidth, getCurColor());
++	//render track: carril redondeado (tenue) y parte rellena con el color de acento del menu
++	const float trackH = Math::max(4.0f, mSize.y() * 0.3f);
++	const float trackY = mSize.y() / 2 - trackH / 2;
++	const float knobHalf = mKnob.getSize().x() / 2;
++	const unsigned int accent = Utils::HtmlColor::applyColorOpacity(sliderAccent(mColor), getOpacity());
++	const unsigned int trackColor = (getCurColor() & 0xFFFFFF00) | 0x40;
++	Renderer::drawRoundRect(knobHalf, trackY, width, trackH, trackH / 2, trackColor);
++	if (!(mIsAutoMode && getAuto()) && mMax > mMin)
++	{
++		float filled = ((mValue - mMin) / (mMax - mMin)) * width;
++		if (filled > trackH)
++			Renderer::drawRoundRect(knobHalf, trackY, filled, trackH, trackH / 2, accent);
++	}
+ 
+ 	//render knob
+ 	mKnob.render(trans);
+@@ -264,7 +292,7 @@
+ void SliderComponent::onSizeChanged()
+ {
+ 	GuiComponent::onSizeChanged();
+-	mFont = Font::get((int)(mSize.y()), FONT_PATH_LIGHT);
++	mFont = Font::get((int)(mSize.y() * 1.1f), FONT_PATH_REGULAR);
+ 	onValueChanged();
+ }
+ 
+@@ -318,7 +346,7 @@
+ 		mValueCache->metrics.size[0] = textSize.x(); // fudge the width
+ 	}
+ 
+-	mKnob.setResize(0, mSize.y() * 0.7f);
++	mKnob.setResize(0, mSize.y() * 0.95f);
+ 	float lineLength = mSize.x() - mKnob.getSize().x() - (mValueCache ? mValueCache->metrics.size.x() + 4 : 0);
+ 
+ 	if (mIsAutoMode && getAuto())
+@@ -329,7 +357,7 @@
+ 	else
+ 	{
+ 		mKnob.setOpacity(getOpacity());
+-		mKnob.setPosition(((mValue - mMin) / (mMax - mMin)) * lineLength, mSize.y() / 2);
++		mKnob.setPosition(mKnob.getSize().x() / 2 + ((mValue - mMin) / (mMax - mMin)) * lineLength, mSize.y() / 2);
+ 	}
+ 
+ }
