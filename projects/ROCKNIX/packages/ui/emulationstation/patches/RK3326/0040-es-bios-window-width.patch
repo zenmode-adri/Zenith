@@ -1,0 +1,12 @@
+--- a/es-app/src/guis/GuiBios.cpp
++++ b/es-app/src/guis/GuiBios.cpp
+@@ -17,7 +17,8 @@
+ 
+ #include <cstring>
+ 
+-#define WINDOW_WIDTH (float)Math::max((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.65f))
++// en pantallas cuadradas max(alto, 0.65 ancho) = ancho completo (ventana de lado a lado): se limita al 90 % como las demas ventanas
++#define WINDOW_WIDTH (float)Math::min((float)Math::max((int)Renderer::getScreenHeight(), (int)(Renderer::getScreenWidth() * 0.65f)), Renderer::getScreenWidth() * 0.90f)
+ 
+ void GuiBios::show(Window* window)
+ {
