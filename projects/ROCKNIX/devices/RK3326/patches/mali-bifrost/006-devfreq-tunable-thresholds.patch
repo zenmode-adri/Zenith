@@ -1,0 +1,41 @@
+From: Zenith
+Subject: [PATCH] mali: expose the GPU devfreq simple_ondemand thresholds as module parameters
+
+kbase registered simple_ondemand with NULL data (kernel defaults 90/5). In 6.12 devfreq has no sysfs files for
+the thresholds, so they cannot be tuned. Pass a data struct backed by module parameters (defaults unchanged).
+Precedent: Chromium veyron commit 280b5221 (35/5) for a GPU stuck at its lowest OPP at 30-70 % occupancy.
+
+--- a/product/kernel/drivers/gpu/arm/midgard/backend/gpu/mali_kbase_devfreq.c	2026-10-20 19:39:48.414116001 +0200
++++ b/product/kernel/drivers/gpu/arm/midgard/backend/gpu/mali_kbase_devfreq.c	2026-10-20 19:39:48.431940801 +0200
+@@ -35,6 +35,22 @@
+ #include <linux/pm_opp.h>
+ #include "mali_kbase_devfreq.h"
+ 
++/*
++ * simple_ondemand thresholds for the GPU. devfreq reads them on every poll, so they can be changed at run time:
++ *   /sys/module/mali_kbase/parameters/gpu_upthreshold       % busy above which the GPU jumps to the top OPP
++ *   /sys/module/mali_kbase/parameters/gpu_downdifferential  hysteresis in % below the up threshold
++ * The defaults are the kernel's own (90/5), so behaviour is unchanged until they are tuned. The busy metric only
++ * counts time with work queued on the GPU, so a CPU-bound game never reaches 90 % and the GPU stays low.
++ */
++static struct devfreq_simple_ondemand_data kbase_ondemand_data = {
++	.upthreshold = 90,
++	.downdifferential = 5,
++};
++module_param_named(gpu_upthreshold, kbase_ondemand_data.upthreshold, uint, 0644);
++MODULE_PARM_DESC(gpu_upthreshold, "GPU devfreq simple_ondemand upthreshold (percent busy)");
++module_param_named(gpu_downdifferential, kbase_ondemand_data.downdifferential, uint, 0644);
++MODULE_PARM_DESC(gpu_downdifferential, "GPU devfreq simple_ondemand downdifferential (percent)");
++
+ /**
+  * get_voltage() - Get the voltage value corresponding to the nominal frequency
+  *                 used by devfreq.
+@@ -679,7 +695,7 @@
+ 	if (err)
+ 		goto init_core_mask_table_failed;
+ 
+-	kbdev->devfreq = devfreq_add_device(kbdev->dev, dp, "simple_ondemand", NULL);
++	kbdev->devfreq = devfreq_add_device(kbdev->dev, dp, "simple_ondemand", &kbase_ondemand_data);
+ 	if (IS_ERR(kbdev->devfreq)) {
+ 		err = PTR_ERR(kbdev->devfreq);
+ 		kbdev->devfreq = NULL;
