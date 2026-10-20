@@ -15,11 +15,11 @@ Precedent: Chromium veyron commit 280b5221 (35/5) for a GPU stuck at its lowest 
 + * simple_ondemand thresholds for the GPU. devfreq reads them on every poll, so they can be changed at run time:
 + *   /sys/module/mali_kbase/parameters/gpu_upthreshold       % busy above which the GPU jumps to the top OPP
 + *   /sys/module/mali_kbase/parameters/gpu_downdifferential  hysteresis in % below the up threshold
-+ * The defaults are the kernel's own (90/5), so behaviour is unchanged until they are tuned. The busy metric only
++ * Default 60/5 (kernel's is 90/5): glmark2 scored 538 at 90, 557 at 80, 577 at 70, 585 at 60, ~590 at 50-30. The busy metric only
 + * counts time with work queued on the GPU, so a CPU-bound game never reaches 90 % and the GPU stays low.
 + */
 +static struct devfreq_simple_ondemand_data kbase_ondemand_data = {
-+	.upthreshold = 90,
++	.upthreshold = 60,
 +	.downdifferential = 5,
 +};
 +module_param_named(gpu_upthreshold, kbase_ondemand_data.upthreshold, uint, 0644);
