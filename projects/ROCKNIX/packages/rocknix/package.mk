@@ -46,6 +46,16 @@ makeinstall_target() {
 Passphrase=${LOCAL_WIFI_KEY}
 EOF
   fi
+  ### Zenith debug build: copy ready-made iwd network files from LOCAL_IWD_DIR (kept OUTSIDE the repository), exactly as
+  ### iwd stores them (an SSID with dots or spaces is stored under an "=<hex>.psk" name, which LOCAL_WIFI_SSID cannot
+  ### produce), and keep Wi-Fi and SSH on. The marker makes firstboot/update.sh leave ssh.enabled alone.
+  if [ -n "${LOCAL_IWD_DIR}" ] && [ -d "${LOCAL_IWD_DIR}" ]
+  then
+    mkdir -p ${INSTALL}/usr/config/iwd
+    cp -a ${LOCAL_IWD_DIR}/. ${INSTALL}/usr/config/iwd/
+    sed -i "s#wifi.enabled=0#wifi.enabled=1#g;s#ssh.enabled=0#ssh.enabled=1#g" ${INSTALL}/usr/config/system/configs/system.cfg
+    touch ${INSTALL}/usr/config/zenith-debug-build
+  fi
   # Always install the update script
   mkdir -p $INSTALL/usr/share/bootloader
   find_file_path bootloader/detect_subdevice.sh && cp -av ${FOUND_PATH} ${INSTALL}/usr/share/bootloader

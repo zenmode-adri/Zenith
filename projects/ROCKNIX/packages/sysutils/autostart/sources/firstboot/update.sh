@@ -43,7 +43,7 @@ function Set_system() {
         sed -i -e '/audio.volume\=/c\audio.volume\=60' ${SYSCFG}
         sed -i -e '/rotate.root.password\=/c\rotate.root.password\=0' ${SYSCFG}
         sed -i -e '/samba.enabled\=/c\samba.enabled\=0' ${SYSCFG}
-        sed -i -e '/ssh.enabled\=/c\ssh.enabled\=0' ${SYSCFG}
+        [ -e /usr/config/zenith-debug-build ] || sed -i -e '/ssh.enabled\=/c\ssh.enabled\=0' ${SYSCFG}
         sed -i -e '/updates.enabled\=/c\updates.enabled\=0' ${SYSCFG}
         sed -i -e '/system.autohotkeys\=/c\system.autohotkeys\=0' ${SYSCFG}
         sed -i -e '/global.retroarch.menu_driver\=/c\global.retroarch.menu_driver\=ozone' ${SYSCFG}
