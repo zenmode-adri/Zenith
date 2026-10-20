@@ -1,0 +1,18 @@
+From: Zenith
+Subject: [PATCH] OSK: the OK tick key (U+F00C, lower layer) accepts the text instead of typing the glyph
+
+Patch 0018 changed the lower-layer OK glyph from U+F058 to U+F00C but makeButton() only recognised U+F058
+(and "OK"), so on the default (unshifted) keyboard the tick typed a check mark. The multi-line enter glyph
+(U+F149) is only the label of the other layers; the callback always captures the lower-layer key.
+---
+--- a/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
++++ b/es-core/src/guis/GuiTextEditPopupKeyboard.cpp
+@@ -481,7 +481,7 @@
+ {
+ 	std::shared_ptr<ButtonComponent> button = std::make_shared<ButtonComponent>(mWindow, key, key, [this, key, shiftedKey, altedKey, altedShiftedKey]
+ 	{						
+-		if (key == _U("\uF058") || key.find("OK") != std::string::npos)
++		if (key == _U("\uF00C") || key == _U("\uF058") || key.find("OK") != std::string::npos)
+ 		{	
+ 			if (mMultiLine && (mShift || mAlt))
+ 			{
