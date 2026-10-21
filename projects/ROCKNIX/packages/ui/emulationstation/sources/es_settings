@@ -12,8 +12,10 @@ IMPORT_VARIABLES=()
 
 TZ=$(get_setting system.timezone)
 echo -n "TIMEZONE=${TZ}" > /storage/.cache/timezone
+OLD_TZ="$(cat /storage/.cache/system_timezone 2>/dev/null)"
 echo -n "${TZ}" >/storage/.cache/system_timezone
-systemctl restart tz-data.service
+# solo si cambio la zona horaria desde el ultimo arranque (el servicio ya aplico la anterior al arrancar)
+[ "${TZ}" != "${OLD_TZ}" ] && systemctl restart tz-data.service
 
 MYLOCALE=$(get_setting system.language)
 if [[ -n "${MYLOCALE}" ]]
@@ -57,7 +59,7 @@ do
 done
 
 if (( ${#IMPORT_VARIABLES[@]} )); then
-  systemctl import-environment "${IMPORT_VARIABLES[@]}"
+  systemctl import-environment "${IMPORT_VARIABLES[@]}" &   # ES no lo necesita para arrancar
 fi
 
 set_kill set "emulationstation"

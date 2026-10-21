@@ -80,7 +80,10 @@ COM_G="003-gpudriver"
 COM_D="006-display 055-hdmi-check"
 COM_S="080-dual_screen_mode 111-sway-init"
 COM_M="001-sync-modules"
-COM_L1="020-set_audio_latency 050-audio 095-turbo-mode 009-sleepmode 020-rumble 081-usbgadget 020-configs"
+# L1A (audio) sigue antes de ES: ES inicia SDL audio antes de su primer fotograma. L1B y L2 esperan a que ES este listo (ver wait_es_ready)
+COM_L1A="020-set_audio_latency 050-audio"
+COM_L1B="095-turbo-mode 009-sleepmode 020-rumble 081-usbgadget 020-configs"
+COM_L1="${COM_L1A} ${COM_L1B}"
 COM_L2="098-deviceutils 007-rootpw 099-networkservices 009-bluetooth 010-moonlight 010-uimode"
 # 008-perfmode es el primero de L1 (+ governor), ver late_chain()
 COM_KNOWN="001-controller ${COM_P1} ${COM_PICO} ${COM_G} ${COM_D} ${COM_S} ${COM_M} ${COM_L1} ${COM_L2} 008-perfmode"
@@ -163,6 +166,38 @@ wait_system_up() {   # wait_system_up <timeout_s> : espera a network.target, mul
   alog "WARN: multi-user/network not active after $1 s; continuing"
 }
 
+wait_es_ready() {   # wait_es_ready <timeout_s> : ES crea /tmp/emulationstation.ready justo antes de su primer fotograma
+  local i=0 max=$(( $1 * 10 ))
+  while [ ! -e /tmp/emulationstation.ready ] && [ $i -lt $max ]
+  do
+    sleep 0.1
+    i=$((i+1))
+  done
+  [ -e /tmp/emulationstation.ready ] || alog "WARN: ES not ready after $1 s; continuing late chain"
+}
+
+# Precarga en la cache de paginas (SD + squashfs, lectura en frio) de lo que ES va a necesitar: binario y bibliotecas.
+# La lista se regenera desde /proc/<pid>/maps de ES cuando cambia el binario.
+ES_PREFETCH_LIST="${STORAGE}/.cache/es-prefetch.list"
+es_prefetch() {
+  local f
+  [ -s "${ES_PREFETCH_LIST}" ] || return 0
+  renice -n 19 -p "${BASHPID}" >/dev/null 2>&1 || :
+  while read -r f
+  do
+    [ -f "${f}" ] && cat "${f}" >/dev/null 2>&1
+  done <"${ES_PREFETCH_LIST}"
+}
+es_prefetch_refresh() {
+  local pid
+  [ -s "${ES_PREFETCH_LIST}" ] && [ "${ES_PREFETCH_LIST}" -nt /usr/bin/emulationstation ] && return 0
+  pid="$(pidof emulationstation 2>/dev/null)"
+  pid="${pid%% *}"
+  [ -n "${pid}" ] || return 0
+  mkdir -p "${STORAGE}/.cache"
+  awk '$6 ~ /^\// {print $6}' "/proc/${pid}/maps" 2>/dev/null | sort -u >"${ES_PREFETCH_LIST}.tmp" && mv -f "${ES_PREFETCH_LIST}.tmp" "${ES_PREFETCH_LIST}"
+}
+
 late_chain() {   # late_chain L1|L2  (prioridad baja para no quitar CPU a Sway/ES)
   local t0="${EPOCHREALTIME/./}"
   renice -n 10 -p "${BASHPID}" >/dev/null 2>&1 || :
@@ -172,12 +207,16 @@ late_chain() {   # late_chain L1|L2  (prioridad baja para no quitar CPU a Sway/E
     L1)
       run_script "${COM_DIR}/008-perfmode"
       apply_governor
-      run_names "${COM_DIR}" ${COM_L1}
+      run_names "${COM_DIR}" ${COM_L1A}
+      wait_es_ready 15   # el resto no lo necesita ES para el menu: no le quita CPU mientras arranca
+      run_names "${COM_DIR}" ${COM_L1B}
       run_script "${PLAT_DIR}/060-game_settings"
       run_script "${PLAT_DIR}/015-rk817_config"
       run_script "${DEV_DIR}/050-game-configs"
+      es_prefetch_refresh
       ;;
     L2)
+      wait_es_ready 15   # red, Bluetooth, teclas rapidas, LED...: tras el primer fotograma de ES
       # 075-dpad-volbright reinicia "input" si ya esta activo: tiene que ir ANTES de que
       # 098-deviceutils lo arranque (igual que en el orden original).
       run_script "${DEV_DIR}/075-dpad-volbright"
@@ -434,6 +473,8 @@ else
   . "${PROFILE_D}/099-freqfunctions"
   performance 2>/dev/null
 fi
+
+( es_prefetch ) &   # lectura en frio de ES y sus bibliotecas en segundo plano (prioridad minima) mientras corre el resto
 
 ### ---- FASE 1: serie, imprescindible (escribe profile.d / ajustes que lee la UI) ----
 if [ -d "${PLAT_DIR}" ]

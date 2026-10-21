@@ -1,7 +1,7 @@
 [Unit]
 Description=Fix unset volumes on RK3326/RK3566 devices
 After=rocknix.target
-Before=essway.service
+# (sin Before=essway.service: alinear el volumen no debe retener el arranque de ES)
 
 [Service]
 Type=oneshot
