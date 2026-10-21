@@ -15,6 +15,17 @@ get_current_driver() {
 }
 
 
+# fast-5b: bind de las bibliotecas de <subdir> sobre /usr/lib{,32} en el mismo proceso. Antes: `find -exec bash -c 'mount --bind'`,
+# un bash + un mount por fichero (14 en el arranque). `-n`: /etc/mtab es un enlace a /proc/self/mounts, no hay nada que escribir.
+bind_libs() {   # bind_libs <subdir>   (/usr/lib/<subdir>/X -> /usr/lib/X, igual para lib32)
+  for d in /usr/lib /usr/lib32; do
+    [ -d "${d}/${1}" ] || continue
+    find "${d}/${1}" -type f | while IFS= read -r lib; do
+      mount -n --bind "${lib}" "${d}/${lib#${d}/${1}/}"
+    done
+  done
+}
+
 # When loading a driver, do two things:
 #   * ensure needed driver is loaded and other is not
 #   * ensure graphics related libs are overridden (or not)
@@ -23,16 +34,18 @@ load_driver() {
 
   case ${DRIVER_TO_LOAD} in
     "libmali")
-      modprobe -r @PAN@
-      modprobe mali_kbase
+      # fast-5b: la carga del modulo (~0,4 s) corre a la vez que los binds de bibliotecas (no dependen de el); se espera al final
+      ( modprobe -r @PAN@; modprobe mali_kbase ) &
+      MODPID=$!
 
-      grep -q /usr/lib/libEGL.so /proc/mounts || find /usr/{lib,lib32}/mali -type f -exec bash -c 'lib={}; mount --bind $lib ${lib/\/mali\//\/}' ';'
+      grep -q /usr/lib/libEGL.so /proc/mounts || bind_libs mali
       # Portmaster is not ready for SDL in glesonly subdir, so override libs the dirty way
       if [ -d /usr/lib/glesonly ]; then
-        grep -q /usr/lib/libSDL2-2.0.so /proc/mounts || find /usr/{lib,lib32}/glesonly -type f -exec bash -c 'lib={}; mount --bind $lib ${lib/\/glesonly\//\/}' ';'
+        grep -q /usr/lib/libSDL2-2.0.so /proc/mounts || bind_libs glesonly
       fi
-      mount --bind /dev/null /usr/lib/libGL.so
-      mount --bind /dev/null /usr/lib32/libGL.so
+      mount -n --bind /dev/null /usr/lib/libGL.so
+      mount -n --bind /dev/null /usr/lib32/libGL.so
+      wait ${MODPID}
       ;;
     "panfrost")
       modprobe -r mali_kbase

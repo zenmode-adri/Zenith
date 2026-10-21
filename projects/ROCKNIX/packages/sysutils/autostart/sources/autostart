@@ -72,7 +72,10 @@ DEV_L1="050-game-configs"
 # 500-enable-led (0,67 s) es una accion de LEDs, no la necesita ES: al final de L2 (antes caia en fase 1 por no estar en ninguna lista)
 DEV_L2="075-dpad-volbright 500-enable-led"
 # 001-controller es un "exit 0": se mantiene en COM_KNOWN (para que no cuente como no clasificado) pero ya no se ejecuta
-COM_P1="001-emulationstation 001-setup 002-device-switch 003-logging 003-upgrade 999-export"
+# P1A (crea dirs y deja system.cfg ordenado) va antes de lanzar G y D en paralelo; P1B es el resto del bloque serie
+COM_P1A="001-emulationstation 001-setup"
+COM_P1B="002-device-switch 003-logging 003-upgrade 999-export"
+COM_P1="${COM_P1A} ${COM_P1B}"
 COM_PICO="010-pico8"   # tras el montaje de roms (ver tras el lanzamiento de la UI)
 COM_G="003-gpudriver"
 # 055-hdmi-check (drm_tool list) abre /dev/dri/card0: va en la cadena D, en serie tras 006-display
@@ -496,9 +499,22 @@ then
 fi
 
 tocon "Starting storage services..."
-if [ -e "${STORAGE}/.boot.hint" ]; then systemctl start rocknix-automount; else systemctl start --no-block rocknix-automount; fi   # tanda 5: sin bloquear salvo post-update (003-upgrade puede necesitar roms)
+if [ -e "${STORAGE}/.boot.hint" ]; then systemctl start rocknix-automount; else systemctl start --no-block rocknix-automount & fi   # tanda 5: sin bloquear salvo post-update (003-upgrade puede necesitar roms); fast-5b: ni siquiera esperamos la respuesta de systemd
 
-run_names "${COM_DIR}" ${COM_P1}
+PIDS=()
+EARLY_GD=0
+run_names "${COM_DIR}" ${COM_P1A}
+# fast-5b: G (modulo mali + bind de libs) y D (brillo + paneladj + hdmi-check) no dependen de lo que escribe el resto de P1
+# (verificado: ningun script de P1/quirks toca backlight/DRM/mali; 002/003/999 no los usan). Arrancan en cuanto 001-setup ha
+# ordenado system.cfg (sort_settings) y se solapan con P1B. Tras una actualizacion (.boot.hint) se mantiene el orden clasico.
+if [ ! -e "${STORAGE}/.boot.hint" ]
+then
+  EARLY_GD=1
+  tocon "Configuring graphics and display..."
+  ( run_names "${COM_DIR}" ${COM_G} ) & PIDS+=($!)
+  ( wait_display_dev 5; run_names "${COM_DIR}" ${COM_D} ) & PIDS+=($!)
+fi
+run_names "${COM_DIR}" ${COM_P1B}
 collect_extras "${COM_DIR}" "${COM_KNOWN}"
 for s in "${EXTRAS[@]}"; do alog "unclassified common script -> phase 1"; run_script "${s}"; done
 
@@ -509,9 +525,11 @@ for s in "${EXTRAS[@]}"; do alog "unclassified common script -> phase 1"; run_sc
 #     (080 solo lee /sys/class/drm/*/status, no abre card0; en paralelo con D es seguro)
 #  M: modulos de ES + mangohud           (profile.d/075 lo lee ES; modulos los lista ES)
 tocon "Configuring graphics and display..."
-PIDS=()
-( run_names "${COM_DIR}" ${COM_G} ) & PIDS+=($!)
-( wait_display_dev 5; run_names "${COM_DIR}" ${COM_D} ) & PIDS+=($!)
+if [ "${EARLY_GD}" = 0 ]
+then
+  ( run_names "${COM_DIR}" ${COM_G} ) & PIDS+=($!)
+  ( wait_display_dev 5; run_names "${COM_DIR}" ${COM_D} ) & PIDS+=($!)
+fi
 ( run_names "${COM_DIR}" ${COM_S} ) & PIDS+=($!)
 ( run_names "${COM_DIR}" ${COM_M}; run_names "${PLAT_DIR}" ${PLAT_M} ) & PIDS+=($!)
 wait_chains "${JOIN_TIMEOUT}" "${PIDS[@]}"
