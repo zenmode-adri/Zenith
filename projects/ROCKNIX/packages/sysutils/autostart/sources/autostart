@@ -65,11 +65,14 @@ COM_DIR="${AS_ROOT}/common"
 ### se ejecuta en la fase 1 (en serie, antes de la UI) por seguridad.
 PLAT_P1="002-turbo-mode_config 010-governors 050-audio_path 050-modifiers 090-ui_service 091-ui_shader"
 PLAT_M="075-mangohud-supported"
-PLAT_L1="060-game_settings"
+# 015-rk817_config solo escribe un profile.d (DEVICE_RK817_FUEL_GAUGE) que nadie consume antes de la UI: tardio
+PLAT_L1="060-game_settings 015-rk817_config"
 DEV_P1="001-device_config 002-disable-led"
 DEV_L1="050-game-configs"
-DEV_L2="075-dpad-volbright"
-COM_P1="001-controller 001-emulationstation 001-setup 002-device-switch 003-logging 003-upgrade 999-export"
+# 500-enable-led (0,67 s) es una accion de LEDs, no la necesita ES: al final de L2 (antes caia en fase 1 por no estar en ninguna lista)
+DEV_L2="075-dpad-volbright 500-enable-led"
+# 001-controller es un "exit 0": se mantiene en COM_KNOWN (para que no cuente como no clasificado) pero ya no se ejecuta
+COM_P1="001-emulationstation 001-setup 002-device-switch 003-logging 003-upgrade 999-export"
 COM_PICO="010-pico8"   # tras el montaje de roms (ver tras el lanzamiento de la UI)
 COM_G="003-gpudriver"
 # 055-hdmi-check (drm_tool list) abre /dev/dri/card0: va en la cadena D, en serie tras 006-display
@@ -80,7 +83,7 @@ COM_M="001-sync-modules"
 COM_L1="020-set_audio_latency 050-audio 095-turbo-mode 009-sleepmode 020-rumble 081-usbgadget 020-configs"
 COM_L2="098-deviceutils 007-rootpw 099-networkservices 009-bluetooth 010-moonlight 010-uimode"
 # 008-perfmode es el primero de L1 (+ governor), ver late_chain()
-COM_KNOWN="${COM_P1} ${COM_PICO} ${COM_G} ${COM_D} ${COM_S} ${COM_M} ${COM_L1} ${COM_L2} 008-perfmode"
+COM_KNOWN="001-controller ${COM_P1} ${COM_PICO} ${COM_G} ${COM_D} ${COM_S} ${COM_M} ${COM_L1} ${COM_L2} 008-perfmode"
 
 alog() {
   local up _
@@ -171,6 +174,7 @@ late_chain() {   # late_chain L1|L2  (prioridad baja para no quitar CPU a Sway/E
       apply_governor
       run_names "${COM_DIR}" ${COM_L1}
       run_script "${PLAT_DIR}/060-game_settings"
+      run_script "${PLAT_DIR}/015-rk817_config"
       run_script "${DEV_DIR}/050-game-configs"
       ;;
     L2)
@@ -178,6 +182,7 @@ late_chain() {   # late_chain L1|L2  (prioridad baja para no quitar CPU a Sway/E
       # 098-deviceutils lo arranque (igual que en el orden original).
       run_script "${DEV_DIR}/075-dpad-volbright"
       run_names "${COM_DIR}" ${COM_L2}
+      run_script "${DEV_DIR}/500-enable-led"
       ;;
   esac
   alog "Late chain $1 done in $(( (${EPOCHREALTIME/./} - t0) / 1000 )) ms"

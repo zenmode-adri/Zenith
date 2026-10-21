@@ -11,6 +11,7 @@ EOF
 
 # libmali reads ./mali_debug.config
 # Allows direct scanout, without this forces composition pass
-if [ "$(gpudriver)" = "libmali" ] && [ ! -e /storage/mali_debug.config ]; then
+# comprobar el fichero primero: evita lanzar `gpudriver` (otro bash + carga de system.cfg) en cada arranque
+if [ ! -e /storage/mali_debug.config ] && [ "$(gpudriver)" = "libmali" ]; then
   echo 'MALI_WAYLAND_AFBC=0' > /storage/mali_debug.config
 fi
