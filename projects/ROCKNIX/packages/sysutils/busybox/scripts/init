@@ -1474,7 +1474,9 @@ fi
 if [ -x /sysroot/storage/zinit/zinit ] && [ -f /sysroot/storage/zinit/try ]; then
   /usr/bin/busybox rm -f /sysroot/storage/zinit/try
   /usr/bin/busybox sync
-  /usr/bin/busybox switch_root /sysroot /storage/zinit/zinit
+  echo "zinit: entregando el control a /storage/zinit/zinit" >/dev/kmsg
+  # switch_root exige ser PID 1: sin `exec` (como hijo) se negaba y se seguia con systemd (comprobado 21-oct)
+  exec /usr/bin/busybox switch_root /sysroot /storage/zinit/zinit
 fi
 
 # switch to new sysroot and start real init
