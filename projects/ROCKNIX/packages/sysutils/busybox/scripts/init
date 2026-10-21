@@ -661,6 +661,14 @@ check_disks() {
     for i in 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0; do
       /usr/sbin/fsck -T -M -p -a ${RUN_FSCK_DISKS} >/dev/fsck.latest 2>&1
       FSCK_RET=$?
+      # Zenith: si aun no existe algun dispositivo (bit 8) se reintenta cada 50 ms (hasta ~10 s) en vez de esperar 500 ms por intento
+      W=0
+      while [ $(( ${FSCK_RET} & 8 )) -eq 8 ] && [ ${FSCK_RET} -lt 16 ] && [ ${W} -lt 200 ]; do
+        usleep 50000
+        /usr/sbin/fsck -T -M -p -a ${RUN_FSCK_DISKS} >/dev/fsck.latest 2>&1
+        FSCK_RET=$?
+        W=$((W+1))
+      done
       cat /dev/fsck.latest >>/dev/fsck.log
 
       # FSCK_RET is the bit-wise OR of the exit codes for each filesystem that is checked.
