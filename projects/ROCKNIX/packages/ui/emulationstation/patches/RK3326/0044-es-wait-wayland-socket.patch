@@ -1,0 +1,41 @@
+From: Zenith
+Subject: [PATCH] ES: wait for the Wayland socket inside ES (ES_WAIT_WAYLAND_SOCKET) so ES startup overlaps sway startup
+
+start_es.sh used to wait for /run/0-runtime-dir/wayland-1 in a shell loop BEFORE exec'ing ES, so ES's dynamic linking, config parsing
+and thread-pool tasks only started once sway was ready. With ES_WAIT_WAYLAND_SOCKET set, ES starts at once and waits (max 10 s,
+20 ms steps) just before window.init().
+---
+--- a/es-app/src/main.cpp
++++ b/es-app/src/main.cpp
+@@ -33,6 +33,10 @@
+ #include "ImageIO.h"
+ #include "components/VideoVlcComponent.h"
+ #include <csignal>
++#ifndef WIN32
++#include <sys/stat.h>
++#include <unistd.h>
++#endif
+ #include "InputConfig.h"
+ #include "RetroAchievements.h"
+ #include "TextToSpeech.h"
+@@ -566,6 +570,20 @@
+ 
+ 	window.setReloadGamelistsCallback([&window] { ViewController::reloadAllGames(&window, true, true); });	
+ 	window.pushGui(ViewController::get());
++	// Zenith: si start_es.sh exporta ES_WAIT_WAYLAND_SOCKET, el arranque de ES (enlazado, ficheros, ThreadPool) corre en paralelo
++	// con el de sway y aqui se espera (max 10 s) a que sway cree el socket; antes lo hacia el script de shell antes de lanzar ES
++#ifndef WIN32
++	{
++		const char* waitSocket = getenv("ES_WAIT_WAYLAND_SOCKET");
++		if (waitSocket != nullptr && *waitSocket != 0)
++		{
++			struct stat waitSt;
++			for (int w = 0; w < 500 && !(stat(waitSocket, &waitSt) == 0 && S_ISSOCK(waitSt.st_mode)); w++)
++				usleep(20000);
++		}
++	}
++#endif
++
+ 	if (!window.init(true, false))
+ 	{
+ 		LOG(LogError) << "Window failed to initialize!";
