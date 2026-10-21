@@ -3,9 +3,13 @@ Description=EmulationStation-with-Sway
 # This path never exist on rk3566
 #ConditionPathExists=/var/lock/start.games
 Requires=sway.service
-After=sway.service
+After=sway.service var.mount tmp.mount
+DefaultDependencies=no
+Conflicts=shutdown.target
+Before=shutdown.target
 
 [Service]
+CPUWeight=10000
 Type=simple
 Environment=HOME=/storage
 EnvironmentFile=/etc/profile

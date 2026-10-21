@@ -17,6 +17,9 @@ GOTO="exit"
 
 # mount or umount for hdds
 LABEL="harddisk"
+# Zenith (arranque temprano): en los primeros 25 s el coldplug de udev repasa las particiones y reiniciaba rocknix-automount, que ya esta
+# montando las ROMs al arrancar (desmontaba /storage/roms mientras ES la escaneaba). El propio servicio enumera los discos presentes.
+ACTION=="add", PROGRAM="/usr/bin/sh -c 'test $$(cut -d. -f1 /proc/uptime) -lt 25'", GOTO="exit"
 ACTION=="add", PROGRAM="/usr/bin/sh -c '/usr/bin/grep -E ^/dev/%k\  /proc/mounts || true'", RESULT=="", RUN+="/usr/bin/systemctl restart rocknix-automount.service"
 GOTO="exit"
 

@@ -68,6 +68,8 @@ function start_ms() {
     done
     mount overlay -t overlay -o lowerdir=/storage/games-${LOWER}/roms,upperdir=/storage/games-${UPPER}/roms,workdir=/storage/games-${UPPER}/.tmp/games-workdir ${MS_PATH}
   fi
+  # fast-7: las ROMs ya estan montadas; ES (parche 0045) solo necesita esto para escanear los sistemas, no el resto del script
+  touch /run/rocknix-automount.ready
 }
 
 start_overlay() {

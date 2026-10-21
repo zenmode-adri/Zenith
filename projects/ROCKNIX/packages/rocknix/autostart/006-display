@@ -46,9 +46,37 @@ get_paneladj_value() {
 apply_panel_adjustments() {
     command -v paneladj >/dev/null 2>&1 || return 0
 
+    # fast-7: en RK3326/PX30 sin Sway las 4 propiedades se aplican con UNA sola llamada a modetest (antes 4 x paneladj = bash + modetest
+    # cada una, ~1 s en el arranque). Si algo falla se usa el camino de siempre.
+    if [ -e /dev/dri/card0 ] && [ ! -S /run/0-runtime-dir/sway-ipc.0.sock ] && command -v modetest >/dev/null 2>&1 &&
+       grep -qaE 'rk3326|px30' /proc/device-tree/compatible 2>/dev/null; then
+        mkdir -p /run/paneladj
+        [ -s /run/paneladj/crtc ] || modetest 2>/dev/null | awk '
+          /^CRTCs:/ { in_crtcs = 1; next }
+          /^Planes:/ { in_crtcs = 0 }
+          in_crtcs && $1 ~ /^[0-9]+$/ && $2 != "0" { print $1; exit }
+        ' > /run/paneladj/crtc
+        CRTC=$(cat /run/paneladj/crtc 2>/dev/null)
+        if [ -n "${CRTC}" ] && modetest -w "${CRTC}:brightness:$(get_paneladj_value brightness)"              -w "${CRTC}:contrast:$(get_paneladj_value contrast)"              -w "${CRTC}:saturation:$(get_paneladj_value saturation)"              -w "${CRTC}:hue:$(get_paneladj_value hue)" >/dev/null 2>&1; then
+            return 0
+        fi
+        rm -f /run/paneladj/crtc
+    fi
+
     for PROPERTY in brightness contrast saturation hue; do
         paneladj "${PROPERTY}" "$(get_paneladj_value "${PROPERTY}")" nosave
     done
+}
+
+# fast-7: con un unico backlight se escribe el valor directamente en sysfs (antes `brightness set`: bash + find + bc, ~0,3 s).
+# Mismo calculo que el script (floor(porcentaje * max / 100)); si el valor guardado no coincide se usa el script (que lo corrige en system.cfg).
+set_brightness_fast() {
+    set -- /sys/class/backlight/*/brightness
+    [ $# -eq 1 ] && [ -w "$1" ] || return 1
+    [ "${BRIGHTNESS_1}" = "$(get_setting system.brightness)" ] || return 1
+    MAXB=$(cat "${1%/*}/max_brightness" 2>/dev/null) || return 1
+    case "${MAXB}" in ""|*[!0-9]*) return 1 ;; esac
+    echo $(( BRIGHTNESS_1 * MAXB / 100 )) > "$1" 2>/dev/null
 }
 
 BRIGHTNESS_1=$(get_setting system.brightness)
@@ -59,7 +87,7 @@ if [ -z "${BRIGHTNESS_1}" ] || [ "${BRIGHTNESS_1}" -lt "${MIN_BRIGHTNESS}" ]; th
     BRIGHTNESS_1="${DEFAULT_BRIGHTNESS}"
 fi
 
-brightness set "${BRIGHTNESS_1}"
+set_brightness_fast || brightness set "${BRIGHTNESS_1}"
 
 BRIGHTNESS_2=$(get_setting system.brightness2)
 

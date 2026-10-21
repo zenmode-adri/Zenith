@@ -3,10 +3,14 @@ Description=Sway Wayland Compositor
 Before=graphical.target
 # arranque temprano (Zenith): sway ya no espera a multi-user.target ni a automount; lo lanza autostart cuando pantalla/GPU/udev estan listos
 Wants=seatd.service
-After=seatd.service
+After=seatd.service var.mount tmp.mount
+DefaultDependencies=no
+Conflicts=shutdown.target
+Before=shutdown.target
 ConditionKernelCommandLine=!installer
 
 [Service]
+CPUWeight=10000
 Environment=HOME=/storage
 Environment=XDG_RUNTIME_DIR=/var/run/0-runtime-dir
 Environment=WLR_BACKENDS=drm,libinput

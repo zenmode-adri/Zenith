@@ -1,6 +1,9 @@
 [Unit]
 Description=Seat Management Daemon
-Before=graphical.target sway.service
+Before=graphical.target sway.service shutdown.target
+After=var.mount
+DefaultDependencies=no
+Conflicts=shutdown.target
 ConditionKernelCommandLine=!installer
 
 [Service]

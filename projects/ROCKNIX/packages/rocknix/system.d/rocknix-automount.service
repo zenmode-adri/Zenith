@@ -11,7 +11,7 @@ Before=shutdown.target
 Type=oneshot
 Environment=HOME=/storage
 EnvironmentFile=/etc/profile
-Nice=5
+CPUWeight=10000
 ExecStart=/usr/bin/automount
 # ES espera este fichero (parche 0045) antes de escanear las ROMs; tambien si el montaje falla (ExecStopPost)
 ExecStartPost=/bin/touch /run/rocknix-automount.ready
