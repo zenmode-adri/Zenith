@@ -1,9 +1,9 @@
 From: Zenith
-Subject: [PATCH] ES: bounded wait (1 s) and automatic reconnection for the PulseAudio connection of the global PulseAudioControl
+Subject: [PATCH] ES: bounded wait (1 s) and supervised reconnection for the PulseAudio connection of the global PulseAudioControl
 
-static PulseAudioControl PulseAudio runs its constructor before main() and waited forever for the pulse context state callback,
-so the whole ES startup was held until the audio server answered (early boot starts ES before pipewire-pulse). Now the wait is
-bounded (1 s) and, if the server does not exist yet, the connection is retried every 0.5 s (max ~60 s).
+static PulseAudioControl PulseAudio runs its constructor before main() and waited forever for the pulse context state callback.
+With the early boot ES starts before pipewire-pulse is ready: the wait is now bounded (1 s) and each connection attempt is watched
+(max 2 s); if it does not reach READY the context is dropped and a new one is created (max ~60 attempts).
 ---
 --- a/es-core/src/VolumeControl.cpp
 +++ b/es-core/src/VolumeControl.cpp
@@ -24,62 +24,77 @@ bounded (1 s) and, if the server does not exist yet, the connection is retried e
  
  		if(mThread != nullptr) {
  		  if (mMainLoop != nullptr) {
-@@ -81,15 +84,28 @@
+@@ -81,15 +84,55 @@
  
    		pa_signal_init(pa_mlapi);
  
 -		mContext = pa_context_new(pa_mlapi, "EmulationStation");
-+		// Zenith: si el servidor aun no existe (ES arranca antes que pipewire-pulse) la conexion falla; se reintenta cada 0,5 s (max ~60 s)
-+		// en vez de quedarse sin control de volumen toda la sesion.
-+		for (int attempt = 0; attempt < 120 && !mExit; attempt++)
++		// Zenith: con el arranque temprano ES arranca antes que pipewire-pulse y el primer intento de conexion puede quedarse colgado
++		// hasta el tiempo limite de libpulse (~25 s) o fallar. Cada intento se vigila (max 2 s): si no llega a READY se descarta el contexto
++		// y se reintenta (max ~60 intentos). Una vez READY se vuelve al bucle bloqueante de siempre.
++		for (int attempt = 0; attempt < 60 && !mExit; attempt++)
 +		{
-+			mFailed = false;
 +			mContext = pa_context_new(pa_mlapi, "EmulationStation");
 +
 +			pa_context_set_state_callback(mContext, context_state_callback, this);
 +			pa_context_connect(mContext, nullptr, pa_context_flags::PA_CONTEXT_NOFLAGS, nullptr);
-+
-+			int result = 0;
-+			pa_mainloop_run(mMainLoop, &result);
  
 -		pa_context_set_state_callback(mContext, context_state_callback, this);
 -		pa_context_connect(mContext, nullptr, pa_context_flags::PA_CONTEXT_NOFLAGS, nullptr);
-+			pa_context_unref(mContext);
-+			mContext = nullptr;
++			auto t0 = std::chrono::steady_clock::now();
++			bool ready = false;
  
 -		int result = 0;
 -		pa_mainloop_run(mMainLoop, &result);
-+			if (!mFailed || mExit)
-+				break;
++			while (!mExit)
++			{
++				int r = 0;
++				pa_mainloop_iterate(mMainLoop, 0, &r);
 +
-+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
-+		}
++				pa_context_state_t st = pa_context_get_state(mContext);
++				if (st == PA_CONTEXT_READY) { ready = true; break; }
++				if (st == PA_CONTEXT_FAILED || st == PA_CONTEXT_TERMINATED) break;
++				if (std::chrono::steady_clock::now() - t0 > std::chrono::milliseconds(2000)) break;
++
++				std::this_thread::sleep_for(std::chrono::milliseconds(20));
++			}
++
++			if (ready)
++			{
++				int result = 0;
++				pa_mainloop_run(mMainLoop, &result);
++				break;
++			}
++
++			pa_context_disconnect(mContext);
++			pa_context_unref(mContext);
++			mContext = nullptr;
++			mReady = 0;
  
 -		pa_context_unref(mContext);
++			if (mExit)
++				break;
++
++			std::this_thread::sleep_for(std::chrono::milliseconds(300));
++		}
++
++		if (mContext != nullptr)
++		{
++			pa_context_unref(mContext);
++			mContext = nullptr;
++		}
  		pa_mainloop_free(mMainLoop);
  		mMainLoop = nullptr;
  
-@@ -178,14 +194,19 @@
- 		default:
- 			LOG(LogError) << "PulseAudioControl Connection failure : " << pa_strerror(pa_context_errno(c));    		
- 			pThis->mReady = 0;
-+			pThis->mFailed = true;
- 			pThis->FireEvent();
- 
- 			quit(userdata, 1);
-+			if (pThis->mMainLoop != nullptr)
-+				pa_mainloop_quit(pThis->mMainLoop, 1);
- 		}
- 	}
+@@ -186,6 +229,7 @@
  
  private:
  	int mReady;
 +	std::atomic<bool> mExit{false};
-+	std::atomic<bool> mFailed{false};
  	int mMute;
  	int mVolume;
  
-@@ -196,8 +217,11 @@
+@@ -196,8 +240,11 @@
  
  	void WaitEvent()
  	{

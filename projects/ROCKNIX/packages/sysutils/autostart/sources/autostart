@@ -152,9 +152,17 @@ late_done() {   # late_done L1|L2 : cuando acaban las dos, se quita la marca .pe
   : >"${RUNDIR}/autostart-late-$1.done"
   if [ -e "${RUNDIR}/autostart-late-L1.done" ] && [ -e "${RUNDIR}/autostart-late-L2.done" ]
   then
-    rm -f "${PENDING}"
-    alog "Late chains L1+L2 complete; fast boot finished OK."
-    { mkdir -p "${STORAGE}/.cache"; early_sig >"${EARLY_STAMP}.tmp" && mv -f "${EARLY_STAMP}.tmp" "${EARLY_STAMP}"; } 2>/dev/null
+    if [ -e /tmp/emulationstation.ready ]
+    then
+      rm -f "${PENDING}"
+      alog "Late chains L1+L2 complete; fast boot finished OK."
+      { mkdir -p "${STORAGE}/.cache"; early_sig >"${EARLY_STAMP}.tmp" && mv -f "${EARLY_STAMP}.tmp" "${EARLY_STAMP}"; } 2>/dev/null
+    else
+      # Las cadenas acabaron pero ES no esta listo: el arranque NO se da por bueno. Sin sello el siguiente arranque no sera temprano
+      # y, al quedar PENDING, sera legacy (se recupera solo; vale tambien en otras consolas donde el modo temprano rompa ES).
+      rm -f "${EARLY_STAMP}"
+      alog "WARN: late chains complete but ES is NOT ready; early mode disabled for the next boot"
+    fi
   fi
 }
 
@@ -581,25 +589,31 @@ else
 fi
 
 ( es_prefetch ) &   # lectura en frio de ES y sus bibliotecas en segundo plano (prioridad minima) mientras corre el resto
-# diagnostico: si a los 20 s ES no esta listo, vuelca procesos y esperas a /var/log/hang.log (fallo intermitente del arranque temprano)
+# si a los 20 s ES no esta listo: se quita el sello del modo temprano (el siguiente arranque vuelve al flujo normal) y, solo si existe
+# /storage/.config/autostart-diag, se vuelcan procesos y esperas a /var/log/hang.log
 ( sleep 20
   if [ ! -e /tmp/emulationstation.ready ]; then
-    { echo "== $(cut -d' ' -f1 /proc/uptime) ES no listo a los 20 s"; ps -eo pid,ppid,stat,wchan:22,args 2>/dev/null | awk '$5 !~ /^\[/' | cut -c1-170 | head -120
+    rm -f "${EARLY_STAMP}"
+    alog "WARN: ES not ready after 20 s; early mode disabled for the next boot"
+    if [ -e "${FLAGDIR}/autostart-diag" ]; then
       epid="$(pidof emulationstation 2>/dev/null)"; epid="${epid%% *}"
-      echo "== hilos de ES (pid ${epid}): nombre | wchan | syscall"
-      for t in /proc/${epid}/task/*; do echo "$(cat $t/comm 2>/dev/null) | $(cat $t/wchan 2>/dev/null) | $(cut -d' ' -f1,2 $t/syscall 2>/dev/null)"; done
-      echo "== sockets de ES (inodo -> ruta):"
-      for ino in $(ls -l /proc/${epid}/fd 2>/dev/null | sed -n 's/.*socket:\[\([0-9]*\)\].*//p' | sort -u); do grep -F " ${ino}" /proc/net/unix 2>/dev/null | cut -c1-120; done
-      echo "== perf trace 2 s sobre ES:"; timeout 3 perf trace -p ${epid} >/var/log/perf-es.txt 2>&1; head -30 /var/log/perf-es.txt 2>&1
-      echo "== fds de ES:"; ls -l /proc/${epid}/fd 2>/dev/null | awk '{print $9,$10,$11}' | tail -25
-      echo "== lock:"; ls -l /tmp/.system.cfg.lock 2>&1; cat /tmp/.system.cfg.lock 2>/dev/null
-      echo "== mounts roms:"; grep -E "roms|games" /proc/mounts; echo "== tail boot.log"; tail -15 "${BOOTLOG}"; } >/var/log/hang.log 2>&1
+      { echo "== $(cut -d' ' -f1 /proc/uptime) ES no listo a los 20 s"; ps -eo pid,ppid,stat,wchan:22,args 2>/dev/null | awk '$5 !~ /^\[/' | cut -c1-170 | head -120
+        echo "== hilos de ES (pid ${epid}): nombre | wchan | syscall"
+        for t in /proc/${epid}/task/*; do echo "$(cat $t/comm 2>/dev/null) | $(cat $t/wchan 2>/dev/null) | $(cut -d' ' -f1,2 $t/syscall 2>/dev/null)"; done
+        echo "== mounts roms:"; grep -E "roms|games" /proc/mounts; echo "== tail boot.log"; tail -15 "${BOOTLOG}"; } >/var/log/hang.log 2>&1
+    fi
   fi ) &
 # marca exacta (sondeo de 20 ms) de cuando ES esta listo, para medir el arranque
 ( while [ ! -e /tmp/emulationstation.ready ] && [ "${SECONDS}" -lt 120 ]; do sleep 0.02; done
   if [ -e /tmp/emulationstation.ready ]
   then
     alog "ES-READY (marca fina)"
+    read -r EUP _ </proc/uptime
+    if [ -e "${RUNDIR}/autostart-late-L1.done" ] && [ -e "${RUNDIR}/autostart-late-L2.done" ] && [ "${EUP%%.*}" -lt 30 ]
+    then
+      rm -f "${PENDING}"
+      { mkdir -p "${STORAGE}/.cache"; early_sig >"${EARLY_STAMP}.tmp" && mv -f "${EARLY_STAMP}.tmp" "${EARLY_STAMP}"; } 2>/dev/null
+    fi
     # devoverlay: el arranque llego a ES -> se quita la marca "arrancando" (si no, el siguiente arranque se salta el overlay)
     if [ -e /flash/devoverlay/booting ]
     then
