@@ -1459,6 +1459,16 @@ else
   rm -f /sysroot/storage/init.log
 fi
 
+# Zenith: arranque alternativo de UN SOLO USO con init propio (pruebas del arranque rapido).
+# Si existen /storage/zinit/zinit y la marca /storage/zinit/try, se borra la marca (el arranque siguiente vuelve a
+# systemd aunque zinit falle o se cuelgue la consola) y se entrega el control a zinit. Si el switch_root falla, se
+# sigue con systemd.
+if [ -x /sysroot/storage/zinit/zinit ] && [ -f /sysroot/storage/zinit/try ]; then
+  /usr/bin/busybox rm -f /sysroot/storage/zinit/try
+  /usr/bin/busybox sync
+  /usr/bin/busybox switch_root /sysroot /storage/zinit/zinit
+fi
+
 # switch to new sysroot and start real init
 exec /usr/bin/busybox switch_root /sysroot /usr/lib/systemd/systemd ${INIT_ARGS} ${INIT_UNIT}
 
