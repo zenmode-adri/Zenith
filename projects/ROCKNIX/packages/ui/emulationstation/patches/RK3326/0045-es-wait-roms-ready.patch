@@ -1,0 +1,29 @@
+From: Zenith
+Subject: [PATCH] ES: wait for the ROMs mount (ES_WAIT_ROMS_READY) just before scanning systems so ES startup overlaps rocknix-automount
+
+In the early boot essway no longer waits for rocknix-automount.service; ES starts at once and waits (max 15 s) for the ready file
+right before loadSystemConfigFile, when it actually needs the ROMs.
+---
+--- a/es-app/src/main.cpp
++++ b/es-app/src/main.cpp
+@@ -611,6 +611,20 @@
+ 		TextureData::PdfHandler = ApiSystem::getInstance();
+ 	
+ 	threadPool->waitAllExcept(vlcInit); // Wait for what's necessary for loadSystemConfigFile
++	// Zenith: arranque temprano. Si start_es.sh exporta ES_WAIT_ROMS_READY, rocknix-automount puede seguir montando las ROMs mientras
++	// ES arranca; aqui se espera (max 15 s) a que cree ese fichero justo antes de escanear los sistemas.
++#ifndef WIN32
++	{
++		const char* waitRoms = getenv("ES_WAIT_ROMS_READY");
++		if (waitRoms != nullptr && *waitRoms != 0)
++		{
++			struct stat romsSt;
++			for (int w = 0; w < 750 && stat(waitRoms, &romsSt) != 0; w++)
++				usleep(20000);
++		}
++	}
++#endif
++
+ 
+ 	const char* errorMsg = NULL;
+ 	if (!loadSystemConfigFile(splashScreen && splashScreenProgress ? &window : nullptr, &errorMsg))

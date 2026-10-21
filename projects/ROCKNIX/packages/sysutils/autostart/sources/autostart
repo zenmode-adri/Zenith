@@ -341,12 +341,17 @@ early_boot() {
   tocon "Configuring graphics and display..."
   ( systemctl start --no-block seatd.service ) &
   ( systemctl start --no-block rocknix-automount ) &   # ROMs: essway espera a esta unidad (After=)
+  # Camino critico hasta la UI: GPU (G), pantalla (D), sway-init (S), eleccion de UI y 001-emulationstation (dirs de ES).
+  # Los 4 nucleos A35 se saturan: medido con todo en paralelo, 001-setup/111/006 se alargaron x3 y la UI no salio antes.
+  # Lo demas (001-setup, modulos de ES, mangohud) va en segundo plano con prioridad baja y ya no retiene la UI.
   ( run_names "${COM_DIR}" ${COM_G} ) & PIDS+=($!)
   ( wait_display_dev 5; run_names "${COM_DIR}" ${COM_D} ) & PIDS+=($!)
   ( run_names "${COM_DIR}" ${COM_S} ) & PIDS+=($!)
-  ( run_names "${COM_DIR}" ${COM_M}; run_names "${PLAT_DIR}" ${PLAT_M} ) & PIDS+=($!)
   ( run_names "${PLAT_DIR}" ${PLAT_UI} ) & PIDS+=($!)
-  run_names "${COM_DIR}" ${COM_P1A}
+  ( renice -n 10 -p "${BASHPID}" >/dev/null 2>&1
+    run_names "${COM_DIR}" 001-setup
+    run_names "${COM_DIR}" ${COM_M}; run_names "${PLAT_DIR}" ${PLAT_M} ) & BGPID=$!
+  run_names "${COM_DIR}" 001-emulationstation
   wait_chains "${JOIN_TIMEOUT}" "${PIDS[@]}"
   wait_udev_drm 5
   alog "Startup complete (essential phase, early)..."
@@ -363,6 +368,7 @@ early_boot() {
   collect_extras "${COM_DIR}" "${COM_KNOWN}"
   for s in "${EXTRAS[@]}"; do alog "unclassified common script -> phase 1"; run_script "${s}"; done
 
+  wait "${BGPID}" 2>/dev/null
   systemctl start rocknix-automount >>"${BOOTLOG}" 2>&1
   run_names "${COM_DIR}" ${COM_PICO}
   spawn_late L1

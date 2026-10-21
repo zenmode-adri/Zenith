@@ -9,5 +9,7 @@
 ### asi su enlazado y su preambulo se solapan con el arranque de Sway. Evita la carrera sway/ES
 ### ("Error initializing SDL! wayland not available" -> reinicio de 2 s)
 export ES_WAIT_WAYLAND_SOCKET=/run/0-runtime-dir/wayland-1
+### Las ROMs pueden seguir montandose (rocknix-automount) mientras ES arranca: ES (parche 0045) espera este fichero justo antes de escanear sistemas (max 15 s)
+export ES_WAIT_ROMS_READY=/run/rocknix-automount.ready
 
 emulationstation --log-path /var/log

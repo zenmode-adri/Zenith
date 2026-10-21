@@ -1,13 +1,21 @@
 [Unit]
 Description=ROCKNIX user autostart script
 Before=autostart.service
-After=systemd-tmpfiles-setup.service
+After=systemd-tmpfiles-setup.service userconfig.service local-fs.target
+# arranque temprano (Zenith): no espera a basic.target (arrancaba 1,7 s despues y essway lo espera para ver las ROMs)
+DefaultDependencies=no
+Conflicts=shutdown.target
+Before=shutdown.target
 
 [Service]
 Type=oneshot
 Environment=HOME=/storage
 EnvironmentFile=/etc/profile
+Nice=5
 ExecStart=/usr/bin/automount
+# ES espera este fichero (parche 0045) antes de escanear las ROMs; tambien si el montaje falla (ExecStopPost)
+ExecStartPost=/bin/touch /run/rocknix-automount.ready
+ExecStopPost=/bin/touch /run/rocknix-automount.ready
 RemainAfterExit=yes
 
 [Install]
