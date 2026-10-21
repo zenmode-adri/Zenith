@@ -6,6 +6,10 @@
 # Minimal OS variable loading for performance
 . /etc/profile.d/001-functions
 
+# Precarga la cache de get_setting en el proceso padre: los subprocesos que lanza $(get_setting ...) la heredan
+# en vez de releer system.cfg cada uno (~6 lecturas de ~60 ms).
+gs_load
+
 tocon "Configuring display..."
 
 PANELADJ_DEFAULT="50"
