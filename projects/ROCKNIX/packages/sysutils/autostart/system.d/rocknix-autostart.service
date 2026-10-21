@@ -1,7 +1,10 @@
 [Unit]
 Description=ROCKNIX user autostart script
-Before=emustation.service weston.service
-After=userconfig.service
+Before=emustation.service weston.service shutdown.target
+After=userconfig.service systemd-udevd.service systemd-tmpfiles-setup.service local-fs.target
+# arranque temprano (Zenith): no espera a basic.target/sockets/timers (~0,6 s); necesita /var, /tmp y udevd, nada mas
+DefaultDependencies=no
+Conflicts=shutdown.target
 
 [Service]
 Type=oneshot

@@ -63,7 +63,9 @@ COM_DIR="${AS_ROOT}/common"
 
 ### Listas de scripts por fase (nombres). Lo que exista en los directorios y NO este aqui
 ### se ejecuta en la fase 1 (en serie, antes de la UI) por seguridad.
-PLAT_P1="002-turbo-mode_config 010-governors 050-audio_path 050-modifiers 090-ui_service 091-ui_shader"
+PLAT_UI="090-ui_service 091-ui_shader"   # deciden la UI: en arranque temprano van antes de lanzarla
+PLAT_P1R="002-turbo-mode_config 010-governors 050-audio_path 050-modifiers"
+PLAT_P1="${PLAT_P1R} ${PLAT_UI}"
 PLAT_M="075-mangohud-supported"
 # 015-rk817_config solo escribe un profile.d (DEVICE_RK817_FUEL_GAUGE) que nadie consume antes de la UI: tardio
 PLAT_L1="060-game_settings 015-rk817_config"
@@ -144,6 +146,7 @@ late_done() {   # late_done L1|L2 : cuando acaban las dos, se quita la marca .pe
   then
     rm -f "${PENDING}"
     alog "Late chains L1+L2 complete; fast boot finished OK."
+    { mkdir -p "${STORAGE}/.cache"; early_sig >"${EARLY_STAMP}.tmp" && mv -f "${EARLY_STAMP}.tmp" "${EARLY_STAMP}"; } 2>/dev/null
   fi
 }
 
@@ -284,6 +287,90 @@ wait_chains() {   # wait_chains <timeout_s> <pids...> : espera a todas, como muc
   fi
 }
 
+wait_udev_drm() {   # wait_udev_drm <timeout_s> : sway (wlroots) necesita la entrada de udev de la GPU; si tarda, se dispara un trigger de drm
+  local i=0 max=$(( $1 * 100 ))
+  while ! compgen -G "/run/udev/data/c226:[0-9]*" >/dev/null && [ $i -lt $max ]
+  do
+    [ $i = 150 ] && udevadm trigger --action=add --subsystem-match=drm >/dev/null 2>&1
+    sleep 0.01
+    i=$((i+1))
+  done
+  compgen -G "/run/udev/data/c226:[0-9]*" >/dev/null || alog "WARN: udev db for drm not ready after $1 s; launching UI anyway"
+}
+
+# Lanza sway+ES (misma logica que el final de la fase 3 del arranque rapido clasico)
+start_ui() {
+  ### Re-source the profile so we fetch the correct UI_SERVICE variable.
+  ### (solo profile.d de usuario y en subshell: sin forks, sin ensuciar el entorno)
+  NEW_UI_SERVICE=$(
+    for f in "${STORAGE}"/.config/profile.d/*; do
+      [ -f "${f}" ] && . "${f}"
+    done
+    printf '%s' "${UI_SERVICE}"
+  )
+  [ -n "${NEW_UI_SERVICE}" ] && UI_SERVICE="${NEW_UI_SERVICE}"
+  [ -n "${UI_SERVICE}" ] || UI_SERVICE="${DEFAULT_UI_SERVICE}"
+
+  ### Lock is a prerequisite for emustation
+  rm -f "${START_LOCK}" 2>&1 >>"${BOOTLOG}"
+  touch "${START_LOCK}" 2>&1 >>"${BOOTLOG}"
+  touch /run/zenith-ui-ready   # puerta de sway.service (ExecStartPre espera a este fichero)
+  alog "Starting ${UI_SERVICE}..."
+  # UI_STARTED=1 SOLO si systemctl acepta el trabajo; si no, el trap EXIT lo reintenta.
+  if systemctl start --no-block ${UI_SERVICE} 2>&1 >>"${BOOTLOG}"
+  then
+    UI_STARTED=1
+    read -r UPT _ </proc/uptime
+    alog "UI start requested at ${UPT}"
+  else
+    alog "ERROR: systemctl start ${UI_SERVICE} failed; the EXIT trap will retry"
+  fi
+  # A partir de aqui tocon deja de escribir
+  touch /run/.boot-console-done
+  { clear >/dev/console; } 2>/dev/null
+}
+
+# ARRANQUE TEMPRANO (Zenith, 21-oct): solo si el sello dice que el arranque anterior completo fue en esta misma imagen/dispositivo/kernel
+# (los profile.d de los quirks persistidos son vigentes). GPU, pantalla, sway-init, modulos y la eleccion de UI corren en paralelo con
+# 001-setup; en cuanto acaban (y udev tiene la GPU) se lanza la UI, y el resto de la fase 1 (quirks restantes y 002/003/999) continua con la UI ya arrancando.
+EARLY_STAMP="${STORAGE}/.cache/zenith-early.stamp"
+early_sig() { printf '%s|%s|%s' "$(stat -c %Y /usr/bin/autostart 2>/dev/null)" "${QUIRK_DEVICE}" "$(</proc/sys/kernel/osrelease)"; }
+
+early_boot() {
+  PIDS=()
+  tocon "Configuring graphics and display..."
+  ( systemctl start --no-block seatd.service ) &
+  ( systemctl start --no-block rocknix-automount ) &   # ROMs: essway espera a esta unidad (After=)
+  ( run_names "${COM_DIR}" ${COM_G} ) & PIDS+=($!)
+  ( wait_display_dev 5; run_names "${COM_DIR}" ${COM_D} ) & PIDS+=($!)
+  ( run_names "${COM_DIR}" ${COM_S} ) & PIDS+=($!)
+  ( run_names "${COM_DIR}" ${COM_M}; run_names "${PLAT_DIR}" ${PLAT_M} ) & PIDS+=($!)
+  ( run_names "${PLAT_DIR}" ${PLAT_UI} ) & PIDS+=($!)
+  run_names "${COM_DIR}" ${COM_P1A}
+  wait_chains "${JOIN_TIMEOUT}" "${PIDS[@]}"
+  wait_udev_drm 5
+  alog "Startup complete (essential phase, early)..."
+  start_ui
+
+  ### lo que faltaba de la fase 1, con la UI ya en marcha (las cadenas tardias dependen de ello)
+  run_names "${PLAT_DIR}" ${PLAT_P1R}
+  collect_extras "${PLAT_DIR}" "${PLAT_P1} ${PLAT_M} ${PLAT_L1}"
+  for s in "${EXTRAS[@]}"; do alog "unclassified platform quirk -> phase 1"; run_script "${s}"; done
+  run_names "${DEV_DIR}" ${DEV_P1}
+  collect_extras "${DEV_DIR}" "${DEV_P1} ${DEV_L1} ${DEV_L2}"
+  for s in "${EXTRAS[@]}"; do alog "unclassified device quirk -> phase 1"; run_script "${s}"; done
+  run_names "${COM_DIR}" ${COM_P1B}
+  collect_extras "${COM_DIR}" "${COM_KNOWN}"
+  for s in "${EXTRAS[@]}"; do alog "unclassified common script -> phase 1"; run_script "${s}"; done
+
+  systemctl start rocknix-automount >>"${BOOTLOG}" 2>&1
+  run_names "${COM_DIR}" ${COM_PICO}
+  spawn_late L1
+  spawn_late L2
+  alog "Autostart main process done (late chains running)."
+  exit 0
+}
+
 set_mode() {   # set_mode "fast" | "legacy(razon)"  -> primera linea de boot.log + /run/autostart.mode
   alog "MODE=$1"
   { printf '%s\n' "$1" >"${RUNDIR}/autostart.mode"; } 2>/dev/null
@@ -386,6 +473,7 @@ legacy_boot() {
   ### Lock is a prerequisite for emustation
   rm /var/lock/start.games 2>&1 >>${BOOTLOG}
   touch /var/lock/start.games 2>&1 >>${BOOTLOG}
+  touch /run/zenith-ui-ready   # puerta de sway.service (ExecStartPre espera a este fichero)
   alog "Starting ${UI_SERVICE}..."
   systemctl start ${UI_SERVICE} 2>&1 >>${BOOTLOG} &
   alog "UI start requested at $(cut -d' ' -f1 /proc/uptime) (legacy)"
@@ -437,7 +525,7 @@ if [ "${MODE}" = "legacy" ]
 then
   set_mode "legacy(${REASON})"
   # tanda 5: el servicio ya no espera a graphical/network (drop-in); el flujo ORIGINAL si lo necesita
-  i=0; until systemctl is-active --quiet graphical.target 2>/dev/null && systemctl is-active --quiet network.target 2>/dev/null || [ $i -ge 300 ]; do sleep 0.2; i=$((i+1)); done
+  i=0; until systemctl is-active --quiet multi-user.target 2>/dev/null && systemctl is-active --quiet network.target 2>/dev/null || [ $i -ge 300 ]; do sleep 0.2; i=$((i+1)); done
   legacy_boot
   exit 0
 fi
@@ -457,6 +545,7 @@ UI_STARTED=0
 # Prueba UI_SERVICE y, si falla y era distinto, el valor por defecto.
 ui_safety_trap() {
   [ "${UI_STARTED}" = 1 ] && return 0
+  touch /run/zenith-ui-ready   # puerta de sway.service (ExecStartPre espera a este fichero)
   alog "TRAP: UI not started, starting ${UI_SERVICE:-${DEFAULT_UI_SERVICE}}"
   systemctl start --no-block ${UI_SERVICE:-${DEFAULT_UI_SERVICE}} >>"${BOOTLOG}" 2>&1 && return 0
   if [ "${UI_SERVICE:-${DEFAULT_UI_SERVICE}}" != "${DEFAULT_UI_SERVICE}" ]
@@ -478,6 +567,14 @@ else
 fi
 
 ( es_prefetch ) &   # lectura en frio de ES y sus bibliotecas en segundo plano (prioridad minima) mientras corre el resto
+
+if [ ! -e "${FLAGDIR}/autostart-noearly" ] && [ ! -e "${STORAGE}/.boot.hint" ] && [ -s "${EARLY_STAMP}" ] &&
+   [ "$(<"${EARLY_STAMP}")" = "$(early_sig)" ] && [ -s "${STORAGE}/.config/sway/config" ] && [ -s "${STORAGE}/.config/profile.d/095-sway" ]
+then
+  alog "EARLY=1 (sello vigente)"
+  early_boot
+fi
+alog "EARLY=0"
 
 ### ---- FASE 1: serie, imprescindible (escribe profile.d / ajustes que lee la UI) ----
 if [ -d "${PLAT_DIR}" ]
@@ -552,6 +649,7 @@ NEW_UI_SERVICE=$(
 ### Lock is a prerequisite for emustation
 rm -f "${START_LOCK}" 2>&1 >>"${BOOTLOG}"
 touch "${START_LOCK}" 2>&1 >>"${BOOTLOG}"
+touch /run/zenith-ui-ready   # puerta de sway.service (ExecStartPre espera a este fichero)
 alog "Starting ${UI_SERVICE}..."
 # --no-block: el job de essway espera a volume-fixup <- rocknix.target <- fin de ESTE servicio.
 # UI_STARTED=1 SOLO si systemctl acepta el trabajo; si no, el trap EXIT lo reintenta.

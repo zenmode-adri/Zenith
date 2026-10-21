@@ -1,7 +1,9 @@
 [Unit]
 Description=Sway Wayland Compositor
 Before=graphical.target
-After=multi-user.target rocknix-automount.service
+# arranque temprano (Zenith): sway ya no espera a multi-user.target ni a automount; lo lanza autostart cuando pantalla/GPU/udev estan listos
+Wants=seatd.service
+After=seatd.service
 ConditionKernelCommandLine=!installer
 
 [Service]
@@ -12,6 +14,8 @@ EnvironmentFile=-/storage/.config/profile.d/095-sway
 EnvironmentFile=/usr/share/sway/sway-daemon.conf
 EnvironmentFile=-/run/sway/sway-daemon.conf
 WorkingDirectory=/storage
+# puerta de arranque (Zenith): autostart crea /run/zenith-ui-ready cuando GPU, pantalla y udev estan listos (maximo 60 s de espera)
+ExecStartPre=/bin/sh -c 'i=0; while [ ! -e /run/zenith-ui-ready ] && [ $i -lt 3000 ]; do sleep 0.02; i=$((i+1)); done'
 ExecStartPre=-/usr/lib/sway/sway-config
 ExecStart=/usr/bin/sway.sh
 Restart=always
