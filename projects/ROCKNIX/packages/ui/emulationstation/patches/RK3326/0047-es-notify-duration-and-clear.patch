@@ -1,0 +1,70 @@
+From: Zenith
+Subject: [PATCH] ES: POST /notify accepts ?duration=ms and POST /notify/clear removes the notices on screen
+
+The "Suspending..." notice sent by sleep.sh used the default 10 s of popup time and ES's clock does not advance during suspend, so the notice
+reappeared on resume. The notice now asks for 1.5 s and sleep.sh clears the notices in the post phase.
+---
+--- a/es-core/src/Window.cpp
++++ b/es-core/src/Window.cpp
+@@ -334,6 +334,17 @@
+ 	layoutNotificationPopups();
+ }
+ 
++void Window::clearNotifications()
++{
++	{
++		std::unique_lock<std::mutex> lock(mNotificationMessagesLock);
++		mNotificationMessages.clear();
++	}
++
++	stopNotificationPopups();
++	PowerSaver::wake();
++}
++
+ void Window::stopNotificationPopups()
+ {
+ 	if (mNotificationPopups.size() == 0)
+--- a/es-core/src/Window.h
++++ b/es-core/src/Window.h
+@@ -101,6 +101,7 @@
+ 	void setScreenSaver(ScreenSaver* screenSaver) { mScreenSaver = screenSaver; }
+ 
+ 	void stopNotificationPopups();
++	void clearNotifications();
+ 
+ 	void startScreenSaver();
+ 	bool cancelScreenSaver();
+--- a/es-app/src/services/HttpServerThread.cpp
++++ b/es-app/src/services/HttpServerThread.cpp
+@@ -36,7 +36,8 @@
+ GET  /emukill
+ GET  /reloadgames
+ POST /messagebox												-> body must contain the message text as text/plain
+-POST /notify													-> body must contain the message text as text/plain
++POST /notify													-> body must contain the message text as text/plain (optional ?duration=ms)
++POST /notify/clear											-> removes the notifications on screen and the pending ones
+ POST /launch													-> body must contain the exact file path as text/plain
+ GET  /runningGame
+ GET  /isIdle
+@@ -571,7 +572,20 @@
+ 			return;
+ 		}
+ 
+-		mWindow->displayNotificationMessage(req.body);
++		int duration = -1;
++		if (req.has_param("duration"))
++			duration = atoi(req.get_param_value("duration").c_str());
++
++		mWindow->displayNotificationMessage(req.body, duration);
++	});
++
++	mHttpServer->Post("/notify/clear", [this](const httplib::Request& req, httplib::Response& res)
++	{
++		if (!isAllowed(req, res))
++			return;
++
++		Window* w = mWindow;
++		mWindow->postToUiThread([w]() { w->clearNotifications(); });
+ 	});
+ 	
+ 	mHttpServer->Post("/storage/event", [this](const httplib::Request& req, httplib::Response& res)

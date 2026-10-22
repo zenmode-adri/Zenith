@@ -136,10 +136,16 @@ suspend_notice() {
   export XDG_RUNTIME_DIR=/run/0-runtime-dir WAYLAND_DISPLAY=wayland-1
   export SWAYSOCK=/run/0-runtime-dir/sway-ipc.0.sock DBUS_SESSION_BUS_ADDRESS=unix:path=/run/0-runtime-dir/bus
   if [ "$(swaymsg -t get_tree 2>/dev/null | jq -r '.. | select(.focused?) | .app_id' 2>/dev/null)" = "emulationstation" ]; then
-    curl -s -m 2 -X POST -H 'Content-Type: text/plain' -d "${MSG}" http://127.0.0.1:1234/notify >/dev/null 2>&1
+    curl -s -m 2 -X POST -H 'Content-Type: text/plain' -d "${MSG}" 'http://127.0.0.1:1234/notify?duration=1500' >/dev/null 2>&1
   else
     /usr/bin/mako-notify "${MSG}" >/dev/null 2>&1
   fi
+}
+
+# Quita el aviso al volver de la suspension (el reloj de ES se para al suspender y el aviso reaparecia).
+clear_suspend_notice() {
+  curl -s -m 2 -X POST -d x http://127.0.0.1:1234/notify/clear >/dev/null 2>&1
+  XDG_RUNTIME_DIR=/run/0-runtime-dir DBUS_SESSION_BUS_ADDRESS=unix:path=/run/0-runtime-dir/bus makoctl dismiss -a >/dev/null 2>&1
 }
 
 case $1 in
@@ -160,6 +166,7 @@ case $1 in
     touch /run/.last_sleep_time
     ;;
   post)
+    ( clear_suspend_notice ) &
     ledcontrol
     modules start
     powerstate start
