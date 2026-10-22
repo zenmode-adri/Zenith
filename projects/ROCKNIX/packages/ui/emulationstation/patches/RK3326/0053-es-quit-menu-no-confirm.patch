@@ -1,0 +1,43 @@
+From: Zenith
+Subject: [PATCH] ES: restart / suspend / shutdown from the quit menu do not ask "REALLY ...?"
+
+The menu is already two deliberate steps (open it, choose the entry) and these actions lose no data; the confirmation only added friction.
+FAST SHUTDOWN (does not save metadata) keeps its confirmation.
+---
+--- a/es-app/src/guis/GuiMenu.cpp
++++ b/es-app/src/guis/GuiMenu.cpp
+@@ -6567,30 +6567,22 @@
+ 		s->addGroup(_("QUIT"));
+ 
+ 	s->addEntry(_("RESTART EMULATIONSTATION"), false, [window] {
+-		window->pushGui(new GuiMsgBox(window, _("REALLY RESTART EMULATIONSTATION?"),
+-			_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::QUIT); },
+-			_("NO"), nullptr));
++		Utils::Platform::quitES(Utils::Platform::QuitMode::QUIT);
+ 	}, "iconRestart");
+ 
+ 	s->addEntry(_("RESTART SYSTEM"), false, [window] {
+-		window->pushGui(new GuiMsgBox(window, _("REALLY RESTART?"), 
+-			_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::REBOOT); },
+-			_("NO"), nullptr));
++		Utils::Platform::quitES(Utils::Platform::QuitMode::REBOOT);
+ 	}, "iconRestart");
+ 
+ 	if (ApiSystem::getInstance()->isScriptingSupported(ApiSystem::SUSPEND))
+ 	{
+ 		s->addEntry(_("SUSPEND SYSTEM"), false, [window, s] {
+-			window->pushGui(new GuiMsgBox(window, _("REALLY SUSPEND ?"),
+-				_("YES"), [s] { s->close(); ApiSystem::getInstance()->suspend(); },
+-				_("NO"), nullptr));
++			s->close(); ApiSystem::getInstance()->suspend();
+ 		}, "iconFastShutdown");
+ 	}
+ 
+ 	s->addEntry(_("SHUTDOWN SYSTEM"), false, [window] {
+-		window->pushGui(new GuiMsgBox(window, _("REALLY SHUTDOWN?"), 
+-			_("YES"), [] { Utils::Platform::quitES(Utils::Platform::QuitMode::SHUTDOWN); },
+-			_("NO"), nullptr));
++		Utils::Platform::quitES(Utils::Platform::QuitMode::SHUTDOWN);
+ 	}, "iconShutdown");
+ 
+ 	s->addWithDescription(_("FAST SHUTDOWN SYSTEM"),_("Shutdown without saving metadata."), nullptr, [window] {
