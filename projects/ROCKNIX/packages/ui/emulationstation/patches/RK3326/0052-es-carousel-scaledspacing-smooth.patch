@@ -18,8 +18,8 @@ each key press the old selected item jumped logoDiffX to the left/right and the 
 -				logoTrans.translate(Vector3f(i * logoSpacing[0] + xOff + logoDiffX, i * logoSpacing[1] + yOff, 0));
 +			// The neighbours move away from the selected item by logoDiffX. It used to depend on the cursor, which changes at once when a key is
 +			// pressed, while the item positions follow the animated camera: the old and the new selected item jumped by logoDiffX. Now the shift is
-+			// a continuous function of the distance to the camera (0 on it, +-logoDiffX from one position away).
-+			const float rel = Math::clamp(i - mCamOffset, -1.0f, 1.0f);
++			// a continuous function of the distance to the camera (0 on it, +-logoDiffX from one position away). NB: Math::clamp takes (min, max, value).
++			const float rel = Math::clamp(-1.0f, 1.0f, i - mCamOffset);
 +			logoTrans.translate(Vector3f(i * logoSpacing[0] + xOff + logoDiffX * rel, i * logoSpacing[1] + yOff, 0));
  		}
  		else
