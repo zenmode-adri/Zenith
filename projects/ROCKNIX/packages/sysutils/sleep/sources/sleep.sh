@@ -139,6 +139,28 @@ backlight_off() {
     echo 0 > "${f}"
   done
 }
+# Gobernadores: se guardan al empezar a suspender y se restauran con escrituras directas al sysfs lo primero al despertar
+# (el gancho 002-freq pasa por /etc/profile y tarda ~1 s con la CPU en powersave). 002-freq sigue haciendo su trabajo despues.
+gov_save() {
+  [ -e /run/.sleep-gov ] && return 0
+  local p
+  {
+    for p in /sys/devices/system/cpu/cpufreq/policy[0-9]*; do
+      [ -r "${p}/scaling_governor" ] && echo "${p}/scaling_governor $(cat "${p}/scaling_governor")"
+    done
+    for p in "${GPU_FREQ}/governor" "${DMC_FREQ}/governor"; do
+      [ -r "${p}" ] && echo "${p} $(cat "${p}")"
+    done
+  } > /run/.sleep-gov.tmp 2>/dev/null && mv -f /run/.sleep-gov.tmp /run/.sleep-gov
+}
+gov_restore() {
+  local f g
+  [ -r /run/.sleep-gov ] || return 0
+  while read -r f g; do
+    [ -n "${g}" ] && [ "${g}" != powersave ] && echo "${g}" > "${f}" 2>/dev/null
+  done < /run/.sleep-gov
+  rm -f /run/.sleep-gov
+}
 backlight_on() {
   local f
   for f in /sys/class/backlight/*/brightness; do
@@ -178,6 +200,7 @@ clear_suspend_notice() {
 case $1 in
   pre)
     T0=$(now_ms)
+    gov_save
     ( suspend_notice ) &
 
     # Carril WiFi (en paralelo con el resto): wifictl + descarga del driver RK915 (~2 s en serie)
@@ -213,6 +236,10 @@ case $1 in
   post)
     T0=$(now_ms)
     ( clear_suspend_notice ) &
+
+    # Primero los gobernadores de CPU/GPU/DMC (al suspender se ponen en powersave): si no, la pantalla vuelve con la UI a
+    # frecuencia minima y el primer boton da un tiron.
+    gov_restore
 
     # Carril pantalla: primero los ajustes del panel (en paralelo) y luego la luz, para no encender con colores sin ajustar
     (
