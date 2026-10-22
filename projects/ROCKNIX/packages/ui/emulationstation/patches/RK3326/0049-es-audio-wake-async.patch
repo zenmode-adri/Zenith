@@ -1,0 +1,95 @@
+From: Zenith
+Subject: [PATCH] ES: reopen the idle-closed audio device on a worker thread (first action after idle no longer waits ~230 ms)
+
+After 5 s without sound ES closes the SDL audio device (battery). The first navigation click reopened it synchronously inside the input
+handler: 229 ms measured (futex wait on the main thread) before the carousel started to move. Now Sound::play() starts the reopening on a
+thread and returns; the click that triggered it is not played (the following ones are). Other callers of wake()/init() stay synchronous.
+---
+--- a/es-core/src/AudioManager.h
++++ b/es-core/src/AudioManager.h
+@@ -3,6 +3,7 @@
+ #define ES_CORE_AUDIO_MANAGER_H
+ 
+ #include <SDL_audio.h>
++#include <atomic>
+ #include <memory>
+ #include <vector>
+ #include "SDL_mixer.h"
+@@ -79,6 +80,10 @@
+ 	static bool isSuspended();
+ 	void suspendIdle();
+ 	void wake();
++	// Reopens the device on a worker thread: the main thread (first navigation click after the idle close) does not wait ~230 ms
++	// for PulseAudio/PipeWire. isWaking() is true until the worker has finished; the click that triggered it is not played.
++	void wakeAsync();
++	static bool isWaking();
+ 
+ 	//  New function to get the full path of the currently playing song
+ 
+@@ -90,6 +95,7 @@
+ 
+ 	bool mSongNameChanged;
+ 
++	std::atomic<bool> mWaking{false};
+ 	bool mIdleSuspended;	// true while the device is closed for idleness (mInitialized stays true)
+ 	int mIdleMs;		// ms since the last touch(), clamped just above the threshold
+ };
+--- a/es-core/src/AudioManager.cpp
++++ b/es-core/src/AudioManager.cpp
+@@ -23,6 +23,7 @@
+ #include <time.h>
+ #else
+ #include <unistd.h>
++#include <thread>
+ #endif
+ 
+ // batocera
+@@ -179,6 +180,27 @@
+ 	mIdleSuspended = true;
+ }
+ 
++bool AudioManager::isWaking()
++{
++	return sInstance != nullptr && sInstance->mWaking.load();
++}
++
++void AudioManager::wakeAsync()
++{
++	if (!mIdleSuspended)
++		return;
++
++	bool expected = false;
++	if (!mWaking.compare_exchange_strong(expected, true))
++		return;
++
++	std::thread([this]()
++	{
++		wake();
++		mWaking = false;
++	}).detach();
++}
++
+ // Reopen the device closed by suspendIdle(), same open logic as init()
+ void AudioManager::wake()
+ {
+--- a/es-core/src/Sound.cpp
++++ b/es-core/src/Sound.cpp
+@@ -98,9 +98,16 @@
+ 	if (!Settings::getInstance()->getBool("EnableSounds"))
+ 		return;
+ 
+-	// Reopen the audio device (and reload the sounds) if it was closed for idleness
++	// The device is being reopened by the worker thread: no sound for this one
++	if (AudioManager::isWaking())
++		return;
++
++	// Closed for idleness: reopen it (and reload the sounds) without blocking the UI; the click that triggered it is skipped
+ 	if (AudioManager::isSuspended())
+-		AudioManager::getInstance()->wake();
++	{
++		AudioManager::getInstance()->wakeAsync();
++		return;
++	}
+ 
+ 	if (mSampleData == nullptr)
+ 		return;

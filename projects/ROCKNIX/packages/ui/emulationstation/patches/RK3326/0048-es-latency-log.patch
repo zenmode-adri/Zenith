@@ -1,0 +1,92 @@
+From: Zenith
+Subject: [PATCH] ES: [LAT] diagnostic log of the first frames after an idle period (only if /run/es-latlog exists; /run/es-latlog-all logs every input)
+
+Measures how long the first frames take after an input that ends >= 1.5 s of inactivity (or that wakes the 1 Hz idle loop), with the
+CPU/GPU/DMC frequencies of each of the first 12 frames. No effect (one access() per input event) when /run/es-latlog does not exist.
+---
+--- a/es-app/src/main.cpp
++++ b/es-app/src/main.cpp
+@@ -746,6 +746,27 @@
+ 	int idleRenders = 0;
+ 	int idleWakeTs = -1;
+ 
++	// Diagnostic (only if the file /run/es-latlog exists): after an input that ends >= 1.5 s of inactivity, or that wakes the 1 Hz idle loop,
++	// log the processing time of the first frames with the CPU/GPU/DMC frequencies, to measure the latency of the first action.
++	int latStart = -1;
++	int latFrames = 0;
++	bool latIdle = false;
++	int latTb = 0, latTc = 0, latTd = 0, latTe = 0;
++	auto latFreq = [](const char* path) -> std::string
++	{
++		FILE* f = fopen(path, "r");
++		if (!f)
++			return "?";
++		char buf[32] = { 0 };
++		if (!fgets(buf, sizeof(buf), f))
++			buf[0] = 0;
++		fclose(f);
++		std::string r(buf);
++		while (!r.empty() && isspace((unsigned char)r.back()))
++			r.pop_back();
++		return r;
++	};
++
+ 	bool running = true;
+ 
+ #ifdef BATOCERA
+@@ -818,6 +839,14 @@
+ 			if (idle)
+ 				idleWakeTs = (int)event.common.timestamp; // for the wake->frame latency log
+ 
++			if (access("/run/es-latlog", F_OK) == 0 && (idle || (int)SDL_GetTicks() - ps_time > 1500 || access("/run/es-latlog-all", F_OK) == 0) && latStart < 0)
++			{
++				latStart = (int)SDL_GetTicks();
++				latFrames = 0;
++				latIdle = idle;
++				LOG(LogWarning) << "[LAT] event type=" << (int)event.type << " idle=" << (int)idle << " sinceInput=" << ((int)SDL_GetTicks() - ps_time) << " ms";
++			}
++
+ 			// PowerSaver can push events to exit SDL_WaitEventTimeout immediatly
+ 			// Reset this event's state
+ 			TRYCATCH("resetRefreshEvent", PowerSaver::resetRefreshEvent());
+@@ -888,8 +917,10 @@
+ 			} 
+ 			while(SDL_PollEvent(&event));
+ 
++			latTb = (int)SDL_GetTicks();
+ 			// check guns
+ 			InputManager::getInstance()->updateGuns(&window);
++			latTc = (int)SDL_GetTicks();
+ 
+ 			// triggered if exiting from SDL_WaitEvent due to event
+ 			if (idle || ps_standby || (screenSaverWait && !screensaver.isScreenSaverActive()))
+@@ -927,8 +958,10 @@
+ 		if(deltaTime < 0)
+ 			deltaTime = 1000;
+ 
+-		TRYCATCH("Window.update" ,window.update(deltaTime))	
++		TRYCATCH("Window.update" ,window.update(deltaTime))
++		latTd = (int)SDL_GetTicks();
+ 		TRYCATCH("Window.render", window.render())
++		latTe = (int)SDL_GetTicks();
+ 
+ 		// Did anything report it is animating during this update/render? (next iteration will not idle)
+ 		lastFrameAnimated = window.consumeKeepAlive();
+@@ -951,6 +984,17 @@
+ 		if (idle)
+ 			idleRenders++;
+ 
++		if (latStart >= 0)
++		{
++			int latNow = (int)SDL_GetTicks();
++			std::string fr;
++			if (latFrames < 12)
++				fr = " cpu=" + latFreq("/sys/devices/system/cpu/cpufreq/policy0/scaling_cur_freq") + " gpu=" + latFreq("/sys/devices/platform/ff400000.gpu/devfreq/ff400000.gpu/cur_freq") + " dmc=" + latFreq("/sys/devices/platform/dmc/devfreq/dmc/cur_freq");
++			LOG(LogWarning) << "[LAT] f" << latFrames << " t+" << (latNow - latStart) << " parse=" << (latTb - latStart) << " guns=" << (latTc - latTb) << " pre=" << (curTime - latTc) << " upd=" << (latTd - curTime) << " rend=" << (latTe - latTd) << " proc=" << (latNow - curTime) << " dt=" << deltaTime << " idle=" << (int)latIdle << fr;
++			if (++latFrames >= 40 || latNow - latStart > 2000)
++				latStart = -1;
++		}
++
+ 		if (idleWakeTs >= 0)
+ 		{
+ 			LOG(LogDebug) << "[IDLE1HZ] wake->frame " << (int)(SDL_GetTicks() - (unsigned int)idleWakeTs) << " ms";
