@@ -1,0 +1,35 @@
+From: Zenith
+Subject: [PATCH] ES: the side drawer (GO TO MANUFACTURER / LETTER / ...) opens above the status avatar
+
+The screen extras (the "Z" avatar) are drawn after the GUI stack, so the drawer was drawn under the avatar. While the drawer is the top
+GUI the avatar is not drawn.
+---
+--- a/es-core/src/Window.cpp
++++ b/es-core/src/Window.cpp
+@@ -809,8 +809,16 @@
+ 
+ 	if (!mRenderScreenSaver && !mHideScreenExtras)
+ 	{
++		// The side drawer of SystemView::showNavigationBar() opens above the status avatar (the "Z")
++		const bool drawerOnTop = mGuiStack.size() && mGuiStack.back()->getTag() == "navdrawer";
++
+ 		for (auto extra : mScreenExtras)
++		{
++			if (drawerOnTop && extra->getTag() == "zs-avatar")
++				continue;
++
+ 			extra->render(transform);
++		}
+ 	}
+ 
+ 	if (mVolumeInfo && Settings::VolumePopup())
+--- a/es-app/src/views/SystemView.cpp
++++ b/es-app/src/views/SystemView.cpp
+@@ -550,6 +550,7 @@
+ 	int mCursor = mCarousel.getCursorIndex();
+ 
+ 	GuiSettings* gs = new GuiSettings(mWindow, title, "-----", nullptr, false, false);
++	gs->setTag("navdrawer");
+ 
+ 	int idx = 0;
+ 	std::string sel = selector(getSelected());
