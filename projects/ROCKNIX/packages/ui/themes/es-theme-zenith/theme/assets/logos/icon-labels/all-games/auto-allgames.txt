@@ -1,0 +1,1 @@
+Etiqueta "All games" de la tarjeta auto-allgames (comprobada con exists() en theme.xml)

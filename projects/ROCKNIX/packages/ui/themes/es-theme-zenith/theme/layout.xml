@@ -24,6 +24,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.02813</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.94375</gridW>
@@ -103,6 +104,7 @@
     <sysInfoY>0.6759</sysInfoY>
     <fSys>0.02194</fSys>
     <fLogo>0.03</fLogo>
+    <fLabel>0.0264</fLabel>
     <gridX>0.03056</gridX>
     <gridY>0.13056</gridY>
     <gridW>0.93889</gridW>
@@ -182,6 +184,7 @@
     <sysInfoY>0.7565</sysInfoY>
     <fSys>0.03594</fSys>
     <fLogo>0.04375</fLogo>
+    <fLabel>0.0385</fLabel>
     <gridX>0.02917</gridX>
     <gridY>0.1625</gridY>
     <gridW>0.94167</gridW>
@@ -261,6 +264,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.02342</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.95316</gridW>
@@ -340,6 +344,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.02604</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.94792</gridW>
@@ -419,6 +424,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.02632</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.94737</gridW>
@@ -498,6 +504,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.02361</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.95277</gridW>
@@ -577,6 +584,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.01786</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.96429</gridW>
@@ -656,6 +664,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.02083</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.95833</gridW>
@@ -735,6 +744,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.03</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.94</gridW>
@@ -814,6 +824,7 @@
     <sysInfoY>0.72738</sysInfoY>
     <fSys>0.02813</fSys>
     <fLogo>0.0375</fLogo>
+    <fLabel>0.033</fLabel>
     <gridX>0.02765</gridX>
     <gridY>0.14583</gridY>
     <gridW>0.9447</gridW>

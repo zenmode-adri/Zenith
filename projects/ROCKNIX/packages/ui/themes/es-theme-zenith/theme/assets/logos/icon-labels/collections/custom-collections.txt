@@ -1,0 +1,1 @@
+Etiqueta "Collections" de la tarjeta custom-collections (comprobada con exists() en theme.xml)

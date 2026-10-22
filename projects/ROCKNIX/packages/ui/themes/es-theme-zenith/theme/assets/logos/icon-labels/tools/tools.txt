@@ -1,0 +1,1 @@
+Etiqueta "Tools" de la tarjeta tools (comprobada con exists() en theme.xml)

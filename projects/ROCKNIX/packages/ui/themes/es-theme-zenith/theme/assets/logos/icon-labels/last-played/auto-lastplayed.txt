@@ -1,0 +1,1 @@
+Etiqueta "Last played" de la tarjeta auto-lastplayed (comprobada con exists() en theme.xml)

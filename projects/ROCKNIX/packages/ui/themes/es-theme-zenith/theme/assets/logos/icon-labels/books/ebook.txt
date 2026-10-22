@@ -1,0 +1,1 @@
+Etiqueta "Books" de la tarjeta ebook (comprobada con exists() en theme.xml)

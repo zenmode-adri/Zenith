@@ -1,0 +1,1 @@
+Etiqueta "Favorites" de la tarjeta auto-favorites (comprobada con exists() en theme.xml)

@@ -11,7 +11,7 @@
   <variables>
     <bg>26262A</bg>
     <txt>F0F0F2</txt>
-    <dim>8C8C94</dim>
+    <dim>BEBEC6</dim>
     <dimDark>B4B4BC</dimDark>
     <tileTxt>F0F0F2</tileTxt>
     <cyan>00C3E3</cyan>
@@ -171,6 +171,110 @@
             <pos>0.5 0.5</pos>
             <size>0.8 0.7</size>
             <fontSize>${fLogo}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-music">
+            <visible>exists("${themePath}/assets/logos/icon-labels/music/" + {system:theme} + ".txt")</visible>
+            <text>Music</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-tools">
+            <visible>exists("${themePath}/assets/logos/icon-labels/tools/" + {system:theme} + ".txt")</visible>
+            <text>Tools</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-auto-favorites">
+            <visible>exists("${themePath}/assets/logos/icon-labels/favorites/" + {system:theme} + ".txt")</visible>
+            <text>Favorites</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-auto-allgames">
+            <visible>exists("${themePath}/assets/logos/icon-labels/all-games/" + {system:theme} + ".txt")</visible>
+            <text>All games</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-auto-lastplayed">
+            <visible>exists("${themePath}/assets/logos/icon-labels/last-played/" + {system:theme} + ".txt")</visible>
+            <text>Last played</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-auto-neverplayed">
+            <visible>exists("${themePath}/assets/logos/icon-labels/never-played/" + {system:theme} + ".txt")</visible>
+            <text>Never played</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-custom-collections">
+            <visible>exists("${themePath}/assets/logos/icon-labels/collections/" + {system:theme} + ".txt")</visible>
+            <text>Collections</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-ebook">
+            <visible>exists("${themePath}/assets/logos/icon-labels/books/" + {system:theme} + ".txt")</visible>
+            <text>Books</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
             <fontPath>${font}</fontPath>
             <color>${tileTxt}</color>
           </text>
