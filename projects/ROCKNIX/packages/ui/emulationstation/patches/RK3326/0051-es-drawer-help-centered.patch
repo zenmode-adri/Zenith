@@ -1,21 +1,25 @@
 From: Zenith
-Subject: [PATCH] ES: the help bar is centred on the side drawer while it is open
+Subject: [PATCH] ES: the help bar is centred on the side drawer while it is open (and shown on small screens)
 
 The help bar ("CLOSE / BACK / SELECT") is centred on the whole screen, but the drawer only covers the left part, so the drawer edge cut
 through the text. While the drawer is the top GUI the bar is centred on the drawer.
 ---
 --- a/es-core/src/Window.cpp
 +++ b/es-core/src/Window.cpp
-@@ -758,7 +758,7 @@
+@@ -756,9 +756,10 @@
  
- 	if (mGuiStack.size() < 2 || !Renderer::ScreenSettings::fullScreenMenus())
+ 	renderSindenBorders();
+ 
+-	if (mGuiStack.size() < 2 || !Renderer::ScreenSettings::fullScreenMenus())
++	// small screens hide the global help under full-screen menus; the drawer is not one of them and has no help of its own
++	if (mGuiStack.size() < 2 || !Renderer::ScreenSettings::fullScreenMenus() || mGuiStack.back()->getTag() == "navdrawer")
  		if (!mRenderedHelpPrompts)
 -			mHelp->render(transform);
 +			renderHelp(transform);
  
  	// FPS overlay
  	if (Settings::DrawFramerate() && mFrameDataText)
-@@ -1020,9 +1020,28 @@
+@@ -1020,9 +1021,28 @@
  	mSplash = nullptr;
  }
  
