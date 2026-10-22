@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gameList>
+    <folder>
+        <path>./MOD_TOOLS</path>
+        <name>MOD_TOOLS</name>
+        <desc>Advanced system tools: eMMC backup, install and restore, offline upgrade, bezels installer, power button behaviour and controller fixes.</desc>
+        <developer>AURKNIX</developer>
+        <publisher>Zenith</publisher>
+        <rating>5.0</rating>
+        <genre>Tool</genre>
+        <image>./images/mod-tools.svg</image>
+    </folder>
     <game>
         <path>./@FILEMANAGER@.sh</path>
         <name>文件管理器</name>
@@ -418,7 +428,7 @@
         <releasedate>2026</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/install-rocknix.svg</image>
+        <image>./images/offline-upgrade.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/FIX PortMaster Controller.sh</path>
@@ -430,7 +440,7 @@
         <releasedate>2025</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/portmaster.svg</image>
+        <image>./images/fix-controller.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/Generate SDL GameControllerDB.sh</path>
@@ -454,7 +464,7 @@
         <releasedate>2025</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/file-manager.svg</image>
+        <image>./images/bezels.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/Reset Drastic Cfg.sh</path>
@@ -466,7 +476,7 @@
         <releasedate>2025</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/test-gamepad.svg</image>
+        <image>./images/reset-config.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/Reset YabaSanshiro Input.sh</path>
@@ -478,7 +488,7 @@
         <releasedate>2025</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/test-gamepad.svg</image>
+        <image>./images/reset-config.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/FixShutdown.sh</path>
@@ -514,7 +524,7 @@
         <releasedate>2025</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/install-rocknix.svg</image>
+        <image>./images/emmc-install.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/Backup EMMC.sh</path>
@@ -526,7 +536,7 @@
         <releasedate>2025</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/rclone-backup.svg</image>
+        <image>./images/emmc-backup.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/Restore EMMC.sh</path>
@@ -538,7 +548,7 @@
         <releasedate>2025</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/rclone-restore.svg</image>
+        <image>./images/emmc-restore.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/Toggle Power Button.sh</path>
@@ -550,7 +560,7 @@
         <releasedate>2025</releasedate>
         <genre>工具</genre>
         <players>1</players>
-        <image>./images/remove-mac-files.svg</image>
+        <image>./images/toggle-power.svg</image>
     </game>
     <game>
         <path>./MOD_TOOLS/Start Baidu Sync.sh</path>
