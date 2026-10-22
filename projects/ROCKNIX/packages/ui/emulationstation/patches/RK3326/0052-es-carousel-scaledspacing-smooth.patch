@@ -1,0 +1,26 @@
+From: Zenith
+Subject: [PATCH] ES: scaledLogoSpacing follows the animated camera (no jump of the old/new selected item when moving)
+
+The shift of the neighbours of the selected item was decided with the cursor (instant) while the positions use mCamOffset (animated), so on
+each key press the old selected item jumped logoDiffX to the left/right and the new one jumped back. Continuous shift: logoDiffX * clamp(i - camOffset, -1, 1).
+---
+--- a/es-core/src/components/CarouselComponent.cpp
++++ b/es-core/src/components/CarouselComponent.cpp
+@@ -489,12 +489,11 @@
+ 		{
+ 			auto logoDiffX = ((logoSpacing[0] * mLogoScale) - logoSpacing[0]) / 2.0f * mScaledSpacing;
+ 
+-			if (index == mCursor)
+-				logoTrans.translate(Vector3f(i * logoSpacing[0] + xOff, i * logoSpacing[1] + yOff, 0));
+-			else if (i < mCursor || (mCursor == 0 && index > mMaxLogoCount))
+-				logoTrans.translate(Vector3f(i * logoSpacing[0] + xOff - logoDiffX, i * logoSpacing[1] + yOff, 0));
+-			else
+-				logoTrans.translate(Vector3f(i * logoSpacing[0] + xOff + logoDiffX, i * logoSpacing[1] + yOff, 0));
++			// The neighbours move away from the selected item by logoDiffX. It used to depend on the cursor, which changes at once when a key is
++			// pressed, while the item positions follow the animated camera: the old and the new selected item jumped by logoDiffX. Now the shift is
++			// a continuous function of the distance to the camera (0 on it, +-logoDiffX from one position away).
++			const float rel = Math::clamp(i - mCamOffset, -1.0f, 1.0f);
++			logoTrans.translate(Vector3f(i * logoSpacing[0] + xOff + logoDiffX * rel, i * logoSpacing[1] + yOff, 0));
+ 		}
+ 		else
+ 			logoTrans.translate(Vector3f(i * logoSpacing[0] + xOff, i * logoSpacing[1] + yOff, 0));
