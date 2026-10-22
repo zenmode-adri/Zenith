@@ -564,4 +564,28 @@
         <players>1</players>
         <image>./images/rclone-backup.svg</image>
     </game>
+    <game>
+        <path>./Start R36 Tuner.sh</path>
+        <name>R36 Tuner</name>
+        <desc>R36 Tuner Next: set the CPU governor and frequencies, unlock the turbo steps, run CPU, GPU and RAM benchmarks and monitor the temperature.</desc>
+        <developer>zenmode-adri</developer>
+        <publisher>Zenith</publisher>
+        <rating>5.0</rating>
+        <releasedate>2026</releasedate>
+        <genre>Tool</genre>
+        <players>1</players>
+        <image>./images/r36-tuner.svg</image>
+    </game>
+    <game>
+        <path>./Start EKA2L1.sh</path>
+        <name>Start EKA2L1</name>
+        <desc>Opens the EKA2L1 frontend (Symbian / N-Gage emulator) so that its configuration can be changed directly.</desc>
+        <developer>EKA2L1 team</developer>
+        <publisher>Zenith</publisher>
+        <rating>5.0</rating>
+        <releasedate>2026</releasedate>
+        <genre>Emulator</genre>
+        <players>1</players>
+        <image>./images/eka2l1.svg</image>
+    </game>
 </gameList>

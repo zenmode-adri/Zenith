@@ -102,5 +102,16 @@ open(sys.argv[2], 'w').write(xml)
   if [ "${DEVICE}" != "RK356X" ]; then
     remove_gamelist_game "MOD_TOOLS/Sync eMMC Bootloader to TF.sh"
   fi
+
+  # RK3326 dead entries: scripts of apps/emulators that this build does not have (ES logged one warning for each at every start)
+  case ${DEVICE} in
+    RK3326*)
+      for dead in "Install ROCKNIX.sh" "qterminal.sh" "Start AetherSX2.sh" "Start BigPEmu.sh" "Start CEMU.sh" \
+                  "Start DaedalusX64.sh" "Start Dolphin.sh" "Start MelonDS.sh" "Start Moonlight.sh" "Start PCSX2.sh" \
+                  "Start SkyEmu.sh" "Start RPCS3.sh" "Start Xemu.sh" "Test Touchscreen.sh" "GPcal.sh"; do
+        remove_gamelist_game "${dead}"
+      done
+    ;;
+  esac
 }
 

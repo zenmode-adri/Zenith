@@ -11,7 +11,7 @@ MAPPER_STORAGE="/storage/.config/PortMaster/mapper.txt"
 MAPPER_PORTS="/roms/ports/PortMaster/mapper.txt"
 
 if [[ ! -f "${MAPPER_STORAGE}" ]]; then
-    echo "未找到 PortMaster mapper：${MAPPER_STORAGE}"
+    echo "PortMaster mapper not found: ${MAPPER_STORAGE}"
     exit 1
 fi
 
@@ -19,4 +19,4 @@ chmod +x "${MAPPER_STORAGE}"
 
 [[ -f "${MAPPER_PORTS}" ]] && chmod +x "${MAPPER_PORTS}"
 
-echo "已为 PortMaster mapper 设置可执行权限。"
+echo "Executable permission set on the PortMaster mapper."
