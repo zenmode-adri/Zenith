@@ -1,0 +1,77 @@
+From: Zenith
+Subject: [PATCH] ES: the help bar is centred on the side drawer while it is open
+
+The help bar ("CLOSE / BACK / SELECT") is centred on the whole screen, but the drawer only covers the left part, so the drawer edge cut
+through the text. While the drawer is the top GUI the bar is centred on the drawer.
+---
+--- a/es-core/src/Window.cpp
++++ b/es-core/src/Window.cpp
+@@ -758,7 +758,7 @@
+ 
+ 	if (mGuiStack.size() < 2 || !Renderer::ScreenSettings::fullScreenMenus())
+ 		if (!mRenderedHelpPrompts)
+-			mHelp->render(transform);
++			renderHelp(transform);
+ 
+ 	// FPS overlay
+ 	if (Settings::DrawFramerate() && mFrameDataText)
+@@ -1020,9 +1020,28 @@
+ 	mSplash = nullptr;
+ }
+ 
+-void Window::renderHelpPromptsEarly(const Transform4x4f& transform)
++// While the navigation drawer is the top GUI the help bar is centred on the drawer (it used to be centred on the screen and the
++// drawer edge cut through it)
++void Window::renderHelp(const Transform4x4f& transform)
+ {
++	auto grid = mHelp->getGrid();
++	const bool drawerOnTop = grid && mNavDrawerWidth > 0.0f && mGuiStack.size() && mGuiStack.back()->getTag() == "navdrawer";
++	if (!drawerOnTop)
++	{
++		mHelp->render(transform);
++		return;
++	}
++
++	const Vector3f oldPos = grid->getPosition();
++	const float centerNow = oldPos.x() + (0.5f - grid->getOrigin().x()) * grid->getSize().x();
++	grid->setPosition(oldPos.x() + (mNavDrawerWidth * 0.5f - centerNow), oldPos.y(), oldPos.z());
+ 	mHelp->render(transform);
++	grid->setPosition(oldPos);
++}
++
++void Window::renderHelpPromptsEarly(const Transform4x4f& transform)
++{
++	renderHelp(transform);
+ 	mRenderedHelpPrompts = true;
+ }
+ 
+--- a/es-core/src/Window.h
++++ b/es-core/src/Window.h
+@@ -101,6 +101,8 @@
+ 	void setScreenSaver(ScreenSaver* screenSaver) { mScreenSaver = screenSaver; }
+ 
+ 	void stopNotificationPopups();
++	// Width of the side drawer of SystemView::showNavigationBar(): while it is on top the help bar is centred on it
++	void setNavDrawerWidth(float w) { mNavDrawerWidth = w; }
+ 	void clearNotifications();
+ 
+ 	void startScreenSaver();
+@@ -149,6 +151,8 @@
+ 
+ 	std::vector<PostedFunction> mFunctions;
+ 
++	float mNavDrawerWidth = 0.0f;
++	void renderHelp(const Transform4x4f& transform);
+ 	std::vector<GuiInfoPopup*> mNotificationPopups;
+ 	void updateNotificationPopups(int deltaTime);
+ 	void layoutNotificationPopups();
+--- a/es-app/src/views/SystemView.cpp
++++ b/es-app/src/views/SystemView.cpp
+@@ -594,6 +594,7 @@
+ 	w = Math::max(w, Renderer::getScreenWidth() / 3.0f);
+ 
+ 	gs->getMenu().setSize(w, Renderer::getScreenHeight());
++	mWindow->setNavDrawerWidth(w);
+ 
+ 	gs->getMenu().animateTo(
+ 		Vector2f(-w, 0),
