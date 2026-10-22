@@ -1,0 +1,91 @@
+From: Zenith
+Subject: [PATCH] ES: the carousel continues its speed when a new step arrives while it is still moving (no pulsing when a direction is held)
+
+Each step cancelled the animation and restarted easeOutQuint from the current position at full speed: with a key repeat of ~185 ms the camera speed went
+2 -> 10 -> 2 positions/s at every repeat (measured on the Ultra, 8 steps: 7 accelerations). If the camera is moving in the same direction (> 0.5 pos/s) the new
+step is a cubic Hermite from the current position and speed to the target (end speed 0, 300 ms). From rest it is still the same easeOutQuint.
+---
+--- a/es-core/src/components/CarouselComponent.cpp
++++ b/es-core/src/components/CarouselComponent.cpp
+@@ -168,6 +168,16 @@
+ 
+ void CarouselComponent::update(int deltaTime)
+ {		
++	// camera speed (positions per second, signed, ring aware): onCursorChanged() continues a movement that is already in progress with it
++	if (deltaTime > 0 && !mEntries.empty())
++	{
++		const float ring = (float)mEntries.size();
++		float dc = mCamOffset - mPrevCam;
++		if (dc > ring * 0.5f) dc -= ring; else if (dc < -ring * 0.5f) dc += ring;
++		mCamVelocity = dc * 1000.0f / (float)deltaTime;
++		mPrevCam = mCamOffset;
++	}
++
+ 	for (int i = 0; i < mEntries.size(); i++)
+ 	{
+ 		const std::shared_ptr<GuiComponent> &comp = mEntries.at(i).data.logo;
+@@ -278,6 +288,19 @@
+ 			logo->startStoryboard();
+ 	}
+ 
++	// A new step while the camera is still moving the same way continues with the speed it has (cubic Hermite, end speed 0) instead of
++	// restarting easeOutQuint at full speed, which made the speed pulse at every key repeat (2 <-> 10 positions/s measured).
++	const float camV0 = mCamVelocity;
++	const bool continueMove = fabs(camV0) > 0.5f && (endPos - startPos) * camV0 > 0.0f;
++	const int camDuration = continueMove ? 300 : (int)mTransitionSpeed;
++	auto camAt = [startPos, endPos, camV0, continueMove](float t) -> float
++	{
++		if (!continueMove)
++			return Math::lerp(startPos, endPos, Math::easeOutQuint(t));
++		const float s2 = t * t, s3 = s2 * t;
++		return startPos + (endPos - startPos) * (3.0f * s2 - 2.0f * s3) + camV0 * 0.30f * (t - 2.0f * s2 + s3);
++	};
++
+ 	Animation* anim;
+ 	bool move_carousel = Settings::getInstance()->getBool("MoveCarousel");
+ 	if (Settings::PowerSaverMode() == "instant")
+@@ -285,27 +308,27 @@
+ 
+ 	if (transition_style == "fade" || transition_style == "fade & slide")
+ 	{
+-		anim = new LambdaAnimation([this, startPos, endPos, posMax, move_carousel, oldCursor, transition_style](float t)
++		anim = new LambdaAnimation([this, startPos, endPos, posMax, move_carousel, oldCursor, transition_style, camAt](float t)
+ 		{
+-			float f = Math::lerp(startPos, endPos, Math::easeOutQuint(t));
++			float f = camAt(t);
+ 
+ 			if (f < 0) f += posMax;
+ 			if (f >= posMax) f -= posMax;
+ 
+ 			this->mCamOffset = move_carousel ? f : endPos;
+-		}, mTransitionSpeed);
++		}, camDuration);
+ 	} 
+ 	else if (transition_style == "slide") 
+ 	{
+-		anim = new LambdaAnimation([this, startPos, endPos, posMax, move_carousel](float t)
++		anim = new LambdaAnimation([this, startPos, endPos, posMax, move_carousel, camAt](float t)
+ 		{			
+-			float f = Math::lerp(startPos, endPos, Math::easeOutQuint(t));
++			float f = camAt(t);
+ 			if (f < 0) f += posMax;
+ 			if (f >= posMax) f -= posMax;
+ 
+ 			this->mCamOffset = move_carousel ? f : endPos;			
+ 
+-		}, mTransitionSpeed);
++		}, camDuration);
+ 	} 
+ 	else // instant
+ 	{		
+--- a/es-core/src/components/CarouselComponent.h
++++ b/es-core/src/components/CarouselComponent.h
+@@ -167,6 +167,8 @@
+ 	bool			mAnyLogoHasOpacityStoryboard;
+ 
+ 	float			mScaledSpacing;
++	float			mCamVelocity = 0.0f;
++	float			mPrevCam = 0.0f;
+ 
+ 	// Mouse support
+ 	int				mPressedCursor;
