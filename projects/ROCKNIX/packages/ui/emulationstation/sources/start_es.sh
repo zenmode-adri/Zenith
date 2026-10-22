@@ -12,4 +12,8 @@ export ES_WAIT_WAYLAND_SOCKET=/run/0-runtime-dir/wayland-1
 ### Las ROMs pueden seguir montandose (rocknix-automount) mientras ES arranca: ES (parche 0045) espera este fichero justo antes de escanear sistemas (max 15 s)
 export ES_WAIT_ROMS_READY=/run/rocknix-automount.ready
 
+### Si ES se reinicia (o se cierra) con el salvapantallas activo, el script screensaver-stop no llega a ejecutarse y el panel se queda apagado
+### (screensaver-start pone bl_power=4): al arrancar ES la luz siempre se enciende
+for b in /sys/class/backlight/*/bl_power; do echo 0 > "$b" 2>/dev/null; done
+
 emulationstation --log-path /var/log

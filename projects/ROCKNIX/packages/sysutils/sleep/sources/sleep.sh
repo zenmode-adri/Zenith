@@ -163,6 +163,8 @@ gov_restore() {
 }
 backlight_on() {
   local f
+  # el salvapantallas de ES apaga la luz con bl_power=4: al despertar siempre se enciende
+  for f in /sys/class/backlight/*/bl_power; do echo 0 > "${f}" 2>/dev/null; done
   for f in /sys/class/backlight/*/brightness; do
     [ -r "/run/.sleep-bl.$(basename "$(dirname "${f}")")" ] || continue
     cat "/run/.sleep-bl.$(basename "$(dirname "${f}")")" > "${f}" 2>/dev/null
