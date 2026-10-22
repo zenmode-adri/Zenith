@@ -123,6 +123,8 @@
       <size>${carW} 0.5</size>
       <logoSize>${cellW} ${cellH}</logoSize>
       <logoScale>1.23</logoScale>
+      <!-- las vecinas de la seleccionada se apartan para que los huecos (normal-normal y seleccionada-vecina) midan lo mismo: 0,16 x tarjeta -->
+      <scaledLogoSpacing>1.21</scaledLogoSpacing>
       <color>00000000</color>
       <colorEnd>00000000</colorEnd>
       <maxLogoCount>5</maxLogoCount>
