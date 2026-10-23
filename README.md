@@ -1,15 +1,24 @@
 # Zenith
 
-**Zenith** is an **unofficial** fork of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix), which is a fork
-of [ROCKNIX](https://github.com/ROCKNIX), for **RK3326** handheld consoles. It adds a faster boot, faster and more
-reliable suspend, its own light/dark EmulationStation theme and a cleaner Tools menu.
+**A fast, polished operating system for RK3326 handhelds.** Zenith is its own system image: Linux 6.12 mainline,
+EmulationStation with a custom light/dark theme, and a boot and suspend path rebuilt from the ground up. It is an
+**unofficial fork** of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix), which is a fork of
+[ROCKNIX](https://github.com/ROCKNIX), and it is developed and measured on the **R36 Ultra**.
 
-- Maintained by [zenmode-adri](https://github.com/zenmode-adri). See [`CREDITS.md`](CREDITS.md) for the people and
-  projects this work stands on, and [`CHANGELOG.md`](CHANGELOG.md) for what changed and the measurements.
-- **Tested only on the R36 Ultra.** Other RK3326 handhelds use the same image and device-tree selector but have not
-  been checked with these changes. Targets other than RK3326 are inherited from upstream and were not built or tested.
-- Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors. Please do not report Zenith problems
-  to them.
+- **Boots in about 15 s instead of 33 s**, suspends in 2.3 s and wakes in 4.3 s.
+- **Opens games in 3.85 s** instead of 6.29 s, and the menus answer on the first button press (11 ms).
+- **Own interface**: light and dark theme, redesigned dialogs, keyboard, sliders, a clean Tools menu, first-boot screens.
+- **Modern kernel**: Linux 6.12 mainline instead of the old 4.4 vendor kernel most handheld firmwares still ship.
+- **Measured, not guessed**: newer emulator builds, PPSSPP versions and GPU clocks were benchmarked on the device, and what
+  did not help was left out (see [Tested and not shipped](#tested-and-not-shipped)).
+
+Maintained by [zenmode-adri](https://github.com/zenmode-adri). See [`CREDITS.md`](CREDITS.md) for the people and projects
+this work stands on, and [`CHANGELOG.md`](CHANGELOG.md) for every change and its measurement.
+
+> **Tested only on the R36 Ultra.** Other RK3326 handhelds use the same image and device-tree selector but have not been
+> checked with these changes. Targets other than RK3326 are inherited from upstream and were not built or tested.
+> Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors. Please do not report Zenith problems
+> to them.
 
 ## Screenshots
 
@@ -61,6 +70,62 @@ the bootloader (3.11 s -> 2.11 s).
 
 **Not the goal:** Zenith adds no new emulators and does not update cores; those come from AURKNIX. The work is on boot,
 suspend, responsiveness and the interface.
+
+## Under the hood
+
+**Kernel.** Zenith runs **Linux 6.12 mainline** (6.12.79 in the current image), not the 4.4.189 vendor (BSP) kernel that
+ArkOS and dArkOSRE still use. The 6.12 base comes from AURKNIX/ROCKNIX. The patch set on top of it is in
+`projects/ROCKNIX/devices/RK3326/patches/linux/` (part inherited, part Zenith's own, see the changelog) and includes, among
+others:
+
+- CPU/GPU voltage bins L0-L3 read through PVTM, an RK3326 OPP table (CPU 1296 MHz by default, with 1416 and 1512 MHz as an
+  opt-in turbo; GPU 200-600 MHz) and memory devfreq.
+- Stable RK915 Wi-Fi across reboots and real suspend, and the RK817 battery gauge fixes.
+- The R36 Ultra joystick RGB LED driver and a panel brightness control.
+- An exFAT directory-readahead limit.
+
+The kernel configuration was reviewed for performance: it is already lightweight (`-O2`, no debugging or tracing,
+zram and MGLRU enabled), and the Cortex-A35 reports "not affected" for almost every speculative-execution mitigation, so
+there is no security tax to remove.
+
+**Boot.** A small initramfs probes the SD card every 50 ms and hands over to systemd with `exec`; GPU, display, Sway and
+EmulationStation then start in parallel as soon as storage is ready, and the early start disables itself if EmulationStation
+is not ready in time. u-boot runs with `BOOTDELAY=0`.
+
+**EmulationStation.** 54 patches on top of `ROCKNIX/emulationstation-next` (`projects/ROCKNIX/packages/ui/emulationstation/patches/RK3326/`)
+cover the interface, the carousel, audio wake-up, the quit menu and the Wi-Fi and settings menus.
+
+## Tested and not shipped
+
+Every claim below was measured on the R36 Ultra. The point of Zenith is speed that you can feel, so a change that did not
+help was not shipped.
+
+**Newer emulator cores (ROCKNIX `next` branch).** 19 libretro cores were rebuilt from the `next` branch and compared with
+the installed ones. The main comparisons used 32 ROMs with 4 repetitions each (RetroArch 1.22.2, same governor, temperature
+capped at 68 °C); only CPU time was measured, not audio or save states.
+
+| Core | CPU per frame, old -> new | Verdict |
+|---|---|---|
+| snes9x, genesis_plus_gx, picodrive, gambatte, vba_next, quicknes | -1.4 % to +1.1 % | Same speed, so no reason to change |
+| nestopia (default NES core) | +19 % | **Slower** (worse on all 6 ROMs) |
+| fceumm | +13 % | **Slower** |
+| gearsystem (Game Gear / Master System) | -26 % | The only clear gain |
+| mGBA new vs mGBA old | -42 % | Better than before, but still **2x** the CPU of the default gpSP, and +25 % over gambatte on GB/GBC |
+
+Newer emulator builds do not give more performance in general: most are equivalent, two are slower, and the one
+that is faster (mGBA) is still behind the cores AURKNIX already uses. Zenith keeps AURKNIX's cores; gearsystem is the one
+candidate worth updating in a future image.
+
+**PPSSPP.** Versions 1.12.3 and 1.20 were compared on three games, and 12 settings were tried one at a time on a set of
+ten games run from save states. There is no winning version (1.20 wins in some games, 1.12.3 in others), profile-guided optimisation gives
++2.5 % rather than the hoped 15 %, and no setting is free: the one that raises speed (`SkipBufferEffects`, up to +77 % in
+God of War) breaks the picture. The stock `FrameSkip = 3` stays because it is faster in heavy games.
+
+**GPU clock.** A fixed 520 or 560 MHz freezes the console within a second or two, whatever the voltage; 200, 300, 400 and
+600 MHz are stable. The frequency table is therefore 200/300/400/480/600 MHz.
+
+**CPU turbo.** 1416 MHz at 1350 mV is stable on four cores; 1512 MHz on four cores rebooted the console, so it is not
+used by default.
 
 ## Install
 
