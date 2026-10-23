@@ -73,6 +73,12 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
   (CPU governor and frequencies, turbo steps, benchmarks, monitor). `zenith-14-tema-es` .. `zenith-52-bigger-logos`
 - Opening a game from the menu: 6.29 s -> 3.85 s (average of 8 games). `launch-iter1`..`launch-iter4`
 
+## Boot time summary (R36 Ultra)
+- Stock AURKNIX: about 28 s from power-on to the menu (stopwatch). Zenith: about 15.4 s (boot log, ES ready at 13.3 s of
+  kernel clock plus 2.1 s of bootloader). The 17.6 s -> 15.4 s step in the 2026-10-21 entry starts from an already
+  optimised Zenith build, not from stock AURKNIX.
+- On an R36S with the full 134-system list, the stopwatch went 33 s -> about 17-19 s in the first optimisation round (2026-10-05).
+
 ## 2026-10-07 - base work
 - Silent power-off (no red message), silent console output at boot, reliable RK915 Wi-Fi including real suspend,
   CPU/GPU voltage bins L0-L3 through PVTM, RK817 battery gauge. `img-20261007-*`
