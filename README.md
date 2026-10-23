@@ -27,7 +27,7 @@ developed and measured on the **R36 Ultra**.
 
 - **Fast boot**: about **15 s** from power-on to the menu (33 s before). GPU, display, Sway and EmulationStation start in
   parallel as soon as storage is ready.
-- **Real suspend to RAM**: suspend in **2.3 s**, wake in **4.3 s**, with Wi-Fi that survives sleep.
+- **Fast suspend**: the console sleeps in **2.3 s**, wakes in **4.3 s**, and Wi-Fi works again after waking up.
 - **Games open in 3.85 s** (6.29 s before), and the menus answer on the first button press (**11 ms**).
 - **Own interface**: light and dark theme, redesigned dialogs, keyboard, sliders and carousel, a clean Tools menu and
   first-boot screens.
@@ -50,10 +50,6 @@ developed and measured on the **R36 Ultra**.
 <td align="center"><img src="docs/images/menu-dark.png" width="280"/><br/><sub>Settings menu</sub></td>
 </tr>
 </table>
-
-R36 Ultra, 720x720. The game grids use a small demo set of Game Boy Color games with box art; Zenith does not ship any
-games or covers. The grid shows the `thumbnail` (box art) that the EmulationStation scraper stores for each game, so it
-works with any scraped library.
 
 ---
 
