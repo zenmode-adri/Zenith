@@ -55,7 +55,7 @@ developed and measured on the **R36 Ultra**.
 
 Measured on an **R36 Ultra**. Details and the git tag of every change are in [`CHANGELOG.md`](CHANGELOG.md).
 
-| | AURKNIX | Zenith | Change |
+| | AURKNIX (base) | Zenith | Change |
 |---|---:|---:|---:|
 | Power-on to menu | 33 s | **15 s** | **-53 %** |
 | Opening a game | 6.29 s | **3.85 s** | **-39 %** |
@@ -65,6 +65,8 @@ Measured on an **R36 Ultra**. Details and the git tag of every change are in [`C
 
 > AURKNIX is the base image Zenith started from. Zenith's boot time comes from the boot log plus the bootloader
 > (3.11 s -> 2.11 s).
+>
+> Thanks to AURKNIX and ROCKNIX for the base these numbers start from.
 
 ### Boot and power
 - GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD
