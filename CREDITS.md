@@ -13,7 +13,7 @@ Zenith would not exist without them.
   EmulationStation contributors, testers.
 
 - **Jacob Cook** (SD resume retry and dwc2 suspend/resume fixes, ROCKNIX #3303/#3304) and **Chris Morgan** (RK817 battery
-  gauge and sleep fixes, ROCKNIX #3305), whose kernel patches Zenith carries for a reliable suspend.
+  gauge and sleep fixes, ROCKNIX #3305), whose kernel patches Zenith carries for suspend and resume.
 - **KK** (AveyondFly), who ported the PX30 memory (DMC) frequency scaling from the Rockchip BSP
   (AveyondFly/distribution_rocknix commit `2c34156`, "rk3326: add dmc").
 

@@ -13,7 +13,7 @@
 </p>
 
 Zenith is its own system image: Linux 6.12 mainline, EmulationStation with a custom light/dark theme, and a boot and
-suspend path rebuilt from the ground up. It is an **unofficial fork** of
+suspend path tuned for speed. It is an **unofficial fork** of
 [AURKNIX](https://github.com/AveyondFly/distribution_rocknix), which is a fork of [ROCKNIX](https://github.com/ROCKNIX),
 developed and measured on the **R36 Ultra**.
 
@@ -33,8 +33,6 @@ developed and measured on the **R36 Ultra**.
   first-boot screens.
 - **Mainline kernel**: Linux 6.12 with upstream drivers, plus a patch set for the RK3326.
 - **R36 Tuner Next** built in: CPU governor and frequencies, turbo steps, benchmarks and a monitor.
-- **Measured, not guessed**: newer emulator builds, PPSSPP versions and GPU clocks were benchmarked on the device, and what
-  did not help was left out ([details](#tested-and-not-shipped)).
 
 ## Screenshots
 
@@ -81,13 +79,12 @@ Measured on an **R36 Ultra**. Details and the git tag of every change are in [`C
 - System carousel with equal 22 px gaps, no jumping neighbours and a steady speed when holding a direction.
 - System / Network Settings open at once and fill their lists in the background; faster Wi-Fi menu.
 - Fewer confirmation prompts in the quit menu.
-- Tools menu with an icon and a description for every tool; 15 dead entries removed (ES warnings per boot 15 -> 0).
+- Tools menu with an icon and a description for every tool; 15 dead entries removed.
 - Own first-boot screens, language question and boot banner.
 
 ### R36 Ultra hardware
 - RK915 Wi-Fi driver fixes, joystick RGB LED driver, RK817 battery gauge, CPU/GPU voltage bins
   L0-L3 through PVTM, GPU table 200-600 MHz.
-- **R36 Tuner Next** built in: CPU governor and frequencies, turbo steps, benchmarks, monitor.
 
 > [!NOTE]
 > Zenith adds no new emulators and does not update cores; those come from AURKNIX. The work is on boot, suspend,
@@ -121,7 +118,7 @@ reliable on these devices relies on upstream fixes that Zenith carries:
 
 On top of that, Zenith adds the RK915 Wi-Fi unload/reload around sleep, suspend steps that run in parallel
 (suspend 3.5 s -> 2.3 s, resume 8 s -> 4.3 s), CPU/GPU/memory governors restored first on wake-up, a "Suspending..." notice
-that stays on screen for at least one second, and a guarantee that the backlight is on after waking.
+that stays on screen for at least one second, and a fix that makes sure the backlight is always on after waking.
 
 The kernel configuration was reviewed for performance: it is already lightweight (`-O2`, no debugging or tracing,
 zram and MGLRU enabled), and the Cortex-A35 reports "not affected" for almost every speculative-execution mitigation, so
@@ -136,8 +133,8 @@ cover the interface, the carousel, audio wake-up, the quit menu and the Wi-Fi an
 
 ## Tested and not shipped
 
-Every claim below was measured on the R36 Ultra. The point of Zenith is speed that you can feel, so a change that did not
-help was not shipped.
+Newer emulator builds, PPSSPP versions and GPU clocks were benchmarked on the R36 Ultra, and a change that did not help
+was not shipped. Everything below was measured on the device.
 
 ### Newer emulator cores (ROCKNIX `next` branch)
 

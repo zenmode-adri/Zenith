@@ -1,7 +1,7 @@
 # Zenith changelog
 
 Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix) (itself a fork of
-[ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, a polished EmulationStation interface and reliable
+[ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, a polished EmulationStation interface and fast
 suspend on **RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
 Dates are the build dates. Every entry has a git tag (named in `code`) and details in the commit it points to.
 
@@ -80,7 +80,7 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
 - In the first optimisation round (2026-10-05, R36S with the full 134-system list) the stopwatch already went 33 s -> about 17-19 s.
 
 ## 2026-10-07 - base work
-- Silent power-off (no red message), silent console output at boot, reliable RK915 Wi-Fi including real suspend,
+- Silent power-off (no red message), silent console output at boot, RK915 Wi-Fi fixes (boot, reboot and suspend),
   CPU/GPU voltage bins L0-L3 through PVTM, RK817 battery gauge. `img-20261007-*`
 
 ## Known limitations
