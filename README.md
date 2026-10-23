@@ -5,11 +5,10 @@
 <h3 align="center">A fast, polished operating system for RK3326 handhelds</h3>
 
 <p align="center">
-  <a href="https://github.com/zenmode-adri/Zenith/releases"><img src="https://img.shields.io/github/v/release/zenmode-adri/Zenith?style=flat-square" alt="Release"/></a>
-  <a href="https://github.com/zenmode-adri/Zenith/stargazers"><img src="https://img.shields.io/github/stars/zenmode-adri/Zenith?style=flat-square" alt="Stars"/></a>
-  <a href="https://github.com/zenmode-adri/Zenith/commits/main"><img src="https://img.shields.io/github/last-commit/zenmode-adri/Zenith?style=flat-square" alt="Last commit"/></a>
   <img src="https://img.shields.io/badge/SoC-RK3326-blue?style=flat-square" alt="RK3326"/>
   <img src="https://img.shields.io/badge/kernel-Linux%206.12-orange?style=flat-square" alt="Linux 6.12"/>
+  <img src="https://img.shields.io/badge/tested%20on-R36%20Ultra-success?style=flat-square" alt="Tested on R36 Ultra"/>
+  <img src="https://img.shields.io/badge/boot-15%20s-informational?style=flat-square" alt="Boot 15 s"/>
   <a href="https://ko-fi.com/zenmodeadri"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&style=flat-square" alt="Ko-fi"/></a>
 </p>
 
