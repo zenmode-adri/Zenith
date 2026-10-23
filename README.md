@@ -18,7 +18,7 @@ All numbers were measured on an **R36 Ultra** (full details and the git tag of e
 
 | Area | Change | Result |
 |---|---|---|
-| Boot | GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD probing in the initramfs | Power-on to menu about **28 s -> 15 s** (stock AURKNIX by stopwatch; Zenith 15.4 s from the boot log plus bootloader, which went 3.11 s -> 2.11 s) |
+| Boot | GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD probing in the initramfs | Power-on to menu about **33 s -> 15 s** (stock AURKNIX by stopwatch; Zenith 15.4 s from the boot log plus bootloader, which went 3.11 s -> 2.11 s) |
 | Suspend | Wi-Fi shutdown, panel and the rest in parallel; governors restored first on wake-up | Suspend **3.5 s -> 2.3 s**, resume **8 s -> 4.3 s** |
 | Responsiveness | Audio device reopened on a worker thread after idle | First button press after idle **225-245 ms -> 11 ms** |
 | Opening a game | Launch path optimised | **6.29 s -> 3.85 s** (average of 8 games) |
