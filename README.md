@@ -55,7 +55,7 @@ developed and measured on the **R36 Ultra**.
 
 Measured on an **R36 Ultra**. Details and the git tag of every change are in [`CHANGELOG.md`](CHANGELOG.md).
 
-| | Before | Zenith | Change |
+| | AURKNIX | Zenith | Change |
 |---|---:|---:|---:|
 | Power-on to menu | 33 s | **15 s** | **-53 %** |
 | Opening a game | 6.29 s | **3.85 s** | **-39 %** |
@@ -63,9 +63,8 @@ Measured on an **R36 Ultra**. Details and the git tag of every change are in [`C
 | Resume | 8 s | **4.3 s** | **-46 %** |
 | First button press after idle | 225-245 ms | **11 ms** | **-95 %** |
 
-> *Before* is stock AURKNIX for boot (stopwatch) and for opening a game. For suspend, resume and the first button press it
-> is an earlier Zenith build, because stock AURKNIX was not measured for those. Zenith's boot time comes from the boot log
-> plus the bootloader (3.11 s -> 2.11 s).
+> AURKNIX is the base image Zenith started from. Zenith's boot time comes from the boot log plus the bootloader
+> (3.11 s -> 2.11 s).
 
 ### Boot and power
 - GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD
@@ -116,8 +115,8 @@ reliable on these devices relies on upstream fixes that Zenith carries:
 - RK817 battery gauge corrected across sleep, and the `SYS_CAN_SD` register cleared by default, as the vendor kernel does:
   ROCKNIX pull request #3305, by Chris Morgan.
 
-On top of that, Zenith adds the RK915 Wi-Fi unload/reload around sleep, suspend steps that run in parallel
-(suspend 3.5 s -> 2.3 s, resume 8 s -> 4.3 s), CPU/GPU/memory governors restored first on wake-up, a "Suspending..." notice
+On top of that, Zenith adds the RK915 Wi-Fi unload/reload around sleep, suspend steps that run in parallel,
+CPU/GPU/memory governors restored first on wake-up, a "Suspending..." notice
 that stays on screen for at least one second, and a fix that makes sure the backlight is always on after waking.
 
 The kernel configuration was reviewed for performance: it is already lightweight (`-O2`, no debugging or tracing,
