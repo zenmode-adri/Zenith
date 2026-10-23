@@ -1,9 +1,0 @@
-./client.go
-./config.go
-./debug.go
-./errors.go
-./main.go
-./operations.go
-./pending.go
-./show.go
-./utils.go

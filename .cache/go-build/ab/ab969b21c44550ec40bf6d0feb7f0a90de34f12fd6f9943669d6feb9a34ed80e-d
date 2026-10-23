@@ -1,6 +1,0 @@
-./gateway.go
-./gateway_linux.go
-./gateway_parsers.go
-./mock_interfaceGetter.go
-./net_interface.go
-./test_route_tables.go

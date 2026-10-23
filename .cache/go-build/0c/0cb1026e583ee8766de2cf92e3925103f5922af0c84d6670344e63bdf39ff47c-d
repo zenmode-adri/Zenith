@@ -1,4 +1,0 @@
-./debug.go
-./signingkey.go
-./upgrade_common.go
-./upgrade_unsupp.go

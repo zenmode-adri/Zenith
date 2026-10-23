@@ -1,6 +1,0 @@
-./blockqueue.go
-./blocks.go
-./debug.go
-./doc.go
-./metrics.go
-./walk.go
