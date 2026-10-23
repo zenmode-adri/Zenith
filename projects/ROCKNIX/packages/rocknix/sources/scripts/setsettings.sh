@@ -252,7 +252,7 @@ done
 function log() {
     if [ ${LOGGING} = "verbose" ]
     then
-        echo "$(printf '%(%c)T\n' -1): setsettings: $*" >> ${LOG_DIR}/${LOG_FILE} 2>&1
+        printf '%(%c)T: setsettings: %s\n' -1 "$*" >> ${LOG_DIR}/${LOG_FILE} 2>&1
     fi
 }
 
@@ -273,19 +273,19 @@ function game_setting() {
 
 function clear_setting() {
       log "Remove setting [${1}]"
-      if [ ! -f "${TMP_CONFIG}.sed" ]
-      then
-          echo -n 'sed -i "/^'${1}'/d;' >${TMP_CONFIG}.sed
-      else
-          echo -n ' /^'${1}'/d;' >>${TMP_CONFIG}.sed
-      fi
+      # script de sed acumulado (una orden por clave); flush_settings lo aplica con un solo sed
+      echo -n '/^'${1}'/d; ' >>${TMP_CONFIG}.sed
 }
 
 function flush_settings() {
-    echo -n '" '${RETROARCH_CONFIG}' >/dev/null 2>&1' >>${TMP_CONFIG}.sed
-    chmod 0755 ${TMP_CONFIG}.sed
-    ${TMP_CONFIG}.sed >/dev/null 2>&1 ||:
-    rm -f ${TMP_CONFIG}.sed
+    # un solo proceso (sed) por vuelco: antes eran chmod + subshell + sed + rm
+    if [ -s "${TMP_CONFIG}.sed" ]
+    then
+        local SED_SCRIPT
+        read -r -d '' SED_SCRIPT <"${TMP_CONFIG}.sed" ||:
+        sed -i "${SED_SCRIPT}" ${RETROARCH_CONFIG} >/dev/null 2>&1 ||:
+        : >${TMP_CONFIG}.sed
+    fi
 }
 
 function add_setting() {
@@ -295,8 +295,8 @@ function add_setting() {
     fi
     local RETROARCH_KEY="${2}"
     local RETROARCH_VALUE="${3}"
-    if [ -z "${RETROARCH_VALUE}" ]& \
-       [ ! "${1}" = "none" ]
+    # (el "[ -z ... ]&" original corria en segundo plano y su resultado se ignoraba: el efecto era solo "$1 != none")
+    if [ ! "${1}" = "none" ]
     then
         RETROARCH_VALUE="${OS_SETTING}"
     fi
@@ -334,27 +334,58 @@ function set_retroarch_paths() {
     clear_setting "${RPATH}"
   done
   flush_settings
-  cat <<EOF >>${RETROARCH_CONFIG}
-assets_directory = "/tmp/assets"
-cache_directory = "/tmp/cache"
-cheat_database_path = "/tmp/database/cht"
-content_database_path = "/tmp/database/rdb"
-joypad_autoconfig_dir = "/tmp/joypads"
-libretro_directory = "/tmp/cores"
-libretro_info_path = "/tmp/cores"
-overlay_directory = "/tmp/overlays"
-video_shader_dir = "/tmp/shaders"
-EOF
+  # printf es builtin; "cat <<EOF" lanzaba un proceso
+  printf '%s\n' \
+    'assets_directory = "/tmp/assets"' \
+    'cache_directory = "/tmp/cache"' \
+    'cheat_database_path = "/tmp/database/cht"' \
+    'content_database_path = "/tmp/database/rdb"' \
+    'joypad_autoconfig_dir = "/tmp/joypads"' \
+    'libretro_directory = "/tmp/cores"' \
+    'libretro_info_path = "/tmp/cores"' \
+    'overlay_directory = "/tmp/overlays"' \
+    'video_shader_dir = "/tmp/shaders"' >>${RETROARCH_CONFIG}
+}
+
+### Nombre del mando: lo mismo que `grep -b4 PATRON /proc/bus/input/devices | awk -F\" '/Name/ {printf $2}'`
+### pero con builtins (grep + grep + awk eran 3 procesos). Pone el nombre en INPUT_NAME y devuelve 0 si PATRON aparece.
+function input_device_name() {
+    local pat="$1" i j n
+    local -a L
+    local -A show=()
+    mapfile -t L </proc/bus/input/devices
+    n=${#L[@]}
+    INPUT_NAME=""
+    for ((i = 0; i < n; i++))
+    do
+        [[ "${L[i]}" == *${pat}* ]] || continue
+        for ((j = i - 4; j <= i + 4; j++))
+        do
+            ((j >= 0 && j < n)) && show[${j}]=1
+        done
+    done
+    ((${#show[@]})) || return 1
+    for ((i = 0; i < n; i++))
+    do
+        [[ -n "${show[${i}]:-}" && "${L[i]}" == *Name* ]] || continue
+        if [[ "${L[i]}" == *'"'* ]]
+        then
+            j="${L[i]#*\"}"
+            INPUT_NAME+="${j%%\"*}"
+        fi
+    done
+    return 0
 }
 
 ### Configure retroarch hotkeys
 function configure_hotkeys() {
     log "Configure hotkeys..."
     local MY_CONTROLLER
-    if grep -q "js0" /proc/bus/input/devices; then
-        MY_CONTROLLER=$(grep -b4 js0 /proc/bus/input/devices | awk 'BEGIN {FS="\""}; /Name/ {printf $2}')
+    if input_device_name js0; then
+        MY_CONTROLLER="${INPUT_NAME}"
     else
-        MY_CONTROLLER=$(grep -b4 joypad /proc/bus/input/devices | awk 'BEGIN {FS="\""}; /Name/ {printf $2}')
+        input_device_name joypad
+        MY_CONTROLLER="${INPUT_NAME}"
     fi
 
     ### Remove any input settings retroarch may have added.
@@ -364,9 +395,9 @@ function configure_hotkeys() {
     then
         if [ -e "/tmp/joypads/${MY_CONTROLLER}.cfg" ]
         then
-            cp /tmp/joypads/"${MY_CONTROLLER}.cfg" /tmp
-            sed -i "s# = #=#g" /tmp/"${MY_CONTROLLER}.cfg"
-            source /tmp/"${MY_CONTROLLER}.cfg"
+            local JOYPAD_CFG
+            read -r -d '' JOYPAD_CFG <"/tmp/joypads/${MY_CONTROLLER}.cfg" ||:
+            eval "${JOYPAD_CFG// = /=}"
             for HKEYSETTING in input_enable_hotkey_btn input_bind_hold            \
                                input_exit_emulator_btn input_fps_toggle_btn       \
                                input_menu_toggle_btn input_save_state_btn         \
@@ -410,7 +441,6 @@ input_rewind_axis = "${input_l2_axis}"
 input_rewind_btn = "nul"
 EOF
             fi
-            rm -f /tmp/"${MY_CONTROLLER}.cfg"
         fi
     fi
 }
@@ -1108,7 +1138,7 @@ function set_gambatte() {
 }
 
 function setup_controllers() {
-    for i in $(seq 1 1 5)
+    for i in {1..5}
     do
         log "Controller setup (${i})"
         if [[ "$CONTROLLERS" == *p${i}* ]]
