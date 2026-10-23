@@ -5,6 +5,19 @@ Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribu
 suspend on **RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
 Dates are the build dates. Every entry has a git tag (named in `code`) and details in the commit it points to.
 
+## v0.1.0 - 2026-10-23 (first public release, pre-release)
+
+Image `AURKNIX-RK3326.aarch64-20261023.img.gz` and update package `AURKNIX-RK3326.aarch64-20261023.tar`. Tag `v0.1.0`.
+Same sources as the development image `44d6084` below, built as a **clean release image**:
+
+- No Wi-Fi network, SSH, Samba or verbose logging is enabled by default: turn them on from the menu when you need them.
+  The development builds enabled all of them.
+- `sshd` no longer starts just because the kernel command line contains `ssh` (the AURKNIX `extlinux.conf` had it, so
+  SSH was always on, with the factory password). SSH is now opt-in through the `ssh.enabled` setting.
+- Checked on the files: no saved Wi-Fi name or key anywhere in the image, no SSH keys, update package under 2 GiB.
+- **Not yet checked:** the first boot of this exact image from a freshly written SD card. The same sources run on an
+  R36 Ultra as a development image.
+
 ## 2026-10-23 - image `44d6084` (first public candidate)
 
 - **Carousel cards with an icon** (Music, Tools, Favorites, All games, Last played, Never played, Collections, Books):
