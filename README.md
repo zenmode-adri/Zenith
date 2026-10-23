@@ -21,7 +21,7 @@ R36 Ultra, 720x720. Dark and light variants of the Zenith theme.
 | **Game grid (dark)** | **Game grid (light)** | **Settings menu** |
 | <img src="docs/images/grid-dark.png" width="230"> | <img src="docs/images/grid-light.png" width="230"> | <img src="docs/images/menu-dark.png" width="230"> |
 
-The game grids use a small demo set of Game Boy Color games with scraped covers; Zenith does not ship any games.
+The game grids use a small demo set of Game Boy Color games with box art; Zenith does not ship any games or covers. The grid shows the `thumbnail` (box art) that the EmulationStation scraper stores for each game.
 
 ## What's different from AURKNIX
 
