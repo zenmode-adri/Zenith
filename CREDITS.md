@@ -7,6 +7,7 @@ Zenith would not exist without them.
 
 - **lcdyk** and **KK**, authors and maintainers of AURKNIX: the RK3326 device trees, emulators, tools and the whole
   base this fork stands on (https://github.com/AveyondFly/distribution_rocknix, upstream work by lcdyk0517).
+  Support lcdyk on Ko-fi: https://ko-fi.com/lcdyk
 - **AveyondFly**, who hosts the AURKNIX repository.
 - The **ROCKNIX** team (https://github.com/ROCKNIX) and the **JELOS** and **EmuELEC** teams before them.
 - Everyone who builds and shares open source for these handhelds: emulator authors, kernel and driver developers,

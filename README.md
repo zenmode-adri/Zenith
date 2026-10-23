@@ -67,3 +67,5 @@ built on) and to **AveyondFly**, who hosts the AURKNIX repository. Thank you.
 
 Thanks also to the **ROCKNIX** and **JELOS** teams, and to CoreELEC, LibreELEC and the many open source developers
 whose work makes a distribution like this possible. See [`CREDITS.md`](CREDITS.md) for the full list.
+
+If you would like to support **lcdyk**, maintainer of AURKNIX, you can use Ko-fi: [https://ko-fi.com/lcdyk](https://ko-fi.com/lcdyk).
