@@ -20,3 +20,11 @@ Zenith: boot messages and debugging
    run "dmesg" or "journalctl -k" over SSH, or read the boot logs saved in /flash/bootlog.
  * To see everything on screen (and on the serial console), copy extlinux.conf.debug over
    extlinux.conf, or just remove "loglevel=1" from the APPEND line. Re-add your FDT line if you use one.
+
+Zenith: choosing the DTB for your console
+ * Windows: run ZenithDtbSelector.exe from the root of this card. It finds the card, lists every supported
+   console (Chinese, English or Spanish), shows exactly what will change in extlinux.conf and keeps a backup in
+   extlinux/backups/ (restore it from the same tool).
+ * From the console itself (SSH): run dtbselect.
+ * If the screen stays black or the colours are wrong, put the card back in the PC and try another variant of
+   the same family (for example "R36S clone type 3 panel 1" instead of "panel 2").

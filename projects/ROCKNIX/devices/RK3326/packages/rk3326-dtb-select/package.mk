@@ -22,7 +22,10 @@ makeinstall_target() {
   cp -a ${PKG_DIR}/dtb_selector.py ${INSTALL}/usr/share/bootloader/
   cp -a ${PKG_DIR}/config ${INSTALL}/usr/share/bootloader/config
   install -m 0755 ${PKG_DIR}/scripts/dtb-select-flash.in ${INSTALL}/usr/share/bootloader/dtbselect
-  if [ -f ${PKG_DIR}/prebuilt/DtbselectWin64.exe ]; then
+  # Zenith DTB Selector (zenith-dtb-selector/build.sh); the legacy Windows exe is only used when the new one was not built
+  if [ -f ${PKG_DIR}/prebuilt/ZenithDtbSelector-win64.exe ]; then
+    install -m 644 ${PKG_DIR}/prebuilt/ZenithDtbSelector-win64.exe ${INSTALL}/usr/share/bootloader/ZenithDtbSelector.exe
+  elif [ -f ${PKG_DIR}/prebuilt/DtbselectWin64.exe ]; then
     install -m 644 ${PKG_DIR}/prebuilt/DtbselectWin64.exe ${INSTALL}/usr/share/bootloader/DtbselectWin64.exe
   fi
 }

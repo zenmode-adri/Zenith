@@ -189,6 +189,10 @@ mkimage_rk3326_dtb_select() {
   if [ -f "${RELEASE_DIR}/3rdparty/bootloader/dtbselect" ]; then
     mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/dtbselect" ::/dtbselect
   fi
+  if [ -f "${RELEASE_DIR}/3rdparty/bootloader/ZenithDtbSelector.exe" ]; then
+    echo "image: copying ZenithDtbSelector.exe (Windows) to boot partition (RK3326)..."
+    mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/ZenithDtbSelector.exe" ::/ZenithDtbSelector.exe
+  fi
   if [ -f "${RELEASE_DIR}/3rdparty/bootloader/DtbselectWin64.exe" ]; then
     echo "image: copying DtbselectWin64.exe (Windows) to boot partition (RK3326)..."
     mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/DtbselectWin64.exe" ::/DtbselectWin64.exe

@@ -1,0 +1,962 @@
+{
+ "families": [
+  {
+   "id": "udt",
+   "zh": "UDT",
+   "en": "UDT",
+   "es": "UDT"
+  },
+  {
+   "id": "r36s_clone",
+   "zh": "R36S克隆",
+   "en": "R36S Clone",
+   "es": "R36S clon"
+  },
+  {
+   "id": "r36s_sauce",
+   "zh": "R36S酱油",
+   "en": "R36S Sauce",
+   "es": "R36S Sauce"
+  },
+  {
+   "id": "gameconsole",
+   "zh": "Game Console",
+   "en": "Game Console",
+   "es": "Game Console"
+  },
+  {
+   "id": "xifan",
+   "zh": "稀范科技",
+   "en": "Xifan",
+   "es": "Xifan"
+  },
+  {
+   "id": "anbernic",
+   "zh": "安伯尼克",
+   "en": "Anbernic",
+   "es": "Anbernic"
+  },
+  {
+   "id": "powkiddy",
+   "zh": "泡机堂",
+   "en": "PowKiddy",
+   "es": "PowKiddy"
+  },
+  {
+   "id": "ymc",
+   "zh": "亿米创",
+   "en": "YMC",
+   "es": "YMC"
+  },
+  {
+   "id": "diium",
+   "zh": "迪优米",
+   "en": "Diium",
+   "es": "Diium"
+  },
+  {
+   "id": "magicx",
+   "zh": "Magicx",
+   "en": "Magicx",
+   "es": "Magicx"
+  },
+  {
+   "id": "gamemt",
+   "zh": "漫特科技",
+   "en": "GAMEMT",
+   "es": "GAMEMT"
+  },
+  {
+   "id": "odroid",
+   "zh": "Odroid",
+   "en": "Odroid",
+   "es": "Odroid"
+  },
+  {
+   "id": "aislpc",
+   "zh": "AISLPC",
+   "en": "AISLPC",
+   "es": "AISLPC"
+  },
+  {
+   "id": "k36",
+   "zh": "K36系列",
+   "en": "K36 series",
+   "es": "Serie K36"
+  },
+  {
+   "id": "batlexp",
+   "zh": "Batlexp",
+   "en": "Batlexp",
+   "es": "Batlexp"
+  },
+  {
+   "id": "other",
+   "zh": "其他",
+   "en": "Others",
+   "es": "Otros"
+  }
+ ],
+ "devices": [
+  {
+   "id": "udt-r36-ultra",
+   "family": "udt",
+   "zh": "UDT R36 Ultra",
+   "en": "UDT R36 Ultra",
+   "es": "UDT R36 Ultra",
+   "dtb": "rk3326-gameconsole-r36ultra.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "udt-r36-ultra-v2",
+   "family": "udt",
+   "zh": "UDT R36 Ultra v2",
+   "en": "UDT R36 Ultra v2",
+   "es": "UDT R36 Ultra v2",
+   "dtb": "rk3326-gameconsole-r36ultra-v2.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "udt-r36-ultra-x",
+   "family": "udt",
+   "zh": "UDT R36 Ultra X",
+   "en": "UDT R36 Ultra X",
+   "es": "UDT R36 Ultra X",
+   "dtb": "rk3326-gameconsole-r36ultrax.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "r36s-clone-type-1-with-amplifier",
+   "family": "r36s_clone",
+   "zh": "R36S克隆 种类1带功放",
+   "en": "R36S Clone Type 1 with amplifier",
+   "es": "R36S clon tipo 1 con amplificador",
+   "dtb": "rk3326-xifan-r36pro.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "r36s-clone-type-1-without-amplifier",
+   "family": "r36s_clone",
+   "zh": "R36S克隆 种类1不带功放",
+   "en": "R36S Clone Type 1 without amplifier",
+   "es": "R36S clon tipo 1 sin amplificador",
+   "dtb": "rk3326-gameconsole-hg36.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "r36s-clone-type-1-without-amplifier-inverted-r-stick",
+   "family": "r36s_clone",
+   "zh": "R36S克隆 种类1不带功放并反转右摇杆",
+   "en": "R36S Clone Type 1 without amplifier (Inverted R-Stick)",
+   "es": "R36S clon tipo 1 sin amplificador (stick derecho invertido)",
+   "dtb": "rk3326-gameconsole-k36.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "r36s-clone-type-2-with-amplifier",
+   "family": "r36s_clone",
+   "zh": "R36S克隆 种类2带功放",
+   "en": "R36S Clone Type 2 with amplifier",
+   "es": "R36S clon tipo 2 con amplificador",
+   "dtb": "rk3326-r36s-type2-with-amplifier.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "r36s-clone-type-2-without-amplifier",
+   "family": "r36s_clone",
+   "zh": "R36S克隆 种类2不带功放",
+   "en": "R36S Clone Type 2 without amplifier",
+   "es": "R36S clon tipo 2 sin amplificador",
+   "dtb": "rk3326-r36s-type2-without-amplifier.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "r36s-clone-type-3-panel-1",
+   "family": "r36s_clone",
+   "zh": "R36S克隆 种类3屏幕1",
+   "en": "R36S Clone Type 3 Panel 1",
+   "es": "R36S clon tipo 3 pantalla 1",
+   "dtb": "rk3326-r36s-type3-panel1.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "r36s-clone-type-3-panel-2",
+   "family": "r36s_clone",
+   "zh": "R36S克隆 种类3屏幕2",
+   "en": "R36S Clone Type 3 Panel 2",
+   "es": "R36S clon tipo 3 pantalla 2",
+   "dtb": "rk3326-r36s-type3-panel2.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "r36s-clone-type-4",
+   "family": "r36s_clone",
+   "zh": "R36S克隆 种类4",
+   "en": "R36S Clone Type 4",
+   "es": "R36S clon tipo 4",
+   "dtb": "rk3326-r36s-type4.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "r36s-sauce-panel-1",
+   "family": "r36s_sauce",
+   "zh": "R36S酱油 屏幕1",
+   "en": "R36S Sauce Panel 1",
+   "es": "R36S Sauce pantalla 1",
+   "dtb": "rk3326-r36s-sauce-panel1.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "r36s-sauce-panel-2",
+   "family": "r36s_sauce",
+   "zh": "R36S酱油 屏幕2",
+   "en": "R36S Sauce Panel 2",
+   "es": "R36S Sauce pantalla 2",
+   "dtb": "rk3326-r36s-sauce-panel2.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "r36s-sauce-panel-3",
+   "family": "r36s_sauce",
+   "zh": "R36S酱油 屏幕3",
+   "en": "R36S Sauce Panel 3",
+   "es": "R36S Sauce pantalla 3",
+   "dtb": "rk3326-r36s-sauce-panel3.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "r36s-sauce-panel-4",
+   "family": "r36s_sauce",
+   "zh": "R36S酱油 屏幕4",
+   "en": "R36S Sauce Panel 4",
+   "es": "R36S Sauce pantalla 4",
+   "dtb": "rk3326-r36s-sauce-panel4.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r33s",
+   "family": "gameconsole",
+   "zh": "Game Console R33s",
+   "en": "Game Console R33s",
+   "es": "Game Console R33s",
+   "dtb": "rk3326-gameconsole-r33s.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36s-p1-screen",
+   "family": "gameconsole",
+   "zh": "Game Console R36s P1屏幕",
+   "en": "Game Console R36s P1 screen",
+   "es": "Game Console R36s pantalla P1",
+   "dtb": "rk3326-gameconsole-r36s.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36s-p2-screen",
+   "family": "gameconsole",
+   "zh": "Game Console R36s P2屏幕",
+   "en": "Game Console R36s P2 screen",
+   "es": "Game Console R36s pantalla P2",
+   "dtb": "rk3326-gameconsole-r36s-panel2.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36s-p3-screen",
+   "family": "gameconsole",
+   "zh": "Game Console R36s P3屏幕",
+   "en": "Game Console R36s P3 screen",
+   "es": "Game Console R36s pantalla P3",
+   "dtb": "rk3326-gameconsole-r36s-panel3.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36s-p4-screen",
+   "family": "gameconsole",
+   "zh": "Game Console R36s P4屏幕",
+   "en": "Game Console R36s P4 screen",
+   "es": "Game Console R36s pantalla P4",
+   "dtb": "rk3326-gameconsole-r36s-panel4.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36xx",
+   "family": "gameconsole",
+   "zh": "Game Console R36xx",
+   "en": "Game Console R36xx",
+   "es": "Game Console R36xx",
+   "dtb": "rk3326-gameconsole-r36s-panel4.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36h",
+   "family": "gameconsole",
+   "zh": "Game Console R36H",
+   "en": "Game Console R36H",
+   "es": "Game Console R36H",
+   "dtb": "rk3326-gameconsole-r36s-panel4.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-o30s",
+   "family": "gameconsole",
+   "zh": "Game Console O30S",
+   "en": "Game Console O30S",
+   "es": "Game Console O30S",
+   "dtb": "rk3326-gameconsole-r36s-panel4.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r50s",
+   "family": "gameconsole",
+   "zh": "Game Console R50S",
+   "en": "Game Console R50S",
+   "es": "Game Console R50S",
+   "dtb": "rk3326-gameconsole-r50s.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r50h",
+   "family": "gameconsole",
+   "zh": "Game Console R50H",
+   "en": "Game Console R50H",
+   "es": "Game Console R50H",
+   "dtb": "rk3326-gameconsole-r50h.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36splus",
+   "family": "gameconsole",
+   "zh": "Game Console R36sPlus",
+   "en": "Game Console R36sPlus",
+   "es": "Game Console R36sPlus",
+   "dtb": "rk3326-gameconsole-r36splus.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36h-promax",
+   "family": "gameconsole",
+   "zh": "Game Console R36H ProMax",
+   "en": "Game Console R36H ProMax",
+   "es": "Game Console R36H ProMax",
+   "dtb": "rk3326-gameconsole-r45h.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r40xx",
+   "family": "gameconsole",
+   "zh": "Game Console R40XX",
+   "en": "Game Console R40XX",
+   "es": "Game Console R40XX",
+   "dtb": "rk3326-gameconsole-r40xx.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r40xx-promax",
+   "family": "gameconsole",
+   "zh": "Game Console R40XX ProMax",
+   "en": "Game Console R40XX ProMax",
+   "es": "Game Console R40XX ProMax",
+   "dtb": "rk3326-gameconsole-r40xxpromax.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r45h",
+   "family": "gameconsole",
+   "zh": "Game Console R45H",
+   "en": "Game Console R45H",
+   "es": "Game Console R45H",
+   "dtb": "rk3326-gameconsole-r45h.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r46h",
+   "family": "gameconsole",
+   "zh": "Game Console R46H",
+   "en": "Game Console R46H",
+   "es": "Game Console R46H",
+   "dtb": "rk3326-gameconsole-r46h.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-r36xx-promax",
+   "family": "gameconsole",
+   "zh": "Game Console R36xx ProMax",
+   "en": "Game Console R36xx ProMax",
+   "es": "Game Console R36xx ProMax",
+   "dtb": "rk3326-gameconsole-r36xxpromax.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "game-console-ee-clone",
+   "family": "gameconsole",
+   "zh": "Game Console EE Clone",
+   "en": "Game Console EE Clone",
+   "es": "Game Console EE Clone",
+   "dtb": "rk3326-gameconsole-eeclone.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "xifan-mymini",
+   "family": "xifan",
+   "zh": "稀范科技 MyMini",
+   "en": "Xifan MyMini",
+   "es": "Xifan MyMini",
+   "dtb": "rk3326-xifan-mymini.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-mini40",
+   "family": "xifan",
+   "zh": "稀范科技 Mini40",
+   "en": "Xifan Mini40",
+   "es": "Xifan Mini40",
+   "dtb": "rk3326-xifan-mini40.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-xf35h",
+   "family": "xifan",
+   "zh": "稀范科技 XF35H",
+   "en": "Xifan XF35H",
+   "es": "Xifan XF35H",
+   "dtb": "rk3326-xifan-xf35h.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-r36max",
+   "family": "xifan",
+   "zh": "稀范科技 R36Max",
+   "en": "Xifan R36Max",
+   "es": "Xifan R36Max",
+   "dtb": "rk3326-xifan-r36max.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-r36pro",
+   "family": "xifan",
+   "zh": "稀范科技 R36Pro",
+   "en": "Xifan R36Pro",
+   "es": "Xifan R36Pro",
+   "dtb": "rk3326-xifan-r36pro.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-xf40h",
+   "family": "xifan",
+   "zh": "稀范科技 XF40H",
+   "en": "Xifan XF40H",
+   "es": "Xifan XF40H",
+   "dtb": "rk3326-xifan-xf40h.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-xf40v",
+   "family": "xifan",
+   "zh": "稀范科技 XF40V",
+   "en": "Xifan XF40V",
+   "es": "Xifan XF40V",
+   "dtb": "rk3326-xifan-xf40v.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-xf28",
+   "family": "xifan",
+   "zh": "稀范科技 XF28",
+   "en": "Xifan XF28",
+   "es": "Xifan XF28",
+   "dtb": "rk3326-xifan-xf28.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-dc35v",
+   "family": "xifan",
+   "zh": "稀范科技 DC35V",
+   "en": "Xifan DC35V",
+   "es": "Xifan DC35V",
+   "dtb": "rk3326-xifan-dc35v.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-dc40v",
+   "family": "xifan",
+   "zh": "稀范科技 DC40V",
+   "en": "Xifan DC40V",
+   "es": "Xifan DC40V",
+   "dtb": "rk3326-xifan-dc40v.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-dc45v",
+   "family": "xifan",
+   "zh": "稀范科技 DC45V",
+   "en": "Xifan DC45V",
+   "es": "Xifan DC45V",
+   "dtb": "rk3326-xifan-dc45v.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "xifan-r36max2",
+   "family": "xifan",
+   "zh": "稀范科技 R36Max2",
+   "en": "Xifan R36Max2",
+   "es": "Xifan R36Max2",
+   "dtb": "rk3326-xifan-r36max2.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "xifan-rf35h",
+   "family": "xifan",
+   "zh": "稀范科技 RF35H",
+   "en": "Xifan RF35H",
+   "es": "Xifan RF35H",
+   "dtb": "rk3326-xifan-rf35h.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-rf40h",
+   "family": "xifan",
+   "zh": "稀范科技 RF40H",
+   "en": "Xifan RF40H",
+   "es": "Xifan RF40H",
+   "dtb": "rk3326-xifan-rf40h.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xifan-rf45v",
+   "family": "xifan",
+   "zh": "稀范科技 RF45V",
+   "en": "Xifan RF45V",
+   "es": "Xifan RF45V",
+   "dtb": "rk3326-xifan-rf45v.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "xifan-xf45v",
+   "family": "xifan",
+   "zh": "稀范科技 XF45V",
+   "en": "Xifan XF45V",
+   "es": "Xifan XF45V",
+   "dtb": "rk3326-xifan-xf45v.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "anbernic-rg351m",
+   "family": "anbernic",
+   "zh": "安伯尼克 RG351M",
+   "en": "Anbernic RG351M",
+   "es": "Anbernic RG351M",
+   "dtb": "rk3326-anbernic-rg351m.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "anbernic-rg351v",
+   "family": "anbernic",
+   "zh": "安伯尼克 RG351V",
+   "en": "Anbernic RG351V",
+   "es": "Anbernic RG351V",
+   "dtb": "rk3326-anbernic-rg351v.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "anbernic-rg351v-p2-screen",
+   "family": "anbernic",
+   "zh": "安伯尼克 RG351V P2屏幕",
+   "en": "Anbernic RG351V P2 screen",
+   "es": "Anbernic RG351V pantalla P2",
+   "dtb": "rk3326-anbernic-rg351v-panel2.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "anbernic-rg351mp",
+   "family": "anbernic",
+   "zh": "安伯尼克 RG351MP",
+   "en": "Anbernic RG351MP",
+   "es": "Anbernic RG351MP",
+   "dtb": "rk3326-anbernic-rg351mp.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "powkiddy-rgb10",
+   "family": "powkiddy",
+   "zh": "PowKiddy RGB10",
+   "en": "PowKiddy RGB10",
+   "es": "PowKiddy RGB10",
+   "dtb": "rk3326-powkiddy-rgb10.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "powkiddy-rgbv10",
+   "family": "powkiddy",
+   "zh": "PowKiddy RGBV10",
+   "en": "PowKiddy RGBV10",
+   "es": "PowKiddy RGBV10",
+   "dtb": "rk3326-powkiddy-rgbv10.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "powkiddy-rgb10x",
+   "family": "powkiddy",
+   "zh": "PowKiddy RGB10X",
+   "en": "PowKiddy RGB10X",
+   "es": "PowKiddy RGB10X",
+   "dtb": "rk3326-powkiddy-rgb10x.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "powkiddy-rgb10s",
+   "family": "powkiddy",
+   "zh": "PowKiddy RGB10S",
+   "en": "PowKiddy RGB10S",
+   "es": "PowKiddy RGB10S",
+   "dtb": "rk3326-powkiddy-rgb10s.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "powkiddy-rgb20s",
+   "family": "powkiddy",
+   "zh": "PowKiddy RGB2OS",
+   "en": "PowKiddy RGB20S",
+   "es": "PowKiddy RGB20S",
+   "dtb": "rk3326-powkiddy-rgb20s.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "powkiddy-rgb10max1",
+   "family": "powkiddy",
+   "zh": "PowKiddy RGB10Max1",
+   "en": "PowKiddy RGB10Max1",
+   "es": "PowKiddy RGB10Max1",
+   "dtb": "rk3326-powkiddy-rgb10max1.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "powkiddy-rgb10max2",
+   "family": "powkiddy",
+   "zh": "PowKiddy RGB10Max2",
+   "en": "PowKiddy RGB10Max2",
+   "es": "PowKiddy RGB10Max2",
+   "dtb": "rk3326-powkiddy-rgb10max2.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "ymc-a10mini",
+   "family": "ymc",
+   "zh": "YMC A10mini",
+   "en": "YMC A10mini",
+   "es": "YMC A10mini",
+   "dtb": "rk3326-portablegame-a10mini.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "ymc-a10mini-v4",
+   "family": "ymc",
+   "zh": "YMC A10mini V4",
+   "en": "YMC A10mini V4",
+   "es": "YMC A10mini V4",
+   "dtb": "rk3326-portablegame-a10mini-v4.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "diium-d-r28s",
+   "family": "diium",
+   "zh": "Diium D-R28S",
+   "en": "Diium D-R28S",
+   "es": "Diium D-R28S",
+   "dtb": "rk3326-diium-dr28s.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "diium-d007-plus",
+   "family": "diium",
+   "zh": "Diium D007(Plus)",
+   "en": "Diium D007(Plus)",
+   "es": "Diium D007(Plus)",
+   "dtb": "rk3326-diium-d007.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "magicx-xu10",
+   "family": "magicx",
+   "zh": "Magicx Xu10",
+   "en": "Magicx Xu10",
+   "es": "Magicx Xu10",
+   "dtb": "rk3326-magicx-xu10.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "magicx-xu-mini-m",
+   "family": "magicx",
+   "zh": "Magicx Xu Mini M",
+   "en": "Magicx Xu Mini M",
+   "es": "Magicx Xu Mini M",
+   "dtb": "rk3326-magicx-xu-mini-m.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "gamemt-e6",
+   "family": "gamemt",
+   "zh": "GAMEMT E6",
+   "en": "GAMEMT E6",
+   "es": "GAMEMT E6",
+   "dtb": "rk3326-gamemt-e6.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "odroid-go-advance",
+   "family": "odroid",
+   "zh": "ODROID-GO Advance",
+   "en": "ODROID-GO Advance",
+   "es": "ODROID-GO Advance",
+   "dtb": "rk3326-odroid-go2.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "odroid-go-advance-black-edition",
+   "family": "odroid",
+   "zh": "ODROID-GO Advance 1.1",
+   "en": "ODROID-GO Advance Black Edition",
+   "es": "ODROID-GO Advance Black Edition",
+   "dtb": "rk3326-odroid-go2-v11.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "odroid-go-super",
+   "family": "odroid",
+   "zh": "Odroid Go Super",
+   "en": "Odroid Go Super",
+   "es": "Odroid Go Super",
+   "dtb": "rk3326-odroid-go3.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "aislpc-k36s",
+   "family": "aislpc",
+   "zh": "AISLPC K36s",
+   "en": "AISLPC K36s",
+   "es": "AISLPC K36s",
+   "dtb": "rk3326-aislpc-k36s.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "aislpc-r36t",
+   "family": "aislpc",
+   "zh": "AISLPC R36T",
+   "en": "AISLPC R36T",
+   "es": "AISLPC R36T",
+   "dtb": "rk3326-aislpc-r36t.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "aislpc-r36tmax",
+   "family": "aislpc",
+   "zh": "AISLPC R36TMax",
+   "en": "AISLPC R36TMax",
+   "es": "AISLPC R36TMax",
+   "dtb": "rk3326-aislpc-r36tmax.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "k36-original",
+   "family": "k36",
+   "zh": "K36 原始版本",
+   "en": "K36 Original",
+   "es": "K36 original",
+   "dtb": "rk3326-gameconsole-k36.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "batlexp-g350",
+   "family": "batlexp",
+   "zh": "Batlexp G350",
+   "en": "Batlexp G350",
+   "es": "Batlexp G350",
+   "dtb": "rk3326-batlexp-g350.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "t16max",
+   "family": "other",
+   "zh": "T16Max",
+   "en": "T16Max",
+   "es": "T16Max",
+   "dtb": "rk3326-gameconsole-t16max.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "u8",
+   "family": "other",
+   "zh": "U8",
+   "en": "U8",
+   "es": "U8",
+   "dtb": "rk3326-gameconsole-u8.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "u8-p2-screen",
+   "family": "other",
+   "zh": "U8 P2屏幕",
+   "en": "U8 P2 screen",
+   "es": "U8 pantalla P2",
+   "dtb": "rk3326-gameconsole-u8-v2.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "rx6h",
+   "family": "other",
+   "zh": "RX6H",
+   "en": "RX6H",
+   "es": "RX6H",
+   "dtb": "rk3326-gameconsole-rx6h.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "hg36-hg3506",
+   "family": "other",
+   "zh": "HG36/HG3506",
+   "en": "HG36/HG3506",
+   "es": "HG36/HG3506",
+   "dtb": "rk3326-gameconsole-hg36.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "lenovo-go2",
+   "family": "other",
+   "zh": "Lenovo Go2",
+   "en": "Lenovo Go2",
+   "es": "Lenovo Go2",
+   "dtb": "rk3326-gusgu-h7.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "gusgu-h7",
+   "family": "other",
+   "zh": "GUSGU H7",
+   "en": "GUSGU H7",
+   "es": "GUSGU H7",
+   "dtb": "rk3326-gusgu-h7.dtb",
+   "uart": 1,
+   "overlay": null
+  },
+  {
+   "id": "xgb36",
+   "family": "other",
+   "zh": "XGB36",
+   "en": "XGB36",
+   "es": "XGB36",
+   "dtb": "rk3326-gameconsole-xgb36.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "rg36",
+   "family": "other",
+   "zh": "RG36",
+   "en": "RG36",
+   "es": "RG36",
+   "dtb": "rk3326-gameconsole-rg36.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "r40s",
+   "family": "other",
+   "zh": "R40S",
+   "en": "R40S",
+   "es": "R40S",
+   "dtb": "rk3326-gameconsole-r40s.dtb",
+   "uart": 2,
+   "overlay": null
+  },
+  {
+   "id": "r39s",
+   "family": "other",
+   "zh": "R39S",
+   "en": "R39S",
+   "es": "R39S",
+   "dtb": "rk3326-gameconsole-r40s.dtb",
+   "uart": 2,
+   "overlay": null
+  }
+ ]
+}

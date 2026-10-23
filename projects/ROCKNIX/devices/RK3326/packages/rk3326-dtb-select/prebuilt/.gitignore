@@ -1,3 +1,5 @@
-# CI drops DtbselectWin64.exe here before image build
+# Zenith DTB Selector (Windows) is committed so every image build ships it; rebuild with ../zenith-dtb-selector/build.sh
+# CI may still drop the legacy DtbselectWin64.exe here (ignored)
 *
 !.gitignore
+!ZenithDtbSelector-win64.exe

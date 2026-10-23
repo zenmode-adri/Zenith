@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zenith DTB Selector</title>
+<style>
+:root{
+  --bg:#f4f5f7; --surface:#ffffff; --surface2:#f0f2f5; --text:#15181d; --muted:#667085; --border:#e1e5eb;
+  --accent:#2f6bff; --accent-text:#ffffff; --accent-soft:#e8efff; --ok:#17803d; --ok-soft:#e3f5ea;
+  --warn:#9a5b00; --warn-soft:#fff3dc; --bad:#c2362f; --bad-soft:#fde8e7; --add:#e3f5ea; --del:#fde8e7;
+  --shadow:0 1px 2px rgba(16,24,40,.06),0 4px 14px rgba(16,24,40,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1116; --surface:#161a21; --surface2:#1d222b; --text:#e9ecf1; --muted:#97a1b2; --border:#272d38;
+    --accent:#5b8cff; --accent-text:#0b1020; --accent-soft:#1a2542; --ok:#4ed08a; --ok-soft:#14301f;
+    --warn:#f0b34a; --warn-soft:#352711; --bad:#ff7a72; --bad-soft:#3a1a19; --add:#13301f; --del:#3a1a19;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1116; --surface:#161a21; --surface2:#1d222b; --text:#e9ecf1; --muted:#97a1b2; --border:#272d38;
+  --accent:#5b8cff; --accent-text:#0b1020; --accent-soft:#1a2542; --ok:#4ed08a; --ok-soft:#14301f;
+  --warn:#f0b34a; --warn-soft:#352711; --bad:#ff7a72; --bad-soft:#3a1a19; --add:#13301f; --del:#3a1a19;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 "Segoe UI",system-ui,-apple-system,"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Roboto,sans-serif;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:16px;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--surface)}
+.logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),#7a5cff);display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px}
+header h1{font-size:17px;margin:0;line-height:1.2}
+header small{color:var(--muted);display:block;font-size:12.5px}
+header .sp{flex:1}
+select,input[type=search],input[type=text]{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:8px 11px;outline:none}
+select:focus,input:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+button{font:inherit;cursor:pointer;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:8px 14px}
+button:hover{background:var(--surface2)}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-text);font-weight:600}
+button.primary:hover{filter:brightness(1.07);background:var(--accent)}
+button[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+button.icon{padding:7px 10px}
+main{flex:1;overflow:auto;padding:20px 24px 28px;max-width:1180px;width:100%;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:16px}
+.card h2{font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:600}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:180px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:2px 9px;border-radius:99px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.pill.acc{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+code,.mono{font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;font-size:12.5px}
+.current{display:flex;gap:10px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--surface2)}
+.msg{padding:10px 12px;border-radius:10px;margin-top:12px;font-size:14px}
+.msg.warn{background:var(--warn-soft);color:var(--warn)}
+.msg.bad{background:var(--bad-soft);color:var(--bad)}
+.msg.ok{background:var(--ok-soft);color:var(--ok)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{padding:5px 11px;border-radius:99px;font-size:13px;background:var(--surface2);border:1px solid var(--border);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--accent);color:var(--accent-text);border-color:var(--accent)}
+.fam{margin:18px 0 8px;font-size:13px;font-weight:600;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.dev{text-align:left;display:flex;flex-direction:column;justify-content:flex-start;width:100%;padding:11px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface)}
+.dev:hover{border-color:var(--accent)}
+.dev[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft)}
+.dev[disabled]{opacity:.5}
+.dev .n{font-weight:600}
+.dev .alt{color:var(--muted);font-size:12.5px;margin-top:1px}
+.dev .meta{margin-top:auto;padding-top:7px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.empty{color:var(--muted);padding:26px;text-align:center}
+.own{margin-top:16px;padding-top:14px;border-top:1px dashed var(--border);color:var(--muted);font-size:13.5px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#bar{border-top:1px solid var(--border);background:var(--surface);padding:12px 24px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;box-shadow:0 -4px 16px rgba(16,24,40,.06)}
+#bar .sum{flex:1;min-width:240px}
+#bar .sum b{display:block}
+details.opts{margin-top:2px}
+details.opts summary{cursor:pointer;color:var(--muted);font-size:13px}
+.optgrid{display:grid;gap:10px;margin-top:12px}
+.opt{display:flex;gap:10px;align-items:flex-start}
+.opt input{margin-top:4px;width:17px;height:17px;accent-color:var(--accent)}
+.opt .d{color:var(--muted);font-size:12.5px}
+.bk{display:flex;gap:6px 10px;align-items:center;flex-wrap:wrap;padding:6px 0;border-top:1px solid var(--border);font-size:13px}
+.bk .mono{overflow-wrap:anywhere;min-width:0}
+.opt>span{min-width:0;overflow-wrap:anywhere}
+.card{min-width:0}
+main{min-width:0}
+.modal{position:fixed;inset:0;background:rgba(8,12,20,.55);display:none;place-items:center;padding:20px;z-index:10}
+.modal.open{display:grid}
+.dialog{background:var(--surface);border:1px solid var(--border);border-radius:16px;max-width:760px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 18px 60px rgba(0,0,0,.35)}
+.dialog header{background:none;border:0;padding:16px 20px 6px}
+.dialog .body{padding:6px 20px 12px;overflow:auto}
+.dialog .foot{padding:12px 20px 16px;display:flex;gap:10px;justify-content:flex-end}
+.diff{border:1px solid var(--border);border-radius:10px;overflow:auto;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.diff div{padding:1px 10px;white-space:pre-wrap;word-break:break-all}
+.diff .a{background:var(--add)} .diff .d{background:var(--del)}
+.diff .c{color:var(--muted)}
+.diff mark{background:rgba(255,193,7,.38);color:inherit;border-radius:3px;padding:0 2px;font-weight:700}
+.sibs{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+@media (max-width:640px){header{padding:12px 14px}main{padding:14px}#bar{padding:10px 14px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Z</div>
+  <div><h1>Zenith DTB Selector</h1><small data-i="sub"></small></div>
+  <div class="sp"></div>
+  <select id="lang" aria-label="Language"><option value="zh">中文</option><option value="en">English</option><option value="es">Español</option></select>
+  <button id="theme" class="icon" aria-label="Theme" title="Theme">◐</button>
+  <button id="quit" data-i="quit"></button>
+</header>
+
+<main>
+  <section class="card" id="sd">
+    <h2 data-i="sd"></h2>
+    <div class="row">
+      <select id="vols" class="grow" aria-label="SD card"></select>
+      <button id="refresh" data-i="refresh"></button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <input id="manual" type="text" class="grow" data-iph="manualph">
+      <button id="usepath" data-i="usepath"></button>
+    </div>
+    <div id="sdmsg"></div>
+    <div class="current" id="current" hidden></div>
+  </section>
+
+  <section class="card" id="picker">
+    <h2 data-i="choose"></h2>
+    <input id="q" type="search" style="width:100%" data-iph="search" aria-label="Search">
+    <div class="chips" id="chips"></div>
+    <div id="list"></div>
+    <div class="own"><span data-i="own_t"></span> <button id="imp1" data-i="imp_btn"></button></div>
+  </section>
+  <input type="file" id="impfile" accept=".dtb" hidden>
+
+  <section class="card">
+    <details class="opts" id="adv">
+      <summary data-i="advanced"></summary>
+      <div class="optgrid">
+        <label class="opt"><input type="checkbox" id="o-show"><span><b data-i="o_show"></b><div class="d" data-i="o_show_d"></div></span></label>
+        <label class="opt"><input type="checkbox" id="o-uart"><span><b data-i="o_uart"></b><div class="d" data-i="o_uart_d"></div></span></label>
+        <div>
+          <b data-i="o_custom"></b><div class="d" style="color:var(--muted);font-size:12.5px" data-i="o_custom_d"></div>
+          <select id="custom" style="margin-top:6px;max-width:100%"></select>
+          <div style="margin-top:8px"><button id="imp2" data-i="imp_btn"></button></div>
+        </div>
+        <div>
+          <b data-i="backups"></b>
+          <div id="bks"></div>
+        </div>
+      </div>
+    </details>
+  </section>
+</main>
+
+<div id="bar">
+  <div class="sum" id="sum"></div>
+  <button id="review" class="primary" disabled data-i="review"></button>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <div class="dialog">
+    <header><h1 id="m-title"></h1></header>
+    <div class="body" id="m-body"></div>
+    <div class="foot" id="m-foot"></div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const T = {
+  en: {
+    imp_btn:"Import my own DTB…", own_t:"Your console is not in the list? Use your own .dtb file.", imp_ok:"DTB imported", imp_ok_t:"The file was copied to the root of the card and selected. Press «Review & write» to use it.", imp_soc:"This file does not mention rk3326, so it may not be a DTB for this kind of console. Zenith cannot check that it matches your hardware: if the screen stays black, restore the backup.", imp_exists:"A file with that name is already on the card. Replace it?", err_bad_dtb:"That is not a valid DTB file (it must start with the device-tree header and be under 2 MB).", err_bad_name:"The file name must use only letters, digits, dots, dashes or underscores, and end in .dtb.", err_dtb_exists:"A DTB with that name already exists on the card.", quit:"Exit", sub:"RK3326 handheld boot configuration", sd:"SD card", refresh:"Refresh", usepath:"Use this path",
+    manualph:"Or type the SD card path (e.g. E:\\ or /media/user/ZENITH)", choose:"Choose your console",
+    search:"Search by model, brand or DTB file…", all:"All", advanced:"Advanced options & backups",
+    o_show:"Show boot messages on screen", o_show_d:"Removes quiet/loglevel so the kernel log is drawn while booting. Useful to diagnose a console that does not start.",
+    o_uart:"Use this model's debug UART", o_uart_d:"Sets console= and debug_shell= to the serial port of the selected model (only matters if you have a UART cable).",
+    o_custom:"Use another DTB file from the card", o_custom_d:"For advanced users. Lists every .dtb found in the card root.",
+    custom_none:"— use the model list above —", backups:"Backups of extlinux.conf", no_backups:"No backups yet. One is created automatically before every change.",
+    restore:"Restore", review:"Review & write", cancel:"Cancel", write:"Write to SD card", close:"Close",
+    no_sd:"No Zenith SD card found. Insert the card you just flashed (its FAT partition must show up as a drive) and press Refresh.",
+    current:"Current configuration", unknown_dtb:"Custom or unknown DTB", none_sel:"Select a console to continue", selected:"Selected",
+    cur_badge:"Current", missing:"DTB missing on card", same:"Shares its DTB with", changes:"Changes to extlinux.conf",
+    no_changes:"Nothing to change: the card is already configured like this.", done:"Done! Configuration written",
+    done_t:"Safely eject the card, put it in the console and power on. A backup of the previous file was saved on the card.",
+    black:"Black screen, wrong colors or no controls?", black_t:"Put the card back in the PC and try another variant of the same family:",
+    err_missing_extlinux:"This is not a Zenith boot partition (extlinux/extlinux.conf not found).", err_missing_kernel:"This is not a Zenith boot partition (KERNEL not found).",
+    err_dtb_missing:"That DTB file is not on the card. The image does not include it.", err_generic:"Error", free:"free", uart:"UART",
+    restored:"Backup restored.", confirm_restore:"Restore this backup?", model:"Model", dtb:"DTB", opts:"Options", on:"on", off:"off",
+    boot_hidden:"boot messages hidden", boot_shown:"boot messages shown", ssh_on:"SSH on", ssh_off:"SSH off", tip:"Tip: after writing, always eject the card from the system tray before removing it.",
+    lost:"Lost connection with the program. You can close this window."
+  },
+  es: {
+    imp_btn:"Importar mi propio DTB…", own_t:"¿Tu consola no está en la lista? Usa tu propio archivo .dtb.", imp_ok:"DTB importado", imp_ok_t:"El archivo se copió a la raíz de la tarjeta y quedó seleccionado. Pulsa «Revisar y escribir» para usarlo.", imp_soc:"Este archivo no menciona rk3326, así que puede no ser un DTB de este tipo de consola. Zenith no puede comprobar que encaje con tu hardware: si la pantalla se queda negra, restaura la copia de seguridad.", imp_exists:"Ya hay un archivo con ese nombre en la tarjeta. ¿Reemplazarlo?", err_bad_dtb:"Ese no es un archivo DTB válido (debe empezar con la cabecera del árbol de dispositivos y pesar menos de 2 MB).", err_bad_name:"El nombre solo puede llevar letras, números, puntos, guiones o guiones bajos, y terminar en .dtb.", err_dtb_exists:"Ya existe un DTB con ese nombre en la tarjeta.", quit:"Salir", sub:"Configuración de arranque para consolas RK3326", sd:"Tarjeta SD", refresh:"Actualizar", usepath:"Usar esta ruta",
+    manualph:"O escribe la ruta de la tarjeta (p. ej. E:\\ o /media/usuario/ZENITH)", choose:"Elige tu consola",
+    search:"Busca por modelo, marca o archivo DTB…", all:"Todas", advanced:"Opciones avanzadas y copias de seguridad",
+    o_show:"Mostrar mensajes de arranque en pantalla", o_show_d:"Quita quiet/loglevel para que el registro del kernel se dibuje al arrancar. Útil para diagnosticar una consola que no arranca.",
+    o_uart:"Usar la UART de depuración de este modelo", o_uart_d:"Ajusta console= y debug_shell= al puerto serie del modelo elegido (solo importa si tienes un cable UART).",
+    o_custom:"Usar otro archivo DTB de la tarjeta", o_custom_d:"Para usuarios avanzados. Lista todos los .dtb de la raíz de la tarjeta.",
+    custom_none:"— usar la lista de modelos de arriba —", backups:"Copias de seguridad de extlinux.conf", no_backups:"Aún no hay copias. Se crea una automáticamente antes de cada cambio.",
+    restore:"Restaurar", review:"Revisar y escribir", cancel:"Cancelar", write:"Escribir en la tarjeta", close:"Cerrar",
+    no_sd:"No se encuentra ninguna tarjeta Zenith. Inserta la que acabas de grabar (su partición FAT debe aparecer como unidad) y pulsa Actualizar.",
+    current:"Configuración actual", unknown_dtb:"DTB personalizado o desconocido", none_sel:"Elige una consola para continuar", selected:"Elegido",
+    cur_badge:"Actual", missing:"Falta el DTB en la tarjeta", same:"Comparte DTB con", changes:"Cambios en extlinux.conf",
+    no_changes:"No hay nada que cambiar: la tarjeta ya está configurada así.", done:"¡Listo! Configuración escrita",
+    done_t:"Expulsa la tarjeta de forma segura, ponla en la consola y enciéndela. Se guardó una copia del archivo anterior en la propia tarjeta.",
+    black:"¿Pantalla negra, colores raros o sin controles?", black_t:"Vuelve a poner la tarjeta en el PC y prueba otra variante de la misma familia:",
+    err_missing_extlinux:"Esta no es una partición de arranque de Zenith (no hay extlinux/extlinux.conf).", err_missing_kernel:"Esta no es una partición de arranque de Zenith (no hay KERNEL).",
+    err_dtb_missing:"Ese archivo DTB no está en la tarjeta. La imagen no lo incluye.", err_generic:"Error", free:"libres", uart:"UART",
+    restored:"Copia restaurada.", confirm_restore:"¿Restaurar esta copia?", model:"Modelo", dtb:"DTB", opts:"Opciones", on:"sí", off:"no",
+    boot_hidden:"mensajes de arranque ocultos", boot_shown:"mensajes de arranque visibles", ssh_on:"SSH activado", ssh_off:"SSH desactivado", tip:"Consejo: tras escribir, expulsa siempre la tarjeta desde la bandeja del sistema antes de quitarla.",
+    lost:"Se perdió la conexión con el programa. Puedes cerrar esta ventana."
+  },
+  zh: {
+    imp_btn:"导入我自己的 DTB…", own_t:"列表里没有你的掌机？使用你自己的 .dtb 文件。", imp_ok:"DTB 已导入", imp_ok_t:"文件已复制到 SD 卡根目录并已选中。点击“检查并写入”即可使用。", imp_soc:"该文件中没有出现 rk3326，可能不是这类掌机的 DTB。Zenith 无法确认它与你的硬件匹配：如果屏幕变黑，请恢复备份。", imp_exists:"卡中已有同名文件，是否替换？", err_bad_dtb:"这不是有效的 DTB 文件（必须以设备树头开头，且小于 2 MB）。", err_bad_name:"文件名只能包含字母、数字、点、短横线或下划线，并以 .dtb 结尾。", err_dtb_exists:"卡中已存在同名 DTB。", quit:"退出", sub:"RK3326 掌机启动配置", sd:"SD 卡", refresh:"刷新", usepath:"使用此路径",
+    manualph:"或手动输入 SD 卡路径（例如 E:\\ 或 /media/user/ZENITH）", choose:"选择你的掌机",
+    search:"按机型、品牌或 DTB 文件搜索…", all:"全部", advanced:"高级选项与备份",
+    o_show:"启动时在屏幕上显示启动信息", o_show_d:"移除 quiet/loglevel，启动时显示内核日志。用于排查无法启动的机器。",
+    o_uart:"使用该机型的调试串口", o_uart_d:"把 console= 和 debug_shell= 设为所选机型的串口（只有接了串口线才有影响）。",
+    o_custom:"使用卡中的其他 DTB 文件", o_custom_d:"面向高级用户。列出 SD 卡根目录下所有 .dtb 文件。",
+    custom_none:"— 使用上面的机型列表 —", backups:"extlinux.conf 备份", no_backups:"还没有备份。每次修改前都会自动创建一份。",
+    restore:"恢复", review:"检查并写入", cancel:"取消", write:"写入 SD 卡", close:"关闭",
+    no_sd:"没有找到 Zenith SD 卡。请插入刚刚烧录好的卡（其 FAT 分区应显示为一个盘符），然后点击刷新。",
+    current:"当前配置", unknown_dtb:"自定义或未知的 DTB", none_sel:"请选择一个机型以继续", selected:"已选择",
+    cur_badge:"当前", missing:"卡中缺少该 DTB", same:"与以下机型共用 DTB", changes:"extlinux.conf 的修改",
+    no_changes:"无需修改：SD 卡已经是这个配置。", done:"完成！配置已写入",
+    done_t:"请安全弹出 SD 卡，放入掌机后开机。修改前的文件已备份在卡中。",
+    black:"黑屏、颜色异常或按键无效？", black_t:"把卡放回电脑，试试同系列的其他版本：",
+    err_missing_extlinux:"这不是 Zenith 的启动分区（找不到 extlinux/extlinux.conf）。", err_missing_kernel:"这不是 Zenith 的启动分区（找不到 KERNEL）。",
+    err_dtb_missing:"卡中没有这个 DTB 文件，镜像未包含它。", err_generic:"错误", free:"可用", uart:"串口",
+    restored:"已恢复备份。", confirm_restore:"确定恢复这份备份？", model:"机型", dtb:"DTB", opts:"选项", on:"开", off:"关",
+    boot_hidden:"隐藏启动信息", boot_shown:"显示启动信息", ssh_on:"SSH 开启", ssh_off:"SSH 关闭", tip:"提示：写入后，请务必先在系统托盘中安全弹出 SD 卡再拔出。",
+    lost:"与程序的连接已断开，可以关闭此窗口。"
+  }
+};
+
+const $ = s => document.querySelector(s);
+const el = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v; else if (k === "text") e.textContent = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v); else e.setAttribute(k, v);
+  }
+  for (const c of kids) if (c != null) e.append(c);
+  return e;
+};
+const store = { get(k){ try { return localStorage.getItem(k) } catch { return null } }, set(k, v){ try { localStorage.setItem(k, v) } catch {} } };
+
+let lang = store.get("zds-lang") || (/^zh/i.test(navigator.language) ? "zh" : /^es/i.test(navigator.language) ? "es" : "en");
+const t = k => (T[lang] && T[lang][k]) || T.en[k] || k;
+let token = (location.hash.match(/t=([0-9a-f]+)/) || [])[1] || "";
+try { if (token) sessionStorage.setItem("zds-tok", token); else token = sessionStorage.getItem("zds-tok") || ""; } catch {}
+history.replaceState(null, "", location.pathname);
+
+let catalog = null, volumes = [], vol = null, vstate = null, sel = null, famFilter = "all", dead = false;
+
+async function api(path, body) {
+  const r = await fetch(path, {
+    method: body ? "POST" : "GET",
+    headers: { "X-Zenith-Token": token, ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+const errText = e => { const m = String(e.message || e); const k = "err_" + m.replace(/-/g, "_"); return T[lang][k] || T.en[k] || (t("err_generic") + ": " + m); };
+
+const dname = d => d[lang] || d.en;
+const names = d => ({ main: dname(d), alt: ["zh", "en", "es"].filter(l => l !== lang && d[l] && d[l] !== d[lang] && !(l === "es" && d.es === d.en)).map(l => d[l]).join("  ·  ") });
+const famName = id => { const f = catalog.families.find(f => f.id === id); return f ? (f[lang] || f.en) : id; };
+const byDTB = dtb => catalog.devices.filter(d => d.dtb === dtb);
+
+function applyI18n() {
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : lang;
+  document.querySelectorAll("[data-i]").forEach(n => n.textContent = t(n.dataset.i));
+  document.querySelectorAll("[data-iph]").forEach(n => n.placeholder = t(n.dataset.iph));
+  $("#lang").value = lang;
+}
+
+function renderVolumes() {
+  const s = $("#vols"); s.replaceChildren();
+  volumes.forEach(v => s.append(el("option", { value: v.path, text: `${v.path}  ${v.label || ""}  ·  ${v.fs || ""}${v.freeMB ? "  ·  " + v.freeMB + " MB " + t("free") : ""}` })));
+  s.disabled = !volumes.length;
+  const m = $("#sdmsg"); m.replaceChildren();
+  if (!volumes.length) m.append(el("div", { class: "msg warn", text: t("no_sd") }));
+}
+
+function renderCurrent() {
+  const c = $("#current"); c.replaceChildren();
+  if (!vstate) { c.hidden = true; return; }
+  c.hidden = false;
+  const m = vstate.match.map(id => catalog.devices.find(d => d.id === id)).filter(Boolean);
+  const label = m.length ? dname(m[0]) + (m.length > 1 ? `  (+${m.length - 1})` : "") : t("unknown_dtb");
+  c.append(el("span", { class: "pill acc", text: t("current") }), el("b", { text: label }), el("span", { class: "mono", style: "color:var(--muted)", text: vstate.state.fdt || "—" }));
+}
+
+function renderChips() {
+  const box = $("#chips"); box.replaceChildren();
+  const mk = (id, label) => box.append(el("button", { class: "chip", "aria-pressed": String(famFilter === id), text: label, onclick: () => { famFilter = id; renderChips(); renderList(); } }));
+  mk("all", t("all"));
+  catalog.families.forEach(f => mk(f.id, f[lang] || f.en));
+}
+
+function matchQ(d, q) {
+  if (!q) return true;
+  return [d.zh, d.en, d.es, d.dtb, d.id, famName(d.family)].join(" ").toLowerCase().includes(q);
+}
+
+function renderList() {
+  const q = $("#q").value.trim().toLowerCase();
+  const box = $("#list"); box.replaceChildren();
+  const have = vstate ? new Set((vstate.dtbs || []).map(x => x.toLowerCase())) : null;
+  let shown = 0, lastFam = null, grid = null;
+  catalog.devices.forEach(d => {
+    if (famFilter !== "all" && d.family !== famFilter) return;
+    if (!matchQ(d, q)) return;
+    shown++;
+    if (d.family !== lastFam) {
+      lastFam = d.family;
+      box.append(el("div", { class: "fam", text: famName(d.family) }));
+      grid = el("div", { class: "grid" }); box.append(grid);
+    }
+    const n = names(d);
+    const isCur = vstate && vstate.state.fdt === d.dtb;
+    const missing = have && !have.has(d.dtb.toLowerCase());
+    const twins = byDTB(d.dtb).filter(x => x.id !== d.id);
+    const meta = el("div", { class: "meta" }, el("span", { class: "pill mono", text: d.dtb }), el("span", { class: "pill", text: t("uart") + " " + d.uart }));
+    if (isCur) meta.append(el("span", { class: "pill ok", text: t("cur_badge") }));
+    if (missing) meta.append(el("span", { class: "pill warn", text: t("missing") }));
+    const b = el("button", { class: "dev", "aria-pressed": String(sel === d.id), onclick: () => { sel = d.id; $("#custom").value = ""; renderList(); renderSum(); } },
+      el("div", { class: "n", text: n.main }), n.alt ? el("div", { class: "alt", text: n.alt }) : null, meta);
+    if (twins.length) b.title = t("same") + ": " + twins.map(x => dname(x)).join(", ");
+    if (missing) b.disabled = true;
+    grid.append(b);
+  });
+  if (!shown) box.append(el("div", { class: "empty", text: "—" }));
+}
+
+function curDevice() { return sel ? catalog.devices.find(d => d.id === sel) : null; }
+function curDTB() { const c = $("#custom").value; return c || (curDevice() && curDevice().dtb) || ""; }
+
+function renderSum() {
+  const s = $("#sum"); s.replaceChildren();
+  const d = curDevice(), custom = $("#custom").value;
+  if (!d && !custom) { s.append(el("span", { style: "color:var(--muted)", text: t("none_sel") })); $("#review").disabled = true; return; }
+  s.append(el("b", { text: d && !custom ? dname(d) : custom }), el("span", { class: "mono", style: "color:var(--muted)", text: `${t("dtb")}: ${curDTB()}${d && !custom ? "  ·  " + t("uart") + " " + d.uart : ""}` }));
+  $("#review").disabled = !vol;
+}
+
+function renderCustom() {
+  const s = $("#custom"); s.replaceChildren(el("option", { value: "", text: t("custom_none") }));
+  ((vstate && vstate.dtbs) || []).forEach(x => s.append(el("option", { value: x, text: x })));
+}
+
+function renderBackups() {
+  const box = $("#bks"); box.replaceChildren();
+  const bs = (vstate && vstate.backups) || [];
+  if (!bs.length) { box.append(el("div", { class: "d", style: "color:var(--muted);font-size:12.5px;margin-top:4px", text: t("no_backups") })); return; }
+  bs.forEach(b => box.append(el("div", { class: "bk" }, el("span", { class: "mono", text: b.time }), el("span", { class: "mono grow", style: "color:var(--muted)", text: b.fdt }),
+    el("button", { text: t("restore"), onclick: async () => {
+      if (!confirm(t("confirm_restore") + "\n" + b.time + "  " + b.fdt)) return;
+      try { await api("/api/restore", { path: vol, backup: b.name }); await loadVolume(); showModal(t("restored"), [el("p", { text: t("tip") })], [btn("close", () => closeModal(), true)]); } catch (e) { showErr(e); }
+    } }))));
+}
+
+function opts() {
+  const d = curDevice();
+  return { hideBoot: !$("#o-show").checked, ssh: !!(vstate && vstate.state.ssh), applyUart: $("#o-uart").checked && !$("#custom").value, uart: d ? d.uart : 0 };
+}
+function payload() {
+  const custom = $("#custom").value;
+  return { path: vol, device: custom ? "" : sel || "", dtb: custom || "", opts: opts() };
+}
+
+/* ---------- modal ---------- */
+const btn = (key, fn, primary) => el("button", { class: primary ? "primary" : "", text: t(key), onclick: fn });
+function showModal(title, bodyNodes, footNodes) {
+  $("#m-title").textContent = title;
+  const b = $("#m-body"); b.replaceChildren(...bodyNodes);
+  const f = $("#m-foot"); f.replaceChildren(...footNodes);
+  $("#modal").classList.add("open");
+}
+function closeModal() { $("#modal").classList.remove("open"); }
+function showErr(e) { showModal(t("err_generic"), [el("div", { class: "msg bad", text: errText(e) })], [btn("close", closeModal, true)]); }
+
+async function review() {
+  try {
+    const r = await api("/api/preview", payload());
+    const dm = el("div", { class: "diff" });
+    const mkLine = (l, other) => {
+      const d = el("div", { class: l.t === "+" ? "a" : l.t === "-" ? "d" : "c" });
+      d.append(l.t === " " ? "  " : l.t + " ");
+      if (!other) { d.append(l.s); return d; }
+      const mine = l.s.split(" "), theirs = new Set(other.split(" "));
+      mine.forEach((w, i) => { d.append(theirs.has(w) ? w : el("mark", { text: w })); if (i < mine.length - 1) d.append(" "); });
+      return d;
+    };
+    // bloques consecutivos de "-" y "+": se emparejan por posicion para resaltar solo las palabras que cambian
+    for (let i = 0; i < r.diff.length;) {
+      if (r.diff[i].t === " ") { dm.append(mkLine(r.diff[i], null)); i++; continue; }
+      const dels = [], adds = [];
+      while (i < r.diff.length && r.diff[i].t === "-") dels.push(r.diff[i++]);
+      while (i < r.diff.length && r.diff[i].t === "+") adds.push(r.diff[i++]);
+      dels.forEach((l, k) => dm.append(mkLine(l, adds[k] ? adds[k].s : null)));
+      adds.forEach((l, k) => dm.append(mkLine(l, dels[k] ? dels[k].s : null)));
+    }
+    const body = [];
+    if (r.warnings && r.warnings.includes("dtb-missing")) body.push(el("div", { class: "msg bad", text: errText("dtb-missing") }));
+    body.push(dm);
+    const foot = [btn("cancel", closeModal)];
+    if (!r.changed) body.unshift(el("div", { class: "msg ok", text: t("no_changes") }));
+    else if (!(r.warnings || []).includes("dtb-missing")) foot.push(btn("write", write, true));
+    showModal(t("changes"), body, foot);
+  } catch (e) { showErr(e); }
+}
+
+async function write() {
+  try {
+    await api("/api/apply", payload());
+    await loadVolume();
+    const d = curDevice();
+    const body = [el("div", { class: "msg ok", text: t("done_t") }), el("p", { class: "mono", text: curDTB() }), el("p", { style: "color:var(--muted)", text: t("tip") })];
+    if (d) {
+      const sibs = catalog.devices.filter(x => x.family === d.family && x.id !== d.id).slice(0, 8);
+      if (sibs.length) {
+        body.push(el("b", { text: t("black") }), el("div", { style: "color:var(--muted);font-size:13px", text: t("black_t") }));
+        const row = el("div", { class: "sibs" });
+        sibs.forEach(x => row.append(el("button", { text: dname(x), onclick: () => { sel = x.id; closeModal(); renderList(); renderSum(); window.scrollTo(0, 0); } })));
+        body.push(row);
+      }
+    }
+    showModal(t("done"), body, [btn("close", closeModal, true)]);
+  } catch (e) { showErr(e); }
+}
+
+/* ---------- importar DTB propio ---------- */
+async function importFile(file, overwrite) {
+  if (!vol) return;
+  try {
+    const r = await fetch("/api/import?path=" + encodeURIComponent(vol), {
+      method: "POST", body: file,
+      headers: { "X-Zenith-Token": token, "X-Filename": encodeURIComponent(file.name), "X-Overwrite": overwrite ? "1" : "0" }
+    });
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 409 && !overwrite) { if (confirm(t("imp_exists") + "\n" + file.name)) return importFile(file, true); return; }
+    if (!r.ok) throw new Error(j.error || r.statusText);
+    await loadVolume();
+    $("#custom").value = j.name; renderSum();
+    const body = [el("div", { class: "msg ok", text: t("imp_ok_t") }), el("p", { class: "mono", text: j.name })];
+    if (!j.soc) body.push(el("div", { class: "msg warn", text: t("imp_soc") }));
+    showModal(t("imp_ok"), body, [btn("close", closeModal, true)]);
+  } catch (e) { showErr(e); }
+}
+
+/* ---------- carga ---------- */
+async function loadVolume() {
+  vstate = null;
+  if (vol) {
+    try { vstate = await api("/api/volume?path=" + encodeURIComponent(vol)); }
+    catch (e) { $("#sdmsg").replaceChildren(el("div", { class: "msg bad", text: errText(e) })); vol = null; }
+  }
+  if (vstate) {
+    $("#o-show").checked = !vstate.state.hideBoot;
+    $("#o-uart").checked = true;
+    if (!sel && vstate.match.length === 1) sel = vstate.match[0];
+  }
+  renderCurrent(); renderCustom(); renderBackups(); renderList(); renderSum();
+}
+
+async function refresh(path) {
+  try {
+    const info = await api("/api/info");
+    volumes = info.volumes || [];
+    if (path && !volumes.find(v => v.path === path)) volumes.push({ path, label: "", fs: "", freeMB: 0 });
+    renderVolumes();
+    vol = path || (volumes[0] && volumes[0].path) || null;
+    if (vol) $("#vols").value = vol;
+    await loadVolume();
+  } catch (e) { showErr(e); }
+}
+
+function rerender() { applyI18n(); renderVolumes(); if (vol) $("#vols").value = vol; renderChips(); renderCurrent(); renderCustom(); renderBackups(); renderList(); renderSum(); }
+
+async function init() {
+  const th = store.get("zds-theme"); if (th) document.documentElement.dataset.theme = th;
+  catalog = await (await fetch("catalog.json")).json();
+  applyI18n(); renderChips();
+  $("#lang").onchange = e => { lang = e.target.value; store.set("zds-lang", lang); rerender(); };
+  $("#theme").onclick = () => {
+    const cur = document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const n = cur === "dark" ? "light" : "dark"; document.documentElement.dataset.theme = n; store.set("zds-theme", n);
+  };
+  $("#q").oninput = renderList;
+  $("#custom").onchange = renderSum;
+  $("#vols").onchange = async e => { vol = e.target.value; sel = null; await loadVolume(); };
+  $("#refresh").onclick = () => refresh(vol);
+  $("#usepath").onclick = () => { const p = $("#manual").value.trim(); if (p) { sel = null; refresh(p); } };
+  $("#review").onclick = review;
+  const pick = () => { if (vol) $("#impfile").click(); };
+  $("#imp1").onclick = pick; $("#imp2").onclick = pick;
+  $("#impfile").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; if (f) await importFile(f, false); };
+  $("#quit").onclick = async () => { dead = true; try { await api("/api/quit"); } catch {} showModal(t("quit"), [el("div", { class: "msg ok", text: t("lost") })], []); };
+  $("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+  await refresh(null);
+  setInterval(async () => { if (dead) return; try { await api("/api/ping"); } catch { dead = true; showModal(t("err_generic"), [el("div", { class: "msg warn", text: t("lost") })], []); } }, 4000);
+}
+init();
+</script>
+</body>
+</html>
