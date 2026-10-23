@@ -5,17 +5,16 @@ Zenith would not exist without them.
 
 ## Thanks
 
-- **lcdyk** and **KK**, authors and maintainers of AURKNIX: the RK3326 device trees, emulators, tools and the whole
+- **lcdyk** and **KK** (GitHub: AveyondFly), authors and maintainers of AURKNIX: the RK3326 device trees, emulators, tools and the whole
   base this fork stands on (https://github.com/AveyondFly/distribution_rocknix, upstream work by lcdyk0517).
   Support lcdyk on Ko-fi: https://ko-fi.com/lcdyk
-- **AveyondFly**, who hosts the AURKNIX repository.
 - The **ROCKNIX** team (https://github.com/ROCKNIX) and the **JELOS** and **EmuELEC** teams before them.
 - Everyone who builds and shares open source for these handhelds: emulator authors, kernel and driver developers,
   EmulationStation contributors, testers.
 
 - **Jacob Cook** (SD resume retry and dwc2 suspend/resume fixes, ROCKNIX #3303/#3304) and **Chris Morgan** (RK817 battery
   gauge and sleep fixes, ROCKNIX #3305), whose kernel patches Zenith carries for a reliable suspend.
-- **KK** (AURKNIX), who ported the PX30 memory (DMC) frequency scaling from the Rockchip BSP
+- **KK** (AveyondFly), who ported the PX30 memory (DMC) frequency scaling from the Rockchip BSP
   (AveyondFly/distribution_rocknix commit `2c34156`, "rk3326: add dmc").
 
 ## Maintainer

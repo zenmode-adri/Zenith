@@ -80,7 +80,7 @@ others:
 
 - CPU/GPU voltage bins L0-L3 read through PVTM and an RK3326 OPP table (CPU 1296 MHz by default, with 1416 and 1512 MHz as an
   opt-in turbo; GPU 200-600 MHz).
-- Memory (DMC) frequency scaling, ported from the Rockchip 6.1 BSP by KK of AURKNIX: the DDR clock follows the load between
+- Memory (DMC) frequency scaling, ported from the Rockchip 6.1 BSP by KK (AveyondFly) of AURKNIX: the DDR clock follows the load between
   194 and 666 MHz.
 - Stable RK915 Wi-Fi across reboots and real suspend, and the RK817 battery gauge fixes.
 - The R36 Ultra joystick RGB LED driver and a panel brightness control.
@@ -167,7 +167,7 @@ images, or the last step (copying the image) can fail.
 Zenith is an unofficial fork. The device and emulator lists, features and manuals of the base distribution are
 documented upstream, not here:
 
-- [AURKNIX](https://github.com/AveyondFly/distribution_rocknix) by **lcdyk** and **KK**: the fork Zenith is built on.
+- [AURKNIX](https://github.com/AveyondFly/distribution_rocknix) by **lcdyk** and **KK** (GitHub: AveyondFly): the fork Zenith is built on.
 - [ROCKNIX](https://github.com/ROCKNIX): the distribution AURKNIX is forked from.
 
 Everything else in the repository comes from them. What Zenith adds or changes is listed in
@@ -193,8 +193,8 @@ All other software is provided under each component's respective license. These 
 
 ## Credits
 
-Zenith exists thanks to **lcdyk** and **KK** (AURKNIX, whose RK3326 device trees, emulators and tooling this fork is
-built on) and to **AveyondFly**, who hosts the AURKNIX repository. Thank you.
+Zenith exists thanks to **lcdyk** and **KK** (GitHub: **AveyondFly**), the authors of AURKNIX, whose RK3326 device trees,
+emulators and tooling this fork is built on. Thank you.
 
 Thanks also to the **ROCKNIX** and **JELOS** teams, and to CoreELEC, LibreELEC and the many open source developers
 whose work makes a distribution like this possible. See [`CREDITS.md`](CREDITS.md) for the full list.
