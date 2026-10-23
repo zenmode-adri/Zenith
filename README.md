@@ -27,7 +27,7 @@ developed and measured on the **R36 Ultra**.
 
 - **Fast boot**: about **15 s** from power-on to the menu (33 s before). GPU, display, Sway and EmulationStation start in
   parallel as soon as storage is ready.
-- **Fast suspend**: the console sleeps in **2.3 s**, wakes in **4.3 s**, and Wi-Fi works again after waking up.
+- **Fast suspend**: the console sleeps in **2.3 s** and wakes in **4.3 s**.
 - **Games open in 3.85 s** (6.29 s before), and the menus answer on the first button press (**11 ms**).
 - **Own interface**: light and dark theme, redesigned dialogs, keyboard, sliders and carousel, a clean Tools menu and
   first-boot screens.
@@ -85,7 +85,7 @@ Measured on an **R36 Ultra**. Details and the git tag of every change are in [`C
 - Own first-boot screens, language question and boot banner.
 
 ### R36 Ultra hardware
-- RK915 Wi-Fi that survives reboots and real suspend, joystick RGB LED driver, RK817 battery gauge, CPU/GPU voltage bins
+- RK915 Wi-Fi driver fixes, joystick RGB LED driver, RK817 battery gauge, CPU/GPU voltage bins
   L0-L3 through PVTM, GPU table 200-600 MHz.
 - **R36 Tuner Next** built in: CPU governor and frequencies, turbo steps, benchmarks, monitor.
 
@@ -106,7 +106,7 @@ others:
   opt-in turbo; GPU 200-600 MHz).
 - Memory (DMC) frequency scaling, ported from the Rockchip 6.1 BSP by KK (AveyondFly) of AURKNIX: the DDR clock follows the load between
   194 and 666 MHz.
-- Stable RK915 Wi-Fi across reboots and real suspend, and the RK817 battery gauge fixes.
+- RK915 Wi-Fi driver fixes and the RK817 battery gauge fixes.
 - The R36 Ultra joystick RGB LED driver and a panel brightness control.
 - An exFAT directory-readahead limit.
 
