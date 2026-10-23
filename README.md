@@ -11,27 +11,52 @@ reliable suspend, its own light/dark EmulationStation theme and a cleaner Tools 
 - Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors. Please do not report Zenith problems
   to them.
 
+## Screenshots
+
+R36 Ultra, 720x720. The dark theme ships with a light variant.
+
+| Start-up | Main menu (dark) | Main menu (light) | Settings menu |
+|:---:|:---:|:---:|:---:|
+| <img src="docs/images/splash.png" width="200"> | <img src="docs/images/main-dark.png" width="200"> | <img src="docs/images/main-light.png" width="200"> | <img src="docs/images/menu-dark.png" width="200"> |
+
 ## What's different from AURKNIX
 
-All numbers were measured on an **R36 Ultra** (full details and the git tag of every change in
-[`CHANGELOG.md`](CHANGELOG.md)).
+Measured on an **R36 Ultra**. Details and the git tag of every change are in [`CHANGELOG.md`](CHANGELOG.md).
 
-| Area | Change | Result |
-|---|---|---|
-| Boot | GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD probing in the initramfs | Power-on to menu about **33 s -> 15 s** (stock AURKNIX by stopwatch; Zenith 15.4 s from the boot log plus bootloader, which went 3.11 s -> 2.11 s) |
-| Suspend | Wi-Fi shutdown, panel and the rest in parallel; governors restored first on wake-up | Suspend **3.5 s -> 2.3 s**, resume **8 s -> 4.3 s** |
-| Responsiveness | Audio device reopened on a worker thread after idle | First button press after idle **225-245 ms -> 11 ms** |
-| Opening a game | Launch path optimised | **6.29 s -> 3.85 s** (average of 8 games) |
-| Menus | System / Network Settings open at once and fill their lists in the background; faster Wi-Fi menu | No more wait when opening them |
-| System carousel | Equal 22 px gaps on all four sides, no jumping neighbours, steady speed when holding a direction | Hold speed **1.96-10.62 -> 4.74-6.59** positions/s |
-| Interface | Own light and dark EmulationStation theme, readable card labels and higher contrast, redesigned switches, sliders, keyboard, dialogs, scrollbars and Information screen (ES patches 0001-0054) | See the changelog |
-| Tools menu | Every tool has an icon and a description; 15 dead entries removed (ES warnings per boot **15 -> 0**) | Cleaner menu |
-| Power-off | Silent shutdown (no red message), quiet boot, fewer confirmation prompts in the quit menu | |
-| Hardware (R36 Ultra) | RK915 Wi-Fi that survives reboots and real suspend, joystick RGB LED driver, RK817 battery gauge, CPU/GPU voltage bins L0-L3 through PVTM, GPU table 200-600 MHz | |
-| First start | Own first-boot screens, language question and boot banner | |
-| Extras | **R36 Tuner Next** (CPU governor and frequencies, turbo steps, benchmarks, monitor) built in | |
+| | Before | Zenith |
+|---|---:|---:|
+| Power-on to menu | 33 s | **15 s** |
+| Opening a game | 6.29 s | **3.85 s** |
+| Suspend | 3.5 s | **2.3 s** |
+| Resume | 8 s | **4.3 s** |
+| First button press after idle | 225-245 ms | **11 ms** |
 
-**Not the goal:** Zenith adds no new emulators and does not update cores; those come from AURKNIX. The work is on boot, suspend, responsiveness and the interface.
+*Before* is stock AURKNIX for boot (stopwatch) and for opening a game; for suspend, resume and the first button press it is
+an earlier Zenith build, because stock AURKNIX was not measured for those. Zenith's boot time comes from the boot log plus
+the bootloader (3.11 s -> 2.11 s).
+
+**Boot and power**
+- GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD
+  probing in the initramfs.
+- Suspend runs Wi-Fi shutdown, panel and the rest in parallel; governors are restored first on wake-up.
+- Silent shutdown (no red message) and quiet boot.
+
+**Interface**
+- Own light and dark EmulationStation theme, readable card labels and higher contrast.
+- Redesigned switches, sliders, keyboard, dialogs, scrollbars and Information screen (ES patches 0001-0054).
+- System carousel with equal 22 px gaps, no jumping neighbours and a steady speed when holding a direction.
+- System / Network Settings open at once and fill their lists in the background; faster Wi-Fi menu.
+- Fewer confirmation prompts in the quit menu.
+- Tools menu with an icon and a description for every tool; 15 dead entries removed (ES warnings per boot 15 -> 0).
+- Own first-boot screens, language question and boot banner.
+
+**R36 Ultra hardware**
+- RK915 Wi-Fi that survives reboots and real suspend, joystick RGB LED driver, RK817 battery gauge, CPU/GPU voltage bins
+  L0-L3 through PVTM, GPU table 200-600 MHz.
+- **R36 Tuner Next** built in: CPU governor and frequencies, turbo steps, benchmarks, monitor.
+
+**Not the goal:** Zenith adds no new emulators and does not update cores; those come from AURKNIX. The work is on boot,
+suspend, responsiveness and the interface.
 
 ## Install
 
