@@ -19,8 +19,9 @@ Steps to reproduce the behavior:
 3. See error
 
 ### Information
- - AURKNIX Version: [e.g. 20240517]
- - Hardware Platform: [e.g. Powkiddy RGB20SX]
+ - Zenith image: [e.g. 20261023-44d6084]
+ - Hardware Platform: [e.g. R36 Ultra. Only the R36 Ultra has been tested]
+ - Does it also happen on a stock AURKNIX/ROCKNIX image? [yes / no / not tried]
 
 ### Log file
 <!-- Add debug log files that we can search for errors. -->

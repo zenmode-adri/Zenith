@@ -1,0 +1,85 @@
+# Zenith changelog
+
+Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix) (itself a fork of
+[ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, a polished EmulationStation interface and reliable
+suspend on **RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
+Dates are the build dates. Every entry has a git tag (named in `code`) and details in the commit it points to.
+
+## 2026-10-23 - image `44d6084` (first public candidate)
+
+- **Carousel cards with an icon** (Music, Tools, Favorites, All games, Last played, Never played, Collections, Books):
+  the name is now real EmulationStation text (about 19 px) instead of a word baked into a 360x300 bitmap that was
+  scaled down 4x (about 11 px). `zenith-77-etiquetas-contraste`
+- **More contrast on secondary text** in both themes (dark: 4.5:1 -> about 8:1, light: 4.5-5.3:1 -> about 7:1).
+
+## 2026-10-22 - images `4868372` and `8fef418`
+
+### Suspend and resume
+- "Suspending..." notice stays on screen at least 1 s, then the panel turns off; it no longer reappears on wake-up
+  (ES patch 0047). `fast-10-aviso-suspension`
+- Suspend takes 3.5 s -> 2.3 s and resume 8 s -> 4.3 s: Wi-Fi shutdown, panel and the rest run in parallel, panel
+  colour settings are restored all at once. `fast-11-suspension-paralela`
+- CPU/GPU/DMC governors are restored first on wake-up (they were left in powersave for 3.5 s, which made the first
+  button press stutter). `fast-12-gobernadores-primero`
+- The panel backlight is always switched on when EmulationStation starts and on wake-up: if ES was restarted while
+  the screensaver was active the screen could stay black with full brightness. `fast-17-luz-siempre`
+
+### EmulationStation
+- First button press after idle: 225-245 ms -> 11 ms. The audio device that ES closes after 5 s of silence is now
+  reopened on a worker thread (ES patch 0049; the one click that wakes it up is silent). `fast-13-primer-boton`
+- System carousel: the selected card no longer touches its neighbours (all four gaps are 22 px), the neighbours no
+  longer jump when moving, and holding a direction keeps a steady speed (1.96-10.62 -> 4.74-6.59 positions/s).
+  ES patches 0052 and 0054, theme `scaledLogoSpacing`. `zenith-76-huecos-iguales`, `fast-18-carrusel-suave`,
+  `fast-20-clamp-carrusel`, `fast-21-carrusel-mantener`
+- Side drawer (GO TO MANUFACTURER / LETTER...): opens above the Z logo and its help bar is centred on it, also on small
+  screens (ES patches 0050, 0051). `fast-14-cajon-sobre-z`, `fast-15-ayuda-en-cajon`, `fast-16-ayuda-cajon-pequenas`
+- Quit menu: restart, suspend and shutdown no longer ask for confirmation (fast shutdown, which skips saving
+  metadata, still does; ES patch 0053). `fast-19-salir-sin-confirmar`
+
+### Tools menu
+- R36 Tuner and EKA2L1 entries now have a description and an icon; the `MOD_TOOLS` folder has a description.
+- 15 dead entries of apps that this build does not ship are gone (ES logged 15 warnings per boot, now 0).
+- Every tool has its own icon, and the icons are visible on the dark theme (lighter background).
+- Baidu Sync is hidden, and the Duckstation and PortMaster scripts are fixed. `tools-1-limpieza`, `tools-2-imagenes`
+
+## 2026-10-21 - fast boot (`bareboot-4s` branch)
+
+- **Early boot**: GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; the UI is
+  requested at about 5.8 s instead of 10.1 s and ES is ready at about 13.3 s of kernel clock instead of 14.5 s.
+  It disables itself if ES is not ready in time. `fast-1-led-rk817-tarde` .. `fast-9-seguro`
+- **u-boot** `CONFIG_BOOTDELAY=0`: bootloader 3.11 s -> 2.11 s (R36 Ultra). Total from power-on to ES ready:
+  about 17.6 s -> 15.4 s. `uboot-bootdelay0`
+- initramfs probes the SD card every 50 ms and hands over to systemd with `exec`. `zinit-oneshot`, `fast-3a-fsck-sondeo`
+- ES waits for the Wayland socket and for the ROM partition mount (patches 0044, 0045) and no longer blocks on
+  PulseAudio at start-up (patch 0046).
+
+## 2026-10-20 - GPU
+- GPU frequency table 200/300/400/480/600 MHz (600 MHz is stable; 520 and 560 MHz were removed because a fixed 560 MHz
+  clock freezes the console, cause unknown). simple_ondemand up-threshold set to 60. `zenith-87-gpu-tabla-600`,
+  `zenith-91-gpu-umbral-60`
+
+## 2026-10-19 - EmulationStation interface (patches 0017-0043)
+- Switches, sliders, on-screen keyboard, search field, dialogs, tabs, scrollbar, header alignment, battery text,
+  theme downloader, game options, scraper fixes, window sizes relative to the status bar. `zenith-54-contraste` .. `zenith-86-led-sin-irq-off`
+- New LED driver for the R36 Ultra joysticks. `zenith-74-led-joysticks`
+
+## 2026-10-15 - Wi-Fi and PPSSPP
+- Faster Wi-Fi menu (busctl, prescan; ES patch 0016). `zenith-53-wifi-fast`
+- PPSSPP `RenderDuplicateFrames = False`.
+
+## 2026-10-08..10-11 - Zenith first release work
+- Own first-boot screens, boot banner, language question and credits. `zenith-1-firstboot`..`zenith-13-debug`
+- Own light and dark EmulationStation theme ("Zenith"), volume OSD, bundled themes, brightness notice, R36 Tuner Next
+  (CPU governor and frequencies, turbo steps, benchmarks, monitor). `zenith-14-tema-es` .. `zenith-52-bigger-logos`
+- Opening a game from the menu: 6.29 s -> 3.85 s (average of 8 games). `launch-iter1`..`launch-iter4`
+
+## 2026-10-07 - base work
+- Silent power-off (no red message), silent console output at boot, reliable RK915 Wi-Fi including real suspend,
+  CPU/GPU voltage bins L0-L3 through PVTM, RK817 battery gauge. `img-20261007-*`
+
+## Known limitations
+- Tested only on the **R36 Ultra**. The other RK3326 devices, and every non-RK3326 target inherited from upstream,
+  have not been tested with these changes.
+- The Zenith early-boot mode, the Wi-Fi suspend fix (RK915 chip) and the LED driver are device specific.
+- A fixed GPU clock of 560 MHz freezes the console; do not add it back to the frequency table.
+- The eMMC tools (backup, install, restore) come from upstream and have not been tested with Zenith.

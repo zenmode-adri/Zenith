@@ -25,4 +25,14 @@ which descends from JELOS and EmuELEC. Zenith would not exist without them.
   Zenith's own.
 - Zenith's own changes are published under the same licenses as the files they modify.
 
+## Zenith's own work
+
+- **Zenith** EmulationStation theme (light and dark), Tools icons, first-boot screens, boot banner and the changes
+  listed in `CHANGELOG.md`: zenmode-adri. The theme uses the **Rubik** font (SIL Open Font License 1.1) and
+  system logos from **iconic-es** by Delgan (CC0); the icon-only versions of eight of those logos were derived by
+  removing the baked-in label.
+- **R36 Tuner Next** (`projects/ROCKNIX/packages/apps/r36-tuner`): zenmode-adri.
+- EmulationStation patches (`.../emulationstation/patches/RK3326/`) and the shell scripts changed by Zenith are
+  published under the license of the files they modify (GPL v2).
+
 Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors.
