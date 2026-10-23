@@ -8,7 +8,7 @@ EmulationStation with a custom light/dark theme, and a boot and suspend path reb
 - **Boots in about 15 s instead of 33 s**, suspends in 2.3 s and wakes in 4.3 s.
 - **Opens games in 3.85 s** instead of 6.29 s, and the menus answer on the first button press (11 ms).
 - **Own interface**: light and dark theme, redesigned dialogs, keyboard, sliders, a clean Tools menu, first-boot screens.
-- **Modern kernel**: Linux 6.12 mainline instead of the old 4.4 vendor kernel most handheld firmwares still ship.
+- **Mainline kernel**: Linux 6.12 with upstream drivers, plus a patch set for the RK3326.
 - **Measured, not guessed**: newer emulator builds, PPSSPP versions and GPU clocks were benchmarked on the device, and what
   did not help was left out (see [Tested and not shipped](#tested-and-not-shipped)).
 
@@ -73,8 +73,8 @@ suspend, responsiveness and the interface.
 
 ## Under the hood
 
-**Kernel.** Zenith runs **Linux 6.12 mainline** (6.12.79 in the current image), not the 4.4.189 vendor (BSP) kernel that
-ArkOS and dArkOSRE still use. The 6.12 base comes from AURKNIX/ROCKNIX. The patch set on top of it is in
+**Kernel.** Zenith runs **Linux 6.12 mainline** (6.12.79 in the current image), with upstream drivers for the SoC, storage and
+power management, on a long-term-support base. The 6.12 base comes from AURKNIX/ROCKNIX. The patch set on top of it is in
 `projects/ROCKNIX/devices/RK3326/patches/linux/` (part inherited, part Zenith's own, see the changelog) and includes, among
 others:
 
@@ -107,14 +107,14 @@ capped at 68 °C); only CPU time was measured, not audio or save states.
 | Core | CPU per frame, old -> new | Verdict |
 |---|---|---|
 | snes9x, genesis_plus_gx, picodrive, gambatte, vba_next, quicknes | -1.4 % to +1.1 % | Same speed, so no reason to change |
-| nestopia (default NES core) | +19 % | **Slower** (worse on all 6 ROMs) |
-| fceumm | +13 % | **Slower** |
+| nestopia (default NES core) | +19 % | More CPU (on all 6 ROMs), so not updated |
+| fceumm | +13 % | More CPU, so not updated |
 | gearsystem (Game Gear / Master System) | -26 % | The only clear gain |
-| mGBA new vs mGBA old | -42 % | Better than before, but still **2x** the CPU of the default gpSP, and +25 % over gambatte on GB/GBC |
+| mGBA new vs mGBA old | -42 % | Better than before; the default gpSP (GBA) and gambatte (GB/GBC) still use less CPU, so the defaults stay |
 
-Newer emulator builds do not give more performance in general: most are equivalent, two are slower, and the one
-that is faster (mGBA) is still behind the cores AURKNIX already uses. Zenith keeps AURKNIX's cores; gearsystem is the one
-candidate worth updating in a future image.
+In these tests newer builds did not bring more performance in general: most are equivalent, two use more CPU, and mGBA
+improves on its older version but not on the default cores. So Zenith keeps the cores that AURKNIX ships; gearsystem is the
+one candidate worth updating in a future image.
 
 **PPSSPP.** Versions 1.12.3 and 1.20 were compared on three games, and 12 settings were tried one at a time on a set of
 ten games run from save states. There is no winning version (1.20 wins in some games, 1.12.3 in others), profile-guided optimisation gives
