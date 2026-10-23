@@ -18,10 +18,10 @@ R36 Ultra, 720x720. Dark and light variants of the Zenith theme.
 | Start-up | Main menu (dark) | Main menu (light) |
 |:---:|:---:|:---:|
 | <img src="docs/images/splash.png" width="230"> | <img src="docs/images/main-dark.png" width="230"> | <img src="docs/images/main-light.png" width="230"> |
-| **Game list (dark)** | **Game list (light)** | **Settings menu** |
-| <img src="docs/images/list-dark.png" width="230"> | <img src="docs/images/list-light.png" width="230"> | <img src="docs/images/menu-dark.png" width="230"> |
+| **Game grid (dark)** | **Game grid (light)** | **Settings menu** |
+| <img src="docs/images/grid-dark.png" width="230"> | <img src="docs/images/grid-light.png" width="230"> | <img src="docs/images/menu-dark.png" width="230"> |
 
-The game lists use a small demo set of Game Boy Color games with scraped covers; Zenith does not ship any games.
+The game grids use a small demo set of Game Boy Color games with scraped covers; Zenith does not ship any games.
 
 ## What's different from AURKNIX
 
