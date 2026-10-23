@@ -13,6 +13,10 @@ Zenith would not exist without them.
 - Everyone who builds and shares open source for these handhelds: emulator authors, kernel and driver developers,
   EmulationStation contributors, testers.
 
+- **Jacob Cook** (SD resume retry and dwc2 suspend/resume fixes, ROCKNIX #3303/#3304) and **Chris Morgan** (RK817 battery
+  gauge and sleep fixes, ROCKNIX #3305), whose kernel patches Zenith carries for a reliable suspend.
+- **AveyondFly**'s AURKNIX patches for PX30 memory (DMC) frequency scaling.
+
 ## Maintainer
 
 - zenmode-adri (https://github.com/zenmode-adri)

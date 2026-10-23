@@ -84,6 +84,19 @@ others:
 - The R36 Ultra joystick RGB LED driver and a panel brightness control.
 - An exFAT directory-readahead limit.
 
+**Suspend to RAM.** Suspending with the power button is a real suspend-to-RAM (PSCI `mem`/deep sleep): the CPU rail is powered
+off and the memory rail is lowered while the console sleeps (about 20-25 mA, estimated from the battery counter). Making it
+reliable on these devices relies on upstream fixes that Zenith carries:
+
+- SD card resume retried after a power cycle, and USB (dwc2) suspend/resume fixes: ROCKNIX pull requests #3304 and #3303,
+  by Jacob Cook.
+- RK817 battery gauge corrected across sleep, and the `SYS_CAN_SD` register cleared by default, as the vendor kernel does:
+  ROCKNIX pull request #3305, by Chris Morgan.
+
+On top of that, Zenith adds the RK915 Wi-Fi unload/reload around sleep, suspend steps that run in parallel
+(suspend 3.5 s -> 2.3 s, resume 8 s -> 4.3 s), CPU/GPU/memory governors restored first on wake-up, a "Suspending..." notice
+that stays on screen for at least one second, and a guarantee that the backlight is on after waking.
+
 The kernel configuration was reviewed for performance: it is already lightweight (`-O2`, no debugging or tracing,
 zram and MGLRU enabled), and the Cortex-A35 reports "not affected" for almost every speculative-execution mitigation, so
 there is no security tax to remove.
