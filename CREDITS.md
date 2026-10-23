@@ -1,13 +1,20 @@
 # Zenith - credits and notices
 
-Zenith is a fork of AURKNIX (by lcdyk and KK), which is itself a fork of ROCKNIX,
-which descends from JELOS and EmuELEC. Zenith would not exist without them.
+Zenith is an unofficial fork of AURKNIX, which is itself a fork of ROCKNIX, which descends from JELOS and EmuELEC.
+Zenith would not exist without them.
 
-- Maintained by: zenmode-adri (https://github.com/zenmode-adri)
-- Built on: ROCKNIX (https://github.com/ROCKNIX), AURKNIX by lcdyk, AveyondFly
-  (https://github.com/AveyondFly/distribution_rocknix)
-- Thanks to everyone who builds and shares open source for these handhelds:
-  emulator authors, kernel and driver developers, EmulationStation contributors, testers.
+## Thanks
+
+- **lcdyk** and **KK**, authors and maintainers of AURKNIX: the RK3326 device trees, emulators, tools and the whole
+  base this fork stands on (https://github.com/AveyondFly/distribution_rocknix, upstream work by lcdyk0517).
+- **AveyondFly**, who hosts the AURKNIX repository.
+- The **ROCKNIX** team (https://github.com/ROCKNIX) and the **JELOS** and **EmuELEC** teams before them.
+- Everyone who builds and shares open source for these handhelds: emulator authors, kernel and driver developers,
+  EmulationStation contributors, testers.
+
+## Maintainer
+
+- zenmode-adri (https://github.com/zenmode-adri)
 
 ## Licenses
 
