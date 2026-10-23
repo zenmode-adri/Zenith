@@ -1,23 +1,21 @@
 # Zenith changelog
 
 Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix) (itself a fork of
-[ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, a polished EmulationStation interface and fast
+[ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, a polished EmulationStation interface and reliable
 suspend on **RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
 Dates are the build dates. Every entry has a git tag (named in `code`) and details in the commit it points to.
 
-## v0.1.0 - 2026-10-23 (first public release, pre-release)
+## Next image (not built yet)
 
-Image `AURKNIX-RK3326.aarch64-20261023.img.gz`. Tag `v0.1.0`. No update package yet: nobody has Zenith installed, so
-the first release is the full image only.
-Same sources as the development image `44d6084` below, built as a **clean release image**:
-
-- No Wi-Fi network, SSH, Samba or verbose logging is enabled by default: turn them on from the menu when you need them.
-  The development builds enabled all of them.
-- `sshd` no longer starts just because the kernel command line contains `ssh` (the AURKNIX `extlinux.conf` had it, so
-  SSH was always on, with the factory password). SSH is now opt-in through the `ssh.enabled` setting.
-- Checked on the files: no saved Wi-Fi name or key anywhere in the image, no SSH keys.
-- **Not yet checked:** the first boot of this exact image from a freshly written SD card. The same sources run on an
-  R36 Ultra as a development image.
+### Opening a game
+- **RetroArch games start 0.2-0.5 s faster.** `setsettings.sh` (the script that writes the per-game RetroArch
+  configuration right before launch) started about 220 processes per game; it now starts about 40 and produces
+  byte-identical `retroarch.cfg` and `/tmp/.retroarch.cfg` files (compared on 14 systems). Time spent in that
+  script: 0.70 s -> 0.47 s with logging off (the default), 1.01 s -> 0.51 s with `system.loglevel=verbose`.
+  Whole launch, averaged over 7 games (Famicom, Game Boy, SNES, Mega Drive, GBA, N64, PlayStation): 3.54 s -> 3.33 s
+  with logging off, 3.90 s -> 3.41 s with verbose logging. `launch-opt-2`
+- Not affected: standalone emulators (PPSSPP, Flycast, DraStic, DuckStation, ScummVM...) do not go through
+  `setsettings.sh`.
 
 ## 2026-10-23 - image `44d6084` (first public candidate)
 
@@ -87,14 +85,8 @@ Same sources as the development image `44d6084` below, built as a **clean releas
   (CPU governor and frequencies, turbo steps, benchmarks, monitor). `zenith-14-tema-es` .. `zenith-52-bigger-logos`
 - Opening a game from the menu: 6.29 s -> 3.85 s (average of 8 games). `launch-iter1`..`launch-iter4`
 
-## Boot time summary (R36 Ultra)
-- Stock AURKNIX: about 33 s from power-on to the menu (stopwatch). Zenith: about 15.4 s (boot log, ES ready at 13.3 s of
-  kernel clock plus 2.1 s of bootloader). The 17.6 s -> 15.4 s step in the 2026-10-21 entry starts from an already
-  optimised Zenith build, not from stock AURKNIX.
-- In the first optimisation round (2026-10-05, R36S with the full 134-system list) the stopwatch already went 33 s -> about 17-19 s.
-
 ## 2026-10-07 - base work
-- Silent power-off (no red message), silent console output at boot, RK915 Wi-Fi fixes (boot, reboot and suspend),
+- Silent power-off (no red message), silent console output at boot, reliable RK915 Wi-Fi including real suspend,
   CPU/GPU voltage bins L0-L3 through PVTM, RK817 battery gauge. `img-20261007-*`
 
 ## Known limitations
