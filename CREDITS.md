@@ -15,7 +15,8 @@ Zenith would not exist without them.
 
 - **Jacob Cook** (SD resume retry and dwc2 suspend/resume fixes, ROCKNIX #3303/#3304) and **Chris Morgan** (RK817 battery
   gauge and sleep fixes, ROCKNIX #3305), whose kernel patches Zenith carries for a reliable suspend.
-- **AveyondFly**'s AURKNIX patches for PX30 memory (DMC) frequency scaling.
+- **KK** (AURKNIX), who ported the PX30 memory (DMC) frequency scaling from the Rockchip BSP
+  (AveyondFly/distribution_rocknix commit `2c34156`, "rk3326: add dmc").
 
 ## Maintainer
 

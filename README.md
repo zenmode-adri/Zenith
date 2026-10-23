@@ -78,8 +78,10 @@ power management, on a long-term-support base. The 6.12 base comes from AURKNIX/
 `projects/ROCKNIX/devices/RK3326/patches/linux/` (part inherited, part Zenith's own, see the changelog) and includes, among
 others:
 
-- CPU/GPU voltage bins L0-L3 read through PVTM, an RK3326 OPP table (CPU 1296 MHz by default, with 1416 and 1512 MHz as an
-  opt-in turbo; GPU 200-600 MHz) and memory devfreq.
+- CPU/GPU voltage bins L0-L3 read through PVTM and an RK3326 OPP table (CPU 1296 MHz by default, with 1416 and 1512 MHz as an
+  opt-in turbo; GPU 200-600 MHz).
+- Memory (DMC) frequency scaling, ported from the Rockchip 6.1 BSP by KK of AURKNIX: the DDR clock follows the load between
+  194 and 666 MHz.
 - Stable RK915 Wi-Fi across reboots and real suspend, and the RK817 battery gauge fixes.
 - The R36 Ultra joystick RGB LED driver and a panel brightness control.
 - An exFAT directory-readahead limit.
