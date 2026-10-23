@@ -7,14 +7,15 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
 
 ## v0.1.0 - 2026-10-23 (first public release, pre-release)
 
-Image `AURKNIX-RK3326.aarch64-20261023.img.gz` and update package `AURKNIX-RK3326.aarch64-20261023.tar`. Tag `v0.1.0`.
+Image `AURKNIX-RK3326.aarch64-20261023.img.gz`. Tag `v0.1.0`. No update package yet: nobody has Zenith installed, so
+the first release is the full image only.
 Same sources as the development image `44d6084` below, built as a **clean release image**:
 
 - No Wi-Fi network, SSH, Samba or verbose logging is enabled by default: turn them on from the menu when you need them.
   The development builds enabled all of them.
 - `sshd` no longer starts just because the kernel command line contains `ssh` (the AURKNIX `extlinux.conf` had it, so
   SSH was always on, with the factory password). SSH is now opt-in through the `ssh.enabled` setting.
-- Checked on the files: no saved Wi-Fi name or key anywhere in the image, no SSH keys, update package under 2 GiB.
+- Checked on the files: no saved Wi-Fi name or key anywhere in the image, no SSH keys.
 - **Not yet checked:** the first boot of this exact image from a freshly written SD card. The same sources run on an
   R36 Ultra as a development image.
 

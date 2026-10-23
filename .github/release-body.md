@@ -12,17 +12,13 @@ What changed and the measurements: [CHANGELOG.md](https://github.com/zenmode-adr
 | File | What it is |
 |------|------------|
 | `AURKNIX-RK3326.aarch64-20261023.img.gz` | Full image for a new SD card |
-| `AURKNIX-RK3326.aarch64-20261023.tar` | Update package for an installed system |
-| `*.sha256` | SHA-256 checksums: verify them before writing anything |
+| `*.sha256` | SHA-256 checksum: verify it before writing anything |
 
 ## Installation
 * Download the image and check its `.sha256`.
 * Decompress the image and write it to an SD card with an imaging tool such as Balena Etcher.
   Check the target disk first: everything on it is erased.
 * Other RK3326 devices: choose the device tree with `/flash/dtbselect` or `DtbselectWin64.exe` on the boot partition.
-
-## Upgrading
-* Copy the `.tar` to the device update share over the network and reboot; the update starts automatically.
 
 ## Default settings
 * Wi-Fi, SSH and Samba are **off**: enable them from the network settings of the menu.

@@ -184,7 +184,6 @@ from save states.
    Double-check the target disk: writing an image overwrites everything on it.
 3. For a device other than the R36 Ultra, pick its device tree with `/flash/dtbselect` (or `DtbselectWin64.exe` on the boot
    partition).
-4. Updating an installed system: copy the matching `.tar` to the update share and reboot.
 
 ## Building
 
