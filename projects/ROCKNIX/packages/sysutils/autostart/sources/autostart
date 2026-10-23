@@ -477,14 +477,6 @@ legacy_boot() {
   ### Re-source the profile so we fetch the correct UI_SERVICE variable.
   . /etc/profile
 
-  ### Zenith: modo de prueba de DTB (lo activa el usuario desde Zenith DTB Selector en el PC)
-  # Pinta una tarjeta de prueba y espera un boton: con boton se queda el DTB actual; sin boton escribe el siguiente
-  # candidato en extlinux.conf y reinicia (no vuelve). Sin /flash/dtbprobe/state no hace nada.
-  if [ -f /flash/dtbprobe/state ] && [ -x /usr/lib/autostart/firstboot/dtb-probe.sh ]; then
-    alog "DTB probe mode: running dtb-probe.sh"
-    /usr/lib/autostart/firstboot/dtb-probe.sh >>${BOOTLOG} 2>&1
-  fi
-
   ### Run firstboot
   if [ ! -e "/storage/mod.done" ]; then
     if [ -x "/usr/lib/autostart/firstboot/update.sh" ]; then
@@ -557,6 +549,14 @@ fi
 if [ "${MODE}" = "legacy" ]
 then
   set_mode "legacy(${REASON})"
+  ### Zenith: modo de prueba de DTB (lo activa el usuario desde Zenith DTB Selector en el PC).
+  # Va ANTES de esperar a multi-user/red: con un DTB equivocado un servicio ajeno puede colgarse y el ciclo no avanzaria.
+  # Pinta una tarjeta de prueba y espera un boton: con boton se queda el DTB actual y el arranque sigue; sin boton escribe
+  # el siguiente candidato en extlinux.conf y reinicia (no vuelve). Sin /flash/dtbprobe/state no hace nada.
+  if [ -f /flash/dtbprobe/state ] && [ -x /usr/lib/autostart/firstboot/dtb-probe.sh ]; then
+    alog "DTB probe mode: running dtb-probe.sh"
+    /usr/lib/autostart/firstboot/dtb-probe.sh >>"${BOOTLOG}" 2>&1
+  fi
   # tanda 5: el servicio ya no espera a graphical/network (drop-in); el flujo ORIGINAL si lo necesita
   i=0; until systemctl is-active --quiet multi-user.target 2>/dev/null && systemctl is-active --quiet network.target 2>/dev/null || [ $i -ge 300 ]; do sleep 0.2; i=$((i+1)); done
   legacy_boot

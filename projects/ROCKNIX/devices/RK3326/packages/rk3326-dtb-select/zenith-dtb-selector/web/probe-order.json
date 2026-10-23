@@ -7,24 +7,6 @@
  ],
  "candidates": [
   {
-   "dtb": "rk3326-xifan-r36pro.dtb",
-   "group": [
-    "rk3326-xifan-r36pro.dtb",
-    "rk3326-gameconsole-hg36.dtb",
-    "rk3326-gameconsole-k36.dtb",
-    "rk3326-r36s-type2-with-amplifier.dtb",
-    "rk3326-r36s-type2-without-amplifier.dtb"
-   ],
-   "icc": 1500000,
-   "names": [
-    {
-     "en": "R36S Clone Type 1 with amplifier",
-     "es": "R36S clon tipo 1 con amplificador",
-     "zh": "R36S克隆 种类1带功放"
-    }
-   ]
-  },
-  {
    "dtb": "rk3326-gameconsole-r45h.dtb",
    "group": [
     "rk3326-gameconsole-r45h.dtb",
@@ -39,6 +21,52 @@
      "en": "Game Console R36H ProMax",
      "es": "Game Console R36H ProMax",
      "zh": "Game Console R36H ProMax"
+    }
+   ]
+  },
+  {
+   "dtb": "rk3326-xifan-r36pro.dtb",
+   "group": [
+    "rk3326-xifan-r36pro.dtb",
+    "rk3326-gameconsole-hg36.dtb",
+    "rk3326-gameconsole-k36.dtb"
+   ],
+   "icc": 1500000,
+   "names": [
+    {
+     "en": "R36S Clone Type 1 with amplifier",
+     "es": "R36S clon tipo 1 con amplificador",
+     "zh": "R36S克隆 种类1带功放"
+    }
+   ]
+  },
+  {
+   "dtb": "rk3326-r36s-type2-with-amplifier.dtb",
+   "group": [
+    "rk3326-r36s-type2-with-amplifier.dtb",
+    "rk3326-r36s-type2-without-amplifier.dtb"
+   ],
+   "icc": 1500000,
+   "names": [
+    {
+     "en": "R36S Clone Type 2 with amplifier",
+     "es": "R36S clon tipo 2 con amplificador",
+     "zh": "R36S克隆 种类2带功放"
+    }
+   ]
+  },
+  {
+   "dtb": "rk3326-gameconsole-r33s.dtb",
+   "group": [
+    "rk3326-gameconsole-r33s.dtb",
+    "rk3326-gameconsole-r36s.dtb"
+   ],
+   "icc": 2000000,
+   "names": [
+    {
+     "en": "Game Console R33s",
+     "es": "Game Console R33s",
+     "zh": "Game Console R33s"
     }
    ]
   },
@@ -137,34 +165,6 @@
      "en": "R36S Sauce Panel 4",
      "es": "R36S Sauce pantalla 4",
      "zh": "R36S酱油 屏幕4"
-    }
-   ]
-  },
-  {
-   "dtb": "rk3326-gameconsole-r33s.dtb",
-   "group": [
-    "rk3326-gameconsole-r33s.dtb"
-   ],
-   "icc": 2000000,
-   "names": [
-    {
-     "en": "Game Console R33s",
-     "es": "Game Console R33s",
-     "zh": "Game Console R33s"
-    }
-   ]
-  },
-  {
-   "dtb": "rk3326-gameconsole-r36s.dtb",
-   "group": [
-    "rk3326-gameconsole-r36s.dtb"
-   ],
-   "icc": 2000000,
-   "names": [
-    {
-     "en": "Game Console R36s P1 screen",
-     "es": "Game Console R36s pantalla P1",
-     "zh": "Game Console R36s P1屏幕"
     }
    ]
   },

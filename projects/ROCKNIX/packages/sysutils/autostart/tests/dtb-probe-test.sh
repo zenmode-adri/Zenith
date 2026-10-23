@@ -50,7 +50,7 @@ setup() {
 }
 run() {   # run [press_after]
   echo "${1:-0}" >"$T/stub/press_after"
-  DTBPROBE_FLASH="$T/flash" DTBPROBE_TIMEOUT=2 DTBPROBE_POLL=0.05 DTBPROBE_IGNORE_FIRST=0 DTBPROBE_REMOUNT=0 \
+  DTBPROBE_FLASH="$T/flash" DTBPROBE_TIMEOUT=2 DTBPROBE_POLL=0.05 DTBPROBE_IGNORE_FIRST=0 DTBPROBE_INPUT_WAIT=1 DTBPROBE_REMOUNT=0 \
   DTBPROBE_REBOOT="$T/bin/reboot" DTBPROBE_EVTEST="$T/bin/evtest" DTBPROBE_INPUT_DIR="$T/in" ZSPLASH="$T/bin/zsplash" \
   STUB="$T/stub" bash "$SCRIPT" >"$T/out.txt" 2>&1
   RC=$?
@@ -105,6 +105,21 @@ check "avanza igualmente" "[ \"\$(fdt)\" = /b.dtb ]"; check "lo anota en el log"
 echo "T10: indice corrupto se trata como 0"
 setup a.dtb b.dtb c.dtb; echo "basura;rm -rf /" >"$T/flash/dtbprobe/index"; run 0
 check "avanza a b.dtb" "[ \"\$(fdt)\" = /b.dtb ]"
+
+echo "T11: sin mando espera un tiempo acotado y sigue (solo VOL)"
+setup a.dtb b.dtb c.dtb; rm -f "$T/in/platform-test-event-joystick"; t0=$SECONDS; run 0; dt=$((SECONDS - t0))
+check "no se queda esperando para siempre" "[ $dt -le 8 ]"; check "lo anota" "grep -q 'sin mando' $T/flash/dtbprobe/log"; check "avanza igualmente" "[ \"\$(fdt)\" = /b.dtb ]"
+: >"$T/in/platform-test-event-joystick"
+
+echo "T12: el boton de encendido NO confirma"
+setup a.dtb b.dtb c.dtb; : >"$T/in/platform-x-pwrkey-event"; echo 1 >"$T/stub/press_after"
+# evtest simulado devuelve 10 para cualquier consulta; la unica tecla "encendido" no debe consultarse: se comprueba por el codigo
+check "el script no consulta KEY_POWER" "! grep -q 'KEY_POWER' $SCRIPT"
+rm -f "$T/in/platform-x-pwrkey-event"
+
+echo "T13: el resultado y el registro quedan en la FAT al terminar"
+setup a.dtb b.dtb c.dtb; printf '%s' "$ORIG" | sed 's#/a.dtb#/b.dtb#' >"$T/flash/extlinux/extlinux.conf"; echo 1 >"$T/flash/dtbprobe/index"; run 3
+check "dtbprobe-last.log existe" "[ -s $T/flash/dtbprobe-last.log ]"; check "dice que se confirmo" "grep -q 'confirmado' $T/flash/dtbprobe-last.log"
 
 echo; echo "Resultado: $pass correctas, $fail fallidas"
 [ "$fail" -eq 0 ]

@@ -12,6 +12,7 @@ func fakeCard(t *testing.T, dtbs ...string) string {
 	os.MkdirAll(filepath.Join(boot, "extlinux"), 0o755)
 	os.WriteFile(filepath.Join(boot, "KERNEL"), nil, 0o644)
 	os.WriteFile(confPath(boot), []byte(zenithConf), 0o644)
+	os.WriteFile(filepath.Join(boot, "zenith-features.txt"), []byte("dtb-probe=1\n"), 0o644)
 	for _, d := range dtbs {
 		os.WriteFile(filepath.Join(boot, d), fakeDTB(200, true), 0o644)
 	}
@@ -21,7 +22,7 @@ func fakeCard(t *testing.T, dtbs ...string) string {
 func TestProbeStartStop(t *testing.T) {
 	boot := fakeCard(t, "rk3326-gameconsole-r36ultra.dtb", "a.dtb", "b.dtb", "c.dtb")
 	orig, _ := os.ReadFile(confPath(boot))
-	n, err := probeStart(boot, []string{"a.dtb", "falta.dtb", "../x.dtb", "b.dtb", "a.dtb", "c.dtb"})
+	n, err := probeStart(boot, []string{"a.dtb", "falta.dtb", "../x.dtb", "b.dtb", "a.dtb", "c.dtb"}, false)
 	if err != nil || n != 3 {
 		t.Fatalf("start: %d %v", n, err)
 	}
@@ -36,7 +37,7 @@ func TestProbeStartStop(t *testing.T) {
 	if o, _ := os.ReadFile(filepath.Join(probeDir(boot), "extlinux.orig")); string(o) != string(orig) {
 		t.Fatal("extlinux.orig no es el original")
 	}
-	if _, err := probeStart(boot, []string{"a.dtb", "b.dtb"}); err == nil || err.Error() != "probe-active" {
+	if _, err := probeStart(boot, []string{"a.dtb", "b.dtb"}, false); err == nil || err.Error() != "probe-active" {
 		t.Fatalf("segundo start debia fallar: %v", err)
 	}
 	if err := probeStop(boot); err != nil {
@@ -56,7 +57,7 @@ func TestProbeStartStop(t *testing.T) {
 
 func TestProbeNeedsTwoCandidates(t *testing.T) {
 	boot := fakeCard(t, "a.dtb")
-	if _, err := probeStart(boot, []string{"a.dtb"}); err == nil || err.Error() != "probe-few" {
+	if _, err := probeStart(boot, []string{"a.dtb"}, false); err == nil || err.Error() != "probe-few" {
 		t.Fatalf("esperaba probe-few: %v", err)
 	}
 	if _, err := os.Stat(probeDir(boot)); err == nil {
@@ -105,4 +106,24 @@ func findByDTB(dtb string) *Device {
 func init() {
 	// los tests usan el catalogo embebido igual que el programa
 	loadCatalog()
+}
+
+func TestProbeNeedsCapableImage(t *testing.T) {
+	boot := fakeCard(t, "a.dtb", "b.dtb")
+	os.Remove(filepath.Join(boot, "zenith-features.txt")) // imagen antigua: sin el script de la consola
+	if probeSupported(boot) {
+		t.Fatal("no debia estar soportado")
+	}
+	if _, err := probeStart(boot, []string{"a.dtb", "b.dtb"}, false); err == nil || err.Error() != "probe-unsupported" {
+		t.Fatalf("esperaba probe-unsupported: %v", err)
+	}
+	if cur, _ := os.ReadFile(confPath(boot)); string(cur) != zenithConf {
+		t.Fatal("no debia tocar extlinux.conf")
+	}
+	if _, err := os.Stat(probeDir(boot)); err == nil {
+		t.Fatal("no debia crear nada")
+	}
+	if n, err := probeStart(boot, []string{"a.dtb", "b.dtb"}, true); err != nil || n != 2 {
+		t.Fatalf("con force deberia funcionar: %d %v", n, err)
+	}
 }

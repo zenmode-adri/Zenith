@@ -91,6 +91,7 @@ func main() {
 	probeStopF := flag.Bool("probe-stop", false, "cancela el modo de prueba y restaura el extlinux.conf original (--boot)")
 	probeStatF := flag.Bool("probe-status", false, "muestra el estado del modo de prueba (--boot)")
 	probeList := flag.String("probe-list", "", "con --probe-start: lista de DTB separada por comas (por defecto, el orden recomendado)")
+	probeForce := flag.Bool("probe-force", false, "con --probe-start: no exigir la marca de imagen compatible (solo pruebas)")
 	flag.Parse()
 	initPlatform()
 	loadCatalog()
@@ -103,7 +104,7 @@ func main() {
 		return
 	}
 	if *probeStartF || *probeStopF || *probeStatF {
-		cliProbe(*boot, *probeStartF, *probeStopF, *probeList)
+		cliProbe(*boot, *probeStartF, *probeStopF, *probeList, *probeForce)
 		return
 	}
 	if *apply != "" {
@@ -186,7 +187,7 @@ func cliApply(boot, id string, showBoot bool) {
 	fmt.Printf("OK: %s -> %s (copia: extlinux/backups/%s)\n", d.EN, d.DTB, name)
 }
 
-func cliProbe(boot string, start, stop bool, list string) {
+func cliProbe(boot string, start, stop bool, list string, force bool) {
 	if boot == "" {
 		vs := detectVolumes()
 		if len(vs) != 1 {
@@ -202,7 +203,7 @@ func cliProbe(boot string, start, stop bool, list string) {
 		} else {
 			l = probeCandidates(boot)
 		}
-		n, err := probeStart(boot, l)
+		n, err := probeStart(boot, l, force)
 		if err != nil {
 			fatal(err)
 		}
@@ -340,7 +341,7 @@ func newMux(forced string) http.Handler {
 		writeJSON(w, 200, map[string]any{
 			"state": st, "match": match, "text": string(b),
 			"dtbs": dtbsOnCard(boot), "backups": listBackups(boot),
-			"probe": probeStatus(boot), "probeCandidates": probeCandidates(boot),
+			"probe": probeStatus(boot), "probeCandidates": probeCandidates(boot), "probeSupported": probeSupported(boot),
 		})
 	}))
 	type req struct {
@@ -446,7 +447,7 @@ func newMux(forced string) http.Handler {
 	mux.HandleFunc("/api/probe/start", api(func(w http.ResponseWriter, r *http.Request) {
 		var rq req
 		json.NewDecoder(r.Body).Decode(&rq)
-		n, err := probeStart(rq.Path, probeCandidates(rq.Path))
+		n, err := probeStart(rq.Path, probeCandidates(rq.Path), false)
 		if err != nil {
 			jerr(w, 400, err.Error())
 			return

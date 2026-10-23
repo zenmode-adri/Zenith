@@ -189,6 +189,13 @@ mkimage_rk3326_dtb_select() {
   if [ -f "${RELEASE_DIR}/3rdparty/bootloader/dtbselect" ]; then
     mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/dtbselect" ::/dtbselect
   fi
+  # Marca de capacidades para Zenith DTB Selector (PC): esta imagen lleva el modo de prueba de DTB en la consola.
+  # Sin la marca el selector no lo ofrece (en una imagen antigua nada avanzaria ni confirmaria los intentos).
+  local feat
+  feat="$(mktemp)"
+  printf 'dtb-probe=1\n' >"${feat}"
+  mcopy -o "${feat}" ::/zenith-features.txt
+  rm -f "${feat}"
   if [ -f "${RELEASE_DIR}/3rdparty/bootloader/ZenithDtbSelector.exe" ]; then
     echo "image: copying ZenithDtbSelector.exe (Windows) to boot partition (RK3326)..."
     mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/ZenithDtbSelector.exe" ::/ZenithDtbSelector.exe

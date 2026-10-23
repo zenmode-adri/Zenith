@@ -50,8 +50,8 @@ def draw_card(W, H):
     tx = x0 + int(44 * s)
     d.ellipse([x0 - rr, y1 - rr, x0 + rr, y1 + rr], fill=CYAN)
     d.text((x0, y1), "A", font=f(24), fill=WHITE, anchor="mm")
-    d.text((tx, y1 - int(13 * s)), "Yes: press any button (or VOL / POWER)", font=f(22), fill=WHITE, anchor="lm")
-    d.text((tx, y1 + int(15 * s)), "是：按任意键  -  Sí: pulsa un botón", font=fz(18), fill=GREY, anchor="lm")
+    d.text((tx, y1 - int(13 * s)), "Yes: hold any button for 1 s (or VOL)", font=f(22), fill=WHITE, anchor="lm")
+    d.text((tx, y1 + int(15 * s)), "是：按住任意键约1秒  -  Sí: mantén un botón 1 s", font=fz(18), fill=GREY, anchor="lm")
 
     # respuesta NO
     y2 = top + int(306 * s)
@@ -63,7 +63,7 @@ def draw_card(W, H):
     # aviso del cargador (dos lineas)
     d.text((cx, top + int(378 * s)), "Unplug the charger while testing", font=f(16), fill=AMBER, anchor="mm")
     d.text((cx, top + int(400 * s)), "测试期间请拔下充电器  -  Desconecta el cargador durante la prueba", font=fz(14), fill=AMBER, anchor="mm")
-    d.text((cx, top + int(440 * s)), "Zenith DTB probe  -  each try takes about 12 s", font=f(14), fill=GREY, anchor="mm")
+    d.text((cx, top + int(440 * s)), "Zenith DTB probe", font=f(14), fill=GREY, anchor="mm")
     return im
 
 def to_bgra(im):

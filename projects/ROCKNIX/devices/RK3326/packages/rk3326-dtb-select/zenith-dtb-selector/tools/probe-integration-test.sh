@@ -21,6 +21,7 @@ sed -e 's/sleep 60/:/g' "$SCRIPT" >"$T/probe.sh"
 card() {
   rm -rf "$T/card"; mkdir -p "$T/card/extlinux"; : >"$T/card/KERNEL"
   printf 'LABEL ROCKNIX\n  LINUX /KERNEL\n  FDT /rk3326-gameconsole-r36ultra.dtb\n  APPEND boot=${partition_boot} quiet loglevel=1 console=ttyS2,1500000 uboot.hwid_adc=${hwid_adc}\n' >"$T/card/extlinux/extlinux.conf"
+  echo "dtb-probe=1" >"$T/card/zenith-features.txt"
   for d in rk3326-gameconsole-r36ultra a b c d; do head -c 200 /dev/zero >"$T/card/$d.dtb"; done
   cp "$T/card/extlinux/extlinux.conf" "$T/orig.conf"
 }
@@ -63,5 +64,11 @@ card; for d in rk3326-xifan-r36pro rk3326-r36s-type3-panel1 rk3326-r36s-type4; d
 "$SEL" --boot "$T/card" --probe-start | head -1
 check "usa los 3 que existen, en orden" "[ \"\$(cat $T/card/dtbprobe/list | tr '\n' ' ')\" = 'rk3326-xifan-r36pro.dtb rk3326-r36s-type3-panel1.dtb rk3326-r36s-type4.dtb ' ]"
 check "doble activacion rechazada" "! $SEL --boot $T/card --probe-start >/dev/null 2>&1"
+
+echo "I5: una imagen antigua (sin la marca) rechaza el modo de prueba y no toca nada"
+card; rm -f "$T/card/zenith-features.txt"
+check "se rechaza" "! $SEL --boot $T/card --probe-start --probe-list a.dtb,b.dtb >/dev/null 2>&1"
+check "extlinux intacto" "cmp -s $T/card/extlinux/extlinux.conf $T/orig.conf"; check "sin carpeta dtbprobe" "[ ! -e $T/card/dtbprobe ]"
+check "con --probe-force si se activa" "$SEL --boot $T/card --probe-start --probe-force --probe-list a.dtb,b.dtb >/dev/null"
 
 echo; echo "Resultado: $pass correctas, $fail fallidas"; [ "$fail" -eq 0 ]

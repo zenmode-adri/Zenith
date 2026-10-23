@@ -62,6 +62,17 @@ func readLines(path string) []string {
 	return out
 }
 
+// probeSupported: la imagen de la tarjeta lleva el script de la consola (mkimage escribe zenith-features.txt en la FAT).
+// Sin esa marca, activar el modo dejaria la consola probando siempre el primer candidato (nada lo avanza ni lo confirma).
+func probeSupported(boot string) bool {
+	for _, l := range readLines(filepath.Join(boot, "zenith-features.txt")) {
+		if l == "dtb-probe=1" {
+			return true
+		}
+	}
+	return false
+}
+
 func probeStatus(boot string) ProbeStatus {
 	st := ProbeStatus{List: []string{}}
 	if _, err := os.Stat(filepath.Join(probeDir(boot), "state")); err == nil {
@@ -98,9 +109,12 @@ func probeCandidates(boot string) []string {
 
 // probeStart prepara el modo de prueba: copia de seguridad, marca, lista, extlinux.orig y FDT = primer candidato.
 // Solo se cambia la linea FDT (las demas opciones de extlinux.conf se respetan).
-func probeStart(boot string, list []string) (int, error) {
+func probeStart(boot string, list []string, force bool) (int, error) {
 	if ok, why := validBoot(boot); !ok {
 		return 0, fmt.Errorf("%s", why)
+	}
+	if !force && !probeSupported(boot) {
+		return 0, fmt.Errorf("probe-unsupported")
 	}
 	if st := probeStatus(boot); st.Active {
 		return 0, fmt.Errorf("probe-active")
