@@ -477,6 +477,14 @@ legacy_boot() {
   ### Re-source the profile so we fetch the correct UI_SERVICE variable.
   . /etc/profile
 
+  ### Zenith: modo de prueba de DTB (lo activa el usuario desde Zenith DTB Selector en el PC)
+  # Pinta una tarjeta de prueba y espera un boton: con boton se queda el DTB actual; sin boton escribe el siguiente
+  # candidato en extlinux.conf y reinicia (no vuelve). Sin /flash/dtbprobe/state no hace nada.
+  if [ -f /flash/dtbprobe/state ] && [ -x /usr/lib/autostart/firstboot/dtb-probe.sh ]; then
+    alog "DTB probe mode: running dtb-probe.sh"
+    /usr/lib/autostart/firstboot/dtb-probe.sh >>${BOOTLOG} 2>&1
+  fi
+
   ### Run firstboot
   if [ ! -e "/storage/mod.done" ]; then
     if [ -x "/usr/lib/autostart/firstboot/update.sh" ]; then
@@ -521,7 +529,10 @@ fi
 ###########################################################################
 MODE="fast"
 REASON=""
-if [ -e "${LEGACY_FLAG}" ]
+if [ -f /flash/dtbprobe/state ]
+then
+  MODE="legacy"; REASON="DTB probe mode active (/flash/dtbprobe)"
+elif [ -e "${LEGACY_FLAG}" ]
 then
   MODE="legacy"; REASON="manual flag ${LEGACY_FLAG} (permanent; rm it to re-enable fast mode)"
 elif [ -e "${PENDING}" ]

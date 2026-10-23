@@ -87,14 +87,23 @@ func main() {
 	showBoot := flag.Bool("show-boot", false, "con --apply: mostrar mensajes de arranque en pantalla")
 	noBrowser := flag.Bool("no-browser", false, "no abrir el navegador (para pruebas)")
 	listen := flag.Int("port", 0, "puerto local (0 = automatico)")
+	probeStartF := flag.Bool("probe-start", false, "activa el modo de prueba de DTB en la tarjeta (--boot, y opcionalmente --probe-list)")
+	probeStopF := flag.Bool("probe-stop", false, "cancela el modo de prueba y restaura el extlinux.conf original (--boot)")
+	probeStatF := flag.Bool("probe-status", false, "muestra el estado del modo de prueba (--boot)")
+	probeList := flag.String("probe-list", "", "con --probe-start: lista de DTB separada por comas (por defecto, el orden recomendado)")
 	flag.Parse()
 	initPlatform()
 	loadCatalog()
+	loadProbeOrder()
 
 	if *list {
 		for _, d := range catalog.Devices {
 			fmt.Printf("%-44s %-48s uart%d  %s\n", d.ID, d.DTB, d.UART, d.EN)
 		}
+		return
+	}
+	if *probeStartF || *probeStopF || *probeStatF {
+		cliProbe(*boot, *probeStartF, *probeStopF, *probeList)
 		return
 	}
 	if *apply != "" {
@@ -175,6 +184,39 @@ func cliApply(boot, id string, showBoot bool) {
 		fatal(err)
 	}
 	fmt.Printf("OK: %s -> %s (copia: extlinux/backups/%s)\n", d.EN, d.DTB, name)
+}
+
+func cliProbe(boot string, start, stop bool, list string) {
+	if boot == "" {
+		vs := detectVolumes()
+		if len(vs) != 1 {
+			fatal(fmt.Errorf("indica --boot (tarjetas detectadas: %d)", len(vs)))
+		}
+		boot = vs[0].Path
+	}
+	switch {
+	case start:
+		var l []string
+		if list != "" {
+			l = strings.Split(list, ",")
+		} else {
+			l = probeCandidates(boot)
+		}
+		n, err := probeStart(boot, l)
+		if err != nil {
+			fatal(err)
+		}
+		fmt.Printf("OK: modo de prueba activado con %d candidatos; primero: %s\n", n, probeStatus(boot).Current)
+	case stop:
+		if err := probeStop(boot); err != nil {
+			fatal(err)
+		}
+		fmt.Println("OK: modo de prueba cancelado; extlinux.conf restaurado")
+	default:
+		st := probeStatus(boot)
+		b, _ := json.Marshal(st)
+		fmt.Println(string(b))
+	}
 }
 
 func flagWasSet(name string) bool {
@@ -298,6 +340,7 @@ func newMux(forced string) http.Handler {
 		writeJSON(w, 200, map[string]any{
 			"state": st, "match": match, "text": string(b),
 			"dtbs": dtbsOnCard(boot), "backups": listBackups(boot),
+			"probe": probeStatus(boot), "probeCandidates": probeCandidates(boot),
 		})
 	}))
 	type req struct {
@@ -397,6 +440,33 @@ func newMux(forced string) http.Handler {
 		if err := writeConf(rq.Path, strings.Join(normalize(string(b)), "\n")+"\n"); err != nil {
 			jerr(w, 500, err.Error())
 			return
+		}
+		writeJSON(w, 200, map[string]any{"ok": true})
+	}))
+	mux.HandleFunc("/api/probe/start", api(func(w http.ResponseWriter, r *http.Request) {
+		var rq req
+		json.NewDecoder(r.Body).Decode(&rq)
+		n, err := probeStart(rq.Path, probeCandidates(rq.Path))
+		if err != nil {
+			jerr(w, 400, err.Error())
+			return
+		}
+		writeJSON(w, 200, map[string]any{"ok": true, "total": n, "probe": probeStatus(rq.Path)})
+	}))
+	mux.HandleFunc("/api/probe/stop", api(func(w http.ResponseWriter, r *http.Request) {
+		var rq req
+		json.NewDecoder(r.Body).Decode(&rq)
+		if err := probeStop(rq.Path); err != nil {
+			jerr(w, 400, err.Error())
+			return
+		}
+		writeJSON(w, 200, map[string]any{"ok": true})
+	}))
+	mux.HandleFunc("/api/probe/ack", api(func(w http.ResponseWriter, r *http.Request) {
+		var rq req
+		json.NewDecoder(r.Body).Decode(&rq)
+		if ok, _ := validBoot(rq.Path); ok {
+			os.Remove(probeLast(rq.Path))
 		}
 		writeJSON(w, 200, map[string]any{"ok": true})
 	}))

@@ -124,6 +124,11 @@ main{min-width:0}
     <div class="current" id="current" hidden></div>
   </section>
 
+  <section class="card" id="probe" hidden>
+    <h2 data-i="probe_h"></h2>
+    <div id="probe-body"></div>
+  </section>
+
   <section class="card" id="picker">
     <h2 data-i="choose"></h2>
     <input id="q" type="search" style="width:100%" data-iph="search" aria-label="Search">
@@ -170,7 +175,7 @@ main{min-width:0}
 "use strict";
 const T = {
   en: {
-    imp_btn:"Import my own DTB…", own_t:"Your console is not in the list? Use your own .dtb file.", imp_ok:"DTB imported", imp_ok_t:"The file was copied to the root of the card and selected. Press «Review & write» to use it.", imp_soc:"This file does not mention rk3326, so it may not be a DTB for this kind of console. Zenith cannot check that it matches your hardware: if the screen stays black, restore the backup.", imp_exists:"A file with that name is already on the card. Replace it?", err_bad_dtb:"That is not a valid DTB file (it must start with the device-tree header and be under 2 MB).", err_bad_name:"The file name must use only letters, digits, dots, dashes or underscores, and end in .dtb.", err_dtb_exists:"A DTB with that name already exists on the card.", quit:"Exit", sub:"RK3326 handheld boot configuration", sd:"SD card", refresh:"Refresh", usepath:"Use this path",
+    probe_h:"Not sure which model you have?", probe_t:"Test mode: put the card in the console and switch it on. It shows a test screen and tries one screen setting at a time (about 12 s each). When you see the picture clearly, press any button (or VOL / POWER) and that DTB stays. If none works, the original file is restored.", probe_warn:"Unplug the charger during the test.", probe_chk:"The charger is unplugged and I have read this", probe_go:"Enable test mode", probe_n:"{n} settings will be tried (one per different screen).", probe_on:"Test mode is ACTIVE on this card", probe_prog:"Now trying {i} of {n}: {cur}. Eject the card, put it in the console and switch on.", probe_stop:"Cancel and restore", probe_last:"Result from the console", probe_ack:"Dismiss", probe_hint:"Once you pick a DTB the variants that share its screen (amplifier, sticks) are offered below to refine.", probe_blocked:"Finish or cancel the test mode before writing another DTB.", err_probe_few:"Fewer than 2 test DTBs found on the card.", err_probe_active:"Test mode is already active.", imp_btn:"Import my own DTB…", own_t:"Your console is not in the list? Use your own .dtb file.", imp_ok:"DTB imported", imp_ok_t:"The file was copied to the root of the card and selected. Press «Review & write» to use it.", imp_soc:"This file does not mention rk3326, so it may not be a DTB for this kind of console. Zenith cannot check that it matches your hardware: if the screen stays black, restore the backup.", imp_exists:"A file with that name is already on the card. Replace it?", err_bad_dtb:"That is not a valid DTB file (it must start with the device-tree header and be under 2 MB).", err_bad_name:"The file name must use only letters, digits, dots, dashes or underscores, and end in .dtb.", err_dtb_exists:"A DTB with that name already exists on the card.", quit:"Exit", sub:"RK3326 handheld boot configuration", sd:"SD card", refresh:"Refresh", usepath:"Use this path",
     manualph:"Or type the SD card path (e.g. E:\\ or /media/user/ZENITH)", choose:"Choose your console",
     search:"Search by model, brand or DTB file…", all:"All", advanced:"Advanced options & backups",
     o_show:"Show boot messages on screen", o_show_d:"Removes quiet/loglevel so the kernel log is drawn while booting. Useful to diagnose a console that does not start.",
@@ -191,7 +196,7 @@ const T = {
     lost:"Lost connection with the program. You can close this window."
   },
   es: {
-    imp_btn:"Importar mi propio DTB…", own_t:"¿Tu consola no está en la lista? Usa tu propio archivo .dtb.", imp_ok:"DTB importado", imp_ok_t:"El archivo se copió a la raíz de la tarjeta y quedó seleccionado. Pulsa «Revisar y escribir» para usarlo.", imp_soc:"Este archivo no menciona rk3326, así que puede no ser un DTB de este tipo de consola. Zenith no puede comprobar que encaje con tu hardware: si la pantalla se queda negra, restaura la copia de seguridad.", imp_exists:"Ya hay un archivo con ese nombre en la tarjeta. ¿Reemplazarlo?", err_bad_dtb:"Ese no es un archivo DTB válido (debe empezar con la cabecera del árbol de dispositivos y pesar menos de 2 MB).", err_bad_name:"El nombre solo puede llevar letras, números, puntos, guiones o guiones bajos, y terminar en .dtb.", err_dtb_exists:"Ya existe un DTB con ese nombre en la tarjeta.", quit:"Salir", sub:"Configuración de arranque para consolas RK3326", sd:"Tarjeta SD", refresh:"Actualizar", usepath:"Usar esta ruta",
+    probe_h:"¿No sabes qué modelo tienes?", probe_t:"Modo de prueba: pon la tarjeta en la consola y enciéndela. Muestra una pantalla de prueba y va probando una configuración de pantalla cada vez (unos 12 s cada una). Cuando veas bien la imagen, pulsa cualquier botón (o VOL / encendido) y ese DTB se queda. Si ninguno funciona, se restaura el archivo original.", probe_warn:"Desconecta el cargador durante la prueba.", probe_chk:"El cargador está desconectado y he leído esto", probe_go:"Activar el modo de prueba", probe_n:"Se probarán {n} configuraciones (una por cada pantalla distinta).", probe_on:"El modo de prueba está ACTIVO en esta tarjeta", probe_prog:"Probando ahora el {i} de {n}: {cur}. Expulsa la tarjeta, ponla en la consola y enciéndela.", probe_stop:"Cancelar y restaurar", probe_last:"Resultado de la consola", probe_ack:"Descartar", probe_hint:"Cuando elijas un DTB, abajo se ofrecen las variantes que comparten su pantalla (amplificador, sticks) para afinar.", probe_blocked:"Termina o cancela el modo de prueba antes de escribir otro DTB.", err_probe_few:"Hay menos de 2 DTB de prueba en la tarjeta.", err_probe_active:"El modo de prueba ya está activo.", imp_btn:"Importar mi propio DTB…", own_t:"¿Tu consola no está en la lista? Usa tu propio archivo .dtb.", imp_ok:"DTB importado", imp_ok_t:"El archivo se copió a la raíz de la tarjeta y quedó seleccionado. Pulsa «Revisar y escribir» para usarlo.", imp_soc:"Este archivo no menciona rk3326, así que puede no ser un DTB de este tipo de consola. Zenith no puede comprobar que encaje con tu hardware: si la pantalla se queda negra, restaura la copia de seguridad.", imp_exists:"Ya hay un archivo con ese nombre en la tarjeta. ¿Reemplazarlo?", err_bad_dtb:"Ese no es un archivo DTB válido (debe empezar con la cabecera del árbol de dispositivos y pesar menos de 2 MB).", err_bad_name:"El nombre solo puede llevar letras, números, puntos, guiones o guiones bajos, y terminar en .dtb.", err_dtb_exists:"Ya existe un DTB con ese nombre en la tarjeta.", quit:"Salir", sub:"Configuración de arranque para consolas RK3326", sd:"Tarjeta SD", refresh:"Actualizar", usepath:"Usar esta ruta",
     manualph:"O escribe la ruta de la tarjeta (p. ej. E:\\ o /media/usuario/ZENITH)", choose:"Elige tu consola",
     search:"Busca por modelo, marca o archivo DTB…", all:"Todas", advanced:"Opciones avanzadas y copias de seguridad",
     o_show:"Mostrar mensajes de arranque en pantalla", o_show_d:"Quita quiet/loglevel para que el registro del kernel se dibuje al arrancar. Útil para diagnosticar una consola que no arranca.",
@@ -212,7 +217,7 @@ const T = {
     lost:"Se perdió la conexión con el programa. Puedes cerrar esta ventana."
   },
   zh: {
-    imp_btn:"导入我自己的 DTB…", own_t:"列表里没有你的掌机？使用你自己的 .dtb 文件。", imp_ok:"DTB 已导入", imp_ok_t:"文件已复制到 SD 卡根目录并已选中。点击“检查并写入”即可使用。", imp_soc:"该文件中没有出现 rk3326，可能不是这类掌机的 DTB。Zenith 无法确认它与你的硬件匹配：如果屏幕变黑，请恢复备份。", imp_exists:"卡中已有同名文件，是否替换？", err_bad_dtb:"这不是有效的 DTB 文件（必须以设备树头开头，且小于 2 MB）。", err_bad_name:"文件名只能包含字母、数字、点、短横线或下划线，并以 .dtb 结尾。", err_dtb_exists:"卡中已存在同名 DTB。", quit:"退出", sub:"RK3326 掌机启动配置", sd:"SD 卡", refresh:"刷新", usepath:"使用此路径",
+    probe_h:"不知道自己是什么型号？", probe_t:"测试模式：把卡放进掌机并开机。它会显示测试画面，并依次尝试一种屏幕配置（每种约 12 秒）。当你清楚看到画面时，按任意键（或音量键/电源键），该 DTB 就会保留。如果都不行，会恢复原来的文件。", probe_warn:"测试期间请拔下充电器。", probe_chk:"我已拔下充电器并已阅读以上说明", probe_go:"启用测试模式", probe_n:"将尝试 {n} 种配置（每种不同屏幕一个）。", probe_on:"此卡上的测试模式已启用", probe_prog:"当前尝试第 {i}/{n} 个：{cur}。请弹出卡，放入掌机并开机。", probe_stop:"取消并恢复", probe_last:"掌机返回的结果", probe_ack:"忽略", probe_hint:"选定 DTB 后，下方会列出与其屏幕相同的变体（功放、摇杆）供你微调。", probe_blocked:"请先完成或取消测试模式，再写入其他 DTB。", err_probe_few:"卡中的测试 DTB 少于 2 个。", err_probe_active:"测试模式已经启用。", imp_btn:"导入我自己的 DTB…", own_t:"列表里没有你的掌机？使用你自己的 .dtb 文件。", imp_ok:"DTB 已导入", imp_ok_t:"文件已复制到 SD 卡根目录并已选中。点击“检查并写入”即可使用。", imp_soc:"该文件中没有出现 rk3326，可能不是这类掌机的 DTB。Zenith 无法确认它与你的硬件匹配：如果屏幕变黑，请恢复备份。", imp_exists:"卡中已有同名文件，是否替换？", err_bad_dtb:"这不是有效的 DTB 文件（必须以设备树头开头，且小于 2 MB）。", err_bad_name:"文件名只能包含字母、数字、点、短横线或下划线，并以 .dtb 结尾。", err_dtb_exists:"卡中已存在同名 DTB。", quit:"退出", sub:"RK3326 掌机启动配置", sd:"SD 卡", refresh:"刷新", usepath:"使用此路径",
     manualph:"或手动输入 SD 卡路径（例如 E:\\ 或 /media/user/ZENITH）", choose:"选择你的掌机",
     search:"按机型、品牌或 DTB 文件搜索…", all:"全部", advanced:"高级选项与备份",
     o_show:"启动时在屏幕上显示启动信息", o_show_d:"移除 quiet/loglevel，启动时显示内核日志。用于排查无法启动的机器。",
@@ -343,14 +348,45 @@ function curDTB() { const c = $("#custom").value; return c || (curDevice() && cu
 function renderSum() {
   const s = $("#sum"); s.replaceChildren();
   const d = curDevice(), custom = $("#custom").value;
+  if (vstate && vstate.probe && vstate.probe.active) { s.append(el("span", { style: "color:var(--muted)", text: t("probe_blocked") })); $("#review").disabled = true; return; }
   if (!d && !custom) { s.append(el("span", { style: "color:var(--muted)", text: t("none_sel") })); $("#review").disabled = true; return; }
   s.append(el("b", { text: d && !custom ? dname(d) : custom }), el("span", { class: "mono", style: "color:var(--muted)", text: `${t("dtb")}: ${curDTB()}${d && !custom ? "  ·  " + t("uart") + " " + d.uart : ""}` }));
-  $("#review").disabled = !vol;
+  $("#review").disabled = !vol || !!(vstate && vstate.probe && vstate.probe.active);
 }
 
 function renderCustom() {
   const s = $("#custom"); s.replaceChildren(el("option", { value: "", text: t("custom_none") }));
   ((vstate && vstate.dtbs) || []).forEach(x => s.append(el("option", { value: x, text: x })));
+}
+
+function renderProbe() {
+  const box = $("#probe-body"), sec = $("#probe"); box.replaceChildren();
+  const p = vstate && vstate.probe;
+  if (!vstate || !p) { sec.hidden = true; return; }
+  const cands = (vstate.probeCandidates || []).length;
+  if (!p.active && cands < 2 && !p.last) { sec.hidden = true; return; }
+  sec.hidden = false;
+  const fill = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k]);
+  if (p.last) {
+    box.append(el("div", { class: "msg ok" }, el("b", { text: t("probe_last") + ": " }), p.last, " ",
+      el("button", { text: t("probe_ack"), style: "margin-left:8px", onclick: async () => { await api("/api/probe/ack", { path: vol }); await loadVolume(); } })));
+    box.append(el("div", { class: "d", style: "color:var(--muted);font-size:12.5px;margin-top:6px", text: t("probe_hint") }));
+  }
+  if (p.active) {
+    box.append(el("div", { class: "msg warn" }, el("b", { text: t("probe_on") }), el("div", { text: fill(t("probe_prog"), { i: p.index + 1, n: p.total, cur: p.current }) })));
+    box.append(el("div", { style: "margin-top:10px" }, el("button", { text: t("probe_stop"), onclick: async () => {
+      try { await api("/api/probe/stop", { path: vol }); await loadVolume(); } catch (e) { showErr(e); } } })));
+  } else if (cands >= 2) {
+    box.append(el("p", { style: "margin:0 0 8px", text: t("probe_t") }));
+    box.append(el("div", { class: "msg warn", text: t("probe_warn") }));
+    const chk = el("input", { type: "checkbox", id: "probe-chk", style: "width:17px;height:17px;accent-color:var(--accent)" });
+    const go = el("button", { class: "primary", text: t("probe_go"), disabled: "", onclick: async () => {
+      try { await api("/api/probe/start", { path: vol }); await loadVolume(); } catch (e) { showErr(e); } } });
+    chk.onchange = () => { go.disabled = !chk.checked; };
+    box.append(el("label", { class: "opt", style: "margin-top:10px;align-items:center" }, chk, el("span", { text: t("probe_chk") })));
+    box.append(el("div", { style: "margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap" }, go,
+      el("span", { style: "color:var(--muted);font-size:13px", text: fill(t("probe_n"), { n: cands }) })));
+  }
 }
 
 function renderBackups() {
@@ -465,7 +501,7 @@ async function loadVolume() {
     $("#o-uart").checked = true;
     if (!sel && vstate.match.length === 1) sel = vstate.match[0];
   }
-  renderCurrent(); renderCustom(); renderBackups(); renderList(); renderSum();
+  renderCurrent(); renderCustom(); renderBackups(); renderProbe(); renderList(); renderSum();
 }
 
 async function refresh(path) {
@@ -480,7 +516,7 @@ async function refresh(path) {
   } catch (e) { showErr(e); }
 }
 
-function rerender() { applyI18n(); renderVolumes(); if (vol) $("#vols").value = vol; renderChips(); renderCurrent(); renderCustom(); renderBackups(); renderList(); renderSum(); }
+function rerender() { applyI18n(); renderVolumes(); if (vol) $("#vols").value = vol; renderChips(); renderCurrent(); renderCustom(); renderBackups(); renderProbe(); renderList(); renderSum(); }
 
 async function init() {
   const th = store.get("zds-theme"); if (th) document.documentElement.dataset.theme = th;
