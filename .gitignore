@@ -59,3 +59,6 @@ documentation/user_man/prebuilt-pdf/
 /.doc_cache/
 /fork-build*.log
 *.log
+
+# Go telemetry written by the build host (not part of the project)
+/.config/
