@@ -7,6 +7,20 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
 
 ## Next image (not built yet)
 
+### Choosing the right device tree (DTB)
+- **Zenith DTB Selector replaces the old DTB picker.** One small program for Windows, Linux and macOS (window in
+  Chinese, English and Spanish) that finds the SD card by itself, lists 86 models grouped by brand, shows exactly what
+  will change before writing, keeps a dated backup of `extlinux.conf` (the 30 newest, restorable from the tool) and
+  never adds the `ssh` flag. It can also import your own `.dtb`. The Windows version is copied to the root of the
+  card as `ZenithDtbSelector.exe`. Tested on a copy of the real card of an R36 Ultra (all command-line cases and the
+  web interface) and on the console itself: import, apply, reboot with the chosen DTB, restore.
+- **DTB test mode ("try the next one") for clone consoles whose DTB cannot be guessed.** From the selector on a PC
+  you start the mode; on every boot the console shows a test card and waits 12 s for a button (any pad button or
+  VOL+/VOL-, never the power button) to be HELD: if you hold one, that DTB stays; if not, the next candidate is
+  written and the console restarts. Candidates are ordered so the likeliest come first (18 of the 77 DTB). When they
+  run out the original `extlinux.conf` comes back. Only the `FDT` line is ever touched, writes are atomic, and with
+  no `/flash/dtbprobe/state` the script does nothing. **Not yet tested on hardware.**
+
 ### Opening a game
 - **RetroArch games start 0.2-0.5 s faster.** `setsettings.sh` (the script that writes the per-game RetroArch
   configuration right before launch) started about 220 processes per game; it now starts about 40 and produces
