@@ -6,6 +6,8 @@ reliable suspend, its own light/dark EmulationStation theme and a cleaner Tools 
 
 - Maintained by [zenmode-adri](https://github.com/zenmode-adri). See [`CREDITS.md`](CREDITS.md) for the people and
   projects this work stands on, and [`CHANGELOG.md`](CHANGELOG.md) for what changed and the measurements.
+- Measurements, with charts: [`docs/COMPILER-STUDY.md`](docs/COMPILER-STUDY.md) (does compiling the emulators differently
+  make them faster? Mostly no) and [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 - **Tested only on the R36 Ultra.** Other RK3326 handhelds use the same image and device-tree selector but have not
   been checked with these changes. Targets other than RK3326 are inherited from upstream and were not built or tested.
 - Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors. Please do not report Zenith problems
