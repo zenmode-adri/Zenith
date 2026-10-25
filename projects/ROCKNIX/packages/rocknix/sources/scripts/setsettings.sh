@@ -2,10 +2,12 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 # Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
 
-. /etc/profile
+# Si runemu.sh lo carga en proceso (". setsettings.sh") el perfil y la cache de ajustes ya estan cargados
+# (ahorra un bash nuevo + /etc/profile + gs_load, ~150 ms por juego); ejecutado suelto los carga como antes.
+[ -n "${SETSETTINGS_INPROC}" ] || . /etc/profile
 
 # cache de ajustes cargada una vez en el proceso principal (las ~25 funciones en paralelo la heredan)
-type gs_load >/dev/null 2>&1 && gs_load
+[ "${GS_LOADED}" = 1 ] || { type gs_load >/dev/null 2>&1 && gs_load; }
 
 ###
 ### System configuration variables

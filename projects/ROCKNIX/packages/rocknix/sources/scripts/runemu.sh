@@ -41,7 +41,7 @@ RETROARCH_APPEND_CONFIG="/tmp/.retroarch.cfg"
 NETWORK_PLAY="No"
 SET_SETTINGS_TMP="/tmp/shader"
 OUTPUT_LOG="${LOG_DIRECTORY}/${LOG_FILE}"
-SCRIPT_NAME=$(basename "$0")
+SCRIPT_NAME="${0##*/}"   # sin basename (un proceso menos)
 
 ### Export Game Guide Path
 GAME_GUIDE_PATH_CHECK="${1%.*}.txt"
@@ -77,11 +77,8 @@ function log() {
 function loginit() {
         if [ ${LOG} == true ]
         then
-                if [ -e ${LOG_DIRECTORY}/${LOG_FILE} ]
-                then
-                        rm -f ${LOG_DIRECTORY}/${LOG_FILE}
-                fi
-                cat <<EOF >${LOG_DIRECTORY}/${LOG_FILE}
+                # sin rm ni cat (dos procesos): el redireccionamiento ya trunca el fichero
+                while IFS= read -r _l; do printf '%s\n' "${_l}"; done <<EOF >${LOG_DIRECTORY}/${LOG_FILE}
 Emulation Run Log - Started at $(printf '%(%a %b %e %H:%M:%S %Z %Y)T' -1)
 
 ARG1: $1
@@ -291,23 +288,19 @@ case ${EMULATOR} in
     esac
 
     ### Configure retroarch
-    if [ -e "${SET_SETTINGS_TMP}" ]
-    then
-      rm -f "${SET_SETTINGS_TMP}"
-    fi
     ${VERBOSE} && log $0 "Execute setsettings (${PLATFORM} ${ROMNAME} ${CORE} --controllers=${CONTROLLERCONFIG} --autosave=${AUTOSAVE} --snapshot=${SNAPSHOT})"
-    (/usr/bin/setsettings.sh "${PLATFORM}" "${ROMNAME}" "${CORE}" --controllers="${CONTROLLERCONFIG}" --autosave="${AUTOSAVE}" --snapshot="${SNAPSHOT}" >${SET_SETTINGS_TMP})
+    # setsettings.sh se carga en proceso (subshell): sin bash nuevo, sin /etc/profile ni gs_load otra vez (~150 ms)
+    (SETSETTINGS_INPROC=1; . /usr/bin/setsettings.sh "${PLATFORM}" "${ROMNAME}" "${CORE}" --controllers="${CONTROLLERCONFIG}" --autosave="${AUTOSAVE}" --snapshot="${SNAPSHOT}" >${SET_SETTINGS_TMP})
 
     ### If setsettings wrote data in the background, grab it and assign it to EXTRAOPTS
     if [ -e "${SET_SETTINGS_TMP}" ]
     then
-      EXTRAOPTS=$(cat ${SET_SETTINGS_TMP})
-      rm -f ${SET_SETTINGS_TMP}
+      EXTRAOPTS=$(<${SET_SETTINGS_TMP})
       ${VERBOSE} && log $0 "Extra Options: ${EXTRAOPTS}"
     fi
 
     if [[ ${EXTRAOPTS} != 0 ]]; then
-      RUNTHIS=$(echo ${RUNTHIS} | sed "s|--config|${EXTRAOPTS} --config|")
+      RUNTHIS="${RUNTHIS/--config/${EXTRAOPTS} --config}"   # sin echo|sed (dos procesos)
     fi
   ;;
   *)
@@ -486,7 +479,7 @@ else
   ${VERBOSE} && log $0 "Restore system GPU performance mode (auto)"
   gpu_performance_level auto &
 fi
-rm -f /tmp/.gpu_performance_level 2>/dev/null
+[ -e /tmp/.gpu_performance_level ] && rm -f /tmp/.gpu_performance_level 2>/dev/null
 
 ### Reset the number of cores to use.
 NUMTHREADS=${ get_setting "system.threads"; }

@@ -36,18 +36,20 @@ function log() {
 # (sin subproceso) en lugar de $(get_setting ...).
 GS_LOADED=0
 declare -gA GS_FIRST=()
-GS_GAME=()
+# ajustes por juego agrupados por <sistema>["<rom>"]: get_setting solo recorre las lineas de ESE juego
+# (antes recorria las de todos los juegos en cada consulta: ~35 consultas x N entradas por lanzamiento)
+declare -gA GS_ROM=()
 
 function gs_load() {
-  local k v
-  GS_FIRST=(); GS_GAME=()
+  local k v rk
+  GS_FIRST=(); GS_ROM=()
   if [ -r "${J_CONF}" ]
   then
     while IFS== read -r k v
     do
       case "${k}" in
         "") continue ;;
-        *'["'*) GS_GAME+=("${k}=${v}"); continue ;;
+        *'["'*) rk="${k%%\"\]*}\"]"; GS_ROM["${rk}"]+="${k}=${v}"$'\n'; continue ;;
         *'['*|*']'*) continue ;;
       esac
       [[ -n "${GS_FIRST[${k}]+x}" ]] || GS_FIRST["${k}"]="${v}"
@@ -58,16 +60,17 @@ function gs_load() {
 
 function get_setting() {
   [ "${GS_LOADED}" = 1 ] || gs_load
-  local OUTPUT LOCAL pre line
+  local OUTPUT LOCAL pre line rk
   if [ -n "${3}" ]
   then
     ### Ajuste propio del juego: <sistema>["<rom>"].<clave>  (todas las lineas que empiezan asi)
-    pre="${2}[\"${3}\"].${1}"
+    rk="${2}[\"${3}\"]"
+    pre="${rk}.${1}"
     OUTPUT=""
-    for line in "${GS_GAME[@]}"
+    while IFS= read -r line
     do
       [[ "${line}" == "${pre}"* ]] && OUTPUT+="${line##*=}"$'\n'
-    done
+    done <<<"${GS_ROM[${rk}]-}"
     OUTPUT="${OUTPUT%$'\n'}"
     if [ -n "${OUTPUT}" ]
     then
@@ -160,6 +163,13 @@ function wait_lock() {
 }
 
 function del_setting() {
+  ### Si la clave no esta en el fichero no hay nada que borrar: sin bloqueo, sin sed (runemu lo llama en cada juego)
+  local _c
+  if [[ "${1}" =~ ^[[:alnum:]] ]] && [ -r "${J_CONF}" ]
+  then
+    _c=$'\n'"$(<"${J_CONF}")"
+    [[ "${_c}" == *$'\n'"${1}="* ]] || return 0
+  fi
   wait_lock
   if [[ "${1}" =~ ^[[:alnum:]] ]]
   then
@@ -180,9 +190,7 @@ function sort_settings() {
 function set_kill() {
   if [ "${1}" = "set" ]
   then
-    cat <<EOF >/tmp/.process-kill-data
-${2}
-EOF
+    printf '%s\n' "${2}" >/tmp/.process-kill-data
   elif [ "${1}" = "stop" ]
   then
     if [ -e "/tmp/.process-kill-data" ]
