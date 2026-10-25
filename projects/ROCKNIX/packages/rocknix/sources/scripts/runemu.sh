@@ -8,8 +8,16 @@
 . /etc/profile
 . /etc/os-release
 
+# "runemu.sh --prepare <mismos argumentos>": zfront lo lanza cuando el cursor lleva ~1 s sobre un juego. Solo hace la
+# parte de setsettings.sh (config de RetroArch) y deja una marca; el lanzamiento real la reutiliza si nada ha cambiado.
+# No toca gobernadores, Bluetooth ni pantalla.
+if [ "$1" = "--prepare" ]; then
+  PREPARE=1
+  shift
+fi
+
 ### Switch to performance mode early to speed up configuration and reduce time it takes to get into games.
-performance
+[ -n "${PREPARE}" ] || performance
 
 
 # Command line schema
@@ -137,6 +145,88 @@ function bluetooth() {
         fi
 }
 
+### --- Preparacion en reposo de la config de RetroArch -------------------------------------------------------------
+PREP_DIR="/run/zf-prep"
+PREP_LOCK="/tmp/.zf-prep.lock"
+
+# CONTROLLERCONFIG / SNAPSHOT / AUTOSAVE a partir de los argumentos (RetroArch)
+function ra_parse_args() {
+  CONTROLLERCONFIG="${ARGUMENTS#*--controllers=*}"
+
+  if [[ "${ARGUMENTS}" == *"-state_slot"* ]]
+  then
+    CONTROLLERCONFIG="${CONTROLLERCONFIG%% -state_slot*}"  # until -state is found
+    SNAPSHOT="${ARGUMENTS#*-state_slot *}" # -state_slot x
+    SNAPSHOT="${SNAPSHOT%% -*}"
+      if [[ "${ARGUMENTS}" == *"-autosave"* ]]; then
+        CONTROLLERCONFIG="${CONTROLLERCONFIG%% -autosave*}"  # until -autosave is found
+        AUTOSAVE="${ARGUMENTS#*-autosave *}" # -autosave x
+        AUTOSAVE="${AUTOSAVE%% -*}"
+      else
+        AUTOSAVE=""
+      fi
+  else
+    CONTROLLERCONFIG="${CONTROLLERCONFIG%% --*}"  # until a -- is found
+    SNAPSHOT=""
+    AUTOSAVE=""
+  fi
+}
+
+# Ejecuta setsettings.sh en proceso y deja su salida en EXTRAOPTS
+function run_setsettings() {
+  ${VERBOSE} && log $0 "Execute setsettings (${PLATFORM} ${ROMNAME} ${CORE} --controllers=${CONTROLLERCONFIG} --autosave=${AUTOSAVE} --snapshot=${SNAPSHOT})"
+  # setsettings.sh se carga en proceso (subshell): sin bash nuevo, sin /etc/profile ni gs_load otra vez (~150 ms)
+  (SETSETTINGS_INPROC=1; . /usr/bin/setsettings.sh "${PLATFORM}" "${ROMNAME}" "${CORE}" --controllers="${CONTROLLERCONFIG}" --autosave="${AUTOSAVE}" --snapshot="${SNAPSHOT}" >${SET_SETTINGS_TMP})
+
+  ### If setsettings wrote data in the background, grab it and assign it to EXTRAOPTS
+  if [ -e "${SET_SETTINGS_TMP}" ]
+  then
+    EXTRAOPTS=$(<${SET_SETTINGS_TMP})
+    ${VERBOSE} && log $0 "Extra Options: ${EXTRAOPTS}"
+  fi
+}
+
+# 0 si hay una preparacion de ESTOS argumentos y ni system.cfg, ni retroarch.cfg, ni es_settings.cfg, ni la config
+# generada han cambiado desde que acabo (la marca se escribe la ultima: su fecha es la referencia).
+function prep_valid() {
+  local n=0 p f
+  while [ -d "${PREP_LOCK}" ] && [ ${n} -lt 60 ]   # preparacion en curso: espera (<= ~1 s)
+  do
+    p=""; [ -r "${PREP_LOCK}/pid" ] && read -r p <"${PREP_LOCK}/pid"
+    [ -n "${p}" ] && [ ! -d "/proc/${p}" ] && break   # el preparador murio: bloqueo huerfano
+    read -rt 0.02 <> <(:) ||:
+    n=$((n+1))
+  done
+  [ -f "${PREP_DIR}/marker" ] && [ -f "${PREP_DIR}/extraopts" ] && [ -e "${RETROARCH_APPEND_CONFIG}" ] || return 1
+  read -r p <"${PREP_DIR}/marker"
+  [ "${p}" = "${ARGUMENTS}" ] || return 1
+  for f in "${J_CONF}" "${RETROARCH_TEMP_CONFIG}" "${ES_CONFIG}" "${RETROARCH_APPEND_CONFIG}"
+  do
+    [ -e "${f}" ] && [ "${f}" -nt "${PREP_DIR}/marker" ] && return 1
+  done
+  return 0
+}
+
+if [ -n "${PREPARE}" ]; then
+  # solo RetroArch, y sin los casos con efectos fuera de la config (atomiswave borra ficheros, scummvm cambia de
+  # directorio, netplay toca system.cfg): esos se configuran en el lanzamiento como siempre
+  [ "${EMULATOR}" = "retroarch" ] || exit 0
+  case "${PLATFORM}" in atomiswave|scummvm) exit 0 ;; esac
+  case "${ARGUMENTS}" in *"--host"*|*"--connect"*|*"--netplaymode"*) exit 0 ;; esac
+  mkdir "${PREP_LOCK}" 2>/dev/null || exit 0   # otra preparacion en curso
+  echo "$$" >"${PREP_LOCK}/pid"
+  mkdir -p "${PREP_DIR}"
+  rm -f "${PREP_DIR}/marker"
+  del_setting netplay.mode
+  ra_parse_args
+  run_setsettings
+  printf '%s' "${EXTRAOPTS}" >"${PREP_DIR}/extraopts"
+  printf '%s\n' "${ARGUMENTS}" >"${PREP_DIR}/marker"
+  rm -f "${PREP_LOCK}/pid"
+  rmdir "${PREP_LOCK}"
+  exit 0
+fi
+
 if [[ ${PLATFORM} == "psx" ]]; then
 	ROMNAMETMP=${ROMNAME%.*}
 	if [ -f "${ROMNAMETMP}.bios" ]; then
@@ -255,25 +345,7 @@ case ${EMULATOR} in
 
     RUNTHIS='${EMUPERF} /usr/bin/${RABIN} -L /tmp/cores/${CORE}_libretro.so --config ${RETROARCH_TEMP_CONFIG} --appendconfig ${RETROARCH_APPEND_CONFIG} "${ROMNAME}"'
 
-    CONTROLLERCONFIG="${ARGUMENTS#*--controllers=*}"
-
-    if [[ "${ARGUMENTS}" == *"-state_slot"* ]]
-    then
-      CONTROLLERCONFIG="${CONTROLLERCONFIG%% -state_slot*}"  # until -state is found
-      SNAPSHOT="${ARGUMENTS#*-state_slot *}" # -state_slot x
-      SNAPSHOT="${SNAPSHOT%% -*}"
-        if [[ "${ARGUMENTS}" == *"-autosave"* ]]; then
-          CONTROLLERCONFIG="${CONTROLLERCONFIG%% -autosave*}"  # until -autosave is found
-          AUTOSAVE="${ARGUMENTS#*-autosave *}" # -autosave x
-          AUTOSAVE="${AUTOSAVE%% -*}"
-        else
-          AUTOSAVE=""
-        fi
-    else
-      CONTROLLERCONFIG="${CONTROLLERCONFIG%% --*}"  # until a -- is found
-      SNAPSHOT=""
-      AUTOSAVE=""
-    fi
+    ra_parse_args
 
     # Configure platform specific requirements
     case ${PLATFORM} in
@@ -287,16 +359,13 @@ case ${EMULATOR} in
       ;;
     esac
 
-    ### Configure retroarch
-    ${VERBOSE} && log $0 "Execute setsettings (${PLATFORM} ${ROMNAME} ${CORE} --controllers=${CONTROLLERCONFIG} --autosave=${AUTOSAVE} --snapshot=${SNAPSHOT})"
-    # setsettings.sh se carga en proceso (subshell): sin bash nuevo, sin /etc/profile ni gs_load otra vez (~150 ms)
-    (SETSETTINGS_INPROC=1; . /usr/bin/setsettings.sh "${PLATFORM}" "${ROMNAME}" "${CORE}" --controllers="${CONTROLLERCONFIG}" --autosave="${AUTOSAVE}" --snapshot="${SNAPSHOT}" >${SET_SETTINGS_TMP})
-
-    ### If setsettings wrote data in the background, grab it and assign it to EXTRAOPTS
-    if [ -e "${SET_SETTINGS_TMP}" ]
+    ### Configure retroarch (si zfront ya lo preparo con --prepare y nada ha cambiado, se reutiliza)
+    if prep_valid
     then
-      EXTRAOPTS=$(<${SET_SETTINGS_TMP})
-      ${VERBOSE} && log $0 "Extra Options: ${EXTRAOPTS}"
+      EXTRAOPTS=$(<"${PREP_DIR}/extraopts")
+      ${VERBOSE} && log $0 "Using prepared RetroArch settings: ${EXTRAOPTS}"
+    else
+      run_setsettings
     fi
 
     if [[ ${EXTRAOPTS} != 0 ]]; then
