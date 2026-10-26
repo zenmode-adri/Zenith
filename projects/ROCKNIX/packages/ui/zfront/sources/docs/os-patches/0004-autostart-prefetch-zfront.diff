@@ -1,0 +1,37 @@
+--- a/projects/ROCKNIX/packages/sysutils/autostart/sources/autostart	2026-10-25 15:58:03.207297649 +0100
++++ b/projects/ROCKNIX/packages/sysutils/autostart/sources/autostart	2026-10-25 15:58:03.207947543 +0100
+@@ -200,7 +200,14 @@
+ 
+ # Precarga en la cache de paginas (SD + squashfs, lectura en frio) de lo que ES va a necesitar: binario y bibliotecas.
+ # La lista se regenera desde /proc/<pid>/maps de ES cuando cambia el binario.
++ES_FRONTEND=emulationstation
+ ES_PREFETCH_LIST="${STORAGE}/.cache/es-prefetch.list"
++# zfront (system.frontend=zfront, ver start_es.sh): su binario y sus bibliotecas tienen lista propia; si cae a ES (/run/zfront.failed) la lista queda vieja pero no estorba
++if [ "$(get_setting system.frontend)" = "zfront" ] && [ -x /usr/bin/zfront ] && [ ! -e /run/zfront.failed ]
++then
++  ES_FRONTEND=zfront
++  ES_PREFETCH_LIST="${STORAGE}/.cache/zfront-prefetch.list"
++fi
+ es_prefetch() {
+   local f
+   [ -s "${ES_PREFETCH_LIST}" ] || return 0
+@@ -212,8 +219,8 @@
+ }
+ es_prefetch_refresh() {
+   local pid
+-  [ -s "${ES_PREFETCH_LIST}" ] && [ "${ES_PREFETCH_LIST}" -nt /usr/bin/emulationstation ] && return 0
+-  pid="$(pidof emulationstation 2>/dev/null)"
++  [ -s "${ES_PREFETCH_LIST}" ] && [ "${ES_PREFETCH_LIST}" -nt "/usr/bin/${ES_FRONTEND}" ] && return 0
++  pid="$(pidof "${ES_FRONTEND}" 2>/dev/null)"
+   pid="${pid%% *}"
+   [ -n "${pid}" ] || return 0
+   mkdir -p "${STORAGE}/.cache"
+@@ -607,7 +614,7 @@
+     rm -f "${EARLY_STAMP}"
+     alog "WARN: ES not ready after 20 s; early mode disabled for the next boot"
+     if [ -e "${FLAGDIR}/autostart-diag" ]; then
+-      epid="$(pidof emulationstation 2>/dev/null)"; epid="${epid%% *}"
++      epid="$(pidof "${ES_FRONTEND}" emulationstation 2>/dev/null)"; epid="${epid%% *}"
+       { echo "== $(cut -d' ' -f1 /proc/uptime) ES no listo a los 20 s"; ps -eo pid,ppid,stat,wchan:22,args 2>/dev/null | awk '$5 !~ /^\[/' | cut -c1-170 | head -120
+         echo "== hilos de ES (pid ${epid}): nombre | wchan | syscall"
+         for t in /proc/${epid}/task/*; do echo "$(cat $t/comm 2>/dev/null) | $(cat $t/wchan 2>/dev/null) | $(cut -d' ' -f1,2 $t/syscall 2>/dev/null)"; done

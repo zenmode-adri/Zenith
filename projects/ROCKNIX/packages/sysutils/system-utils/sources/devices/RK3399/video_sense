@@ -30,7 +30,7 @@ do
 		pactl set-default-sink ${SPEAKER}
         ;;
       esac
-      killall emulationstation
+      killall emulationstation zfront 2>/dev/null
 
       HDMI_VALUE=${HDMI_NEW_VALUE}
     fi

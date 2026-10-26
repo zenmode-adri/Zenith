@@ -1,0 +1,29 @@
+--- a/projects/ROCKNIX/packages/rocknix/sources/scripts/handle-hdmi-hotplug	2026-10-25 15:58:03.195127087 +0100
++++ b/projects/ROCKNIX/packages/rocknix/sources/scripts/handle-hdmi-hotplug	2026-10-25 15:58:03.196184748 +0100
+@@ -3,7 +3,7 @@
+ # Copyright (C) 2025 ROCKNIX (https://github.com/ROCKNIX)
+ 
+ . /etc/profile
+-if ! pgrep -x emulationstation > /dev/null; then
++if ! pgrep -x emulationstation > /dev/null && ! pgrep -x zfront > /dev/null; then
+   exit 0
+ fi
+ 
+@@ -28,7 +28,7 @@
+     if [ -n "${DSI_OUTPUT}" ]; then
+       wlr-randr --output "${DSI_OUTPUT}" --off
+     fi
+-    killall emulationstation
++    killall emulationstation zfront 2>/dev/null
+     ;;
+   disconnected)
+ 
+@@ -42,7 +42,7 @@
+     if [ -n "${DSI_OUTPUT}" ]; then
+       wlr-randr --output "${DSI_OUTPUT}" --preferred --on
+     fi
+-    killall emulationstation
++    killall emulationstation zfront 2>/dev/null
+     ;;
+ esac
+ 

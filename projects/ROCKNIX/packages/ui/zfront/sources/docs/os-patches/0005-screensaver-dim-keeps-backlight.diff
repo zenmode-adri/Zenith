@@ -1,0 +1,8 @@
+--- a/projects/ROCKNIX/packages/ui/emulationstation/sources/es-scripts/screensaver-start/10-backlight-off.sh	2026-10-25 20:56:23.441522390 +0100
++++ b/projects/ROCKNIX/packages/ui/emulationstation/sources/es-scripts/screensaver-start/10-backlight-off.sh	2026-10-25 20:56:23.698188985 +0100
+@@ -1,3 +1,5 @@
+ #!/bin/sh
+ # Zenith: ES screensaver-start event: turn the backlight off (a black frame still burns the LCD backlight)
++# "dim" (ScreenSaverBehavior, first argument) only dims the picture: the light stays on, otherwise dim would be black.
++[ "$1" = "dim" ] && exit 0
+ for b in /sys/class/backlight/*/bl_power; do echo 4 > "$b" 2>/dev/null; done

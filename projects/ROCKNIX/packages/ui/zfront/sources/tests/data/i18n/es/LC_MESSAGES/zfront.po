@@ -1,0 +1,40 @@
+# Test catalog for tests/test_i18n.cpp (Spanish, 2 plural forms). Built with: msgfmt -o zfront.mo zfront.po
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront-test\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "YES"
+msgstr "SÍ"
+
+msgid "QUIT"
+msgstr "SALIR"
+
+msgid "NOT TRANSLATED"
+msgstr ""
+
+msgid "Not available yet"
+msgstr "Aún no disponible"
+
+msgid "Line\nbreak \"quoted\""
+msgstr "Salto\nde línea \"entre comillas\""
+
+msgid "DELETE"
+msgstr "BORRAR"
+
+msgctxt "game_options"
+msgid "DELETE"
+msgstr "BORRAR JUEGO"
+
+msgctxt "other"
+msgid "DELETE"
+msgstr "ELIMINAR"
+
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "hace %d día"
+msgstr[1] "hace %d días"

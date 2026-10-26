@@ -1,0 +1,11 @@
+--- a/projects/ROCKNIX/packages/sysutils/system-utils/sources/devices/RK3399/video_sense	2026-10-25 15:58:03.201470047 +0100
++++ b/projects/ROCKNIX/packages/sysutils/system-utils/sources/devices/RK3399/video_sense	2026-10-25 15:58:03.203058346 +0100
+@@ -30,7 +30,7 @@
+ 		pactl set-default-sink ${SPEAKER}
+         ;;
+       esac
+-      killall emulationstation
++      killall emulationstation zfront 2>/dev/null
+ 
+       HDMI_VALUE=${HDMI_NEW_VALUE}
+     fi

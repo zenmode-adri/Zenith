@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<gameList>
+	<game id="1234" source="ScreenScraper.fr">
+		<path>./Tom &amp; Jerry (Europe).gbc</path>
+		<name>Tom &amp; Jerry: Frantic Antics!</name>
+		<sortname>Tom and Jerry</sortname>
+		<desc>Cat &amp; mouse chase in a caf&#233;.
+Second line with &lt;cat&gt; and "quotes".</desc>
+		<image>./media/images/Tom &amp; Jerry.png</image>
+		<thumbnail>./media/thumbs/tj.png</thumbnail>
+		<rating>0.8</rating>
+		<releasedate>19930101T000000</releasedate>
+		<developer>Hi Tech</developer>
+		<genre>Platform</genre>
+		<players>1-2</players>
+		<favorite>true</favorite>
+		<playcount>3</playcount>
+		<lastplayed>20261020T213000</lastplayed>
+		<unknowntag keep="me">preserved</unknowntag>
+	</game>
+	<game>
+		<path>./sub dir/Hidden Game.gbc</path>
+		<name>Hidden Game</name>
+		<hidden>true</hidden>
+	</game>
+	<game>
+		<path>./Minimal.gbc</path>
+	</game>
+	<game>
+		<path>/abs/Weird.gbc</path>
+		<name>Weird</name>
+		<rating>7</rating>
+		<releasedate>not-a-date-time</releasedate>
+		<lastplayed>0</lastplayed>
+	</game>
+	<folder>
+		<path>./sub dir</path>
+		<name>Sub Dir</name>
+	</folder>
+</gameList>

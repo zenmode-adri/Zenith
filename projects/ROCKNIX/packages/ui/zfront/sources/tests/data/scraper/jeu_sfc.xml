@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Data>
+  <ssuser>
+    <id>testuser</id>
+    <niveau>1</niveau>
+    <maxthreads>1</maxthreads>
+    <requeststoday>12</requeststoday>
+    <requestskotoday>1</requestskotoday>
+    <maxrequestspermin>20</maxrequestspermin>
+    <maxrequestsperday>20000</maxrequestsperday>
+    <maxrequestskoperday>2000</maxrequestskoperday>
+  </ssuser>
+  <jeu id="3" romid="12" notgame="false">
+    <noms>
+      <nom region="ss">Super Mario World</nom>
+      <nom region="us">Super Mario World (USA)</nom>
+      <nom region="eu">Super Mario World (Europe)</nom>
+      <nom region="jp">Super Mario World JP</nom>
+    </noms>
+    <synopsis>
+      <synopsis langue="en">Mario &amp;amp; Luigi save Dinosaur Land.</synopsis>
+      <synopsis langue="es">Mario y Luigi salvan la Tierra de los Dinosaurios.</synopsis>
+    </synopsis>
+    <editeur id="1">Nintendo</editeur>
+    <developpeur id="2">Nintendo&nbsp;EAD</developpeur>
+    <joueurs>1-2</joueurs>
+    <note>18</note>
+    <dates>
+      <date region="jp">1990-11-21</date>
+      <date region="us">1991-08-23</date>
+      <date region="eu">1992</date>
+    </dates>
+    <genres>
+      <genre id="1" principale="1" langue="en">Platform</genre>
+      <genre id="2" principale="0" langue="en">Collect</genre>
+      <genre id="1" principale="1" langue="es">Plataformas</genre>
+      <genre id="2" principale="0" langue="es">Coleccionar</genre>
+    </genres>
+    <familles>
+      <famille id="9" principale="1" langue="en">Mario</famille>
+    </familles>
+    <medias>
+      <media type="ss" parent="jeu" region="wor" format="png">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;softname=zfront&amp;ssid=USERSECRET&amp;sspassword=PASSSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=ss(wor)</media>
+      <media type="sstitle" parent="jeu" region="wor" format="png">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=sstitle(wor)</media>
+      <media type="box-2D" parent="jeu" region="eu" format="jpg">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=box-2D(eu)</media>
+      <media type="box-2D" parent="jeu" region="us" format="jpg">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=box-2D(us)</media>
+      <media type="box-3D" parent="jeu" region="us" format="png">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=box-3D(us)</media>
+      <media type="wheel" parent="jeu" region="us" format="png">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=wheel(us)</media>
+      <media type="wheel-hd" parent="jeu" region="wor" format="png">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=wheel-hd(wor)</media>
+      <media type="video-normalized" parent="jeu" region="" format="mp4">https://www.screenscraper.fr/api2/mediaVideoJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=video-normalized</media>
+      <media type="manuel" parent="jeu" region="eu" format="pdf">https://www.screenscraper.fr/api2/mediaManuelJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=manuel(eu)</media>
+      <media type="maps" parent="jeu" region="wor" format="jpg">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=maps(wor)</media>
+      <media type="fanart" parent="jeu" region="" format="jpg">https://www.screenscraper.fr/api2/mediaJeu.php?devid=DEVIDSECRET&amp;devpassword=DEVPWSECRET&amp;systemeid=4&amp;jeuid=3&amp;media=fanart</media>
+    </medias>
+  </jeu>
+</Data>

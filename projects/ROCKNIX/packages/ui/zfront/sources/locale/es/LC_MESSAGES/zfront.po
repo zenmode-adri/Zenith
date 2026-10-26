@@ -1,0 +1,1546 @@
+# Spanish translation of the zfront-only strings (the ones ES's own catalogs do not have).
+# Neutral Spanish, "tú". Keys already translated by ES (emulationstation2.mo) must NOT be repeated here.
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"PO-Revision-Date: 2026-10-25 00:00+0000\n"
+"Last-Translator: zfront\n"
+"Language-Team: Spanish\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/app.cpp
+msgid "Not available yet"
+msgstr "Aún no disponible"
+
+#: src/collections.cpp
+msgid "Action"
+msgstr "Acción"
+
+#: src/collections.cpp
+msgid "Adult"
+msgstr "Adulto"
+
+#: src/collections.cpp
+msgid "Adventure"
+msgstr "Aventura"
+
+#: src/collections.cpp
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+#: src/collections.cpp
+msgid "Casino"
+msgstr "Casino"
+
+#: src/collections.cpp
+msgid "Casual Game"
+msgstr "Juego casual"
+
+#: src/collections.cpp
+msgid "Hunting and Fishing"
+msgstr "Caza y pesca"
+
+#: src/collections.cpp
+msgid "Fight"
+msgstr "Lucha"
+
+#: src/collections.cpp
+msgid "Race, Driving"
+msgstr "Carreras, conducción"
+
+#: src/collections.cpp
+msgid "Demo"
+msgstr "Demo"
+
+#: src/collections.cpp
+msgid "Pinball"
+msgstr "Pinball"
+
+#: src/collections.cpp
+msgid "Playing cards"
+msgstr "Juegos de cartas"
+
+#: src/collections.cpp
+msgid "Role playing games"
+msgstr "Juegos de rol"
+
+#: src/collections.cpp
+msgid "Asiatic board game"
+msgstr "Juegos de mesa asiáticos"
+
+#: src/collections.cpp
+msgid "Educational"
+msgstr "Educativo"
+
+#: src/collections.cpp
+msgid "Music and Dance"
+msgstr "Música y baile"
+
+#: src/collections.cpp
+msgid "Platform"
+msgstr "Plataformas"
+
+#: src/collections.cpp
+msgid "Puzzle-Game"
+msgstr "Puzles"
+
+#: src/collections.cpp
+msgid "Quiz"
+msgstr "Preguntas"
+
+#: src/collections.cpp
+msgid "Reflection"
+msgstr "Reflexión"
+
+#: src/collections.cpp
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+#: src/collections.cpp
+msgid "Simulation"
+msgstr "Simulación"
+
+#: src/collections.cpp
+msgid "Sports"
+msgstr "Deportes"
+
+#: src/collections.cpp
+msgid "Sports with Animals"
+msgstr "Deportes con animales"
+
+#: src/collections.cpp
+msgid "Strategy"
+msgstr "Estrategia"
+
+#: src/collections.cpp
+msgid "Shooter"
+msgstr "Shooter"
+
+#: src/gamemeta.cpp
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "No se pudieron guardar los datos del juego"
+
+#: src/menu.cpp
+msgid "ADJUST"
+msgstr "Ajustar"
+
+#: src/menu_collections.cpp
+msgid "FAVORITES ONLY"
+msgstr "Solo favoritos"
+
+#: src/menu_collections.cpp
+msgid "EDIT FILTERS"
+msgstr "Editar filtros"
+
+#: src/menu_collections.cpp
+msgid "Are you sure you want to delete '%s'?"
+msgstr "¿Seguro que quieres borrar '%s'?"
+
+#: src/menu_collections.cpp
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Define sus filtros después en Colecciones de juegos personalizadas."
+
+#: src/menu_collections.cpp
+msgid "NEVER"
+msgstr "Nunca"
+
+#: src/menu_collections.cpp
+msgid "Restart the front-end to apply the changes."
+msgstr "Reinicia la interfaz para aplicar los cambios."
+
+#: src/menu_controllers.cpp
+msgid "Could not save the setting"
+msgstr "No se pudo guardar el ajuste"
+
+#: src/menu_controllers.cpp
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "Autoconfigurar atajos de RetroArch"
+
+#: src/menu_controllers.cpp
+msgid "ENABLE RUMBLE"
+msgstr "Activar vibración"
+
+#: src/menu_controllers.cpp
+msgid "CONNECTED CONTROLLERS"
+msgstr "Mandos conectados"
+
+#: src/menu_controllers.cpp
+msgid "Not configured"
+msgstr "Sin configurar"
+
+#: src/menu_controllers.cpp
+msgid "Unknown controller"
+msgstr "Mando desconocido"
+
+#: src/menu_controllers.cpp
+msgid "Could not start Bluetooth"
+msgstr "No se pudo iniciar el Bluetooth"
+
+#: src/menu_controllers.cpp
+msgid "Searching..."
+msgstr "Buscando…"
+
+#: src/menu_controllers_bt.cpp
+msgid "PAIRED"
+msgstr "Emparejados"
+
+#: src/menu_controllers_bt.cpp
+msgid "Could not pair"
+msgstr "No se pudo emparejar"
+
+#: src/menu_controllers_bt.cpp
+msgid "Connected"
+msgstr "Conectado"
+
+#: src/menu_controllers_bt.cpp
+msgid "Remove all Bluetooth devices?"
+msgstr "¿Quitar todos los dispositivos Bluetooth?"
+
+#: src/menu_controllers_bt.cpp
+msgid "Could not disconnect"
+msgstr "No se pudo desconectar"
+
+#: src/menu_controllers_bt.cpp
+msgid "Could not connect"
+msgstr "No se pudo conectar"
+
+#: src/menu_controllers_bt.cpp
+msgid "Could not remove"
+msgstr "No se pudo quitar"
+
+#: src/menu_controllers_cfg.cpp
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "Botón A / Este"
+
+#: src/menu_controllers_cfg.cpp
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "Botón B / Sur"
+
+#: src/menu_controllers_cfg.cpp
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "Botón X / Norte"
+
+#: src/menu_controllers_cfg.cpp
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "Botón Y / Oeste"
+
+#: src/menu_controllers_cfg.cpp
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "Stick izquierdo (pulsar)"
+
+#: src/menu_controllers_cfg.cpp
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "Stick derecho (pulsar)"
+
+#: src/menu_controllers_cfg.cpp
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "Botón de atajos (hotkey)"
+
+#: src/menu_controllers_wiz.cpp
+msgid "GAMEPAD DETECTED"
+msgstr "mando detectado"
+
+#: src/menu_controllers_wiz.cpp
+msgid "GAMEPADS DETECTED"
+msgstr "mandos detectados"
+
+#: src/menu_controllers_wiz.cpp
+msgid "PRESS B TO CANCEL."
+msgstr "Pulsa B para cancelar."
+
+#: src/menu_controllers_wiz.cpp
+msgid "Could not save the controller configuration"
+msgstr "No se pudo guardar la configuración del mando"
+
+#: src/menu_controllers_wiz.cpp
+msgid "Controller configuration saved"
+msgstr "Configuración del mando guardada"
+
+#: src/menu_controllers_wiz.cpp
+msgid "Controller configuration cancelled"
+msgstr "Configuración del mando cancelada"
+
+#: src/menu_controllers_wiz.cpp
+msgid "ALL BUTTONS ARE DONE"
+msgstr "Todos los botones listos"
+
+#: src/menu_controllers_wiz.cpp
+msgid "set"
+msgstr "asignados"
+
+#: src/menu_controllers_wiz.cpp
+msgid "skipped"
+msgstr "omitidos"
+
+#: src/menu_controllers_wiz.cpp
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "No se ha asignado ningún botón de atajos. Es necesario para salir de los juegos con un mando."
+
+#: src/menu_game.cpp
+msgid "NO OPTIONS"
+msgstr "Sin opciones"
+
+#: src/menu_game_cfg.cpp
+msgid "UNKNOWN SYSTEM"
+msgstr "Sistema desconocido"
+
+#: src/menu_game_cfg.cpp
+msgid "EMULATOR"
+msgstr "Emulador"
+
+#: src/menu_game_cfg.cpp
+msgid "The emulator and core that run this."
+msgstr "El emulador y el núcleo que lo ejecutan."
+
+#: src/menu_game_cfg.cpp
+msgid "SYSTEM OPTIONS"
+msgstr "Opciones del sistema"
+
+#: src/menu_game_cfg.cpp
+msgid "DISPLAY"
+msgstr "Pantalla"
+
+#: src/menu_game_cfg.cpp
+msgid "GAMEPLAY"
+msgstr "Jugabilidad"
+
+#: src/menu_game_cfg.cpp
+msgid "COOLING PROFILE"
+msgstr "Perfil de refrigeración"
+
+#: src/menu_game_cfg.cpp
+msgid "AGGRESSIVE"
+msgstr "Agresivo"
+
+#: src/menu_game_cfg.cpp
+msgid "MODERATE"
+msgstr "Moderado"
+
+#: src/menu_game_cfg.cpp
+msgid "QUIET"
+msgstr "Silencioso"
+
+#: src/menu_game_cfg.cpp
+msgid "CPU SCALING GOVERNOR"
+msgstr "Gobernador de frecuencia de la CPU"
+
+#: src/menu_game_cfg.cpp
+msgid "GPU SCALING GOVERNOR"
+msgstr "Gobernador de frecuencia de la GPU"
+
+#: src/menu_game_cfg.cpp
+msgid "MANGOHUD OVERLAY"
+msgstr "Superposición MangoHud"
+
+#: src/menu_game_src.cpp
+msgid "CONFIG"
+msgstr "Según configuración"
+
+#: src/menu_game_src.cpp
+msgid "CORE PROVIDED"
+msgstr "Del núcleo"
+
+#: src/menu_game_src.cpp
+msgid "FULL"
+msgstr "Pantalla completa"
+
+#: src/menu_game_src.cpp
+msgid "SQUARE PIXEL"
+msgstr "Píxel cuadrado"
+
+#: src/menu_main.cpp
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "Mandos y Bluetooth"
+
+#: src/menu_main.cpp
+msgid "Development only: every widget of the menu framework."
+msgstr "Solo para desarrollo: todos los elementos del marco de menús."
+
+#: src/menu_main.cpp
+msgid "WIDGET DEMO"
+msgstr "Demostración de elementos"
+
+#: src/menu_network.cpp
+msgid "Turning Wi-Fi on..."
+msgstr "Activando el Wi-Fi…"
+
+#: src/menu_network.cpp
+msgid "Wi-Fi configuration error"
+msgstr "Error en la configuración del Wi-Fi"
+
+#: src/menu_network.cpp
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi activado"
+
+#: src/menu_network.cpp
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi desactivado"
+
+#: src/menu_network.cpp
+msgid "Wi-Fi region updated"
+msgstr "Región del Wi-Fi actualizada"
+
+#: src/menu_network.cpp
+msgid "Please wait..."
+msgstr "Espera, por favor…"
+
+#: src/menu_network.cpp
+msgid "Local play mode updated"
+msgstr "Modo de juego local actualizado"
+
+#: src/menu_network.cpp
+msgid "The service did not answer"
+msgstr "El servicio no respondió"
+
+#: src/menu_network.cpp
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "Direcciones IP disponibles:"
+
+#: src/menu_network.cpp
+msgid "Use letters, digits and dashes only"
+msgstr "Usa solo letras, números y guiones"
+
+#: src/menu_network.cpp
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Nombre guardado. Se aplica en el próximo arranque"
+
+#: src/menu_network.cpp
+msgid "The new name is used at the next boot."
+msgstr "El nombre nuevo se usa en el próximo arranque."
+
+#: src/menu_network.cpp
+msgid "WI-FI NETWORKS"
+msgstr "Redes Wi-Fi"
+
+#: src/menu_network.cpp
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Define la normativa de radio: los canales que puedes usar."
+
+#: src/menu_network.cpp
+msgid "LOCAL PLAY MODE"
+msgstr "Modo de juego local"
+
+#: src/menu_network.cpp
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Crea un punto de acceso para jugar en red con otras consolas."
+
+#: src/menu_network.cpp
+msgid "1 (HOST)"
+msgstr "1 (anfitrión)"
+
+#: src/menu_network.cpp
+msgid "2 (CLIENT 1)"
+msgstr "2 (cliente 1)"
+
+#: src/menu_network.cpp
+msgid "3 (CLIENT 2)"
+msgstr "3 (cliente 2)"
+
+#: src/menu_network.cpp
+msgid "4 (CLIENT 3)"
+msgstr "4 (cliente 3)"
+
+#: src/menu_network.cpp
+msgid "LOCAL PLAY ID"
+msgstr "Identificador de juego local"
+
+#: src/menu_network.cpp
+msgid "NETWORK SERVICES"
+msgstr "Servicios de red"
+
+#: src/menu_network.cpp
+msgid "ENABLE SSH"
+msgstr "Activar SSH"
+
+#: src/menu_network.cpp
+msgid "SSH is off"
+msgstr "SSH desactivado"
+
+#: src/menu_network.cpp
+msgid "SSH is on"
+msgstr "SSH activado"
+
+#: src/menu_network.cpp
+msgid "Remote access to the console over the network."
+msgstr "Acceso remoto a la consola por la red."
+
+#: src/menu_network.cpp
+msgid "ENABLE SAMBA"
+msgstr "Activar Samba"
+
+#: src/menu_network.cpp
+msgid "Samba is off"
+msgstr "Samba desactivado"
+
+#: src/menu_network.cpp
+msgid "Samba is on"
+msgstr "Samba activado"
+
+#: src/menu_network.cpp
+msgid "Shares the games folder with other computers."
+msgstr "Comparte la carpeta de juegos con otros equipos."
+
+#: src/menu_network.cpp
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "Activar servidor HTTP sencillo"
+
+#: src/menu_network.cpp
+msgid "HTTP server is off"
+msgstr "Servidor HTTP desactivado"
+
+#: src/menu_network.cpp
+msgid "HTTP server is on"
+msgstr "Servidor HTTP activado"
+
+#: src/menu_network.cpp
+msgid "FILE TRANSFER"
+msgstr "Transferencia de archivos"
+
+#: src/menu_network.cpp
+msgid "NETWORK"
+msgstr "Red"
+
+#: src/menu_network.cpp
+msgid "USB GADGET FUNCTION"
+msgstr "Función USB (gadget)"
+
+#: src/menu_network.cpp
+msgid "USB networking is on. The console is at"
+msgstr "Red por USB activa. La consola está en"
+
+#: src/menu_network.cpp
+msgid "What the console offers on its USB-C port."
+msgstr "Lo que ofrece la consola por su puerto USB-C."
+
+#: src/menu_network.cpp
+msgid "CLOUD SERVICES"
+msgstr "Servicios en la nube"
+
+#: src/menu_network.cpp
+msgid "ENABLE SYNCTHING"
+msgstr "Activar Syncthing"
+
+#: src/menu_network.cpp
+msgid "Syncthing is off"
+msgstr "Syncthing desactivado"
+
+#: src/menu_network.cpp
+msgid "Syncthing is on"
+msgstr "Syncthing activado"
+
+#: src/menu_network.cpp
+msgid "MOUNT CLOUD DRIVE"
+msgstr "Montar unidad en la nube"
+
+#: src/menu_network.cpp
+msgid "Cloud drive mounted"
+msgstr "Unidad en la nube montada"
+
+#: src/menu_network.cpp
+msgid "Cloud drive unmounted"
+msgstr "Unidad en la nube desmontada"
+
+#: src/menu_network.cpp
+msgid "VPN SERVICES"
+msgstr "Servicios VPN"
+
+#: src/menu_network.cpp
+msgid "WIREGUARD VPN"
+msgstr "VPN WireGuard"
+
+#: src/menu_network.cpp
+msgid "WireGuard is off"
+msgstr "WireGuard desactivado"
+
+#: src/menu_network.cpp
+msgid "WireGuard is on"
+msgstr "WireGuard activado"
+
+#: src/menu_network.cpp
+msgid "TAILSCALE VPN"
+msgstr "VPN Tailscale"
+
+#: src/menu_network.cpp
+msgid "Tailscale is off"
+msgstr "Tailscale desactivado"
+
+#: src/menu_network.cpp
+msgid "Tailscale is on"
+msgstr "Tailscale activado"
+
+#: src/menu_network.cpp
+msgid "Tailscale could not connect"
+msgstr "Tailscale no pudo conectar"
+
+#: src/menu_network.cpp
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale necesita que inicies sesión"
+
+#: src/menu_network.cpp
+msgid "SHOW LINK"
+msgstr "Mostrar enlace"
+
+#: src/menu_network.cpp
+msgid "TAILSCALE LOGIN"
+msgstr "Inicio de sesión de Tailscale"
+
+#: src/menu_network.cpp
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "Reautenticar Tailscale:"
+
+#: src/menu_network.cpp
+msgid "ZeroTier One"
+msgstr "ZeroTier One"
+
+#: src/menu_network.cpp
+msgid "ZeroTier could not connect"
+msgstr "ZeroTier no pudo conectar"
+
+#: src/menu_network.cpp
+msgid "ZeroTier is off"
+msgstr "ZeroTier desactivado"
+
+#: src/menu_network.cpp
+msgid "ZeroTier is on"
+msgstr "ZeroTier activado"
+
+#: src/menu_network.cpp
+msgid "Connecting to"
+msgstr "Conectando a"
+
+#: src/menu_network.cpp
+msgid "Connected successfully"
+msgstr "Conectado correctamente"
+
+#: src/menu_network.cpp
+msgid "Failed to connect"
+msgstr "No se pudo conectar"
+
+#: src/menu_network.cpp
+msgid "SAVED"
+msgstr "Guardada"
+
+#: src/menu_network.cpp
+msgid "ENTERPRISE"
+msgstr "Empresarial"
+
+#: src/menu_network.cpp
+msgid "SECURED"
+msgstr "Protegida"
+
+#: src/menu_network.cpp
+msgid "Enterprise networks are not supported"
+msgstr "Las redes empresariales no son compatibles"
+
+#: src/menu_network.cpp
+msgid "Network forgotten"
+msgstr "Red olvidada"
+
+#: src/menu_network.cpp
+msgid "WI-FI KEY FOR "
+msgstr "Clave Wi-Fi de "
+
+#: src/menu_network.cpp
+msgid "CONNECTING..."
+msgstr "Conectando…"
+
+#: src/menu_network.cpp
+msgid "WI-FI SSID"
+msgstr "Nombre de la red Wi-Fi (SSID)"
+
+#: src/menu_network.cpp
+msgid "WI-FI KEY"
+msgstr "Clave Wi-Fi"
+
+#: src/menu_quit.cpp
+msgid "REALLY RESTART EMULATIONSTATION?"
+msgstr "¿Seguro que quieres reiniciar la interfaz?"
+
+#: src/menu_quit.cpp
+msgid "RESTART EMULATIONSTATION"
+msgstr "Reiniciar la interfaz"
+
+#: src/menu_scraper.cpp
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "Esta versión no puede acceder a ScreenScraper"
+
+#: src/menu_scraper.cpp
+msgid "ALL GAMES"
+msgstr "Todos los juegos"
+
+#: src/menu_scraper.cpp
+msgid "GAMES TO SCRAPE"
+msgstr "Juegos a escrapear"
+
+#: src/menu_scraper.cpp
+msgid "WITH MISSING MEDIA"
+msgstr "Con medios ausentes"
+
+#: src/menu_scraper.cpp
+msgid "WITHOUT ANY MEDIA"
+msgstr "Sin ningún medio"
+
+#: src/menu_scraper.cpp
+msgid "Which games of the chosen systems are looked up."
+msgstr "Qué juegos de los sistemas elegidos se buscan."
+
+#: src/menu_scraper.cpp
+msgid "1 DAY"
+msgstr "1 día"
+
+#: src/menu_scraper.cpp
+msgid "1 MONTH"
+msgstr "1 mes"
+
+#: src/menu_scraper.cpp
+msgid "1 WEEK"
+msgstr "1 semana"
+
+#: src/menu_scraper.cpp
+msgid "1 YEAR"
+msgstr "1 año"
+
+#: src/menu_scraper.cpp
+msgid "15 DAYS"
+msgstr "15 días"
+
+#: src/menu_scraper.cpp
+msgid "3 MONTHS"
+msgstr "3 meses"
+
+#: src/menu_scraper.cpp
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Los juegos escrapeados en este plazo se omiten, así se ahorran peticiones."
+
+#: src/menu_scraper.cpp
+msgid "SCRAPER SETTINGS"
+msgstr "Ajustes del escrapeo"
+
+#: src/menu_scraper.cpp
+msgid "ACCOUNT"
+msgstr "Cuenta"
+
+#: src/menu_scraper.cpp
+msgid "Choose at least one system."
+msgstr "Elige al menos un sistema."
+
+#: src/menu_scraper.cpp
+msgid "Looks the games up on ScreenScraper."
+msgstr "Busca los juegos en ScreenScraper."
+
+#: src/menu_scraper.cpp
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "Ningún sistema con juegos que ScreenScraper conozca"
+
+#: src/menu_scraper.cpp
+msgid "PICTURES"
+msgstr "Imágenes"
+
+#: src/menu_scraper.cpp
+msgid "IMAGE"
+msgstr "Imagen"
+
+#: src/menu_scraper.cpp
+msgid "BOX FRONT"
+msgstr "Frontal de la caja"
+
+#: src/menu_scraper.cpp
+msgid "TITLE SCREEN"
+msgstr "Pantalla de título"
+
+#: src/menu_scraper.cpp
+msgid "The main picture of each game."
+msgstr "La imagen principal de cada juego."
+
+#: src/menu_scraper.cpp
+msgid "THUMBNAIL"
+msgstr "Miniatura"
+
+#: src/menu_scraper.cpp
+msgid "The small picture of each game."
+msgstr "La imagen pequeña de cada juego."
+
+#: src/menu_scraper.cpp
+msgid "LOGO"
+msgstr "Logotipo"
+
+#: src/menu_scraper.cpp
+msgid "The logo of each game."
+msgstr "El logotipo de cada juego."
+
+#: src/menu_scraper.cpp
+msgid "WHEEL HD"
+msgstr "Wheel HD"
+
+#: src/menu_scraper.cpp
+msgid "FULL SIZE"
+msgstr "Tamaño original"
+
+#: src/menu_scraper.cpp
+msgid "IMAGE SIZE"
+msgstr "Tamaño de imagen"
+
+#: src/menu_scraper.cpp
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper reduce las imágenes antes de enviarlas: más rápido y ligero."
+
+#: src/menu_scraper.cpp
+msgid "AUTOMATIC"
+msgstr "Automática"
+
+#: src/menu_scraper.cpp
+msgid "BRAZIL"
+msgstr "Brasil"
+
+#: src/menu_scraper.cpp
+msgid "EUROPE"
+msgstr "Europa"
+
+#: src/menu_scraper.cpp
+msgid "FRANCE"
+msgstr "Francia"
+
+#: src/menu_scraper.cpp
+msgid "GERMANY"
+msgstr "Alemania"
+
+#: src/menu_scraper.cpp
+msgid "ITALY"
+msgstr "Italia"
+
+#: src/menu_scraper.cpp
+msgid "JAPAN"
+msgstr "Japón"
+
+#: src/menu_scraper.cpp
+msgid "SPAIN"
+msgstr "España"
+
+#: src/menu_scraper.cpp
+msgid "USA"
+msgstr "EE. UU."
+
+#: src/menu_scraper.cpp
+msgid "WORLD"
+msgstr "Mundo"
+
+#: src/menu_scraper.cpp
+msgid "Preferred region of names, dates and pictures."
+msgstr "Región preferida para nombres, fechas e imágenes."
+
+#: src/menu_scraper.cpp
+msgid "NAMES"
+msgstr "Nombres"
+
+#: src/menu_scraper.cpp
+msgid "Replace the names of the games."
+msgstr "Sustituye los nombres de los juegos."
+
+#: src/menu_scraper.cpp
+msgid "DESCRIPTIONS"
+msgstr "Descripciones"
+
+#: src/menu_scraper.cpp
+msgid "Replace the descriptions."
+msgstr "Sustituye las descripciones."
+
+#: src/menu_scraper.cpp
+msgid "Download the rating of each game."
+msgstr "Descarga la valoración de cada juego."
+
+#: src/menu_scraper.cpp
+msgid "RATINGS"
+msgstr "Valoraciones"
+
+#: src/menu_scraper.cpp
+msgid "EXTRA MEDIA"
+msgstr "Medios adicionales"
+
+#: src/menu_scraper.cpp
+msgid "VIDEOS"
+msgstr "Vídeos"
+
+#: src/menu_scraper.cpp
+msgid "Videos are big and take longer to download."
+msgstr "Los vídeos pesan mucho y tardan más en descargarse."
+
+#: src/menu_scraper.cpp
+msgid "MANUALS"
+msgstr "Manuales"
+
+#: src/menu_scraper.cpp
+msgid "PDF manuals."
+msgstr "Manuales en PDF."
+
+#: src/menu_scraper.cpp
+msgid "MAPS"
+msgstr "Mapas"
+
+#: src/menu_scraper.cpp
+msgid "Maps of the game."
+msgstr "Mapas del juego."
+
+#: src/menu_scraper.cpp
+msgid "Background pictures."
+msgstr "Imágenes de fondo."
+
+#: src/menu_scraper.cpp
+msgid "FANART"
+msgstr "Fanart"
+
+#: src/menu_scraper.cpp
+msgid "BOX BACK"
+msgstr "Trasera de la caja"
+
+#: src/menu_scraper.cpp
+msgid "The back of the box."
+msgstr "La parte trasera de la caja."
+
+#: src/menu_scraper.cpp
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Solo para «Todos los juegos»: las imágenes que ya existen se descargan de nuevo."
+
+#: src/menu_scraper.cpp
+msgid "REPLACE EXISTING MEDIA"
+msgstr "Reemplazar medios existentes"
+
+#: src/menu_scraper.cpp
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Opcional. Sin cuenta, ScreenScraper permite muy pocas peticiones."
+
+#: src/menu_scraper.cpp
+msgid "TEST ACCOUNT"
+msgstr "Probar la cuenta"
+
+#: src/menu_scraper.cpp
+msgid "Asks ScreenScraper for your limits."
+msgstr "Consulta a ScreenScraper tus límites."
+
+#: src/menu_scraper.cpp
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "Conectando con ScreenScraper"
+
+#: src/menu_scraper.cpp
+msgid "ANONYMOUS"
+msgstr "Anónimo"
+
+#: src/menu_scraper.cpp
+msgid "LOGIN"
+msgstr "Usuario"
+
+#: src/menu_scraper.cpp
+msgid "REQUESTS TODAY"
+msgstr "Peticiones de hoy"
+
+#: src/menu_scraper.cpp
+msgid "REQUESTS PER MINUTE"
+msgstr "Peticiones por minuto"
+
+#: src/menu_scraper.cpp
+msgid "STOP"
+msgstr "Detener"
+
+#: src/menu_scraper.cpp
+msgid "SCROLL"
+msgstr "Desplazar"
+
+#: src/menu_scraper.cpp
+msgid "SCRAPE COMPLETE"
+msgstr "Escrapeo terminado"
+
+#: src/menu_scraper.cpp
+msgid "SCRAPE STOPPED"
+msgstr "Escrapeo detenido"
+
+#: src/menu_scraper.cpp
+msgid "FOUND"
+msgstr "Encontrados"
+
+#: src/menu_scraper.cpp
+msgid "NOT FOUND"
+msgstr "No encontrados"
+
+#: src/menu_scraper.cpp
+msgid "ERRORS"
+msgstr "Errores"
+
+#: src/menu_scraper.cpp
+msgid "MEDIA FILES"
+msgstr "Archivos de medios"
+
+#: src/menu_scraper.cpp
+msgid "READING GAME LISTS"
+msgstr "Leyendo las listas de juegos"
+
+#: src/menu_scraper.cpp
+msgid "STOPPING"
+msgstr "Deteniendo"
+
+#: src/menu_scraper.cpp
+msgid "SECONDS"
+msgstr "segundos"
+
+#: src/menu_scraper.cpp
+msgid "WAITING"
+msgstr "Esperando"
+
+#: src/menu_scraper.cpp
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "Detenido. Lo hecho se ha guardado"
+
+#: src/menu_scraper.cpp
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "No hay juegos que escrapear con estos filtros"
+
+#: src/menu_scraper.cpp
+msgid "GAMES"
+msgstr "Juegos"
+
+#: src/menu_scraper.cpp
+msgid "PROBLEMS"
+msgstr "Problemas"
+
+#: src/menu_scraper.cpp
+msgid "MEDIA MISSING"
+msgstr "Medios ausentes"
+
+#: src/menu_screens.cpp
+msgid "SWITCHES AND SLIDERS"
+msgstr "Interruptores y deslizadores"
+
+#: src/menu_screens.cpp
+msgid "The clock shows in the top right corner."
+msgstr "El reloj se muestra arriba a la derecha."
+
+#: src/menu_screens.cpp
+msgid "Volume saved"
+msgstr "Volumen guardado"
+
+#: src/menu_screens.cpp
+msgid "SCREEN BRIGHTNESS"
+msgstr "Brillo de la pantalla"
+
+#: src/menu_screens.cpp
+msgid "LISTS AND TEXT"
+msgstr "Listas y texto"
+
+#: src/menu_screens.cpp
+msgid "TEXT"
+msgstr "Texto"
+
+#: src/menu_screens.cpp
+msgid "WI-FI PASSWORD"
+msgstr "Contraseña del Wi-Fi"
+
+#: src/menu_screens.cpp
+msgid "ACTIONS"
+msgstr "Acciones"
+
+#: src/menu_screens.cpp
+msgid "SHOW A TOAST"
+msgstr "Mostrar un aviso"
+
+#: src/menu_screens.cpp
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi conectado: Casa 5G"
+
+#: src/menu_screens.cpp
+msgid "SHOW THE VOLUME BAR"
+msgstr "Mostrar la barra de volumen"
+
+#: src/menu_screens.cpp
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "Mostrar la barra de brillo"
+
+#: src/menu_screens.cpp
+msgid "ASK A QUESTION"
+msgstr "Hacer una pregunta"
+
+#: src/menu_screens.cpp
+msgid "Delete all saved states of this game?"
+msgstr "¿Borrar todas las partidas guardadas de este juego?"
+
+#: src/menu_screens.cpp
+msgid "SHOW A MESSAGE"
+msgstr "Mostrar un mensaje"
+
+#: src/menu_screens.cpp
+msgid "The update was installed. Restart the console to use it."
+msgstr "La actualización se ha instalado. Reinicia la consola para usarla."
+
+#: src/menu_screens.cpp
+msgid "Restart the system now?"
+msgstr "¿Reiniciar el sistema ahora?"
+
+#: src/menu_screens.cpp
+msgid "Restarting..."
+msgstr "Reiniciando…"
+
+#: src/menu_screens.cpp
+msgid "DISABLED ENTRY"
+msgstr "Opción desactivada"
+
+#: src/menu_sound.cpp
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "Activar aviso sonoro de batería baja"
+
+#: src/menu_sound.cpp
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "Nivel de aviso de batería"
+
+#: src/menu_system.cpp
+msgid "Reboot now"
+msgstr "Reiniciar ahora"
+
+#: src/menu_system.cpp
+msgid "Later"
+msgstr "Más tarde"
+
+#: src/menu_system_info.cpp
+msgid "UPTIME"
+msgstr "Tiempo encendida"
+
+#: src/menu_system_info.cpp
+msgid "No information available"
+msgstr "Sin información disponible"
+
+#: src/menu_system_info.cpp
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "Gestión del sistema y restablecimiento"
+
+#: src/menu_system_info.cpp
+msgid "BACKUP CONFIGURATIONS"
+msgstr "Copia de seguridad de la configuración"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING THIS WILL RESTART EMULATIONSTATION!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr ""
+"¡ATENCIÓN: ESTO REINICIARÁ LA INTERFAZ!\n"
+"\n"
+"CUANDO TERMINE EL PROCESO, COPIA EL ARCHIVO /storage/roms/backup/ROCKNIX_BACKUP.zip A UN LUGAR SEGURO O SE BORRARÁ EN EL PRÓXIMO REINICIO.\n"
+"\n"
+"¿HACER COPIA DE LA CONFIGURACIÓN ACTUAL Y REINICIAR?"
+
+#: src/menu_system_info.cpp
+msgid "RESTORE FROM BACKUP"
+msgstr "Restaurar desde la copia de seguridad"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr ""
+"¡ATENCIÓN: ESTO REINICIARÁ LA CONSOLA!\n"
+"\n"
+"TU CONFIGURACIÓN ACTUAL SE SOBRESCRIBIRÁ.\n"
+"\n"
+"¿RESTAURAR DESDE LA COPIA DE SEGURIDAD Y REINICIAR?"
+
+#: src/menu_system_info.cpp
+msgid "EMULATOR MANAGEMENT"
+msgstr "Gestión de emuladores"
+
+#: src/menu_system_info.cpp
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "Restablecer la configuración de RetroArch"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr ""
+"ATENCIÓN: LA CONFIGURACIÓN DE RETROARCH VOLVERÁ A LOS VALORES PREDETERMINADOS.\n"
+"\n"
+"LAS CONFIGURACIONES POR NÚCLEO NO SE VERÁN AFECTADAS Y NO SE CREARÁ COPIA DE SEGURIDAD.\n"
+"\n"
+"¿RESTABLECER LA CONFIGURACIÓN DE RETROARCH?"
+
+#: src/menu_system_info.cpp
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "Restablecer superposiciones (núcleos, trucos, mandos, etc.)"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr ""
+"ATENCIÓN: SE ELIMINARÁN TODAS LAS SUPERPOSICIONES PERSONALIZADAS DE RETROARCH.\n"
+"\n"
+"NÚCLEOS, MANDOS, TRUCOS, ETC. PERSONALIZADOS. NO SE CREARÁ COPIA DE SEGURIDAD.\n"
+"\n"
+"¿RESTABLECER LAS SUPERPOSICIONES DE RETROARCH?"
+
+#: src/menu_system_info.cpp
+msgid "FULLY RESET RETROARCH"
+msgstr "Restablecer RetroArch por completo"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr ""
+"ATENCIÓN: RETROARCH Y TODAS LAS CONFIGURACIONES GUARDADAS VOLVERÁN A LOS VALORES PREDETERMINADOS.\n"
+"\n"
+"SE ELIMINARÁN LAS CONFIGURACIONES POR NÚCLEO Y NO SE CREARÁ COPIA DE SEGURIDAD.\n"
+"\n"
+"¿RESTABLECER RETROARCH?"
+
+#: src/menu_system_info.cpp
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "Restablecer la configuración de Mednafen"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr ""
+"ATENCIÓN: LA CONFIGURACIÓN DE MEDNAFEN VOLVERÁ A LOS VALORES PREDETERMINADOS.\n"
+"\n"
+"NO SE CREARÁ COPIA DE SEGURIDAD.\n"
+"\n"
+"¿RESTABLECER LA CONFIGURACIÓN DE MEDNAFEN?"
+
+#: src/menu_system_info.cpp
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "Restablecer la configuración de los emuladores independientes"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr ""
+"ATENCIÓN: LA CONFIGURACIÓN DE LOS EMULADORES INDEPENDIENTES VOLVERÁ A LOS VALORES PREDETERMINADOS.\n"
+"\n"
+"NO SE CREARÁ COPIA DE SEGURIDAD.\n"
+"\n"
+"¿RESTABLECER LA CONFIGURACIÓN DE LOS EMULADORES INDEPENDIENTES?"
+
+#: src/menu_system_info.cpp
+msgid "FULLY RESET PORTMASTER"
+msgstr "Restablecer PortMaster por completo"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RESET PORTMASTER TO DEFAULT?"
+msgstr ""
+"ATENCIÓN: PORTMASTER VOLVERÁ A LOS VALORES PREDETERMINADOS.\n"
+"\n"
+"NO SE CREARÁ COPIA DE SEGURIDAD.\n"
+"\n"
+"¿RESTABLECER PORTMASTER?"
+
+#: src/menu_system_info.cpp
+msgid "SYSTEM MANAGEMENT"
+msgstr "Gestión del sistema"
+
+#: src/menu_system_info.cpp
+msgid "AUDIO RESET"
+msgstr "Restablecer el audio"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr ""
+"¡ATENCIÓN: EL AUDIO VOLVERÁ A LOS VALORES PREDETERMINADOS Y EL SISTEMA SE REINICIARÁ!\n"
+"\n"
+"¿RESTABLECER EL AUDIO Y REINICIAR?"
+
+#: src/menu_system_info.cpp
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "Restablecer el medidor de batería"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr ""
+"¡ATENCIÓN: SE RESTABLECERÁ EL MEDIDOR DE BATERÍA DEL PMIC Y EL SISTEMA SE APAGARÁ!\n"
+"\n"
+"DEJA EL CARGADOR DESCONECTADO Y VUELVE A ENCENDER LA CONSOLA TRAS UNOS SEGUNDOS. EL NIVEL DE BATERÍA SE ESTIMA DE NUEVO A PARTIR DE LA TENSIÓN EN REPOSO Y VUELVE A SER PRECISO TRAS UNA CARGA COMPLETA.\n"
+"\n"
+"¿RESTABLECER EL MEDIDOR Y APAGAR?"
+
+#: src/menu_system_info.cpp
+msgid "FACTORY RESET"
+msgstr "Restablecer de fábrica"
+
+#: src/menu_system_info.cpp
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr ""
+"¡ATENCIÓN: TUS DATOS Y TODAS LAS DEMÁS CONFIGURACIONES VOLVERÁN A LOS VALORES PREDETERMINADOS!\n"
+"\n"
+"SI QUIERES CONSERVAR TUS AJUSTES, HAZ UNA COPIA DE SEGURIDAD Y GUÁRDALA EN UNA UNIDAD EXTERNA ANTES DE CONTINUAR.\n"
+"\n"
+"¡EXTRAE LA TARJETA DE JUEGOS ANTES DE SEGUIR!\n"
+"\n"
+"¿RESTABLECER EL SISTEMA Y REINICIAR?"
+
+#: src/menu_system_main.cpp
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Elige la variante del teclado para la distribución elegida (por ejemplo, teclas muertas o disposición alternativa)."
+
+#: src/menu_system_main.cpp
+msgid "TIMEZONE"
+msgstr "Zona horaria"
+
+#: src/menu_system_main.cpp
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "Activar la superposición MangoHud"
+
+#: src/menu_system_main.cpp
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "Activar el teclado táctil"
+
+#: src/menu_system_main.cpp
+msgid "PANEL ADJUSTMENT"
+msgstr "Ajuste del panel"
+
+#: src/menu_system_main.cpp
+msgid "CONTRAST"
+msgstr "Contraste"
+
+#: src/menu_system_main.cpp
+msgid "GAMMA"
+msgstr "Gamma"
+
+#: src/menu_system_main.cpp
+msgid "HUE"
+msgstr "Tono"
+
+#: src/menu_system_main.cpp
+msgid "SATURATION"
+msgstr "Saturación"
+
+#: src/menu_system_main.cpp
+msgid "LEDS"
+msgstr "LEDs"
+
+#: src/menu_system_main.cpp
+msgid "DISABLE POWER LED"
+msgstr "Apagar el LED de encendido"
+
+#: src/menu_system_main.cpp
+msgid "LED COLOR"
+msgstr "Color del LED"
+
+#: src/menu_system_main.cpp
+msgid "JOYSTICK LED"
+msgstr "LED de los joysticks"
+
+#: src/menu_system_main.cpp
+msgid "MAX"
+msgstr "Máx."
+
+#: src/menu_system_main.cpp
+msgid "MID"
+msgstr "Medio"
+
+#: src/menu_system_main.cpp
+msgid "MIN"
+msgstr "Mín."
+
+#: src/menu_system_main.cpp
+msgid "THIS DEVICE IS"
+msgstr "Esta consola es"
+
+#: src/menu_system_main.cpp
+msgid "Device will be switched on next reboot"
+msgstr "El modelo cambiará en el próximo reinicio"
+
+#: src/menu_system_main.cpp
+msgid "AUTODETECT GAMES CARD"
+msgstr "Detectar la tarjeta de juegos automáticamente"
+
+#: src/menu_system_main.cpp
+msgid "ENABLE MERGED STORAGE"
+msgstr "Activar el almacenamiento fusionado"
+
+#: src/menu_system_main.cpp
+msgid "EXTERNAL"
+msgstr "Externa"
+
+#: src/menu_system_main.cpp
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "Tarjeta principal del almacenamiento fusionado"
+
+#: src/menu_system_main.cpp
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "ATENCIÓN: CAMBIAR LA TARJETA PRINCIPAL PUEDE HACER QUE SE PIERDA EL ACCESO A LOS JUEGOS, Y HABRÍA QUE CORREGIRLO A MANO. ¿CONTINUAR?"
+
+#: src/menu_system_main.cpp
+msgid "EJECT MICROSD CARD"
+msgstr "Expulsar la tarjeta microSD"
+
+#: src/menu_system_main.cpp
+msgid "You may now remove the card."
+msgstr "Ya puedes quitar la tarjeta."
+
+#: src/menu_system_main.cpp
+msgid "PERFORMANCE"
+msgstr "Rendimiento"
+
+#: src/menu_system_main.cpp
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "Gobernador de frecuencia predeterminado"
+
+#: src/menu_system_main.cpp
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "Gobernador de frecuencia de GPU predeterminado"
+
+#: src/menu_system_main.cpp
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "Activar el overclock de la CPU"
+
+#: src/menu_system_main.cpp
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "Activar el overclock de la GPU"
+
+#: src/menu_system_main.cpp
+msgid "GPU DRIVER"
+msgstr "Controlador de la GPU"
+
+#: src/menu_system_main.cpp
+msgid "GPU driver will be switched on next reboot"
+msgstr "El controlador de la GPU cambiará en el próximo reinicio"
+
+#: src/menu_system_main.cpp
+msgid "SUSPEND"
+msgstr "Suspensión"
+
+#: src/menu_system_main.cpp
+msgid "DEVICE SUSPEND MODE"
+msgstr "Modo de suspensión"
+
+#: src/menu_ui.cpp
+msgid "Could not save the settings"
+msgstr "No se pudieron guardar los ajustes"
+
+#: src/menu_ui.cpp
+msgid "CONTROL OPTIONS"
+msgstr "Opciones de control"
+
+#: src/menu_updates.cpp
+msgid "No update source available"
+msgstr "No hay ninguna fuente de actualización disponible"
+
+#: src/menu_updates.cpp
+msgid "FORCE NEXT UPDATE"
+msgstr "Forzar la próxima actualización"
+
+#: src/menu_updates.cpp
+msgid "UPDATING"
+msgstr "Actualizando"
+
+#: src/menu_updates.cpp
+msgid "Checking..."
+msgstr "Comprobando…"
+
+#: src/menu_updates.cpp
+msgid "available"
+msgstr "disponible"
+
+#: src/scene.cpp
+msgid "BOOKS"
+msgstr "Libros"
+
+#: src/scraper_run.cpp
+msgid "NETWORK ERROR"
+msgstr "Error de red"
+
+#: src/scraper_run.cpp
+msgid "SERVER BUSY"
+msgstr "Servidor ocupado"
+
+#: src/scraper_run.cpp
+msgid "SERVER ERROR"
+msgstr "Error del servidor"
+
+#: src/scraper_run.cpp
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "No se puede escribir la lista de juegos"
+
+#: src/scraper_run.cpp
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "Inicio de sesión fallido. Revisa tu usuario y contraseña"
+
+#: src/scraper_run.cpp
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "ScreenScraper está cerrado para esta cuenta ahora mismo"
+
+#: src/scraper_run.cpp
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "ScreenScraper está en mantenimiento"
+
+#: src/scraper_run.cpp
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "ScreenScraper ha bloqueado este programa"
+
+#: src/scraper_run.cpp
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "Límite diario de escrapeo alcanzado. Inténtalo mañana"
+
+#: src/scraper_run.cpp
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "Demasiadas ROM sin reconocer hoy. Inténtalo mañana"
+
+#: src/scraper_run.cpp
+msgid "NO NETWORK CONNECTION"
+msgstr "Sin conexión de red"
+
+#: src/scraper_run.cpp
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "No queda espacio en la tarjeta"
+
+#: src/scraper_run.cpp
+msgid "SCRAPING STOPPED"
+msgstr "Escrapeo detenido"
