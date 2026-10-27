@@ -587,6 +587,18 @@
         <image>./images/r36-tuner.svg</image>
     </game>
     <game>
+        <path>./Switch frontend.sh</path>
+        <name>Switch frontend</name>
+        <desc>Switches the interface between EmulationStation and zfront, the new Zenith frontend. The interface restarts by itself (about 10 seconds); run it again to come back.</desc>
+        <developer>zenmode-adri</developer>
+        <publisher>Zenith</publisher>
+        <rating>5.0</rating>
+        <releasedate>2026</releasedate>
+        <genre>Tool</genre>
+        <players>1</players>
+        <image>./images/switch-frontend.svg</image>
+    </game>
+    <game>
         <path>./Start EKA2L1.sh</path>
         <name>Start EKA2L1</name>
         <desc>Opens the EKA2L1 frontend (Symbian / N-Gage emulator) so that its configuration can be changed directly.</desc>
