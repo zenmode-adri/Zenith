@@ -161,8 +161,8 @@ bool log_has(const Ctx& cx, const std::string& needle) {
   return false;
 }
 
-const char* kAllScreens[] = {"menu.game", "menu.controllers", "menu.ui",      "menu.collections", "menu.sound",
-                             "menu.network", "menu.scraper",  "menu.updates", "menu.system",      "menu.quit"};
+const char* kAllScreens[] = {"menu.game",    "menu.g.screen",    "menu.g.power",  "menu.controllers", "menu.network",
+                             "menu.g.library", "menu.g.system", "menu.quit"};
 
 void render_all(const std::string& out);
 
@@ -221,10 +221,10 @@ int main() {
   // ---- menu.main: ES rows, exact screen names, hidden while the screen does not exist, demo only in dry-run
   {
     std::vector<MainRow> rows = main_rows();
-    CHECK_EQ(rows.size(), size_t(10));
+    CHECK_EQ(rows.size(), size_t(8));
     for (size_t i = 0; i < rows.size(); ++i) CHECK_EQ(rows[i].screen, std::string(kAllScreens[i]));
-    CHECK_EQ(rows[0].label, T("GAME SETTINGS"));
-    CHECK_EQ(rows[3].icon, std::string("advanced"));
+    CHECK_EQ(rows[0].label, T("GAMES"));
+    CHECK_EQ(rows[2].icon, std::string("battery"));
 
     Ctx cx;
     fresh(cx);
@@ -239,22 +239,25 @@ int main() {
     size_t expect = 0;
     for (const char* s : kAllScreens) expect += Registry::instance().has(s) ? 1 : 0;
     expect += 1;  // WIDGET DEMO: dry-run
-    CHECK_EQ(rm.size(), expect);
-    CHECK(index_of(rm, "USER INTERFACE SETTINGS") >= 0);
+    CHECK(rm.size() >= expect);
+    CHECK(index_of(rm, "USER INTERFACE SETTINGS") < 0);  // clock and battery are under SCREEN & SOUND, the buttons under CONTROLLER
+    CHECK(index_of(rm, "SCREEN & SOUND") >= 0);
+    CHECK(index_of(rm, "UPDATES & DOWNLOADS") < 0);  // now under SYSTEM
+    CHECK(index_of(rm, "SCRAPER") < 0);              // now under LIBRARY
     CHECK(index_of(rm, "QUIT") >= 0);
     CHECK(index_of(rm, "WIDGET DEMO") >= 0);
     // the entries open their screens
-    int ui = index_of(rm, "USER INTERFACE SETTINGS");
+    int ui = index_of(rm, "SCREEN & SOUND");
     for (int i = 0; i < ui + 2 && rm.cursor() != ui; ++i) press(rm, cx, Action::Down);
     Transition t = press(rm, cx, Action::A);
-    CHECK(t.kind == Transition::Open && t.name == "menu.ui");
+    CHECK(t.kind == Transition::Open && t.name == "menu.g.screen");
 
     // not on the device: no dry-run, no demo entry
     cx.sv->cmd.dry_run = false;
     auto dev = Registry::instance().make("menu.main", cx, "");
     press(*dev, cx, Action::X);
     CHECK(index_of(as_menu(dev), "WIDGET DEMO") < 0);
-    CHECK_EQ(as_menu(dev).size(), expect - 1);
+    CHECK_EQ(as_menu(dev).size(), rm.size() - 1);
     cx.sv->cmd.dry_run = true;
 
     // rows whose screen is not registered are dropped (a name nobody registers; one that exists)
@@ -277,7 +280,7 @@ int main() {
     Menu& m = as_menu(q);
     press(m, cx, Action::X);
     CHECK_EQ(m.title(), T("QUIT"));
-    CHECK_EQ(labels(m), T({"RESTART EMULATIONSTATION", "RESTART SYSTEM", "SUSPEND SYSTEM", "SHUTDOWN SYSTEM"}));
+    CHECK_EQ(labels(m), T({"RESTART THE FRONTEND", "RESTART SYSTEM", "SUSPEND SYSTEM", "SHUTDOWN SYSTEM"}));
     CHECK_EQ(m.entry(0).icon_name, std::string("restart"));
     CHECK_EQ(m.entry(3).icon_name, std::string("shutdown"));
     for (size_t i = 0; i < m.size(); ++i) CHECK(!m.entry(i).confirm_msg.empty());
@@ -326,7 +329,7 @@ int main() {
     fresh(cx, true, false);
     auto q2 = Registry::instance().make("menu.quit", cx, "");
     press(*q2, cx, Action::X);
-    CHECK_EQ(labels(as_menu(q2)), T({"RESTART EMULATIONSTATION", "RESTART SYSTEM", "SHUTDOWN SYSTEM"}));
+    CHECK_EQ(labels(as_menu(q2)), T({"RESTART THE FRONTEND", "RESTART SYSTEM", "SHUTDOWN SYSTEM"}));
     oscontract::reset_for_test();
   }
 
@@ -342,7 +345,7 @@ int main() {
     CHECK_EQ(m.title(), T("USER INTERFACE SETTINGS"));
     // no catalogs for ES languages beyond the fixtures (es, ru_RU, zh_CN) + English
     CHECK_EQ(index_of(m, "LANGUAGE (REGION)") >= 0, true);
-    CHECK(index_of(m, "SWITCH CONFIRM & CANCEL BUTTONS IN EMULATIONSTATION") >= 0);
+    CHECK(index_of(m, "SWITCH CONFIRM & CANCEL BUTTONS") >= 0);
     CHECK(index_of(m, "SCREEN BRIGHTNESS") >= 0);
     CHECK(index_of(m, "SHOW CLOCK") >= 0);
     CHECK(index_of(m, "SHOW BATTERY STATUS") >= 0);
@@ -354,7 +357,7 @@ int main() {
       CHECK(index_of(m, gone) < 0);
 
     // InvertButtons: stored in es_settings.cfg and applied to the pad at once
-    CHECK(goto_label(m, cx, "SWITCH CONFIRM & CANCEL BUTTONS IN EMULATIONSTATION"));
+    CHECK(goto_label(m, cx, "SWITCH CONFIRM & CANCEL BUTTONS"));
     CHECK(m.entry(size_t(m.cursor())).b);  // ES default: true
     press(m, cx, Action::A);
     CHECK_EQ(pad.calls, 1);

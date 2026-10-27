@@ -12,6 +12,7 @@
 
 #include "i18n.hpp"
 #include "menu.hpp"
+#include "menu_groups.hpp"
 #include "menu_system.hpp"
 #include "registry.hpp"
 #include "ui_dialogs.hpp"
@@ -201,9 +202,27 @@ void load_list(Ctx& cx, const Refresh& refresh, const std::string& cmd, std::fun
                    });
 }
 
-void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
+// What a screen made of `secs` can show: the capabilities of the parts that are not in it are switched off.
+Caps masked(const Caps& in, unsigned secs) {
+  using namespace sys_sec;
+  Caps c = in;
+  if (!(secs & kLeds)) c.power_led = c.led = c.sticks = c.led_brightness = c.power_led_r36 = false;
+  if (!(secs & kPanel)) c.paneladj = false;
+  if (!(secs & kPower)) c.fan = c.gpu_govs = false;
+  if (!(secs & kSuspend)) c.suspend = false;
+  if (!(secs & kTurbo)) c.turbo = c.gpu_oc = c.mangohud = false;
+  if (!(secs & kSysAdv)) c.touch = c.devswitch = c.gpudriver = c.root_pass = false;
+  if (!(secs & kStorage)) c.storage = false;
+  if (!(secs & kLang)) c.keyboard = c.timezone = false;
+  return c;
+}
+
+void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, unsigned secs) {
+  using namespace sys_sec;
   State& st = *sp;
-  const Caps& c = st.caps;
+  const Caps c = masked(st.caps, secs);
+  const bool hdr = !(secs & kNoHdr);  // section headers
+  const bool cpugov = (secs & kPower) && !st.cpu_govs.empty();
 
   if (!st.reboot_msg.empty()) {
     std::string msg = st.reboot_msg;
@@ -211,10 +230,10 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
   }
 
   // ---- SYSTEM
-  m.header(tr("SYSTEM"));
-  m.submenu(tr("INFORMATION"), "menu.system.info");
+  if (hdr && (secs & (kInfo | kLang))) m.header(tr("SYSTEM"));
+  if (secs & kInfo) m.submenu(tr("INFORMATION"), "menu.system.info");
 
-  {  // LANGUAGE (REGION): ES list, reduced to the languages that have a catalog (English always)
+  if (secs & kLang) {  // LANGUAGE (REGION): ES list, reduced to the languages that have a catalog (English always)
     std::string cur = norm_lang(get(cx, "system.language"));
     std::vector<Option> o;
     for (const Lang& l : kLangs) {
@@ -293,8 +312,8 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
     });
 
   // ---- HARDWARE
-  if (!st.bl.empty()) m.header(tr("HARDWARE"));
-  for (size_t i = 0; i < st.bl.size(); ++i) {
+  if (hdr && (secs & kBright) && !st.bl.empty()) m.header(secs == kAll ? tr("HARDWARE") : tr("SCREEN"));
+  for (size_t i = 0; (secs & kBright) && i < st.bl.size(); ++i) {
     std::string label = tr("SCREEN BRIGHTNESS");
     if (i > 0) label += " " + std::to_string(i + 1);
     m.slider(label, 5, 100, 1, [sp, i] { return sp->bl[i].pct; }, [&cx, sp, i](int v) {
@@ -305,7 +324,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
     }).unit("%").commit([&cx, sp, i](int v) { put(cx, sp->bl[i].key, std::to_string(v), true); });
   }
   if (c.paneladj) {
-    m.header(tr("PANEL ADJUSTMENT"));
+    if (hdr) m.header(tr("PANEL ADJUSTMENT"));
     const char* labels[4] = {N_("GAMMA"), N_("CONTRAST"), N_("SATURATION"), N_("HUE")};
     for (int k = 0; k < 4; ++k) {
       m.slider(tr(labels[k]), 5, 100, 5, [sp, k] { return sp->panel[k]; }, [&cx, sp, k](int v) {
@@ -317,7 +336,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
   }
 
   bool leds = c.power_led || c.led || c.sticks || c.led_brightness || c.power_led_r36;
-  if (leds) m.header(tr("LEDS"));
+  if (hdr && leds) m.header(tr("LEDS"));
   if (c.power_led)
     m.toggle(tr("DISABLE POWER LED"), [&cx] { return get(cx, "powerled.disabled") == "1"; }, [&cx](bool b) { put_bool(cx, "powerled.disabled", b); });
   if (c.led) {
@@ -355,7 +374,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
              });
 
   if (c.devswitch) {
-    m.header(tr("DEVICE"));
+    if (hdr) m.header(tr("DEVICE"));
     m.choice(tr("THIS DEVICE IS"), to_options(st.switch_opts), [sp] { return sp->switch_cur; }, [&cx, sp, r = m.refresh](const std::string& v) {
       if (v == sp->switch_cur) return;
       cx.sv->cmd.run("/usr/bin/device-switch " + shell_quote(v));
@@ -367,7 +386,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
 
   // ---- STORAGE
   if (c.storage) {
-    m.header(tr("STORAGE"));
+    if (hdr) m.header(tr("STORAGE"));
     bool auto_mount = get_bool(cx, "system.automount", false);
     m.toggle(tr("AUTODETECT GAMES CARD"), [&cx] { return get_bool(cx, "system.automount", false); }, [&cx](bool b) {
       put_bool(cx, "system.automount", b);
@@ -406,7 +425,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
   }
 
   // ---- PERFORMANCE
-  if (c.fan || !st.cpu_govs.empty() || c.gpu_govs || c.turbo || c.gpu_oc || c.gpudriver) m.header(tr("PERFORMANCE"));
+  if (hdr && (c.fan || cpugov || c.gpu_govs || c.turbo || c.gpu_oc || c.gpudriver)) m.header(tr("PERFORMANCE"));
   if (c.fan)
     m.choice(tr("COOLING PROFILE"),
              {{"auto", tr("AUTO")}, {"quiet", tr("QUIET")}, {"moderate", tr("MODERATE")}, {"aggressive", tr("AGGRESSIVE")}, {"custom", tr("CUSTOM")}},
@@ -414,7 +433,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
                put(cx, "cooling.profile", v);
                cx.sv->cmd.spawn("systemctl restart fancontrol");
              });
-  if (!st.cpu_govs.empty())
+  if (cpugov)
     m.choice(tr("DEFAULT SCALING GOVERNOR"), to_options(st.cpu_govs), [&cx] { return get(cx, "system.cpugovernor", "default"); }, [&cx](const std::string& v) {
       put(cx, "system.cpugovernor", v);
       cx.sv->cmd.spawn("/usr/bin/sh -lc " + shell_quote(". /etc/profile.d/099-freqfunctions; " + v) + " >/dev/null 2>&1");
@@ -446,7 +465,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
     }).no_cycle();
 
   if (c.suspend) {
-    m.header(tr("SUSPEND"));
+    if (hdr) m.header(tr("SUSPEND"));
     m.choice(tr("DEVICE SUSPEND MODE"), to_options(st.sleep_modes), [&cx] { return get(cx, "system.suspendmode", "default"); }, [&cx](const std::string& v) {
       put(cx, "system.suspendmode", v);
       cx.sv->cmd.spawn("/usr/bin/suspendmode " + shell_quote(v));
@@ -454,7 +473,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
   }
 
   // ---- ADVANCED
-  m.header(tr("ADVANCED"));
+  if (hdr && (secs & kSysAdv) && c.root_pass) m.header(tr("ADVANCED"));
   if (c.root_pass) {
     // ES: SECURITY > ROOT PASSWORD (plain text); one level less here
     m.text(tr("ROOT PASSWORD"), [&cx] { return get(cx, "root.password", "linux"); }, [&cx](const std::string& v) {
@@ -466,10 +485,10 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp) {
       put(cx, "root.password", v, true);
     });
   }
-  m.submenu(tr("SYSTEM MANAGEMENT AND RESET"), "menu.system.reset");
+  if (secs & kReset) m.submenu(tr("SYSTEM MANAGEMENT AND RESET"), "menu.system.reset");
 }
 
-std::unique_ptr<Screen> make_system(Ctx& cx) {
+MenuSpec make_system_spec(Ctx& cx, unsigned secs) {
   auto st = std::make_shared<State>();
   read_caps(*st);
   st->kb_layout = get(cx, "system.kblayout", "us");
@@ -487,9 +506,9 @@ std::unique_ptr<Screen> make_system(Ctx& cx) {
   MenuSpec s;
   s.title = tr("SYSTEM SETTINGS");
   s.title_key = N_("SYSTEM SETTINGS");
-  s.build = [st](MenuBuilder& m, Ctx& cx) { build_system(m, cx, st); };
-  s.on_open = [st](Ctx& cx, const Refresh& r) {
-    const Caps& c = st->caps;
+  s.build = [st, secs](MenuBuilder& m, Ctx& cx) { build_system(m, cx, st, secs); };
+  s.on_open = [st, secs](Ctx& cx, const Refresh& r) {
+    const Caps c = masked(st->caps, secs);
     if (c.timezone) {
       auto sv = cx.sv;
       bool need_cur = st->tz.empty();
@@ -540,11 +559,23 @@ std::unique_ptr<Screen> make_system(Ctx& cx) {
   s.on_close = [st](Ctx& cx) {
     if (st->toast_reboot) cx.sv->toasts.push(tr("REBOOT REQUIRED TO APPLY THE NEW CONFIGURATION"), 4000);
   };
-  return make_menu(std::move(s));
+  return s;
 }
 
 }  // namespace
 
-ZF_REGISTER_SCREEN("menu.system", [](Ctx& cx, const std::string&) { return make_system(cx); });
+MenuSpec system_spec(Ctx& cx, unsigned sections) { return make_system_spec(cx, sections); }
+
+bool system_has_section(unsigned section) {
+  State st;
+  read_caps(st);
+  const Caps& c = st.caps;
+  if (section & sys_sec::kPanel) return c.paneladj;
+  if (section & sys_sec::kTurbo) return c.turbo || c.gpu_oc || c.mangohud;
+  if (section & sys_sec::kSysAdv) return c.touch || c.devswitch || c.gpudriver || c.root_pass;
+  return true;
+}
+
+ZF_REGISTER_SCREEN("menu.system", [](Ctx& cx, const std::string&) { return make_menu(make_system_spec(cx, sys_sec::kAll)); });
 
 }  // namespace zf

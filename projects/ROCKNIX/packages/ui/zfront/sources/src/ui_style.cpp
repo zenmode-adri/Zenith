@@ -1,3 +1,4 @@
+#include "i18n.hpp"
 #include "ui_style.hpp"
 
 #include <pugixml.hpp>
@@ -342,23 +343,48 @@ void HelpBar::draw(Assets& a, const Theme& th, const Metrics& m, const Style& st
     for (size_t i = 0; i < n; ++i) {
       Item it;
       if (!a.file(th.path(std::string("./assets/help-") + p[i].icon + ".png"), it.icon)) continue;
-      it.t.set(a, tr(p[i].text), px_floor(px));
+      it.t.set(a, i18n::sentence_case(tr(p[i].text)), px_floor(px));
       items_.push_back(it);
     }
   }
-  float height = std::round(a.letter_height(px) * 1.25f);
-  float icon_gap = m.W * 0.0042f, entry_gap = icon_gap * 2.0f;
-  float total = 0;
-  for (Item& it : items_) {
-    it.iw = float(a.img(it.icon).w) * height / float(a.img(it.icon).h);
-    total += it.iw + icon_gap + it.t.w + entry_gap;
+  hi_.clear();
+  for (size_t i = 0; i < items_.size(); ++i) {
+    const Item& it = items_[i];
+    if (it.t.blank || !it.t.ok) continue;
+    hi_.push_back({it.icon, float(a.img(it.icon).w), float(a.img(it.icon).h), it.t.id, it.t.w, it.t.h, std::string(p[i].icon) == "A"});
   }
-  float x = (m.W - total) / 2.0f;
-  for (const Item& it : items_) {
-    out.push_back(Op::image(it.icon, x, m.help_y - height / 2.0f, it.iw, height, st.dim_dark));
-    x += it.iw + icon_gap;
-    put_text(out, it.t, x, m.help_y, st.dim_dark);
-    x += it.t.w + entry_gap;
+  help_pill(a, st, m.W, m.help_y, px, hi_, out);
+}
+
+void help_pill(Assets& a, const Style& st, float W, float help_y, float px, std::vector<HelpItem>& it, std::vector<Op>& out) {
+  static Shapes shapes;
+  if (it.empty()) return;
+  const float ih = std::round(a.letter_height(px) * 1.55f);
+  const float ph = std::round(ih * 1.85f);
+  const float pad = std::round(ph * 0.62f);
+  const float igap = std::max(3.0f, std::round(W * 0.0075f));
+  const float egap = std::round(ph * 0.85f);
+  auto width = [&](size_t n) {
+    float t = 2.0f * pad;
+    for (size_t i = 0; i < n; ++i) t += it[i].iw * ih / it[i].ih + igap + it[i].tw + (i + 1 < n ? egap : 0.0f);
+    return t;
+  };
+  size_t n = it.size();
+  while (n > 1 && width(n) > W * 0.96f) --n;
+  const float total = std::round(width(n));
+  const float x0 = std::round((W - total) / 2.0f), y0 = std::round(help_y - ph / 2.0f);
+  shapes.pill(a, out, x0, y0 + 2.0f, total, ph, st.dark ? Color{0, 0, 0, 90} : Color{0, 0, 0, 22});
+  shapes.framed(a, out, x0, y0, total, ph, int(ph / 2.0f), st.panel, st.line, 1.0f);
+  const Color accent = st.dark ? st.cyan : st.cyan_dark;
+  float x = x0 + pad;
+  const float cy = y0 + ph / 2.0f;
+  for (size_t i = 0; i < n; ++i) {
+    const HelpItem& e = it[i];
+    const float iw = e.iw * ih / e.ih;
+    out.push_back(Op::image(e.icon, std::round(x), std::round(cy - ih / 2.0f), iw, ih, e.primary ? accent : st.dim_dark));
+    x += iw + igap;
+    out.push_back(Op::image(e.text, std::round(x), std::floor(cy - e.th / 2.0f + 0.5f), e.tw, e.th, e.primary ? st.txt : st.dim_dark));
+    x += e.tw + egap;
   }
 }
 

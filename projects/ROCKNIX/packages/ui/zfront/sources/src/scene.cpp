@@ -6,9 +6,11 @@
 #include <cmath>
 #include <deque>
 
+#include "covers.hpp"
 #include "i18n.hpp"
 #include "services.hpp"
 #include "ui_prefs.hpp"
+#include "ui_style.hpp"
 #include "util.hpp"
 
 namespace zf {
@@ -48,13 +50,13 @@ const char* icon_label(const std::string& theme_name) {
   return nullptr;
 }
 
-/// "14 GAMES" under the carousel: ES's plural entry `%i GAME`, in capitals like the rest of the carousel.
+/// "14 games" under the carousel: ES's plural entry `%i GAME` in sentence case.
 std::string games_text(uint32_t n) {
   std::string t = i18n::ntr("%i GAME", "%i GAMES", n);
   size_t p = t.find("%i");
   if (p == std::string::npos) p = t.find("%d");
   if (p != std::string::npos) t.replace(p, 2, std::to_string(n));
-  return utf8_upper(t);
+  return i18n::sentence_case(t);
 }
 
 /// Fit an image of `iw x ih` inside `mw x mh` keeping its aspect ratio.
@@ -91,7 +93,7 @@ void push_avatar(const Theme& th, Assets& a, const Common& c, float w, float h, 
 
 namespace {
 using HelpKeys = std::initializer_list<std::pair<const char*, const char*>>;
-/// A help bar: (icon, ES catalog key) pairs; the text is translated and put in capitals once per language.
+/// A help bar: (icon, ES catalog key) pairs; the text is translated and put in sentence case once per language.
 struct HelpCache {
   unsigned gen = ~0u;
   std::deque<std::string> text;  // pointers into a deque stay valid while it grows
@@ -103,7 +105,7 @@ const HelpPrompts& help_for(HelpCache& c, HelpKeys keys) {
     c.text.clear();
     c.prompts.clear();
     for (const auto& k : keys) {
-      c.text.push_back(utf8_upper(tr(k.second)));
+      c.text.push_back(i18n::sentence_case(tr(k.second)));
       c.prompts.push_back({k.first, c.text.back().c_str()});
     }
   }
@@ -113,11 +115,11 @@ const HelpPrompts& help_for(HelpCache& c, HelpKeys keys) {
 
 const HelpPrompts& system_help() {
   static HelpCache c;
-  return help_for(c, {{"start", N_("MENU")}, {"B", N_("NAVIGATION BAR")}, {"X", N_("RANDOM")}, {"A", N_("SELECT")}, {"leftright", N_("CHOOSE")}});
+  return help_for(c, {{"leftright", N_("CHOOSE")}, {"A", N_("SELECT")}, {"start", N_("MENU")}});
 }
 const HelpPrompts& list_help() {
   static HelpCache c;
-  return help_for(c, {{"select", N_("OPTIONS")}, {"start", N_("MENU")}, {"B", N_("BACK")}, {"Y", N_("SEARCH")}, {"X", N_("GAME OPTIONS")}, {"A", N_("LAUNCH")}});
+  return help_for(c, {{"A", N_("LAUNCH")}, {"B", N_("BACK")}, {"X", N_("GAME OPTIONS")}, {"Y", N_("SEARCH")}});
 }
 
 bool load_common(const Theme& th, Assets& a, Common& out, std::string& err) {
@@ -206,48 +208,90 @@ static void build_status_bar(const Theme& th, Assets& a, float w, float h, const
   }
 }
 
-// Help bar (ES `HelpComponent`): [icon] [text] pairs, icon as tall as 1.25x the capital letter height, centred at
-// (0.5, helpY).
+// Help bar: a floating pill, see ui::help_pill. The icons are the theme's help-<icon>.png masks, tinted.
 void help_bar(const Theme& th, Assets& a, float w, float h, const HelpPrompts& prompts, std::vector<Op>& ops) {
-  float px = std::floor(th.f("fHelp") * h);
-  Color col = th.color("dimDark");
-  float height = std::round(a.letter_height(px) * 1.25f);
-  float icon_gap = w * 0.0042f;
-  float entry_gap = icon_gap * 2.0f;
-  struct E {
-    ImgId icon;
-    float iw;
-    ImgId text;
-    float tw;
-  };
-  std::vector<E> items;
-  float total = 0;
+  const float px = std::floor(th.f("fHelp") * h);
+  std::vector<ui::HelpItem> items;
   for (const auto& [icon, text] : prompts) {
     ImgId iid;
     if (!a.file(th.path(std::string("./assets/help-") + icon + ".png"), iid)) continue;
-    ImgId tid = a.text(text, px, col);
-    float iw = float(a.img(iid).w) * height / float(a.img(iid).h);
-    float tw = float(a.img(tid).w);
-    total += iw + icon_gap + tw + entry_gap;
-    items.push_back({iid, iw, tid, tw});
+    ImgId tid = a.text(text, px, Color{255, 255, 255, 255});
+    items.push_back({iid, float(a.img(iid).w), float(a.img(iid).h), tid, float(a.img(tid).w), float(a.img(tid).h), std::string(icon) == "A"});
   }
-  float x = (w - total) / 2.0f;
-  float cy = th.f("helpY") * h;
-  for (const E& e : items) {
-    ops.push_back(Op::image(e.icon, x, cy - height / 2.0f, e.iw, height, col));
-    x += e.iw + icon_gap;
-    float th_ = float(a.img(e.text).h);
-    ops.push_back(Op::image(e.text, x, cy - th_ / 2.0f, e.tw, th_));
-    x += e.tw + entry_gap;
+  ui::help_pill(a, ui::Style::from(th), w, th.f("helpY") * h, px, items, ops);
+}
+
+/// Muted colour of a system's bar under the carousel, by maker; anything unlisted gets the theme's own accent.
+/// "Continue playing": the newest savestate screenshots of the selected system, left aligned under the hairline. Drawn only when the
+/// screen has the room (about 0.2 of its height): on a short screen the row is left out, never squeezed.
+static void recent_row(const Theme& th, Assets& a, const ui::Style& st, float w, float h, float mx, float hair_y, RecentRow& r, std::vector<Op>& ops) {
+  static ui::Shapes shapes;
+  const float px = std::round(th.f("fSys") * h);
+  ImgId lab = a.text(i18n::sentence_case(tr("CONTINUE PLAYING")), px, th.color("dim"));
+  const float lh = float(a.img(lab).h);
+  const float label_y = std::round(hair_y + 0.012f * h);
+  const float tile_top = std::round(label_y + lh + 0.008f * h);
+  const float cap_h = std::round(px * 2.0f + 0.008f * h);
+  const float limit = th.f("helpY") * h - 0.05f * h;  // clear of the help pill
+  const float tile_h = std::min(std::round(0.125f * h), std::floor(limit - tile_top - cap_h));
+  if (tile_h < std::round(0.085f * h)) return;
+  const float tile_w = std::round(tile_h * 16.0f / 9.0f), gap = std::round(0.022f * w);
+  const size_t fit_n = size_t(std::max(0.0f, (w - 2.0f * mx + gap) / (tile_w + gap)));
+  r.box_w = uint32_t(tile_w) - 2, r.box_h = uint32_t(tile_h) - 2;
+  ops.push_back(Op::image(lab, mx, label_y, float(a.img(lab).w), lh));
+  size_t k = 0;
+  for (const RecentItem& it : r.items) {
+    if (k >= fit_n) break;
+    if (covers::failed(it.shot)) continue;
+    const float x = mx + float(k) * (tile_w + gap);
+    shapes.framed(a, ops, x, tile_top, tile_w, tile_h, 3, st.panel, st.line, 1.0f);
+    ImgId id;
+    const bool have = r.decode_inline ? a.file_fit(it.shot, r.box_w, r.box_h, id) : covers::ready(a, it.shot, r.box_w, r.box_h, id);
+    if (!have && r.decode_inline) covers::mark_failed(it.shot);
+    if (have) {
+      const Img& im = a.img(id);
+      const float iw = float(im.w), ih = float(im.h);
+      ops.push_back(Op::image(id, std::round(x + (tile_w - iw) / 2.0f), std::round(tile_top + (tile_h - ih) / 2.0f), iw, ih));
+    }
+    const float cy0 = tile_top + tile_h + std::round(0.008f * h);
+    ImgId nm = clip_text(a, short_title(it.name), px, st.txt, tile_w);
+    ops.push_back(Op::image(nm, x, cy0, float(a.img(nm).w), float(a.img(nm).h)));
+    if (!it.ago.empty()) {
+      ImgId ag = a.text(it.ago, std::round(px * 0.9f), st.dim);
+      ops.push_back(Op::image(ag, x, cy0 + float(a.img(nm).h), float(a.img(ag).w), float(a.img(ag).h)));
+    }
+    ++k;
   }
 }
 
+static Color system_color(const std::string& t, const ui::Style& st) {
+  auto is = [&](std::initializer_list<const char*> l) {
+    for (const char* x : l)
+      if (t == x) return true;
+    return false;
+  };
+  if (is({"gbc", "gbch", "gbc2players", "ngpc", "wonderswancolor"})) return Color{0x6C, 0x4F, 0xD8, 255};
+  if (is({"gb", "gbh", "gb2players", "sgb", "gameandwatch", "pokemini"})) return Color{0x7A, 0x8B, 0x5A, 255};
+  if (is({"gba", "gbah", "virtualboy"})) return Color{0x4B, 0x3F, 0x9E, 255};
+  if (is({"nes", "nesh", "famicom", "fds", "snes", "snesh", "snesna", "snesnah", "sfc", "satellaview", "sufami", "n64", "n64dd", "gc", "wii", "wiiu", "switch", "nds", "3ds"}))
+    return Color{0xC2, 0x3B, 0x3B, 255};
+  if (is({"psx", "ps2", "ps3", "ps4", "psvita", "psp"})) return Color{0x2F, 0x6F, 0xB5, 255};
+  if (is({"mastersystem", "megadrive", "megadrivejp", "genesis", "genh", "segacd", "megacd", "megacdjp", "sega32x", "sega32xjp", "sega32xna", "gamegear", "saturn",
+          "saturnjp", "dreamcast", "sg-1000", "naomi", "naomi2"}))
+    return Color{0x2C, 0x5F, 0xA8, 255};
+  if (is({"pcengine", "pce-cd", "tg16", "tg-cd", "supergrafx", "pcfx"})) return Color{0xD0, 0x7A, 0x2B, 255};
+  if (is({"neogeo", "neogeocd", "neogeocdjp", "ngp", "mame", "fbneo", "fba", "arcade", "cps", "cps1", "cps2", "cps3"})) return Color{0x8A, 0x6B, 0x2E, 255};
+  if (is({"atari2600", "atari5200", "atari7800", "atari800", "atarilynx", "atarijaguar", "atarist"})) return Color{0xB0, 0x55, 0x2A, 255};
+  return st.cyan_dark;
+}
+
 void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, const std::vector<SystemItem>& items, int cursor_abs, float cam,
-                 const Status& status, std::vector<Op>& ops) {
+                 const Status& status, RecentRow* recent, std::vector<Op>& ops) {
   ops.push_back(Op::rect(0, 0, w, h, th.color("bg")));
   push_avatar(th, a, c, w, h, ops);
   status_bar(th, a, w, h, status, ops);
   help_bar(th, a, w, h, system_help(), ops);
+  if (recent) recent->box_w = recent->box_h = 0;
   if (items.empty()) return;
 
   int n = int(items.size());
@@ -306,16 +350,28 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
     }
   }
 
-  // "N JUEGOS" under the carousel
+  // Under the carousel: the system's name with a flat bar in its colour, the game count on the right, one hairline.
   // (nothing while the background count is pending: no "0 JUEGOS" flash, no layout shift)
-  if (items[size_t(cursor)].games == kCountPending) return;
-  ImgId info = a.text(games_text(items[size_t(cursor)].games), th.f("fSys") * h, th.color("dim"));
+  const SystemItem& cur = items[size_t(cursor)];
+  if (cur.games == kCountPending) return;
+  const ui::Style st = ui::Style::from(th);
+  float mx = std::round(0.044f * w);  // same side margin as the status bar
+  float cy = th.f("sysInfoY") * h;
+  ImgId name = a.text(cur.full_name, std::round(th.f("fSys") * h * 1.75f), th.color("txt"));
+  float nw = float(a.img(name).w), nh = float(a.img(name).h);
+  float bar_w = std::max(3.0f, std::round(0.0056f * w)), bar_h = std::round(nh * 0.95f);
+  ops.push_back(Op::rect(mx, std::round(cy - bar_h / 2.0f), bar_w, bar_h, system_color(cur.theme_name, st)));
+  ops.push_back(Op::image(name, mx + bar_w + std::round(0.0222f * w), cy - nh / 2.0f, nw, nh));
+  ImgId info = a.text(games_text(cur.games), th.f("fSys") * h, th.color("dim"));
   float iw = float(a.img(info).w), ih = float(a.img(info).h);
-  ops.push_back(Op::image(info, w / 2.0f - iw / 2.0f, th.f("sysInfoY") * h - ih / 2.0f, iw, ih));
+  ops.push_back(Op::image(info, w - mx - iw, cy - ih / 2.0f, iw, ih));
+  const float hair_y = std::round(cy + bar_h / 2.0f + 0.011f * h);
+  ops.push_back(Op::rect(mx, hair_y, w - 2.0f * mx, std::max(1.0f, std::round(h / 720.0f)), st.line));
+  if (recent && !recent->items.empty()) recent_row(th, a, st, w, h, mx, hair_y, *recent, ops);
 }
 
 void list_view(const Theme& th, Assets& a, const Common& c, float w, float h, const std::string& system_name, const std::vector<std::string>& names,
-               size_t cursor, const Status& status, const DetailedData* detail, std::vector<Op>& ops) {
+               size_t cursor, const Status& status, const DetailedData* detail, const std::vector<std::string>* marks, std::vector<Op>& ops) {
   ops.push_back(Op::rect(0, 0, w, h, th.color("bg")));
   push_avatar(th, a, c, w, h, ops);
   ImgId t = a.text(system_name, std::floor(th.f("fTitle") * h), th.color("txt"));
@@ -343,7 +399,15 @@ void list_view(const Theme& th, Assets& a, const Common& c, float w, float h, co
     bool sel = idx == cursor;
     if (sel && have_pill) ops.push_back(Op::image(pill, lx, top + th.f("selOffY") * h, lw, th.f("selH") * h));
     Color col = sel ? th.color("cyanDark") : th.color("dimDark");
-    ImgId id = clip_text(a, utf8_upper(names[idx]), px, col, lw - 2.0f * margin);
+    // "12 min ago" on the right of the row (only for games played recently); the name gives up that much room
+    float room = lw - 2.0f * margin;
+    if (marks && idx < marks->size() && !(*marks)[idx].empty()) {
+      ImgId m = a.text((*marks)[idx], std::floor(px * 0.78f), sel ? col : th.color("dim"));
+      float mw = float(a.img(m).w), mh = float(a.img(m).h);
+      ops.push_back(Op::image(m, lx + lw - margin - mw, std::floor(top + row_h / 2.0f - mh / 2.0f), mw, mh));
+      room -= mw + margin;
+    }
+    ImgId id = clip_text(a, utf8_upper(names[idx]), px, col, room);
     float iw = float(a.img(id).w), ih = float(a.img(id).h);
     ops.push_back(Op::image(id, lx + margin, std::floor(top + row_h / 2.0f - ih / 2.0f), iw, ih));
   }

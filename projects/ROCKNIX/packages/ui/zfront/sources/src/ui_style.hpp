@@ -122,6 +122,19 @@ struct Prompt {
   const char* text;
 };
 
+/// One entry of the help pill, already rendered: the button icon, the text (white, tinted when drawn) and whether it is the main
+/// action of the screen (drawn in the accent colour).
+struct HelpItem {
+  ImgId icon = 0;
+  float iw = 0, ih = 0;
+  ImgId text = 0;
+  float tw = 0, th = 0;
+  bool primary = false;
+};
+/// The help bar of every screen: a floating pill (theme panel colour, hairline, soft shadow) centred at `help_y`, icons 1.55x the
+/// capital height, the main action in the accent colour. Entries that do not fit the width are left out from the end.
+void help_pill(Assets& a, const Style& st, float W, float help_y, float px, std::vector<HelpItem>& items, std::vector<Op>& out);
+
 /// Help bar with the same geometry as the carousel/list ones (`scene.cpp: help_bar`), but its images are kept between
 /// frames: it rebuilds only when the prompt table (compared by address) or the size changes.
 class HelpBar {
@@ -138,6 +151,7 @@ class HelpBar {
   size_t n_ = 0;
   float px_ = 0;
   std::vector<Item> items_;
+  std::vector<HelpItem> hi_;  // scratch of draw(): no allocation per frame once it has grown
 };
 
 /// `t` drawn with its left edge at x and vertically centred on cy (whole pixels).

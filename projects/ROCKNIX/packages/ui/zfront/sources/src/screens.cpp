@@ -1,10 +1,13 @@
 #include "screens.hpp"
 
 #include <algorithm>
+#include <cstdio>
+#include <ctime>
 
 #include "collections.hpp"
 #include "covers.hpp"
 #include "detailed.hpp"
+#include "i18n.hpp"
 #include "launch.hpp"
 #include "launchcheck.hpp"
 #include "oscontract.hpp"
@@ -12,6 +15,20 @@
 #include "scene.hpp"
 
 namespace zf {
+
+/// "12 min ago" for a `GameMeta::lastplayed` (YYYYMMDDHHMMSS, local time); empty when never or older than 30 days.
+static std::string played_ago(uint64_t lp, std::time_t now) {
+  if (lp == 0) return std::string();
+  std::tm t{};
+  t.tm_year = int(lp / 10000000000ULL) - 1900;
+  t.tm_mon = int(lp / 100000000ULL % 100) - 1;
+  t.tm_mday = int(lp / 1000000ULL % 100);
+  t.tm_hour = int(lp / 10000ULL % 100);
+  t.tm_min = int(lp / 100ULL % 100);
+  t.tm_sec = int(lp % 100);
+  t.tm_isdst = -1;
+  return ago_text(std::mktime(&t), now);
+}
 
 static float ease_out(float t) {
   float u = 1.0f - t;
@@ -38,6 +55,7 @@ Transition CarouselScreen::handle(Action a, Ctx& cx) {
     case Action::A:
       if (n > 0 && !anim_) {
         size_t idx = size_t(((target_ % n) + n) % n);
+        recent_for_ = -1;
         announced_ = -1;  // coming back announces the system again, as ES does when it returns to the system view
         return Transition::push(std::make_unique<ListScreen>(idx, cx));
       }
@@ -70,16 +88,43 @@ bool CarouselScreen::tick(float dt, Ctx& cx) {
       anim_t_ = t;
     }
   }
-  return anim_;
+  bool changed = false;
+  if (!anim_ && !cx.items.empty()) {  // the "continue playing" row is read once the carousel stopped, not while it moves
+    long n = long(cx.items.size());
+    long idx = ((long(target_) % n) + n) % n;
+    if (idx != recent_for_) {
+      recent_for_ = idx;
+      recent_.items = size_t(idx) < cx.systems.size() ? recent_states(cx.systems[size_t(idx)], std::time(nullptr), 3) : std::vector<RecentItem>();
+      changed = true;
+    }
+  }
+  return anim_ || changed;
 }
 
 void CarouselScreen::draw(Ctx& cx, std::vector<Op>& out) {
-  system_view(cx.th, cx.assets, cx.common, cx.w, cx.h, cx.items, target_, cam_, cx.status, out);
+  const long n = long(cx.items.size());
+  const long idx = n > 0 ? ((long(target_) % n) + n) % n : -1;
+  const bool show = !anim_ && idx >= 0 && idx == recent_for_;  // the row belongs to the system the carousel stopped on
+  recent_.decode_inline = !cx.async_covers;
+  system_view(cx.th, cx.assets, cx.common, cx.w, cx.h, cx.items, target_, cam_, cx.status, show ? &recent_ : nullptr, out);
+  if (show && recent_.box_w > 0 && cx.async_covers) {
+    // the decoder keeps only the newest request: ask for one screenshot per frame, the next one when this one lands
+    for (const RecentItem& it : recent_.items) {
+      ImgId id;
+      if (covers::failed(it.shot) || covers::ready(cx.assets, it.shot, recent_.box_w, recent_.box_h, id)) continue;
+      covers::request(cx.assets, cx.sv->jobs, it.shot, recent_.box_w, recent_.box_h);
+      break;
+    }
+  }
 }
 
 ListScreen::ListScreen(size_t system_index, Ctx& cx) : si_(system_index), lines_(size_t(cx.th.f("listLines"))), settle_(kSettleSeconds) {
   cx.open_system(si_);  // the gamelist is read when the user enters the system
-  for (const Game& g : cx.systems[si_].games) names_.push_back(g.name);
+  const std::time_t now = std::time(nullptr);
+  for (const Game& g : cx.systems[si_].games) {
+    names_.push_back(g.name);
+    marks_.push_back(played_ago(g.meta.lastplayed, now));
+  }
   if (!names_.empty() && oscontract::selected_listening("game-selected")) sel_wait_ = 0;  // the first game counts as selected on entry
 }
 
@@ -192,7 +237,7 @@ void ListScreen::draw(Ctx& cx, std::vector<Op>& out) {
     d_.desc_time = settled ? settle_ - kSettleSeconds : -1.0;
     d_.decode_inline = !cx.async_covers;
   }
-  list_view(cx.th, cx.assets, cx.common, cx.w, cx.h, cx.systems[si_].fullname, names_, cur_, cx.status, d_have_ ? &d_ : nullptr, out);
+  list_view(cx.th, cx.assets, cx.common, cx.w, cx.h, cx.systems[si_].fullname, names_, cur_, cx.status, d_have_ ? &d_ : nullptr, &marks_, out);
   max_scroll_ = d_have_ ? d_.desc_max_scroll : 0;
   // the cover is decoded on the job thread; its `done` inserts it and the loop redraws (covers.hpp)
   if (d_have_ && d_.cover_missing) covers::request(cx.assets, cx.sv->jobs, d_.image, d_.cover_w, d_.cover_h);

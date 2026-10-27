@@ -2,7 +2,7 @@
 // `oscontract::quit(Mode)` / `oscontract::suspend()`: the system command itself runs after the window is gone (`finish`), and
 // `Transition::quit()` is what ends the loop (device and harness alike).
 //
-//   RESTART EMULATIONSTATION  Mode::Quit      exit 0, systemd (Restart=always) starts the frontend again
+//   RESTART THE FRONTEND  Mode::Quit      exit 0, systemd (Restart=always) starts the frontend again
 //   RESTART SYSTEM            Mode::Reboot    `reboot.please` + shutdown -r now
 //   SUSPEND SYSTEM            oscontract::suspend()  (systemctl suspend); only where ES offers it (pm-suspend exists)
 //   SHUTDOWN SYSTEM           Mode::Shutdown  `shutdown.please` + shutdown -P -h now
@@ -39,7 +39,7 @@ std::unique_ptr<Screen> make_quit_menu() {
   s.title = tr("QUIT");
   s.title_key = N_("QUIT");
   s.build = [](MenuBuilder& m, Ctx&) {
-    power(m, tr("RESTART EMULATIONSTATION"), "restart", tr("REALLY RESTART EMULATIONSTATION?"), [](Ctx&) { return leave(oscontract::Mode::Quit); });
+    power(m, tr("RESTART THE FRONTEND"), "restart", tr("REALLY RESTART THE FRONTEND?"), [](Ctx&) { return leave(oscontract::Mode::Quit); });
     power(m, tr("RESTART SYSTEM"), "restart", tr("REALLY RESTART?"), [](Ctx&) { return leave(oscontract::Mode::Reboot); });
     if (oscontract::suspend_supported())
       power(m, tr("SUSPEND SYSTEM"), "shutdown", tr("REALLY SUSPEND ?"), [](Ctx&) {

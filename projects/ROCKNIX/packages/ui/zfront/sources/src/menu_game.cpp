@@ -16,8 +16,8 @@ using namespace detail;
 
 std::unique_ptr<Screen> make_game() {
   MenuSpec spec;
-  spec.title = tr("GAME SETTINGS");
-  spec.title_key = N_("GAME SETTINGS");
+  spec.title = tr("GAMES");
+  spec.title_key = N_("GAMES");
   spec.build = [](MenuBuilder& m, Ctx& cx) {
     const FeatureDb& db = features();
     Sec s(m);

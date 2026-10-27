@@ -24,6 +24,8 @@
 // script (same one the keys and 006-display use) for the backlight. Nothing here starts a thread or a process by itself.
 #include "menu_ui.hpp"
 
+#include "menu_groups.hpp"
+
 #include <dirent.h>
 
 #include <algorithm>
@@ -145,14 +147,15 @@ void save_es(Ctx& cx) {
   if (!cx.es.save(&err)) cx.sv->toasts.push(tr("Could not save the settings"));
 }
 
-std::unique_ptr<Screen> make_ui_menu() {
+MenuSpec make_ui_spec(unsigned parts) {
   MenuSpec s;
   s.title = tr("USER INTERFACE SETTINGS");
   s.title_key = N_("USER INTERFACE SETTINGS");
-  s.build = [](MenuBuilder& m, Ctx& cx) {
+  s.build = [parts](MenuBuilder& m, Ctx& cx) {
+    using namespace ui_part;
     // ---- language (live: the catalogs are mapped, the menus rebuild with the new strings)
     std::vector<Option> langs = available_language_options(ui_language_options());
-    if (langs.size() > 1) {
+    if ((parts & kLang) && langs.size() > 1) {
       m.header(tr("APPEARANCE"));
       m.choice(
            tr("LANGUAGE (REGION)"), langs, [&cx, langs] { return selected_language(langs, cx.conf.get_or("system.language", "")); },
@@ -168,19 +171,22 @@ std::unique_ptr<Screen> make_ui_menu() {
     }
 
     // ---- controls
+    if (parts & kControl) {
     m.header(tr("CONTROL OPTIONS"));
     m.toggle(
-         tr("SWITCH CONFIRM & CANCEL BUTTONS IN EMULATIONSTATION"), [&cx] { return cx.es.get_bool("InvertButtons", true); },
+         tr("SWITCH CONFIRM & CANCEL BUTTONS"), [&cx] { return cx.es.get_bool("InvertButtons", true); },
          [&cx](bool on) {
            cx.es.set_bool("InvertButtons", on);
            save_es(cx);
            if (cx.pad) cx.pad->set_invert_buttons(on);
          })
         .hint(tr("Switches the South and East buttons' functionality"));
+    }
 
     // ---- display
-    m.header(tr("DISPLAY OPTIONS"));
-    if (std::optional<Backlight> bl = find_backlight()) {
+    if (parts & (kBright | kDisplay)) m.header(tr("DISPLAY OPTIONS"));
+    else if (parts & kTopBar) m.header(tr("TOP BAR"));
+    if (std::optional<Backlight> bl = (parts & kBright) ? find_backlight() : std::nullopt) {
       Backlight b = *bl;
       m.slider(
            tr("SCREEN BRIGHTNESS"), 5, 100, 1, [&cx, b] { return read_percent(b, cx); },
@@ -192,14 +198,14 @@ std::unique_ptr<Screen> make_ui_menu() {
           // stores system.brightness (what the keys, 006-display and sleep.sh read) through the same script they use
           .commit([&cx](int v) { cx.sv->cmd.spawn("brightness set " + std::to_string(v)); });
     }
-    m.toggle(
+    if (parts & (kDisplay | kTopBar)) m.toggle(
         tr("SHOW CLOCK"), [&cx] { return cx.es.get_bool("DrawClock", true); },
         [&cx](bool on) {
           cx.es.set_bool("DrawClock", on);
           save_es(cx);
           ui_prefs::reapply(cx);
         });
-    if (ui_prefs::has_battery())
+    if ((parts & (kDisplay | kTopBar)) && ui_prefs::has_battery())
       m.choice(
           tr("SHOW BATTERY STATUS"), {{"", tr("NO")}, {"icon", tr("ICON")}, {"text", tr("ICON AND TEXT")}},
           [&cx] {
@@ -215,7 +221,8 @@ std::unique_ptr<Screen> make_ui_menu() {
           });
 
     // ---- screensaver: oscontract starts it when ScreenSaverTime ms pass without input (0 = never)
-    m.header(tr("SCREENSAVER SETTINGS"));
+    if (!(parts & kSaver)) return;
+    if (!(parts & kNoHdr)) m.header(tr("SCREENSAVER SETTINGS"));
     m.slider(
          tr("START SCREENSAVER AFTER"), 0, 120, 1, [&cx] { return int(std::min(std::max((cx.es.get_int("ScreenSaverTime", 300000) + 30000) / 60000, 0L), 120L)); },
          [&cx](int v) { cx.es.set_int("ScreenSaverTime", long(v) * 60000); })
@@ -238,12 +245,14 @@ std::unique_ptr<Screen> make_ui_menu() {
           });
     }
   };
-  return std::make_unique<LangMenu>(std::move(s));
+  return s;
 }
 
 }  // namespace
 
-ZF_REGISTER_SCREEN("menu.ui", [](Ctx&, const std::string&) { return make_ui_menu(); });
+MenuSpec ui_spec(unsigned parts) { return make_ui_spec(parts); }
+
+ZF_REGISTER_SCREEN("menu.ui", [](Ctx&, const std::string&) { return std::make_unique<LangMenu>(make_ui_spec(ui_part::kAll)); });
 
 void ui_reset_dry_state() { g_dry_percent.reset(); }
 

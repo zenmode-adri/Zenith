@@ -1,3 +1,4 @@
+#include "menu_groups.hpp"
 #include "menu_sound.hpp"
 
 #include <unistd.h>
@@ -128,7 +129,7 @@ void persist(Ctx& cx, const char* key, const std::string& v) {
   if (!cx.conf.persist(key, v)) save_failed(cx);
 }
 
-std::unique_ptr<Screen> make_sound(Ctx& cx) {
+MenuSpec make_sound_spec(Ctx& cx, unsigned parts) {
   load_volume(cx, true);  // hardware keys write audio.volume behind our back: start from the file
   auto st = std::make_shared<St>();
   {
@@ -142,12 +143,16 @@ std::unique_ptr<Screen> make_sound(Ctx& cx) {
   MenuSpec s;
   s.title = tr("SOUND SETTINGS");
   s.title_key = N_("SOUND SETTINGS");
-  s.build = [st](MenuBuilder& m, Ctx& cx) {
-    const bool has_volume = have_tool("volume");
-    const bool has_output = have_tool("set-audio") && st->loaded && (!st->devs.empty() || !st->profs.empty());
-    if (has_volume || has_output) m.header(tr("VOLUME"));
+  s.build = [st, parts](MenuBuilder& m, Ctx& cx) {
+    namespace sp = snd_part;
+    const bool has_volume = have_tool("volume") && (parts & (sp::kQuick | sp::kVol));
+    const bool has_overlay = have_tool("volume") && (parts & (sp::kVol | sp::kOverlay));
+    const bool has_output = (parts & sp::kAudio) && have_tool("set-audio") && st->loaded && (!st->devs.empty() || !st->profs.empty());
+    if ((parts & (sp::kVol | sp::kAudio | sp::kOverlay)) && (has_volume || has_output || has_overlay)) m.header((parts & sp::kVol) ? tr("VOLUME") : tr("AUDIO"));
     if (has_volume) {
       m.slider(tr("SYSTEM VOLUME"), 0, 100, 1, [&cx] { return volume(cx); }, [&cx](int v) { set_volume(cx, v); }).unit("%");
+    }
+    if (has_overlay) {
       m.toggle(tr("SHOW OVERLAY WHEN VOLUME CHANGES"), [&cx] { return popup(cx); }, [&cx](bool b) {
         cx.es.set_bool("VolumePopup", b);
         std::string err;
@@ -196,19 +201,20 @@ std::unique_ptr<Screen> make_sound(Ctx& cx) {
             .hint(tr("Available options can change depending on current audio output."));
     }
 
-    m.header(tr("SOUNDS"));
+    if (!(parts & sp::kBatt)) return;
+    m.header((parts & (sp::kVol | sp::kAudio)) ? tr("SOUNDS") : tr("BATTERY WARNING"));
     m.toggle(tr("ENABLE AUDIBLE BATTERY WARNING"), [&cx] { return cx.conf.get_bool("system.battery.warning", false); },
              [&cx](bool b) { persist(cx, "system.battery.warning", b ? "1" : "0"); });
     m.slider(tr("BATTERY WARNING THRESHOLD"), 0, 50, 1, [st] { return st->threshold; }, [st](int v) { st->threshold = v; })
         .unit("%")
         .commit([st, &cx](int v) { persist(cx, "system.battery.warning_threshold", std::to_string(v)); });
   };
-  s.on_open = [st](Ctx& cx, const Refresh& r) {
+  s.on_open = [st, parts](Ctx& cx, const Refresh& r) {
     vol().refresh = r;
-    if (have_tool("set-audio")) load_lists(st, cx.sv.get(), r, true);
+    if ((parts & snd_part::kAudio) && have_tool("set-audio")) load_lists(st, cx.sv.get(), r, true);
   };
   s.on_close = [](Ctx&) { vol().refresh = nullptr; };
-  return make_menu(std::move(s));
+  return s;
 }
 
 }  // namespace
@@ -308,6 +314,8 @@ std::vector<Option> parse_audio_list(std::string_view text, bool profiles) {
 
 }  // namespace sound
 
-ZF_REGISTER_SCREEN("menu.sound", [](Ctx& cx, const std::string&) { return sound::make_sound(cx); });
+MenuSpec sound_spec(Ctx& cx, unsigned parts) { return sound::make_sound_spec(cx, parts); }
+
+ZF_REGISTER_SCREEN("menu.sound", [](Ctx& cx, const std::string&) { return make_menu(sound::make_sound_spec(cx, snd_part::kAll)); });
 
 }  // namespace zf

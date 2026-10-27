@@ -404,6 +404,7 @@ int main() {
     };
     CHECK(find("CONTROLLER MAPPING") >= 0);
     CHECK(find("AUTOCONFIGURE RETROARCH HOTKEYS") >= 0);
+    CHECK(find("SWITCH CONFIRM & CANCEL BUTTONS") >= 0);  // moved here from USER INTERFACE SETTINGS
     CHECK(find("retrogame_joypad") >= 0 && find("Some BT Pad") >= 0);
     CHECK(find("ENABLE RUMBLE") < 0);                  // no sysfs file: hidden
     CHECK(find("ENABLE BLUETOOTH") >= 0);

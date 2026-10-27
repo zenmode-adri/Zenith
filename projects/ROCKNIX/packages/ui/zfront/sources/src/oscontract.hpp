@@ -70,7 +70,7 @@ std::string kill_target();
 
 // ---- quit / suspend ---------------------------------------------------------------------------------------------------
 /// ES `QuitMode`. `Quit` is "leave the frontend": exit 0 and systemd (Restart=always) starts it again; it is also what the
-/// menu entry "RESTART EMULATIONSTATION" does. `Restart` additionally touches restart.please.
+/// menu entry "RESTART THE FRONTEND" does. `Restart` additionally touches restart.please.
 enum class Mode { Quit, Restart, Reboot, Shutdown, FastReboot, FastShutdown };
 /// Main thread. Like `Utils::Platform::quitES`: Reboot/Shutdown fire `quit <mode>` (synchronous) and `<mode>` now, remember the
 /// mode, and ask the loop to leave (SDL_QUIT). The system command runs in `finish()`, after the window is gone.

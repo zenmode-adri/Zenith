@@ -447,7 +447,7 @@ int main() {
     std::unique_ptr<Screen> s = Registry::instance().make("menu.game", cx, "");
     Menu* m = as_menu(s);
     m->rebuild(cx);
-    CHECK_EQ(m->title(), std::string("GAME SETTINGS"));
+    CHECK_EQ(m->title(), std::string("GAMES"));
     int as = find(*m, "AUTO SAVE/LOAD");
     CHECK(as >= 0);
     m->entry(size_t(as)).set_b(true);

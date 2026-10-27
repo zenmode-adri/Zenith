@@ -78,7 +78,7 @@ int main() {
     for (const char* n : {"menu.scraper", "menu.scraper.systems", "menu.scraper.options", "menu.scraper.account", "menu.scraper.run"}) CHECK(Registry::instance().has(n));
     bool row = false;
     for (const MainRow& r : main_rows())
-      if (r.screen == "menu.scraper") row = true;
+      if (r.screen == "menu.g.library") row = true;  // the scraper is reached through LIBRARY
     CHECK(row);
   }
 

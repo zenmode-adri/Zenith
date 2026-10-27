@@ -150,6 +150,9 @@ class MenuBuilder {
   Entry& header(std::string label);
   Entry& separator();
 
+  /// Rows added so far (a group of menus can tell whether a part showed anything).
+  size_t count() const { return out_.size(); }
+
   Ctx& cx;
   Refresh refresh;
 

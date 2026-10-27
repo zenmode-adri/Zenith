@@ -100,6 +100,13 @@ std::unique_ptr<Screen> make_page() {
     m.header(tr("SETTINGS"));
     m.toggle(tr("AUTOCONFIGURE RETROARCH HOTKEYS"), [&cx] { return conf_bool(cx, "system.autohotkeys"); },
              [&cx](bool b) { conf_set(cx, "system.autohotkeys", b); });
+    m.toggle(
+         tr("SWITCH CONFIRM & CANCEL BUTTONS"), [&cx] { return cx.es.get_bool("InvertButtons", true); },
+         [&cx](bool on) {
+           es_set(cx, "InvertButtons", on);
+           if (cx.pad) cx.pad->set_invert_buttons(on);
+         })
+        .hint(tr("Switches the South and East buttons' functionality"));
     m.action(tr("CONTROLLER MAPPING"), [] { return mapping_intro([](Ctx&) { return Transition::open("menu.controllers.detect"); }); });
 
     std::string rumble = rumble_path();

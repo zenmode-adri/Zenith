@@ -11,6 +11,7 @@
 
 #include "detailed.hpp"
 #include "gfx.hpp"
+#include "recent.hpp"
 #include "status.hpp"
 #include "theme.hpp"
 
@@ -39,13 +40,21 @@ const HelpPrompts& list_help();
 void status_bar(const Theme& th, Assets& a, float w, float h, const Status& st, std::vector<Op>& ops);
 void help_bar(const Theme& th, Assets& a, float w, float h, const HelpPrompts& prompts, std::vector<Op>& ops);
 
+/// The "continue playing" row under the carousel. `items` is what to show; `system_view` sets `box_w x box_h` to the size the
+/// screenshots must be decoded at (the caller asks `covers::request`), or 0 when the row did not fit on this screen.
+struct RecentRow {
+  std::vector<RecentItem> items;
+  uint32_t box_w = 0, box_h = 0;
+  bool decode_inline = false;  // harness and tests: decode in `system_view` (no job thread)
+};
+
 /// `cam` is the (possibly fractional) carousel position; `cursor_abs` the unwrapped selected item.
 void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, const std::vector<SystemItem>& items, int cursor_abs, float cam,
-                 const Status& status, std::vector<Op>& ops);
+                 const Status& status, RecentRow* recent, std::vector<Op>& ops);
 
 /// Game list (theme `basic, detailed` textlist): header with avatar and system name, up to `listLines` rows with the
 /// pill selector, the selected game's column (name only, or `detail` through `detailed_column`), status and help bars.
 void list_view(const Theme& th, Assets& a, const Common& c, float w, float h, const std::string& system_name, const std::vector<std::string>& names,
-               size_t cursor, const Status& status, const DetailedData* detail, std::vector<Op>& ops);
+               size_t cursor, const Status& status, const DetailedData* detail, const std::vector<std::string>* marks, std::vector<Op>& ops);
 
 }  // namespace zf

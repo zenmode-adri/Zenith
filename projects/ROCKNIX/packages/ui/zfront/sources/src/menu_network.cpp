@@ -499,8 +499,8 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
 std::unique_ptr<Screen> make_network() {
   auto st = std::make_shared<NetState>();
   MenuSpec s;
-  s.title = tr("NETWORK SETTINGS");
-  s.title_key = N_("NETWORK SETTINGS");
+  s.title = tr("NETWORK");
+  s.title_key = N_("NETWORK");
   s.build = [st](MenuBuilder& m, Ctx& cx) { build_network(m, cx, st); };
   s.on_open = [](Ctx& cx, const Refresh& refresh) {
     // GuiMenu patch 0016: scan in the background while the user is still on this menu, so WI-FI NETWORKS opens already filled.

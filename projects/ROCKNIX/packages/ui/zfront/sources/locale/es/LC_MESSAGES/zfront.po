@@ -664,11 +664,11 @@ msgid "WI-FI KEY"
 msgstr "Clave Wi-Fi"
 
 #: src/menu_quit.cpp
-msgid "REALLY RESTART EMULATIONSTATION?"
+msgid "REALLY RESTART THE FRONTEND?"
 msgstr "¿Seguro que quieres reiniciar la interfaz?"
 
 #: src/menu_quit.cpp
-msgid "RESTART EMULATIONSTATION"
+msgid "RESTART THE FRONTEND"
 msgstr "Reiniciar la interfaz"
 
 #: src/menu_scraper.cpp
@@ -1125,7 +1125,7 @@ msgstr "Copia de seguridad de la configuración"
 
 #: src/menu_system_info.cpp
 msgid ""
-"WARNING THIS WILL RESTART EMULATIONSTATION!\n"
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
 "\n"
 "AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
 "\n"
@@ -1544,3 +1544,45 @@ msgstr "No queda espacio en la tarjeta"
 #: src/scraper_run.cpp
 msgid "SCRAPING STOPPED"
 msgstr "Escrapeo detenido"
+
+msgid "SCREEN & SOUND"
+msgstr "Pantalla y sonido"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "Batería y rendimiento"
+
+msgid "LIBRARY"
+msgstr "Biblioteca"
+
+msgid "BATTERY WARNING"
+msgstr "Aviso de batería"
+
+msgid "SCREEN"
+msgstr "Pantalla"
+
+msgid "AUDIO"
+msgstr "Audio"
+
+msgid "LANGUAGE & TIME"
+msgstr "Idioma y hora"
+
+msgid "TOP BAR"
+msgstr "Barra superior"
+
+msgid "IDLE"
+msgstr "Inactividad"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "Intercambiar los botones de confirmar y cancelar"
+
+msgid "%i min ago"
+msgstr "hace %i min"
+
+msgid "%i h ago"
+msgstr "hace %i h"
+
+msgid "%i d ago"
+msgstr "hace %i d"
+
+msgid "CONTINUE PLAYING"
+msgstr "Seguir jugando"

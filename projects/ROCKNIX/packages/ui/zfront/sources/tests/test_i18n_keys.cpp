@@ -324,24 +324,21 @@ int main() {
     CHECK_EQ(std::string(i18n::ctr("joystick", "D-PAD UP")), std::string("D-PAD ARRIBA"));
     CHECK_EQ(std::string(i18n::ntr("%i GAME", "%i GAMES", 1)), std::string("%i JUEGO"));
     CHECK_EQ(std::string(i18n::ntr("%i GAME", "%i GAMES", 14)), std::string("%i JUEGOS"));
-    // the carousel and list help bars (capitals, as before) follow the language and come back when it changes
+    // the carousel and list help bars (sentence case, few actions) follow the language and come back when it changes
     const HelpPrompts& sh = system_help();
-    CHECK_EQ(sh.size(), size_t(5));
-    CHECK_EQ(std::string(sh[0].second), std::string("MEN\xc3\x9a"));
-    CHECK_EQ(std::string(sh[1].second), std::string("BARRA DE NAVEGACI\xc3\x93N"));
-    CHECK_EQ(std::string(sh[2].second), std::string("ALEATORIO"));
+    CHECK_EQ(sh.size(), size_t(3));
+    CHECK_EQ(std::string(sh[2].second), std::string("Menú"));
     const HelpPrompts& lh = list_help();
-    CHECK_EQ(lh.size(), size_t(6));
-    CHECK_EQ(std::string(lh[4].second), std::string("OPCIONES DE JUEGO"));
-    CHECK_EQ(std::string(lh[5].second), std::string("INICIAR"));
+    CHECK_EQ(lh.size(), size_t(4));
+    CHECK_EQ(std::string(lh[0].second), std::string("Iniciar"));
+    CHECK_EQ(std::string(lh[2].second), std::string("Opciones de juego"));
   }
   CHECK(i18n::set_language("en_US", both));
   {
     const HelpPrompts& sh = system_help();
-    CHECK_EQ(std::string(sh[0].second), std::string("MENU"));
-    CHECK_EQ(std::string(sh[1].second), std::string("NAVIGATION BAR"));
-    CHECK_EQ(std::string(sh[4].second), std::string("CHOOSE"));
-    CHECK_EQ(std::string(list_help()[5].second), std::string("LAUNCH"));
+    CHECK_EQ(std::string(sh[0].second), std::string("Choose"));
+    CHECK_EQ(std::string(sh[2].second), std::string("Menu"));
+    CHECK_EQ(std::string(list_help()[0].second), std::string("Launch"));
   }
   // another language: zfront has no catalog for it, its keys show in English (sentence case), ES's still translate
   if (!real.empty() && i18n::set_language("fr", both)) {

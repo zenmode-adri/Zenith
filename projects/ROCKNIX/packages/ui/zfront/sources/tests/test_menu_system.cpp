@@ -13,6 +13,8 @@
 #include "app.hpp"
 #include "check.hpp"
 #include "menu.hpp"
+#include "menu_groups.hpp"
+#include "menu_sound.hpp"
 #include "menu_system.hpp"
 #include "registry.hpp"
 #include "ui_dialogs.hpp"
@@ -533,6 +535,85 @@ int main() {
     put_file("/root/storage/.config/profile.d/015-rk817_config", "DEVICE_RK817_FUEL_GAUGE=\"true\"\n");
     std::unique_ptr<Screen> h3;
     CHECK(has(*open(h3, cx, "menu.system.reset"), "RESET BATTERY FUEL GAUGE"));
+  }
+
+  // ---- group screens: the same rows, grouped by what the person wants to do
+  {
+    Ctx cx;
+    make_console(cx);
+    zf::sound::env().fake = true;  // volume + audio tools "installed"
+    for (const char* n : {"menu.g.screen", "menu.g.panel", "menu.g.power", "menu.g.power.adv", "menu.g.library", "menu.g.system", "menu.g.lang", "menu.g.system.adv"})
+      CHECK(Registry::instance().has(n));
+    CHECK(!Registry::instance().has("menu.g.interface"));  // clock and battery went to SCREEN & SOUND, the buttons to CONTROLLER
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.g.screen");
+    for (const char* l : {"SCREEN BRIGHTNESS", "PANEL ADJUSTMENT", "SHOW OVERLAY WHEN VOLUME CHANGES", "LED COLOR", "JOYSTICK LED", "SHOW CLOCK"}) CHECK(has(*m, l));
+    // the volume is the hardware buttons' job; the panel sliders are one level down
+    for (const char* l : {"SYSTEM VOLUME", "GAMMA", "HUE", "DEFAULT SCALING GOVERNOR", "ENABLE CPU OVERCLOCK", "TIMEZONE", "ENABLE AUDIBLE BATTERY WARNING", "START SCREENSAVER AFTER",
+                          "SWITCH CONFIRM & CANCEL BUTTONS"})
+      CHECK(!has(*m, l));
+    CHECK(find(*m, "SCREEN BRIGHTNESS") < find(*m, "SHOW OVERLAY WHEN VOLUME CHANGES"));  // (the audio output lists need the real scripts)
+    CHECK(find(*m, "SHOW OVERLAY WHEN VOLUME CHANGES") < find(*m, "LED COLOR"));
+    CHECK(find(*m, "LED COLOR") < find(*m, "SHOW CLOCK"));
+    std::unique_ptr<Screen> hp;
+    m = open(hp, cx, "menu.g.panel");
+    for (const char* l : {"GAMMA", "CONTRAST", "SATURATION", "HUE"}) CHECK(has(*m, l));
+    CHECK(!has(*m, "SCREEN BRIGHTNESS"));
+
+    std::unique_ptr<Screen> h2;
+    m = open(h2, cx, "menu.g.power");
+    for (const char* l : {"ENABLE AUDIBLE BATTERY WARNING", "BATTERY WARNING THRESHOLD", "DEFAULT SCALING GOVERNOR", "DEFAULT GPU SCALING GOVERNOR", "DEVICE SUSPEND MODE",
+                          "START SCREENSAVER AFTER", "SCREENSAVER TYPE", "ADVANCED"})
+      CHECK(has(*m, l));
+    for (const char* l : {"ENABLE CPU OVERCLOCK", "SYSTEM VOLUME", "SCREEN BRIGHTNESS"}) CHECK(!has(*m, l));
+    // what the console does with its power: governors, then idle (suspend, screensaver), then the warning
+    CHECK(find(*m, "DEFAULT SCALING GOVERNOR") < find(*m, "DEVICE SUSPEND MODE"));
+    CHECK(find(*m, "DEVICE SUSPEND MODE") < find(*m, "START SCREENSAVER AFTER"));
+    CHECK(find(*m, "START SCREENSAVER AFTER") < find(*m, "ENABLE AUDIBLE BATTERY WARNING"));
+    std::unique_ptr<Screen> h3;
+    m = open(h3, cx, "menu.g.power.adv");
+    CHECK(has(*m, "ENABLE CPU OVERCLOCK"));
+    CHECK(has(*m, "ENABLE MANGOHUD OVERLAY"));
+    CHECK(!has(*m, "DEFAULT SCALING GOVERNOR"));
+
+    std::unique_ptr<Screen> h4;
+    m = open(h4, cx, "menu.g.library");
+    for (const char* l : {"GAME COLLECTION SETTINGS", "SCRAPER", "AUTODETECT GAMES CARD", "EJECT MICROSD CARD"}) CHECK(has(*m, l));
+    CHECK(!has(*m, "TIMEZONE"));
+
+    std::unique_ptr<Screen> h6;
+    m = open(h6, cx, "menu.g.system");
+    for (const char* l : {"INFORMATION", "LANGUAGE & TIME", "UPDATES & DOWNLOADS", "SYSTEM MANAGEMENT AND RESET", "ADVANCED"}) CHECK(has(*m, l));
+    for (const char* l : {"LANGUAGE (REGION)", "KEYBOARD LAYOUT", "TIMEZONE", "ENABLE CPU OVERCLOCK", "SCREEN BRIGHTNESS", "ROOT PASSWORD"}) CHECK(!has(*m, l));
+    CHECK(find(*m, "INFORMATION") < find(*m, "LANGUAGE & TIME"));
+    CHECK(find(*m, "LANGUAGE & TIME") < find(*m, "UPDATES & DOWNLOADS"));
+    std::unique_ptr<Screen> hl;
+    m = open(hl, cx, "menu.g.lang");
+    for (const char* l : {"LANGUAGE (REGION)", "KEYBOARD LAYOUT", "TIMEZONE"}) CHECK(has(*m, l));
+    std::unique_ptr<Screen> h7;
+    m = open(h7, cx, "menu.g.system.adv");
+    CHECK(has(*m, "ROOT PASSWORD"));
+    CHECK(has(*m, "GPU DRIVER"));
+
+    // the main menu: only the groups (the volume and the brightness have hardware buttons)
+    std::unique_ptr<Screen> h8;
+    m = open(h8, cx, "menu.main");
+    for (const char* l : {"GAMES", "SCREEN & SOUND", "BATTERY & PERFORMANCE", "LIBRARY", "SYSTEM", "QUIT"}) CHECK(has(*m, l));
+    for (const char* l : {"SYSTEM VOLUME", "SCREEN BRIGHTNESS"}) CHECK(!has(*m, l));
+    CHECK_EQ(find(*m, "GAMES"), 0);  // no quick settings above the groups
+
+    // the section screens keep every row (ES order), so nothing that opens them changes
+    std::unique_ptr<Screen> h9;
+    m = open(h9, cx, "menu.system");
+    for (const char* l : {"SCREEN BRIGHTNESS", "ENABLE CPU OVERCLOCK", "DEVICE SUSPEND MODE", "LANGUAGE (REGION)", "ROOT PASSWORD", "SYSTEM MANAGEMENT AND RESET"}) CHECK(has(*m, l));
+
+    // a console without overclock: no ADVANCED row in BATTERY & PERFORMANCE
+    probe().env.erase("DEVICE_TURBO_MODE");
+    probe().env.erase("DEVICE_MANGOHUD_SUPPORT");
+    std::unique_ptr<Screen> h10;
+    m = open(h10, cx, "menu.g.power");
+    CHECK(!has(*m, "ADVANCED"));
+    zf::sound::env().fake = false;
   }
 
   // ---- fixture loader (review harness)

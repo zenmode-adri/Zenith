@@ -21,6 +21,9 @@ class CarouselScreen : public Screen {
   float anim_t_ = 0, anim_from_ = 0;
   /// System index the `system-selected` script event was last sent for (-1: none yet, also after coming back from a list).
   long announced_ = -1;
+  /// "Continue playing" row of the system the carousel stopped on (`recent_for_`; -1 = not read yet, also after coming back from a list).
+  RecentRow recent_;
+  long recent_for_ = -1;
 };
 
 class ListScreen : public Screen {
@@ -42,6 +45,8 @@ class ListScreen : public Screen {
   std::optional<float> detail_wake_in() const;
   size_t si_, cur_ = 0, lines_;
   std::vector<std::string> names_;
+  /// Per game: "12 min ago" when played in the last 30 days, else empty (computed when the list opens).
+  std::vector<std::string> marks_;
   /// Seconds since the cursor last moved; cover and description are skipped until it reaches `kSettleSeconds`, and
   /// the description scrolls with the time after that (`desc_scroll_offset`).
   double settle_;
