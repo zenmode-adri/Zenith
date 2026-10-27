@@ -3,13 +3,21 @@
 #include <SDL.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <map>
+#include <mutex>
+#include <thread>
+#include <vector>
 
 #include "idlewait.hpp"
 #include "launch.hpp"
 #include "oscontract.hpp"
 #include "sdlwl.hpp"
+#include "sound.hpp"
 
 namespace zf {
 
@@ -79,6 +87,199 @@ int ms_until(TimePoint t, TimePoint now, int cap) {
   return int(std::min<long long>(us / 1000 + 1, cap));
 }
 
+
+// Navigation sounds (sound.hpp): one SDL audio device, opened on demand on a worker thread (opening a PipeWire stream can take
+// 100+ ms; the cue that asked for it is skipped, as ES does) and closed after a few idle seconds, so that no audio stream stays
+// alive while nothing is heard. The wavs of the Zenith theme are 48 kHz mono 16 bit: the device is asked for exactly that and
+// SDL converts for the real output.
+//
+// Clean output: the device runs a callback that MIXES the cues that are playing (never cuts one short: a truncated waveform is
+// an audible click), every clip gets a 2 ms fade at both ends (the wavs start and end off zero), the sum is clamped, and a cue
+// that repeats (the scroll tick) is spaced at least 45 ms from the previous one, so holding a direction gives a steady tick
+// instead of a smear.
+class AudioOut {
+ public:
+  ~AudioOut() { shutdown(); }
+
+  void play(const std::string& wav, bool repeating) {
+    const int st = state_.load();
+    if (st == kClosed) {
+      if (Clock::now() >= retry_at_) start_open();
+      return;
+    }
+    if (st != kOpen) return;
+    Clip* c = clip(wav);
+    if (!c) return;
+    const TimePoint now = Clock::now();
+    if (repeating && now - c->last < kMinGap) return;
+    c->last = now;
+    {
+      std::lock_guard<std::mutex> g(mu_);
+      if (voices_.size() >= kMaxVoices) voices_.erase(voices_.begin());  // only past 4 cues at once
+      voices_.push_back({&c->pcm, 0});
+    }
+    idle_at_ = now + kIdle;
+  }
+
+  // when the idle close is due (none while the device is closed)
+  std::optional<TimePoint> deadline() const {
+    if (state_.load() != kOpen) return std::nullopt;
+    return idle_at_;
+  }
+  void tick(TimePoint now) {
+    if (state_.load() == kOpen && now >= idle_at_ && !playing()) close_now();
+  }
+
+  // The game is about to start and SDL video goes away. True when the device must outlive it: the launch sound is still
+  // playing and is not cut; `close_later` closes the device once it is heard (at most `max_ms`).
+  bool outlives_video() {
+    join_opener();
+    return state_.load() == kOpen;
+  }
+  void close_later(int max_ms) {
+    join_closer();
+    closer_ = std::thread([this, max_ms] {
+      const TimePoint end = Clock::now() + std::chrono::milliseconds(max_ms);
+      while (playing() && Clock::now() < end) SDL_Delay(15);
+      drop_device();
+    });
+  }
+  void join_closer() {
+    if (closer_.joinable()) closer_.join();
+  }
+  void shutdown() {
+    join_closer();
+    join_opener();
+    if (state_.load() == kOpen) drop_device();
+  }
+
+ private:
+  enum { kClosed, kOpening, kOpen };
+  static constexpr std::chrono::seconds kIdle{4};
+  static constexpr std::chrono::milliseconds kMinGap{45};
+  static constexpr size_t kMaxVoices = 4;
+  static constexpr size_t kFade = 96;  // samples: 2 ms at 48 kHz
+
+  struct Clip {
+    std::vector<int16_t> pcm;
+    TimePoint last{};
+  };
+  struct Voice {
+    const std::vector<int16_t>* pcm;
+    size_t pos;
+  };
+
+  bool playing() {
+    std::lock_guard<std::mutex> g(mu_);
+    return !voices_.empty();
+  }
+
+  // SDL audio thread: the sum of the cues that are playing (silence when there are none)
+  static void callback(void* self, Uint8* stream, int len) { static_cast<AudioOut*>(self)->mix(reinterpret_cast<int16_t*>(stream), size_t(len) / 2); }
+  void mix(int16_t* out, size_t n) {
+    std::lock_guard<std::mutex> g(mu_);
+    std::fill(out, out + n, int16_t(0));
+    for (Voice& v : voices_) {
+      const size_t take = std::min(n, v.pcm->size() - v.pos);
+      for (size_t i = 0; i < take; ++i) {
+        const int sum = int(out[i]) + int((*v.pcm)[v.pos + i]);
+        out[i] = int16_t(std::max(-32768, std::min(32767, sum)));
+      }
+      v.pos += take;
+    }
+    voices_.erase(std::remove_if(voices_.begin(), voices_.end(), [](const Voice& v) { return v.pos >= v.pcm->size(); }), voices_.end());
+  }
+
+  void join_opener() {
+    if (opener_.joinable()) opener_.join();
+  }
+  void start_open() {
+    join_opener();
+    state_.store(kOpening);
+    opener_ = std::thread([this] {
+      if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
+        std::fprintf(stderr, "zfront: sound: SDL audio: %s\n", SDL_GetError());
+        retry_at_ = Clock::now() + std::chrono::seconds(30);
+        state_.store(kClosed);
+        return;
+      }
+      SDL_AudioSpec want;
+      SDL_zero(want);
+      want.freq = 48000;
+      want.format = AUDIO_S16SYS;
+      want.channels = 1;
+      want.samples = 1024;  // 21 ms: room for a busy frame without an underrun (an underrun is a crackle)
+      want.callback = &AudioOut::callback;
+      want.userdata = this;
+      SDL_AudioSpec have;
+      dev_ = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
+      if (!dev_) {
+        std::fprintf(stderr, "zfront: sound: no audio device: %s\n", SDL_GetError());
+        SDL_QuitSubSystem(SDL_INIT_AUDIO);
+        retry_at_ = Clock::now() + std::chrono::seconds(30);
+        state_.store(kClosed);
+        return;
+      }
+      if (!logged_) std::fprintf(stderr, "zfront: sound: audio driver %s\n", SDL_GetCurrentAudioDriver());
+      logged_ = true;
+      SDL_PauseAudioDevice(dev_, 0);
+      idle_at_ = Clock::now() + kIdle;
+      state_.store(kOpen);
+    });
+  }
+  void drop_device() {
+    if (dev_) SDL_CloseAudioDevice(dev_);
+    dev_ = 0;
+    {
+      std::lock_guard<std::mutex> g(mu_);
+      voices_.clear();
+    }
+    SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    state_.store(kClosed);
+  }
+  void close_now() {
+    join_opener();
+    drop_device();
+  }
+  Clip* clip(const std::string& path) {
+    auto it = clips_.find(path);
+    if (it != clips_.end()) return it->second.pcm.empty() ? nullptr : &it->second;
+    Clip c;
+    SDL_AudioSpec spec;
+    Uint8* buf = nullptr;
+    Uint32 len = 0;
+    if (SDL_LoadWAV(path.c_str(), &spec, &buf, &len)) {
+      if (spec.freq == 48000 && spec.format == AUDIO_S16LSB && spec.channels == 1) {
+        c.pcm.resize(len / 2);
+        std::memcpy(c.pcm.data(), buf, c.pcm.size() * 2);
+        const size_t f = std::min(kFade, c.pcm.size() / 4);  // 2 ms ramps: the clip starts and ends at zero
+        for (size_t i = 0; i < f; ++i) {
+          const float g = float(i) / float(f);
+          c.pcm[i] = int16_t(float(c.pcm[i]) * g);
+          c.pcm[c.pcm.size() - 1 - i] = int16_t(float(c.pcm[c.pcm.size() - 1 - i]) * g);
+        }
+      } else {
+        std::fprintf(stderr, "zfront: sound: %s is not 48 kHz mono 16 bit: skipped\n", path.c_str());
+      }
+      SDL_FreeWAV(buf);
+    } else {
+      std::fprintf(stderr, "zfront: sound: %s: %s\n", path.c_str(), SDL_GetError());
+    }
+    Clip& slot = clips_[path];
+    slot = std::move(c);
+    return slot.pcm.empty() ? nullptr : &slot;
+  }
+
+  std::atomic<int> state_{kClosed};
+  SDL_AudioDeviceID dev_ = 0;
+  TimePoint idle_at_{}, retry_at_{};
+  std::map<std::string, Clip> clips_;
+  std::mutex mu_;
+  std::vector<Voice> voices_;
+  std::thread opener_, closer_;
+  bool logged_ = false;
+};
+
 }  // namespace
 
 bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::string& err) {
@@ -87,9 +288,11 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
   std::vector<SDL_Texture*> textures;
   bool first_open = true;
   IdleWaiter iw;
+  AudioOut audio;
   // Window + renderer + joystick subsystem. Called at start and again after every game (the window must NOT exist
   // while the emulator runs: it needs the display).
   auto open_video = [&](std::string& e) -> bool {
+    audio.join_closer();  // the launch sound of the last game must be gone before SDL starts again
     oscontract::before_video();  // Wayland app_id must be "emulationstation" (see oscontract.hpp)
     // GAMECONTROLLER only for its mapping database (reserve mapping of pads without an es_input.cfg entry); the pads are
     // never opened as controllers, so ignore its events
@@ -156,9 +359,15 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
     if (win) SDL_DestroyWindow(win);
     rd = nullptr;
     win = nullptr;
-    SDL_Quit();
+    if (audio.outlives_video()) {  // a cue is still playing (the launch sound): only video and joysticks go
+      SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+      audio.close_later(500);
+    } else {
+      SDL_Quit();
+    }
   };
   if (!open_video(err)) return false;
+  sound::set_player([&audio](sound::Cue cue, const std::string& wav) { audio.play(wav, cue == sound::Cue::Scroll); });
   // background counts wake the loop with a user event (SDL_PushEvent is thread-safe)
   Uint32 wake_type = SDL_RegisterEvents(1);
   // The event goes first and the eventfd second: `poll` returns on the eventfd and the loop must then find the event.
@@ -190,8 +399,42 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
   acts.reserve(8);
   bool dirty = true, first_logged = false, quit = false;
   TimePoint last = Clock::now();
+  // ZF_FRAMELOG=<file>: one line per presented frame (diagnostics for animation smoothness, off by default)
+  std::FILE* flog = nullptr;
+  if (const char* fp = std::getenv("ZF_FRAMELOG"); fp && *fp) flog = std::fopen(fp, "w");
+  TimePoint flog_prev = Clock::now();
+  // The main menu and the screens it opens are built and their textures made once, in idle moments shortly after start (see
+  // `App::warm`): the first opening of each used to cost 50-100 ms (text rendering + texture upload). Two steps per screen
+  // (images, then textures), `warm_step` counts them; done when it passes the list.
+  static const char* const kWarm[] = {"menu.main", "menu.g.screen", "menu.g.power", "menu.game", "menu.g.library", "menu.g.system"};
+  constexpr int kWarmSteps = int(sizeof(kWarm) / sizeof(kWarm[0])) * 2;
+  int warm_step = app.cx.ui_motion && !std::getenv("ZF_NOWARM") ? 0 : kWarmSteps;  // ZF_NOWARM=1: off (to measure the cold opening)
+  TimePoint warm_at = Clock::now() + std::chrono::milliseconds(2500);
+  std::vector<Op> warm_ops;
+  // The texture of image `id`, made from its pixels the first time it is needed (null: evicted or not available).
+  auto texture_for = [&](ImgId id) -> SDL_Texture* {
+    Assets& as = app.cx.assets;
+    if (textures.size() <= id) textures.resize(std::max<size_t>(as.count(), id + 1), nullptr);
+    if (as.evicted(id)) {
+      if (textures[id]) SDL_DestroyTexture(textures[id]);
+      textures[id] = nullptr;
+      return nullptr;
+    }
+    if (!textures[id]) {
+      if (!as.has_pixels(id)) return nullptr;  // cannot happen: textures are only dropped together with `forget_released`
+      const Img& im = as.img(id);
+      SDL_Texture* t = SDL_CreateTexture(rd, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, int(im.w), int(im.h));
+      if (!t) return nullptr;
+      SDL_UpdateTexture(t, nullptr, im.rgba.data(), int(im.w * 4));
+      SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND);
+      textures[id] = t;
+      as.release_pixels(id);  // the texture holds them now: do not keep a second copy in RAM (pinned images keep theirs)
+    }
+    return textures[id];
+  };
 
   while (!quit) {
+    if (pad) pad->set_profile(app.repeat_profile());
     // sleep until an event or the next deadline (status bar, key repeat); while animating, one frame at a time
     SDL_Event e;
     bool got = false;
@@ -214,8 +457,11 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
         }
         std::optional<TimePoint> qd = prep.next_deadline();  // cursor rest time of the idle-time preparation
         if (qd && (!dl || *qd < *dl)) dl = qd;
+        if (warm_step < kWarmSteps && (!dl || warm_at < *dl)) dl = warm_at;
         std::optional<TimePoint> sd2 = oscontract::idle_deadline(app.cx.es);  // screensaver timer
         if (sd2 && (!dl || *sd2 < *dl)) dl = sd2;
+        std::optional<TimePoint> ad = audio.deadline();  // closes the audio device after a few silent seconds
+        if (ad && (!dl || *ad < *dl)) dl = ad;
       }
       iw.set_keys_held(keys_down > 0);
       got = wait_event(iw, &e, dl ? ms_until(*dl, now, 60000) : -1);
@@ -265,6 +511,7 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
     }
     if (pad) pad->repeat_due(Clock::now(), acts);
     if (pad && pad->take_unconfigured() && app.open_controller_detect()) dirty = true;  // pad without mapping: suggest configuring it (ES)
+    audio.tick(Clock::now());
     oscontract::before_acts(app.cx.es, Clock::now(), acts, raw_input);  // screensaver start; the key that wakes it is dropped
     if (oscontract::take_redraw()) dirty = true;  // overlay on / off
     // jobs first: POST /launch arrives as a job `done` (request_launch); without this it would wait for the next event
@@ -336,13 +583,38 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
     TimePoint now = Clock::now();
     // screensaver on: the screens underneath are frozen (no animation frames, no timers); `last` follows so that the first
     // tick after waking does not see the whole sleep as one huge dt
-    if (!oscontract::idle().active() && app.tick(std::chrono::duration<float>(now - last).count())) dirty = true;
+    const float tick_dt = std::chrono::duration<float>(now - last).count();
+    if (!oscontract::idle().active() && app.tick(tick_dt)) dirty = true;
     last = now;
     if (app.poll_status(now)) dirty = true;
+    if (warm_step < kWarmSteps) {  // one step per idle moment, never while the person is pressing or something moves
+      if (raw_input || keys_down > 0 || app.animating()) {
+        warm_at = std::max(warm_at, now + std::chrono::milliseconds(600));
+      } else if (!dirty && now >= warm_at) {
+        const TimePoint w0 = Clock::now();
+        if (warm_step % 2 == 0) {
+          warm_ops = app.warm(kWarm[warm_step / 2]);
+        } else {
+          for (const Op& op : warm_ops)
+            if (op.kind == Op::Image) texture_for(op.id);
+          warm_ops.clear();
+          warm_ops.shrink_to_fit();
+        }
+        if (flog) {  // how long the loop was blocked by this step (ms) and the images held afterwards (MB)
+          std::fprintf(flog, "#WARM%d %.3f %.2f\n", warm_step, std::chrono::duration<double, std::milli>(Clock::now() - w0).count(),
+                       double(app.cx.assets.bytes()) / 1048576.0);
+          std::fflush(flog);
+        }
+        ++warm_step;
+        warm_at = Clock::now() + std::chrono::milliseconds(150);
+      }
+    }
     if (!dirty) continue;
     dirty = false;
 
+    const TimePoint f_t0 = Clock::now();
     const std::vector<Op>& ops = app.render();
+    const TimePoint f_t1 = Clock::now();
     Assets& as = app.cx.assets;
     SDL_SetRenderDrawColor(rd, 0, 0, 0, 255);
     SDL_RenderClear(rd);
@@ -365,23 +637,8 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
           SDL_RenderSetClipRect(rd, nullptr);
           break;
         case Op::Image: {
-          if (textures.size() <= op.id) textures.resize(std::max<size_t>(as.count(), op.id + 1), nullptr);
-          const Img& im = as.img(op.id);
-          if (as.evicted(op.id)) {
-            if (textures[op.id]) SDL_DestroyTexture(textures[op.id]);
-            textures[op.id] = nullptr;
-            break;
-          }
-          if (!textures[op.id]) {
-            if (!as.has_pixels(op.id)) break;  // cannot happen: textures are only dropped together with `forget_released`
-            SDL_Texture* t = SDL_CreateTexture(rd, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STATIC, int(im.w), int(im.h));
-            if (!t) break;
-            SDL_UpdateTexture(t, nullptr, im.rgba.data(), int(im.w * 4));
-            SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND);
-            textures[op.id] = t;
-            as.release_pixels(op.id);  // the texture holds them now: do not keep a second copy in RAM (pinned images keep theirs)
-          }
-          SDL_Texture* t = textures[op.id];
+          SDL_Texture* t = texture_for(op.id);
+          if (!t) break;
           SDL_SetTextureColorMod(t, op.color[0], op.color[1], op.color[2]);
           SDL_SetTextureAlphaMod(t, op.color[3]);
           SDL_Rect r = to_rect(op);
@@ -392,7 +649,15 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
         }
       }
     }
+    const TimePoint f_t2 = Clock::now();
     SDL_RenderPresent(rd);
+    if (flog) {  // tick dt, scene build, draw calls, present (blocks on vsync), gap since the previous present returned (all ms)
+      const TimePoint f_t3 = Clock::now();
+      auto ms = [](TimePoint a, TimePoint b) { return std::chrono::duration<double, std::milli>(b - a).count(); };
+      std::fprintf(flog, "%.3f %.3f %.3f %.3f %.3f\n", double(tick_dt) * 1000.0, ms(f_t0, f_t1), ms(f_t1, f_t2), ms(f_t2, f_t3), ms(flog_prev, f_t3));
+      std::fflush(flog);
+      flog_prev = f_t3;
+    }
     if (have_pending) {  // disk bookkeeping only once the first frame is on screen
       have_pending = false;
       launch::apply_after(app.cx, pending_sys, pending_game, pending);
@@ -412,7 +677,10 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
   }
   app.set_wake(nullptr);
   if (pad) pad->set_plug_sink(nullptr);
+  sound::set_player(nullptr);
   close_video();
+  audio.shutdown();
+  SDL_Quit();
   return ok;
 }
 

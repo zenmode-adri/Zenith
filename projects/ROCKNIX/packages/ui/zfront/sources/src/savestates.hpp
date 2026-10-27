@@ -105,4 +105,15 @@ Transition open_manager(Ctx& cx, size_t sys, size_t game);
 /// `savestates::plain_args` for game `game` of system `sys` of `cx` (empty on a bad index).
 std::string plain_args(Ctx& cx, size_t sys, size_t game);
 
+/// Launch of game `game` of system `sys` with the choice of the manager (`pick`, `slot` for Pick::Slot): the command, then `begin`
+/// (file preparation) once the game really starts, i.e. after the CheckBiosesAtLaunch question when it applies. `Transition::none()`
+/// on a bad index or an empty command.
+Transition launch_pick(Ctx& cx, size_t sys, size_t game, Pick pick, int slot);
+/// "Continue playing": the same as picking the state of `slot` (-1 = autosave) in the manager. When that state file is gone (only its
+/// screenshot is left) the game starts as a plain launch.
+Transition launch_state(Ctx& cx, size_t sys, size_t game, int slot);
+/// Index in `cx.systems[sys].games` of the game whose ROM file stem is `stem` (the name savestates are filed under); loads the gamelist
+/// of the system. False when the ROM is not there any more.
+bool find_game(Ctx& cx, size_t sys, const std::string& stem, size_t& game);
+
 }  // namespace zf::savestates

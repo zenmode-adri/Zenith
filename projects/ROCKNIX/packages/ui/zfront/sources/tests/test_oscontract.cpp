@@ -341,6 +341,7 @@ int main() {
     CHECK(suspend_supported());
     CHECK(suspend());
     CHECK(log_has(*sv, "systemctl suspend"));
+    CHECK_EQ(Paths().suspend_helper, string("/usr/lib/systemd/system-sleep/sleep"));  // the default: Zenith has no pm-suspend
   }
 
   // ---- inactivity / screensaver

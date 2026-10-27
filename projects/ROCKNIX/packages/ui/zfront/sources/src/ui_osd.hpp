@@ -24,7 +24,7 @@ void draw_osd(Ctx& cx, std::vector<Op>& out);
 
 /// Rectangle of the pill: the theme's volW/volH/volY. When it would cut the header hairline of the menu under it
 /// (`ui::header_box()`) it moves into the header band, centred on the title row; when it would then touch the title (long
-/// titles) it goes just below the hairline. Toasts stack below this slot.
+/// titles) it goes just below the hairline.
 struct OsdBox {
   float x = 0, y = 0, w = 0, h = 0;
 };

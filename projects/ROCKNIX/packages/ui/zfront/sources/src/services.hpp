@@ -57,9 +57,13 @@ class CmdRunner {
 std::string shell_quote(std::string_view s);
 
 // ---- toasts ---------------------------------------------------------------------------------------------------------
+/// How long a toast takes to come in and to go out (`cx.ui_motion`), seconds.
+constexpr float kToastIn = 0.16f, kToastOut = 0.14f;
+
 struct Toast {
   std::string text;
   std::chrono::steady_clock::time_point until;
+  std::chrono::steady_clock::time_point since{};  // when it was pushed
 };
 
 /// Short messages ("Saved", "WiFi connected"). Drawn by the app on top of every screen (toast.cpp).
@@ -71,6 +75,8 @@ class Toasts {
   /// Earliest expiry, to sleep until.
   std::optional<std::chrono::steady_clock::time_point> next_deadline() const;
   const std::deque<Toast>& items() const { return items_; }
+  /// True while some toast is coming in or going out (the loop keeps drawing frames for it).
+  bool moving(std::chrono::steady_clock::time_point now) const;
 
  private:
   std::deque<Toast> items_;

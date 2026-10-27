@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "launch.hpp"
+#include "launchcheck.hpp"
 #include "util.hpp"
 
 namespace zf::savestates {
@@ -439,6 +441,47 @@ Transition launch_request(Ctx& cx, size_t sys, size_t game) {
   bool show = mode == "1" || (mode == "2" && !list(s, g).empty());
   if (!show) return Transition::none();
   return Transition::open("menu.savestates", make_arg(s, g));
+}
+
+Transition launch_pick(Ctx& cx, size_t sys, size_t game, Pick pick, int slot) {
+  if (sys >= cx.systems.size() || game >= cx.systems[sys].games.size()) return Transition::none();
+  // `begin` copies state files and arms what `after_game` undoes, so it must run only when the game really starts: with
+  // CheckBiosesAtLaunch on and a BIOS missing, it waits for YES (NO leaves the files as they were)
+  auto go = [sys, game, pick, slot](Ctx& c) -> Transition {
+    if (sys >= c.systems.size() || game >= c.systems[sys].games.size()) return Transition::none();
+    const System& s = c.systems[sys];
+    const Game& gm = s.games[game];
+    std::vector<JoyInfo> joys;
+    if (c.pad) joys = c.pad->joysticks();
+    std::string cmd = launch::build_command(s, gm, c.conf.map(), joys);
+    if (cmd.empty()) return Transition::none();
+    cmd += begin(s, gm, c.conf.map(), pick, slot);
+    Transition t = Transition::launch(cmd);
+    t.sys = int(sys);
+    t.game = int(game);
+    return t;
+  };
+  if (launchcheck::bios_ok(cx, sys)) return go(cx);
+  return launchcheck::ask(go);
+}
+
+Transition launch_state(Ctx& cx, size_t sys, size_t game, int slot) {
+  if (sys >= cx.systems.size() || game >= cx.systems[sys].games.size()) return Transition::none();
+  bool exists = false;
+  for (const State& s : list(cx.systems[sys], cx.systems[sys].games[game])) exists = exists || s.slot == slot;
+  return launch_pick(cx, sys, game, !exists ? Pick::None : slot < 0 ? Pick::Auto : Pick::Slot, slot);
+}
+
+bool find_game(Ctx& cx, size_t sys, const std::string& stem, size_t& game) {
+  if (sys >= cx.systems.size()) return false;
+  cx.open_system(sys);
+  const auto& games = cx.systems[sys].games;
+  for (size_t i = 0; i < games.size(); ++i)
+    if (path_stem(games[i].path) == stem) {
+      game = i;
+      return true;
+    }
+  return false;
 }
 
 Transition open_manager(Ctx& cx, size_t sys, size_t game) {

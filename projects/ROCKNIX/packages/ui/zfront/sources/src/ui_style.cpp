@@ -356,6 +356,13 @@ void HelpBar::draw(Assets& a, const Theme& th, const Metrics& m, const Style& st
   help_pill(a, st, m.W, m.help_y, px, hi_, out);
 }
 
+float help_pill_top(Assets& a, const Theme& th, const Metrics& m) {
+  const float px = std::floor(fv(th, "fHelp", 0.025f) * m.H);
+  const float ih = std::round(a.letter_height(px) * 1.55f);
+  const float ph = std::round(ih * 1.85f);
+  return std::round(m.help_y - ph / 2.0f);
+}
+
 void help_pill(Assets& a, const Style& st, float W, float help_y, float px, std::vector<HelpItem>& it, std::vector<Op>& out) {
   static Shapes shapes;
   if (it.empty()) return;

@@ -368,8 +368,8 @@ std::unique_ptr<Screen> make_main() {
     });
   };
   s.on_close = [](Ctx& cx) {
-    if (!reload_needed()) return;
-    // The carousel is built at start. Whoever owns the system loader installs a handler; until then the change waits for a restart.
+    if (!reload_needed() || cx.system_loader) return;  // with a loader, `App` rebuilds the carousel when the menus are closed
+    // No system loader (demo systems, tests): the change waits for a restart.
     cx.sv->toasts.push(tr("Restart the front-end to apply the changes."), 3500);
   };
   return make_menu(std::move(s));

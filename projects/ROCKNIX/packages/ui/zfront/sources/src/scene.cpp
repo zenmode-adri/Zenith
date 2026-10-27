@@ -4,10 +4,12 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 #include <deque>
 
 #include "covers.hpp"
 #include "i18n.hpp"
+#include "motion.hpp"
 #include "services.hpp"
 #include "ui_prefs.hpp"
 #include "ui_style.hpp"
@@ -23,6 +25,18 @@ constexpr float kScaledSpacing = 1.21f;
 constexpr float kMaxLogoCount = 5.0f;
 
 const Color kWhite = {255, 255, 255, 255};
+
+/// 4:3 screens (640x480, 800x600): the theme's default block puts the carousel and the name under it so low that the "continue
+/// playing" row has no room (the band between the hairline and the help pill is ~0.15 of the height, the row needs ~0.2). The band
+/// above the carousel is free (~0.2 of the height between the status bar and the selected card), so both move up by this fraction of
+/// the screen height: the row then fits at the proportion it has on 720x720 (tiles ~0.1 of the height). Every other ratio keeps the theme's own positions (offset 0).
+/// The offset does not depend on whether the row has anything to show, so the carousel never jumps between systems.
+constexpr float kLift43 = 0.09f;
+
+float carousel_lift(float w, float h) {
+  const bool is43 = std::strcmp(ratio_name(unsigned(std::lround(w)), unsigned(std::lround(h))), "4/3") == 0;
+  return is43 ? std::round(kLift43 * h) : 0.0f;
+}
 
 /// Label drawn under the icon of the "auto" tiles (theme.xml `zs-label-*`, shown if the `.txt` exists): the ES catalog key
 /// (`MUSIC`, `all games`...) shown with a capital first letter, translated once per language.
@@ -117,6 +131,10 @@ const HelpPrompts& system_help() {
   static HelpCache c;
   return help_for(c, {{"leftright", N_("CHOOSE")}, {"A", N_("SELECT")}, {"start", N_("MENU")}});
 }
+const HelpPrompts& recent_help() {
+  static HelpCache c;
+  return help_for(c, {{"leftright", N_("CHOOSE")}, {"A", N_("LAUNCH")}, {"B", N_("BACK")}});
+}
 const HelpPrompts& list_help() {
   static HelpCache c;
   return help_for(c, {{"A", N_("LAUNCH")}, {"B", N_("BACK")}, {"X", N_("GAME OPTIONS")}, {"Y", N_("SEARCH")}});
@@ -174,7 +192,9 @@ void status_bar(const Theme& th, Assets& a, float w, float h, const Status& st, 
     c.batt_text = bt;
     c.st = st;
   }
+  const size_t first = ops.size();
   ops.insert(ops.end(), c.ops.begin(), c.ops.end());
+  motion::status_range() = {first, ops.size()};
 }
 
 static void build_status_bar(const Theme& th, Assets& a, float w, float h, const Status& st, std::vector<Op>& ops) {
@@ -222,29 +242,77 @@ void help_bar(const Theme& th, Assets& a, float w, float h, const HelpPrompts& p
 }
 
 /// Muted colour of a system's bar under the carousel, by maker; anything unlisted gets the theme's own accent.
+/// Where the row of "continue playing" sits under the hairline `hair_y` (one place for the drawing and for the keys). `fits` is false
+/// when the screen has not the room: on a short screen the row is left out, never squeezed.
+namespace {
+struct RecentGeom {
+  float px = 0, label_y = 0, label_h = 0, tile_top = 0, cap_h = 0, tile_h = 0, tile_w = 0, gap = 0;
+  size_t fit_n = 0;
+  ImgId label = 0;
+  bool fits = false;
+};
+}  // namespace
+
+static float row_margin(float w) { return std::round(0.044f * w); }  // same side margin as the status bar
+
+/// y of the hairline under the system's name and count.
+static float hairline_y(const Theme& th, Assets& a, float w, float h, const SystemItem& cur) {
+  ImgId name = a.text(cur.full_name, std::round(th.f("fSys") * h * 1.75f), th.color("txt"));
+  const float bar_h = std::round(float(a.img(name).h) * 0.95f);
+  return std::round(th.f("sysInfoY") * h - carousel_lift(w, h) + bar_h / 2.0f + 0.011f * h);  // follows the name when the carousel is lifted
+}
+
+static RecentGeom recent_geom(const Theme& th, Assets& a, float w, float h, float mx, float hair_y) {
+  RecentGeom g;
+  g.px = std::round(th.f("fSys") * h);
+  g.label = a.text(i18n::sentence_case(tr("CONTINUE PLAYING")), g.px, th.color("dim"));
+  g.label_h = float(a.img(g.label).h);
+  g.label_y = std::round(hair_y + 0.012f * h);
+  g.tile_top = std::round(g.label_y + g.label_h + 0.008f * h);
+  g.cap_h = std::round(g.px * 2.0f + 0.008f * h);
+  const float limit = th.f("helpY") * h - 0.05f * h;  // clear of the help pill
+  g.tile_h = std::min(std::round(0.125f * h), std::floor(limit - g.tile_top - g.cap_h));
+  if (g.tile_h < std::round(0.085f * h)) return g;
+  g.tile_w = std::round(g.tile_h * 16.0f / 9.0f), g.gap = std::round(0.022f * w);
+  g.fit_n = size_t(std::max(0.0f, (w - 2.0f * mx + g.gap) / (g.tile_w + g.gap)));
+  g.fits = true;
+  return g;
+}
+
+std::vector<size_t> recent_visible(const Theme& th, Assets& a, float w, float h, const SystemItem& cur, const RecentRow& r) {
+  std::vector<size_t> out;
+  if (r.items.empty() || cur.games == kCountPending) return out;
+  const float hair_y = hairline_y(th, a, w, h, cur);
+  const RecentGeom g = recent_geom(th, a, w, h, row_margin(w), hair_y);
+  if (!g.fits) return out;
+  for (size_t i = 0; i < r.items.size() && out.size() < g.fit_n; ++i)
+    if (!covers::failed(r.items[i].shot)) out.push_back(i);
+  return out;
+}
+
 /// "Continue playing": the newest savestate screenshots of the selected system, left aligned under the hairline. Drawn only when the
-/// screen has the room (about 0.2 of its height): on a short screen the row is left out, never squeezed.
+/// screen has the room (about 0.2 of its height). The tile `r.focus` carries a ring in the theme's cyan, like the carousel's selector.
 static void recent_row(const Theme& th, Assets& a, const ui::Style& st, float w, float h, float mx, float hair_y, RecentRow& r, std::vector<Op>& ops) {
   static ui::Shapes shapes;
-  const float px = std::round(th.f("fSys") * h);
-  ImgId lab = a.text(i18n::sentence_case(tr("CONTINUE PLAYING")), px, th.color("dim"));
-  const float lh = float(a.img(lab).h);
-  const float label_y = std::round(hair_y + 0.012f * h);
-  const float tile_top = std::round(label_y + lh + 0.008f * h);
-  const float cap_h = std::round(px * 2.0f + 0.008f * h);
-  const float limit = th.f("helpY") * h - 0.05f * h;  // clear of the help pill
-  const float tile_h = std::min(std::round(0.125f * h), std::floor(limit - tile_top - cap_h));
-  if (tile_h < std::round(0.085f * h)) return;
-  const float tile_w = std::round(tile_h * 16.0f / 9.0f), gap = std::round(0.022f * w);
-  const size_t fit_n = size_t(std::max(0.0f, (w - 2.0f * mx + gap) / (tile_w + gap)));
+  const RecentGeom g = recent_geom(th, a, w, h, mx, hair_y);
+  if (!g.fits) return;
+  const float px = g.px, tile_top = g.tile_top, tile_h = g.tile_h, tile_w = g.tile_w, gap = g.gap;
+  const Color accent = st.dark ? st.cyan : st.cyan_dark;  // caption (readable on the light panel)
   r.box_w = uint32_t(tile_w) - 2, r.box_h = uint32_t(tile_h) - 2;
-  ops.push_back(Op::image(lab, mx, label_y, float(a.img(lab).w), lh));
+  ops.push_back(Op::image(g.label, mx, g.label_y, float(a.img(g.label).w), g.label_h));
   size_t k = 0;
-  for (const RecentItem& it : r.items) {
-    if (k >= fit_n) break;
+  for (size_t idx = 0; idx < r.items.size(); ++idx) {
+    const RecentItem& it = r.items[idx];
+    if (k >= g.fit_n) break;
     if (covers::failed(it.shot)) continue;
     const float x = mx + float(k) * (tile_w + gap);
-    shapes.framed(a, ops, x, tile_top, tile_w, tile_h, 3, st.panel, st.line, 1.0f);
+    const bool foc = int(idx) == r.focus && r.focus_a > 0.0f;
+    if (foc) {  // 2 px ring outside the tile + the tile's own border in the same colour (the capture covers 1 px of the border)
+      shapes.rrect(a, ops, x - 2.0f, tile_top - 2.0f, tile_w + 4.0f, tile_h + 4.0f, 5, ui::with_alpha(st.cyan, r.focus_a));
+      shapes.framed(a, ops, x, tile_top, tile_w, tile_h, 3, st.panel, ui::mix(st.line, st.cyan, r.focus_a), 1.0f);
+    } else {
+      shapes.framed(a, ops, x, tile_top, tile_w, tile_h, 3, st.panel, st.line, 1.0f);
+    }
     ImgId id;
     const bool have = r.decode_inline ? a.file_fit(it.shot, r.box_w, r.box_h, id) : covers::ready(a, it.shot, r.box_w, r.box_h, id);
     if (!have && r.decode_inline) covers::mark_failed(it.shot);
@@ -254,7 +322,7 @@ static void recent_row(const Theme& th, Assets& a, const ui::Style& st, float w,
       ops.push_back(Op::image(id, std::round(x + (tile_w - iw) / 2.0f), std::round(tile_top + (tile_h - ih) / 2.0f), iw, ih));
     }
     const float cy0 = tile_top + tile_h + std::round(0.008f * h);
-    ImgId nm = clip_text(a, short_title(it.name), px, st.txt, tile_w);
+    ImgId nm = clip_text(a, short_title(it.name), px, foc && r.focus_a >= 0.5f ? accent : st.txt, tile_w);
     ops.push_back(Op::image(nm, x, cy0, float(a.img(nm).w), float(a.img(nm).h)));
     if (!it.ago.empty()) {
       ImgId ag = a.text(it.ago, std::round(px * 0.9f), st.dim);
@@ -285,12 +353,20 @@ static Color system_color(const std::string& t, const ui::Style& st) {
   return st.cyan_dark;
 }
 
+void carousel_span(float cam, int n, int& first, int& last) {
+  const int center = int(std::floor(cam));
+  const int half = int(std::min(kMaxLogoCount, float(n))) / 2;
+  // at rest tiles are drawn up to `half + 1` away, but the next one is already visible (partly) from 0.4 tiles before it gets there
+  first = center - half - 2;
+  last = center + half + 2;
+}
+
 void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, const std::vector<SystemItem>& items, int cursor_abs, float cam,
-                 const Status& status, RecentRow* recent, std::vector<Op>& ops) {
+                 const Status& status, RecentRow* recent, const InfoFade& fade, std::vector<Op>& ops) {
   ops.push_back(Op::rect(0, 0, w, h, th.color("bg")));
   push_avatar(th, a, c, w, h, ops);
   status_bar(th, a, w, h, status, ops);
-  help_bar(th, a, w, h, system_help(), ops);
+  help_bar(th, a, w, h, recent && recent->focus_help ? recent_help() : system_help(), ops);
   if (recent) recent->box_w = recent->box_h = 0;
   if (items.empty()) return;
 
@@ -300,17 +376,20 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
   // carousel box: size (carW x 0.5), centred at (0.5, carY)
   float logo_w = th.f("cellW") * w;
   float car_w = th.f("carW") * w;
-  float ccx = w / 2.0f, ccy = th.f("carY") * h;
-  float logo_count = std::min(kMaxLogoCount, float(n));
+  const float lift = carousel_lift(w, h);
+  float ccx = w / 2.0f, ccy = th.f("carY") * h - lift;
   float spacing = (car_w - logo_w * kMaxLogoCount) / kMaxLogoCount + logo_w;
   float diff_x = (spacing * kLogoScale - spacing) / 2.0f * kScaledSpacing;
   float nominal = logo_w * kLogoScale;  // container size at scale 1.0
   Color tile_tx = th.color("tileTxt");
 
-  int center = int(std::floor(cam));
-  int half = int(logo_count) / 2;
+  int first = 0, last = 0;
+  carousel_span(cam, n, first, last);
   std::vector<std::pair<int, bool>> order;
-  for (int i = center - half - 1; i <= center + half + 1; ++i) order.push_back({i, rem_euclid(i, n) == cursor});
+  for (int i = first; i <= last; ++i) {
+    if (n == 1 && std::fabs(float(i) - cam) > 1.0f) continue;  // a lone system keeps its three tiles
+    order.push_back({i, rem_euclid(i, n) == cursor});
+  }
   // selected last, like ES (activePositions)
   std::stable_sort(order.begin(), order.end(), [](const auto& x, const auto& y) { return !x.second && y.second; });
 
@@ -352,11 +431,12 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
 
   // Under the carousel: the system's name with a flat bar in its colour, the game count on the right, one hairline.
   // (nothing while the background count is pending: no "0 JUEGOS" flash, no layout shift)
-  const SystemItem& cur = items[size_t(cursor)];
+  const SystemItem& cur = items[size_t(fade.item >= 0 && fade.item < n ? fade.item : cursor)];
   if (cur.games == kCountPending) return;
+  const size_t info_from = ops.size();
   const ui::Style st = ui::Style::from(th);
-  float mx = std::round(0.044f * w);  // same side margin as the status bar
-  float cy = th.f("sysInfoY") * h;
+  float mx = row_margin(w);
+  float cy = th.f("sysInfoY") * h - lift;
   ImgId name = a.text(cur.full_name, std::round(th.f("fSys") * h * 1.75f), th.color("txt"));
   float nw = float(a.img(name).w), nh = float(a.img(name).h);
   float bar_w = std::max(3.0f, std::round(0.0056f * w)), bar_h = std::round(nh * 0.95f);
@@ -365,9 +445,10 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
   ImgId info = a.text(games_text(cur.games), th.f("fSys") * h, th.color("dim"));
   float iw = float(a.img(info).w), ih = float(a.img(info).h);
   ops.push_back(Op::image(info, w - mx - iw, cy - ih / 2.0f, iw, ih));
-  const float hair_y = std::round(cy + bar_h / 2.0f + 0.011f * h);
+  const float hair_y = hairline_y(th, a, w, h, cur);
   ops.push_back(Op::rect(mx, hair_y, w - 2.0f * mx, std::max(1.0f, std::round(h / 720.0f)), st.line));
   if (recent && !recent->items.empty()) recent_row(th, a, st, w, h, mx, hair_y, *recent, ops);
+  motion::fade(ops, info_from, fade.alpha);
 }
 
 void list_view(const Theme& th, Assets& a, const Common& c, float w, float h, const std::string& system_name, const std::vector<std::string>& names,

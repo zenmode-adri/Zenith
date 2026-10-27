@@ -71,14 +71,6 @@ OsdBox osd_box(Ctx& cx) {
   return b;
 }
 
-float toast_slot_top(Ctx& cx, float gap) {
-  const OsdBox ob = osd_box(cx);
-  const ui::HeaderBox& hb = ui::header_box();
-  float y = ob.y + ob.h + gap;
-  if (hb.valid) y = std::max(y, hb.line_y + gap);
-  return std::round(y);
-}
-
 void draw_osd(Ctx& cx, std::vector<Op>& out) {
   if (!g_osd.active) return;
   TimePoint now = Clock::now();

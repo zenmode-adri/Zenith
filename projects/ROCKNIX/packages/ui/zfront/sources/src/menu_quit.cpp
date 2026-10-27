@@ -4,7 +4,7 @@
 //
 //   RESTART THE FRONTEND  Mode::Quit      exit 0, systemd (Restart=always) starts the frontend again
 //   RESTART SYSTEM            Mode::Reboot    `reboot.please` + shutdown -r now
-//   SUSPEND SYSTEM            oscontract::suspend()  (systemctl suspend); only where ES offers it (pm-suspend exists)
+//   SUSPEND SYSTEM            oscontract::suspend()  (systemctl suspend -> sleep.sh, or rocknix-fake-suspend when suspendmode=off); only where the sleep.sh hook exists
 //   SHUTDOWN SYSTEM           Mode::Shutdown  `shutdown.please` + shutdown -P -h now
 //
 // FAST SHUTDOWN ("shutdown without saving metadata") is not offered: zfront writes the gamelist in the background right

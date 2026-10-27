@@ -134,6 +134,8 @@ struct HelpItem {
 /// The help bar of every screen: a floating pill (theme panel colour, hairline, soft shadow) centred at `help_y`, icons 1.55x the
 /// capital height, the main action in the accent colour. Entries that do not fit the width are left out from the end.
 void help_pill(Assets& a, const Style& st, float W, float help_y, float px, std::vector<HelpItem>& items, std::vector<Op>& out);
+/// Top edge (whole pixels) of the help pill of a screen with metrics `m`: the same geometry `help_pill` uses.
+float help_pill_top(Assets& a, const Theme& th, const Metrics& m);
 
 /// Help bar with the same geometry as the carousel/list ones (`scene.cpp: help_bar`), but its images are kept between
 /// frames: it rebuilds only when the prompt table (compared by address) or the size changes.

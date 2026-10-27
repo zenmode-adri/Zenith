@@ -9,7 +9,7 @@
 //   SHOW CLOCK                                DrawClock (es)                  shown: ui_prefs, live
 //   SHOW BATTERY STATUS                       ShowBattery (es)                shown when the console has a battery
 //   START SCREENSAVER AFTER (0 = never)       ScreenSaverTime (es, ms)        shown: oscontract reads it every loop
-//   SCREENSAVER TYPE                          ScreenSaverBehavior (es)        dim | black | suspend (suspend only with pm-suspend)
+//   SCREENSAVER TYPE                          ScreenSaverBehavior (es)        dim | black | suspend (suspend only where the sleep.sh hook exists)
 //   THEME SET / THEME CONFIGURATION           ThemeSet, Theme*                hidden: zfront has one theme (Zenith)
 //   GAMELIST VIEW STYLE                       GamelistViewStyle               hidden: zfront picks the view itself
 //   ACCESS GAME OPTIONS WITH NORTH BUTTON     GameOptionsAtNorth              hidden: no game options screen yet

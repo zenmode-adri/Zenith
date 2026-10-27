@@ -311,7 +311,8 @@ void quit(Mode m) {
 }
 
 bool suspend() {
-  runner().spawn("systemctl suspend");
+  // suspendmode=off means no hardware suspend (AllowSuspend=no): the power key then goes through rocknix-fake-suspend, so do the same
+  runner().spawn(". /etc/profile; if [ \"$(get_setting system.suspendmode)\" = off ]; then rocknix-fake-suspend power; else systemctl suspend; fi");
   return true;
 }
 

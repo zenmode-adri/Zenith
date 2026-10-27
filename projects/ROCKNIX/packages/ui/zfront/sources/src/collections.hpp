@@ -122,8 +122,8 @@ bool toggle_favorite(Ctx& cx, size_t sys, size_t game);
 std::string fmt(const char* format, const std::string& a, const std::string& b = {});
 
 // ---- state shared with the system loader --------------------------------------------------------------------------------
-/// A menu changed something that the carousel must rebuild (systems shown, collections, sort...). The loop owner reads and
-/// clears it when the menus close (ES's `reloadSystems` / `reloadAll` flags).
+/// A menu changed something that the carousel must rebuild (systems shown, collections, sort...). `App::maybe_reload_systems` reads
+/// and clears it when the menus close (ES's `reloadSystems` / `reloadAll` flags); without a `Ctx::system_loader` it stays set.
 bool reload_needed();
 void set_reload_needed(bool v);
 

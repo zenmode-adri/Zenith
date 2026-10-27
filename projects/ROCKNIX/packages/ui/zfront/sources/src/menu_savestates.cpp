@@ -342,27 +342,9 @@ class SaveStateScreen : public Screen {
         slot = c.st.slot;
       }
     }
-    // `savestates::begin` copies state files and arms what `after_game` undoes, so it must run only when the game really starts:
-    // with CheckBiosesAtLaunch on and a BIOS missing, it waits for YES (NO leaves the files as they were)
-    const size_t si = si_, gi = gi_;
-    auto go = [si, gi, pick, slot](Ctx& c) -> Transition {
-      if (si >= c.systems.size() || gi >= c.systems[si].games.size()) return Transition::none();
-      const System& s = c.systems[si];
-      const Game& gm = s.games[gi];
-      std::vector<JoyInfo> joys;
-      if (c.pad) joys = c.pad->joysticks();
-      std::string cmd = launch::build_command(s, gm, c.conf.map(), joys);
-      if (cmd.empty()) return Transition::none();
-      cmd += savestates::begin(s, gm, c.conf.map(), pick, slot);
-      Transition t = Transition::launch(cmd);
-      t.sys = int(si);
-      t.game = int(gi);
-      return t;
-    };
     (void)sys;
     (void)g;
-    if (launchcheck::bios_ok(cx, si)) return go(cx);
-    return launchcheck::ask(go);
+    return savestates::launch_pick(cx, si_, gi_, pick, slot);  // also what "continue playing" on the carousel uses
   }
 
   Transition remove(Ctx& cx) {

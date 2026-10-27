@@ -1,4 +1,5 @@
 #include "menu.hpp"
+#include "motion.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -352,7 +353,21 @@ bool Menu::tick(float dt, Ctx& cx) {
     pending_left_ -= dt;
     if (pending_left_ <= 0) flush_commit();
   }
-  return moving || a || b;
+  bool knobs = false;
+  if (cx.ui_motion) {  // the knob of a switch slides to its new side
+    for (Entry& e : e_) {
+      if (e.kind != EntryKind::Toggle) continue;
+      const float to = e.b ? 1.0f : 0.0f;
+      if (e.kn < 0.0f) {
+        e.kn = to;
+      } else if (e.kn != to) {
+        e.kn = motion::approach(e.kn, to, kKnobRate, dt);
+        if (std::fabs(e.kn - to) < 0.02f) e.kn = to;
+        knobs = true;
+      }
+    }
+  }
+  return moving || a || b || knobs;
 }
 
 // ---- Menu: input -----------------------------------------------------------------------------------------------------
@@ -588,8 +603,9 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
     case EntryKind::Toggle: {
       float pad = std::max(std::round(sw_h * 0.14f), 2.0f);
       float kd = sw_h - 2.0f * pad;
-      shapes_.pill(a, out, xr - sw_w, cy - sw_h / 2.0f, sw_w, sw_h, e.b ? st.sw_on : st.sw_off);
-      float kx = e.b ? xr - pad - kd : xr - sw_w + pad;
+      const float t = e.kn >= 0.0f ? e.kn : (e.b ? 1.0f : 0.0f);  // 0 = off, 1 = on (the knob in between while it slides)
+      shapes_.pill(a, out, xr - sw_w, cy - sw_h / 2.0f, sw_w, sw_h, t >= 1.0f ? st.sw_on : (t <= 0.0f ? st.sw_off : motion::mix(st.sw_off, st.sw_on, t)));
+      float kx = (xr - sw_w + pad) + ((xr - pad - kd) - (xr - sw_w + pad)) * t;
       shapes_.disc(a, out, kx, cy - kd / 2.0f, int(kd), st.knob);
       break;
     }
@@ -629,6 +645,14 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
       ui::put_text_right(out, e.t_value, xr, cy, val);
       break;
   }
+}
+
+void Menu::warm(Ctx& cx, std::vector<Op>& out) {
+  if (!opened_) {
+    opened_ = true;
+    rebuild(cx);
+  }
+  draw(cx, out);
 }
 
 void Menu::draw(Ctx& cx, std::vector<Op>& out) {

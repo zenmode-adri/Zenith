@@ -68,7 +68,7 @@ ZF_REGISTER_SCREEN("menu.g.screen", [](Ctx& cx, const std::string&) {
   std::vector<MenuSpec> parts;
   parts.push_back(system_spec(cx, kBright | kNoHdr));  // no header: the title says it, and the screen is one row too long with it
   if (system_has_section(kPanel)) parts.push_back(links([](MenuBuilder& m, Ctx&) { m.submenu(tr("PANEL ADJUSTMENT"), "menu.g.panel"); }));
-  parts.push_back(sound_spec(cx, snd_part::kAudio | snd_part::kOverlay));
+  parts.push_back(sound_spec(cx, snd_part::kAudio | snd_part::kOverlay | snd_part::kNav));
   parts.push_back(system_spec(cx, kLeds));
   parts.push_back(ui_spec(ui_part::kTopBar));
   return group(merge_specs(tr("SCREEN & SOUND"), N_("SCREEN & SOUND"), std::move(parts)));

@@ -671,12 +671,24 @@ int main() {
             CHECK(!straddles);
             // a short title leaves room in the header band: there the pill sits (the 3:2 theme slot would cut the hairline)
             if (title == titles[0] && wh[0] == 480 && wh[1] == 320) CHECK(ob.y + ob.h <= hb.line_y);
-            float top = toast_slot_top(cx, 4.0f);
-            CHECK(top >= ob.y + ob.h + 4.0f - 1.0f);
-            CHECK(top >= hb.line_y + 4.0f - 1.0f);
+            // a toast sits centred in the free band above the help pill: never over the header, never into the help bar
+            cx.sv->toasts.push("Restart the front-end to apply the changes.", 60000);
             tmp.clear();
             draw_toasts(cx, tmp);  // reads and clears the header box
             CHECK(!ui::header_box().valid);
+            const ui::Metrics tm = ui::Metrics::from(cx.th, cx.w, cx.h);
+            const float help_top = ui::help_pill_top(cx.assets, cx.th, tm);
+            float x0 = 1e9f, x1 = -1e9f, y0 = 1e9f, y1 = -1e9f;
+            for (const Op& op : tmp) {
+              if (op.kind != Op::Rect && op.kind != Op::Image) continue;
+              x0 = std::min(x0, op.x), x1 = std::max(x1, op.x + op.w);
+              y0 = std::min(y0, op.y), y1 = std::max(y1, op.y + op.h);
+            }
+            if (!(y1 <= help_top && y0 >= tm.list_top && std::fabs((x0 + x1) - float(cx.w)) <= 2.0f))
+              std::printf("[menu toast] %ux%u: toast x %g..%g y %g..%g, help pill top %g, list top %g\n", wh[0], wh[1], x0, x1, y0, y1, help_top, tm.list_top);
+            CHECK(y1 <= help_top);               // above the help pill
+            CHECK(y0 >= tm.list_top);            // below the header
+            CHECK(std::fabs((x0 + x1) - float(cx.w)) <= 2.0f);  // centred
           }
         }
         for (int i = 0; i < 9; ++i) {
@@ -735,5 +747,46 @@ int main() {
       }
     }
   }
+  // ---- motion: the knob of a switch slides to its new side (only with cx.ui_motion), and rests when it gets there
+  {
+    Ctx cx;
+    make_ctx(cx);
+    cx.ui_motion = true;
+    auto f = std::make_shared<Fixture>();
+    auto m = make(f);
+    press(*m, cx, Action::Left);  // builds
+    press(*m, cx, Action::Down);  // the toggle (entry 2)
+    CHECK_EQ(m->cursor(), 2);
+    m->tick(0.016f, cx);
+    CHECK_EQ(m->knob(2), 0.0f);  // starts where the value is: nothing slides on the first frame
+    press(*m, cx, Action::A);    // switch on
+    CHECK(f->flag);
+    CHECK(m->tick(0.016f, cx));  // moving
+    const float first = m->knob(2);
+    CHECK(first > 0.2f && first < 0.5f);  // 1 - exp(-22/60) = 0.31: it answers at once
+    float prev = first;
+    int frames = 1;
+    while (m->tick(0.016f, cx) && frames < 60) {
+      CHECK(m->knob(2) >= prev && m->knob(2) <= 1.0f);
+      prev = m->knob(2);
+      ++frames;
+    }
+    CHECK(frames < 30);
+    CHECK_EQ(m->knob(2), 1.0f);
+    press(*m, cx, Action::A);  // back off: slides down again
+    m->tick(0.016f, cx);
+    CHECK(m->knob(2) < 1.0f && m->knob(2) > 0.5f);
+    // without motion the knob is never animated (harness): it follows the value
+    Ctx still;
+    make_ctx(still);
+    auto g = std::make_shared<Fixture>();
+    auto n = make(g);
+    press(*n, still, Action::Left);
+    press(*n, still, Action::Down);
+    press(*n, still, Action::A);
+    n->tick(0.016f, still);
+    CHECK_EQ(n->knob(2), -1.0f);
+  }
+
   return zt::done();
 }

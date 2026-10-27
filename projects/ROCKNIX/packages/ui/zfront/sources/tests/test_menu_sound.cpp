@@ -183,7 +183,7 @@ int main() {
     std::unique_ptr<Screen> hold;
     Menu* m = open_menu(r, hold);
     CHECK_EQ(m->title(), std::string("SOUND SETTINGS"));
-    CHECK_EQ(m->size(), size_t(6));
+    CHECK_EQ(m->size(), size_t(7));
     CHECK(m->entry(0).kind == EntryKind::Header);
     CHECK_EQ(m->entry(0).label, std::string("VOLUME"));
     CHECK(m->entry(1).kind == EntryKind::Slider);
@@ -194,27 +194,29 @@ int main() {
     CHECK_EQ(m->entry(2).label, std::string("SHOW OVERLAY WHEN VOLUME CHANGES"));
     CHECK(m->entry(2).b);  // default true
     CHECK_EQ(m->entry(3).label, std::string("SOUNDS"));
-    CHECK_EQ(m->entry(4).label, std::string("ENABLE AUDIBLE BATTERY WARNING"));
-    CHECK(m->entry(4).b);
-    CHECK_EQ(m->entry(5).label, std::string("BATTERY WARNING THRESHOLD"));
-    CHECK_EQ(m->entry(5).i, 30);
-    CHECK_EQ(m->entry(5).max, 50);
+    CHECK_EQ(m->entry(4).label, std::string("ENABLE NAVIGATION SOUNDS"));  // ES `EnableSounds`, default off
+    CHECK(m->entry(4).kind == EntryKind::Toggle && !m->entry(4).b);
+    CHECK_EQ(m->entry(5).label, std::string("ENABLE AUDIBLE BATTERY WARNING"));
+    CHECK(m->entry(5).b);
+    CHECK_EQ(m->entry(6).label, std::string("BATTERY WARNING THRESHOLD"));
+    CHECK_EQ(m->entry(6).i, 30);
+    CHECK_EQ(m->entry(6).max, 50);
     CHECK_EQ(find(*m, "AUDIO OUTPUT"), -1);    // no set-audio: hidden, as in ES
     CHECK_EQ(find(*m, "MUSIC VOLUME"), -1);    // no music player
-    CHECK_EQ(find(*m, "ENABLE NAVIGATION SOUNDS"), -1);
     CHECK_EQ(m->cursor(), 1);
     CHECK(r.cx.sv->cmd.log.empty());           // opening the menu runs nothing
   }
 
-  // ---- no tools at all: only the battery warning is left, with its own header
+  // ---- no tools at all: only the sounds are left (navigation sounds, battery warning), with their own header
   {
     Rig r("notools", "", false, false);
     std::unique_ptr<Screen> hold;
     Menu* m = open_menu(r, hold);
-    CHECK_EQ(m->size(), size_t(3));
+    CHECK_EQ(m->size(), size_t(4));
     CHECK_EQ(m->entry(0).label, std::string("SOUNDS"));
-    CHECK_EQ(m->entry(2).i, 25);  // ES default when the key is missing
-    CHECK(!m->entry(1).b);
+    CHECK_EQ(m->entry(1).label, std::string("ENABLE NAVIGATION SOUNDS"));
+    CHECK_EQ(m->entry(3).i, 25);  // ES default when the key is missing
+    CHECK(!m->entry(2).b);
   }
 
   // ---- opening re-reads system.cfg: hardware keys wrote a newer volume than the one zfront loaded at start
@@ -303,17 +305,23 @@ int main() {
     CHECK(read_all(r.es).find("<bool name=\"VolumePopup\" value=\"false\" />") != std::string::npos);
     m->handle(Action::A, r.cx);
     CHECK_EQ(*EsSettings::load(r.es).get("VolumePopup"), std::string("true"));
-    m->handle(Action::Down, r.cx);  // battery warning
+    m->handle(Action::Down, r.cx);  // navigation sounds: ES `EnableSounds`, in es_settings.cfg
     CHECK_EQ(m->cursor(), 4);
+    m->handle(Action::A, r.cx);
+    CHECK(read_all(r.es).find("<bool name=\"EnableSounds\" value=\"true\" />") != std::string::npos);
+    m->handle(Action::A, r.cx);
+    CHECK(read_all(r.es).find("<bool name=\"EnableSounds\" value=\"false\" />") != std::string::npos);
+    m->handle(Action::Down, r.cx);  // battery warning
+    CHECK_EQ(m->cursor(), 5);
     m->handle(Action::A, r.cx);
     CHECK(read_all(r.cfg).find("system.battery.warning=1\n") != std::string::npos);
     CHECK(read_all(r.cfg).find("other=keep\n") != std::string::npos);  // foreign lines survive
     m->handle(Action::A, r.cx);
     CHECK(read_all(r.cfg).find("system.battery.warning=0\n") != std::string::npos);
     m->handle(Action::Down, r.cx);  // threshold
-    CHECK_EQ(m->cursor(), 5);
+    CHECK_EQ(m->cursor(), 6);
     for (int i = 0; i < 3; ++i) m->handle(Action::Right, r.cx);
-    CHECK_EQ(m->entry(5).i, 28);
+    CHECK_EQ(m->entry(6).i, 28);
     CHECK(read_all(r.cfg).find("warning_threshold") == std::string::npos);  // debounced: nothing written yet
     Transition t = m->handle(Action::B, r.cx);                              // leaving flushes the pending commit
     CHECK(t.kind == Transition::Pop);
@@ -334,7 +342,7 @@ int main() {
     std::unique_ptr<Screen> hold;
     Menu* m = open_menu(r, hold);
     CHECK_EQ(asked.size(), size_t(2));
-    CHECK_EQ(m->size(), size_t(8));
+    CHECK_EQ(m->size(), size_t(9));
     int out = find(*m, "AUDIO OUTPUT"), prof = find(*m, "AUDIO PROFILE");
     CHECK_EQ(out, 3);
     CHECK_EQ(prof, 4);

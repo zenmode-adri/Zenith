@@ -24,6 +24,7 @@
 #include "scene.hpp"
 #include "screens.hpp"
 #include "status.hpp"
+#include "syslist.hpp"
 #ifdef ZF_WITH_SDL
 #include "sdlr.hpp"
 #endif
@@ -60,6 +61,8 @@ struct Args {
   bool sim_reset = false;
   /// `--advance S`: seconds the screen's timers run before the preview is rendered (description scroll).
   double advance = 0;
+  /// `--toast TEXT`: a notice shown in the preview (toast placement is measured with it).
+  std::string toast;
 };
 
 System demo_system(const std::string& t, const std::string& n, std::vector<std::string> games) {
@@ -243,6 +246,8 @@ bool parse_args(int argc, char** argv, Args& a, std::string& err) {
         err = "--bench N";
         return false;
       }
+    } else if (k == "--toast") {
+      if (!val(a.toast)) return false;
     } else if (k == "--advance") {
       if (!val(v)) return false;
       float f = 0;
@@ -283,10 +288,16 @@ int run(int argc, char** argv, std::string& err) {
 #ifdef ZF_WITH_SDL
   if (!args.has_preview && !args.dump) oscontract::wait_roms();  // ES_WAIT_ROMS_READY, bounded
 #endif
+  cx.es = EsSettings::load(args.es_settings);  // before the systems: LoadEmptySystems, HiddenSystems and SortSystems decide what the carousel shows
   if (!args.systems.empty()) {
     // device loop: first frame does not wait for the counts (they arrive from a background thread)
     bool lazy = args.lazy_counts || (!args.has_preview && !args.dump);
-    if (!(lazy ? load_systems_lazy(args.systems, args.roms, cx.systems, err) : load_systems_index(args.systems, args.roms, cx.systems, err))) return 1;
+    // The same loader serves the hot reload (`App::maybe_reload_systems`): it captures only paths and the mode, never `cx`.
+    auto loader = [cfg = args.systems, roms = args.roms, lazy](bool load_empty, std::vector<System>& out, std::string& e) {
+      return lazy ? load_systems_lazy(cfg, roms, out, e, load_empty) : load_systems_index(cfg, roms, out, e, load_empty);
+    };
+    if (!loader(cx.es.get_bool("LoadEmptySystems", false), cx.systems, err)) return 1;
+    if (!args.dump) cx.system_loader = std::move(loader);
   } else {
     cx.systems = demo_systems(args.demo);
     if (args.bench > 0 && args.demo == "list") {  // enough games to exercise the cache eviction
@@ -298,11 +309,15 @@ int run(int argc, char** argv, std::string& err) {
   detailed_set_demo(args.demo == "list");
   cx.conf = SystemConf::load(args.conf);
   i18n::init(cx.conf);  // tr() catalogs for system.language (English when there is none)
-  cx.es = EsSettings::load(args.es_settings);
   cx.sv->cmd.dry_run = args.dry_run || args.has_preview;
   set_writes_blocked(cx.sv->cmd.dry_run);  // never write system.cfg / es_settings.cfg / gamelists / collections in preview or dry-run
   cx.sv->cmd.keep_log = args.has_preview;
   cx.async_covers = !args.has_preview && !args.dump;
+  {  // window / screen motion only on the device, and not when ES is set to instant transitions or to the instant power saver
+    const std::string* style = cx.es.get("TransitionStyle");
+    const std::string* saver = cx.es.get("PowerSaverMode");
+    cx.ui_motion = cx.async_covers && !(style && *style == "instant") && !(saver && *saver == "instant");
+  }
   if (args.dump) {
     for (size_t i = 0; i < cx.systems.size(); ++i) {
       cx.open_system(i);
@@ -315,7 +330,7 @@ int run(int argc, char** argv, std::string& err) {
     }
     return 0;
   }
-  for (const System& s : cx.systems) cx.items.push_back(SystemItem{s.theme, s.fullname, uint32_t(s.count)});
+  cx.items = make_items(cx.systems, cx.es);
   if (!load_common(cx.th, cx.assets, cx.common, err)) return 1;
   long n = long(cx.items.size());
   int start = int(n > 0 ? ((args.cursor % n) + n) % n : 0);
@@ -350,6 +365,7 @@ int run(int argc, char** argv, std::string& err) {
       app.tick(dt);
       left -= double(dt);
     }
+    if (!args.toast.empty()) app.cx.sv->toasts.push(args.toast, 600000);
     if (args.bench > 0) run_bench(app, args.bench, args.sim_gpu);
     if (args.sim_reset) {
       for (const Op& op : app.render())

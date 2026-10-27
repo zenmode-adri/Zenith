@@ -1,7 +1,8 @@
 // "Continue playing": the most recent savestate screenshots of a system, for the row under the carousel.
 //
 // The data is what RetroArch already left on the card: `<state>.png` next to each savestate (see savestates.hpp), so a tile
-// exists only for a game that really has a capture. Nothing is read from gamelist.xml (the carousel does not load it).
+// exists only for a game that really has a capture and a ROM. gamelist.xml is not read for that: the ROM is looked for with one stat per
+// extension, and only when that misses (sub folder, ROM gone) the game list of that system is opened once ( in screens.cpp).
 // `recent_states` lists one folder (a few `stat`s), so the carousel calls it once when it stops on a system, not per frame.
 #pragma once
 #include <ctime>
@@ -16,6 +17,7 @@ struct RecentItem {
   std::string shot;  // absolute path of the png
   std::string name;  // rom file stem
   std::string ago;   // "12 min ago"; empty when older than 30 days
+  int slot = 0;      // slot the screenshot belongs to: -1 = autosave, >= 0 = numbered slot (see savestates.hpp)
 };
 
 /// "12 min ago" / "3 h ago" / "2 d ago"; empty when `then` is in the future or more than 30 days before `now`.

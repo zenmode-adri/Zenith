@@ -75,6 +75,9 @@ struct Option {
 
 enum class EntryKind : uint8_t { Action, Toggle, Slider, Choice, Text, Info, Header, Separator };
 
+/// Speed of a switch knob (it closes this fraction of its way per second: ~90 % in 100 ms).
+constexpr float kKnobRate = 22.0f;
+
 struct Entry {
   EntryKind kind = EntryKind::Action;
   std::string label, id, hint_text, icon_name, value_text;
@@ -88,6 +91,7 @@ struct Entry {
   std::function<bool()> get_b;
   std::function<void(bool)> set_b;
   bool b = false;
+  float kn = -1.0f;  // position of the knob while it slides, 0 = off .. 1 = on (-1: not animated: follows `b`)
   // slider
   int min = 0, max = 100, step = 1, i = 0;
   std::string unit_text;
@@ -184,6 +188,8 @@ class Menu : public Screen {
   bool tick(float dt, Ctx& cx) override;
   std::optional<float> wake_in() const override;
   void draw(Ctx& cx, std::vector<Op>& out) override;
+  /// Rows built and drawn, `on_open` NOT run (it starts commands and jobs): for a throw-away instance only.
+  void warm(Ctx& cx, std::vector<Op>& out) override;
   bool is_menu() const override { return true; }
   /// Start closed the whole menu stack: flushes a pending slider commit and runs `on_close`, like leaving with B.
   void on_dismiss(Ctx& cx) override;
@@ -193,6 +199,8 @@ class Menu : public Screen {
   const Entry& entry(size_t i) const { return e_[i]; }
   /// Index of the entry under the cursor, or -1 (no selectable entry).
   int cursor() const { return cur_; }
+  /// Slide position of the knob of toggle entry `i` (0 off .. 1 on; -1 when it is not animated).
+  float knob(size_t i) const { return e_[i].kn; }
   const std::string& title() const { return spec_.title; }
   /// Replaces the title of an open menu (language change, a name that is known later). Drops the `title_key`.
   void set_title(std::string t);

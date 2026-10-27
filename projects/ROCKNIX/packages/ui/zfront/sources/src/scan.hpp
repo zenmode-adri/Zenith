@@ -79,7 +79,9 @@ std::vector<size_t> scan_count_many(const std::vector<CountJob>& jobs, int threa
 /// and `set_wake` registers a thread-safe callback that interrupts the event loop's sleep.
 class CountWorker {
  public:
-  CountWorker(std::vector<CountJob> jobs, int threads, size_t first = 0);
+  /// `wake` is installed before the threads start: a fast worker could otherwise queue its first result with nobody to wake the loop
+  /// (later results only wake it when the queue was empty).
+  CountWorker(std::vector<CountJob> jobs, int threads, size_t first = 0, std::function<void()> wake = nullptr);
   ~CountWorker();  // stops after the folder in progress and joins
   CountWorker(const CountWorker&) = delete;
   CountWorker& operator=(const CountWorker&) = delete;

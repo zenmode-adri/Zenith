@@ -42,11 +42,12 @@ enum : unsigned {
 namespace snd_part {
 enum : unsigned {
   kQuick = 1,  // the volume slider alone
+  kNav = 32,   // ENABLE NAVIGATION SOUNDS alone
   kOverlay = 16,  // SHOW OVERLAY WHEN VOLUME CHANGES alone (the volume itself is the hardware buttons' job)
   kVol = 2,    // VOLUME: slider + overlay toggle
   kAudio = 4,  // AUDIO OUTPUT / AUDIO PROFILE
   kBatt = 8,   // audible battery warning + threshold
-  kAll = kVol | kAudio | kBatt,
+  kAll = kVol | kAudio | kBatt | kNav,
 };
 }  // namespace snd_part
 

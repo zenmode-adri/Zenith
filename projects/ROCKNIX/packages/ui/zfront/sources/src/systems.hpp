@@ -52,17 +52,18 @@ using ConfMap = std::unordered_map<std::string, std::string>;
 
 /// Loads every system of `cfg` that has at least one game, games included. `roms_root` replaces the `/storage/roms`
 /// prefix (tests on the PC).
-bool load_systems(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err);
+/// `keep_empty` (ES LoadEmptySystems): the systems without games are kept too, with `count` 0.
+bool load_systems(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err, bool keep_empty = false);
 /// Like `load_systems` but without reading any gamelist: `games` is empty and `count` comes from the directory scan.
-bool load_systems_index(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err);
+bool load_systems_index(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err, bool keep_empty = false);
 
 /// Fastest start: no gamelist, no counting. A system appears when it has at least one game (the walk stops at the
 /// first one); `count` is `kCountPending` until `App::start_counts` fills it in the background.
-bool load_systems_lazy(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err);
-bool load_systems_text_lazy(const std::string& xml, const std::string& roms_root, std::vector<System>& out, std::string& err);
+bool load_systems_lazy(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err, bool keep_empty = false);
+bool load_systems_text_lazy(const std::string& xml, const std::string& roms_root, std::vector<System>& out, std::string& err, bool keep_empty = false);
 
 /// Same as `load_systems` from XML text and a ROM root (tests).
-bool load_systems_text(const std::string& xml, const std::string& roms_root, bool eager, std::vector<System>& out, std::string& err);
+bool load_systems_text(const std::string& xml, const std::string& roms_root, bool eager, std::vector<System>& out, std::string& err, bool keep_empty = false);
 
 /// Games of a ROM folder in ES order (sortname/name, case-insensitive, ignoring a leading "A", "AN" or "THE"); hidden
 /// ones removed.

@@ -239,7 +239,8 @@ std::vector<size_t> scan_count_many(const std::vector<CountJob>& jobs, int threa
   return res;
 }
 
-CountWorker::CountWorker(std::vector<CountJob> jobs, int threads, size_t first) : jobs_(std::move(jobs)), first_(jobs_.empty() ? 0 : first % jobs_.size()) {
+CountWorker::CountWorker(std::vector<CountJob> jobs, int threads, size_t first, std::function<void()> wake)
+    : jobs_(std::move(jobs)), first_(jobs_.empty() ? 0 : first % jobs_.size()), wake_(std::move(wake)) {
   if (jobs_.empty()) return;
   int n = std::max(1, std::min(threads, 2));  // never more than 2: the drawing thread keeps its core
   for (int i = 0; i < n; ++i) threads_.emplace_back([this] { run(); });

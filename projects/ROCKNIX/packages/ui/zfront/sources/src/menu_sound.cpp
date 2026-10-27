@@ -1,5 +1,6 @@
 #include "menu_groups.hpp"
 #include "menu_sound.hpp"
+#include "sound.hpp"
 
 #include <unistd.h>
 
@@ -147,8 +148,16 @@ MenuSpec make_sound_spec(Ctx& cx, unsigned parts) {
     namespace sp = snd_part;
     const bool has_volume = have_tool("volume") && (parts & (sp::kQuick | sp::kVol));
     const bool has_overlay = have_tool("volume") && (parts & (sp::kVol | sp::kOverlay));
+    const bool has_nav = (parts & sp::kNav) != 0 && !(parts & sp::kBatt);  // with the battery warning it goes under SOUNDS (ES layout)
+    auto nav_row = [&m, &cx] {  // ES `EnableSounds` (default off); the player reads it at every cue, so it acts at once
+      m.toggle(tr("ENABLE NAVIGATION SOUNDS"), [&cx] { return sound::enabled(cx); }, [&cx](bool b) {
+        cx.es.set_bool("EnableSounds", b);
+        std::string err;
+        if (!cx.es.save(&err)) save_failed(cx);
+      });
+    };
     const bool has_output = (parts & sp::kAudio) && have_tool("set-audio") && st->loaded && (!st->devs.empty() || !st->profs.empty());
-    if ((parts & (sp::kVol | sp::kAudio | sp::kOverlay)) && (has_volume || has_output || has_overlay)) m.header((parts & sp::kVol) ? tr("VOLUME") : tr("AUDIO"));
+    if ((parts & (sp::kVol | sp::kAudio | sp::kOverlay | sp::kNav)) && (has_volume || has_output || has_overlay || has_nav)) m.header((parts & sp::kVol) ? tr("VOLUME") : tr("AUDIO"));
     if (has_volume) {
       m.slider(tr("SYSTEM VOLUME"), 0, 100, 1, [&cx] { return volume(cx); }, [&cx](int v) { set_volume(cx, v); }).unit("%");
     }
@@ -159,6 +168,7 @@ MenuSpec make_sound_spec(Ctx& cx, unsigned parts) {
         if (!cx.es.save(&err)) save_failed(cx);
       });
     }
+    if (has_nav) nav_row();
     if (has_output) {
       Refresh refresh = m.refresh;
       auto change = [st, &cx, refresh](bool profile, const std::string& v) {
@@ -203,6 +213,7 @@ MenuSpec make_sound_spec(Ctx& cx, unsigned parts) {
 
     if (!(parts & sp::kBatt)) return;
     m.header((parts & (sp::kVol | sp::kAudio)) ? tr("SOUNDS") : tr("BATTERY WARNING"));
+    if (parts & sp::kNav) nav_row();
     m.toggle(tr("ENABLE AUDIBLE BATTERY WARNING"), [&cx] { return cx.conf.get_bool("system.battery.warning", false); },
              [&cx](bool b) { persist(cx, "system.battery.warning", b ? "1" : "0"); });
     m.slider(tr("BATTERY WARNING THRESHOLD"), 0, 50, 1, [st] { return st->threshold; }, [st](int v) { st->threshold = v; })

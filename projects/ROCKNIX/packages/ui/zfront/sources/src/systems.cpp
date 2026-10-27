@@ -239,7 +239,7 @@ void System::apply_edit(const GamelistEdit& e) {
 
 enum class LoadMode { Eager, Counted, Lazy };
 
-static bool load_impl(const std::string& xml, const std::string& roms_root, LoadMode mode, std::vector<System>& out, std::string& err) {
+static bool load_impl(const std::string& xml, const std::string& roms_root, LoadMode mode, bool keep_empty, std::vector<System>& out, std::string& err) {
   pugi::xml_document doc;
   pugi::xml_parse_result r = doc.load_buffer(xml.data(), xml.size());
   if (!r) {
@@ -283,10 +283,15 @@ static bool load_impl(const std::string& xml, const std::string& roms_root, Load
     } else if (mode == LoadMode::Counted) {
       sys.count = scan_count_games(path, Exts(exts));
     } else {
-      if (!scan_has_game(path, Exts(exts))) continue;  // stops at the first game
-      sys.count = kCountPending;
+      if (scan_has_game(path, Exts(exts))) {  // stops at the first game
+        sys.count = kCountPending;
+      } else if (keep_empty) {
+        sys.count = 0;
+      } else {
+        continue;
+      }
     }
-    if (sys.count == 0) continue;
+    if (sys.count == 0 && !keep_empty) continue;
     auto [emulator, core] = default_emu(s);
     sys.emulator = emulator;
     sys.core = core;
@@ -301,30 +306,36 @@ static bool load_impl(const std::string& xml, const std::string& roms_root, Load
   return true;
 }
 
-bool load_systems_text(const std::string& xml, const std::string& roms_root, bool eager, std::vector<System>& out, std::string& err) {
-  return load_impl(xml, roms_root, eager ? LoadMode::Eager : LoadMode::Counted, out, err);
+bool load_systems_text(const std::string& xml, const std::string& roms_root, bool eager, std::vector<System>& out, std::string& err, bool keep_empty) {
+  return load_impl(xml, roms_root, eager ? LoadMode::Eager : LoadMode::Counted, keep_empty, out, err);
 }
 
-bool load_systems_text_lazy(const std::string& xml, const std::string& roms_root, std::vector<System>& out, std::string& err) {
-  return load_impl(xml, roms_root, LoadMode::Lazy, out, err);
+bool load_systems_text_lazy(const std::string& xml, const std::string& roms_root, std::vector<System>& out, std::string& err, bool keep_empty) {
+  return load_impl(xml, roms_root, LoadMode::Lazy, keep_empty, out, err);
 }
 
-static bool load_cfg(const std::string& cfg, const std::string& roms_root, LoadMode mode, std::vector<System>& out, std::string& err) {
+static bool load_cfg(const std::string& cfg, const std::string& roms_root, LoadMode mode, bool keep_empty, std::vector<System>& out, std::string& err) {
   std::string xml;
   if (!read_file(cfg, xml)) {
     err = cfg + ": No such file or directory";
     return false;
   }
-  if (!load_impl(xml, roms_root, mode, out, err)) {
+  if (!load_impl(xml, roms_root, mode, keep_empty, out, err)) {
     err = cfg + ": " + err;
     return false;
   }
   return true;
 }
 
-bool load_systems(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err) { return load_cfg(cfg, roms_root, LoadMode::Eager, out, err); }
-bool load_systems_index(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err) { return load_cfg(cfg, roms_root, LoadMode::Counted, out, err); }
-bool load_systems_lazy(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err) { return load_cfg(cfg, roms_root, LoadMode::Lazy, out, err); }
+bool load_systems(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err, bool keep_empty) {
+  return load_cfg(cfg, roms_root, LoadMode::Eager, keep_empty, out, err);
+}
+bool load_systems_index(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err, bool keep_empty) {
+  return load_cfg(cfg, roms_root, LoadMode::Counted, keep_empty, out, err);
+}
+bool load_systems_lazy(const std::string& cfg, const std::string& roms_root, std::vector<System>& out, std::string& err, bool keep_empty) {
+  return load_cfg(cfg, roms_root, LoadMode::Lazy, keep_empty, out, err);
+}
 
 std::pair<std::string, std::string> resolve_emu(const System& sys, const Game& game, const ConfMap& conf) {
   // ES `FileData::getConfigurationName`: '=' and '#' are dropped from the file name (they cannot live in system.cfg keys)

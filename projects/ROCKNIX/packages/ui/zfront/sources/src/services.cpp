@@ -149,7 +149,17 @@ void CmdRunner::spawn(const std::string& cmd) {
 // ---- Toasts ---------------------------------------------------------------------------------------------------------
 void Toasts::push(std::string text, int ms) {
   if (items_.size() >= 4) items_.pop_front();
-  items_.push_back({std::move(text), SteadyClock::now() + std::chrono::milliseconds(ms)});
+  const auto now = SteadyClock::now();
+  items_.push_back({std::move(text), now + std::chrono::milliseconds(ms), now});
+}
+
+bool Toasts::moving(SteadyClock::time_point now) const {
+  for (const Toast& t : items_) {
+    if (!t.text.empty() && t.text[0] == '\x1f') continue;  // not drawn as a toast
+    if (std::chrono::duration<float>(now - t.since).count() < kToastIn) return true;
+    if (std::chrono::duration<float>(t.until - now).count() < kToastOut) return true;
+  }
+  return false;
 }
 
 bool Toasts::expire(SteadyClock::time_point now) {

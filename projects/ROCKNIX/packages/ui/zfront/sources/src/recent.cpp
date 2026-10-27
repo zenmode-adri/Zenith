@@ -44,6 +44,7 @@ std::vector<RecentItem> recent_states(const System& sys, time_t now, size_t max)
   struct Hit {
     std::string stem, shot;
     time_t t;
+    int slot;
   };
   std::vector<Hit> hits;
   const std::string dir = savestates::state_dir(sys);
@@ -60,16 +61,16 @@ std::vector<RecentItem> recent_states(const System& sys, time_t now, size_t max)
     if (::stat(path.c_str(), &st) != 0 || st.st_size <= 0) continue;
     auto it = std::find_if(hits.begin(), hits.end(), [&](const Hit& h) { return h.stem == stem; });
     if (it == hits.end()) {
-      hits.push_back({std::move(stem), std::move(path), st.st_mtime});
+      hits.push_back({std::move(stem), std::move(path), st.st_mtime, slot});
     } else if (st.st_mtime > it->t) {
-      it->shot = std::move(path), it->t = st.st_mtime;  // the newest slot of that game
+      it->shot = std::move(path), it->t = st.st_mtime, it->slot = slot;  // the newest slot of that game
     }
   }
   ::closedir(d);
   std::sort(hits.begin(), hits.end(), [](const Hit& a, const Hit& b) { return a.t > b.t; });
   if (hits.size() > max) hits.resize(max);
   std::vector<RecentItem> out;
-  for (Hit& h : hits) out.push_back({std::move(h.shot), std::move(h.stem), ago_text(h.t, now)});
+  for (Hit& h : hits) out.push_back({std::move(h.shot), std::move(h.stem), ago_text(h.t, now), h.slot});
   return out;
 }
 

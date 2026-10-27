@@ -35,7 +35,7 @@ struct Paths {
   std::string ready_file = "/tmp/emulationstation.ready";
   std::string kill_file = "/tmp/.process-kill-data";       // `set_kill` of /etc/profile.d/001-functions
   std::string tmp_dir = "/tmp";                            // restart.please / reboot.please / shutdown.please
-  std::string suspend_helper = "/usr/sbin/pm-suspend";     // ES only offers suspend when this exists (see suspend_supported)
+  std::string suspend_helper = "/usr/lib/systemd/system-sleep/sleep";  // Zenith suspends through this hook (sleep.sh); ES asks for pm-suspend, which the image lacks
 };
 Paths& paths();
 
@@ -80,7 +80,8 @@ bool quit_requested();
 Mode quit_mode();
 /// `systemctl suspend`, the path of the power button (logind runs the sleep hooks). Fire and forget.
 bool suspend();
-/// ES shows the suspend entry only when pm-suspend exists. Used for ScreenSaverBehavior=suspend.
+/// True when the image can suspend (the sleep.sh hook exists; ES wants pm-suspend, so it hides the entry on Zenith). Used for
+/// the QUIT menu entry and ScreenSaverBehavior=suspend.
 bool suspend_supported();
 
 // ---- events ---------------------------------------------------------------------------------------------------------
