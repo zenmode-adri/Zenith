@@ -16,4 +16,4 @@ else
   set_setting system.frontend zfront
 fi
 
-systemctl restart essway
+systemctl restart --no-block essway
