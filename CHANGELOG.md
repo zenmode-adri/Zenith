@@ -50,8 +50,6 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
   warnings. glmark2: 414 vs 419. **Panfrost is not faster: that game is limited by the emulation thread and memory
   latency, not by the GPU** (the GPU is about 20 % busy), so libmali stays the default. Only this game and glmark2
   were measured. `opp-single-voltage-minimum`
-- When the GPU is the bottleneck (God of War with frame skip off at 2x/3x/4x, Mario Kart 64 in a race) libmali is
-  faster: 10.2/6.0/3.7 fps vs 6.9/4.9/3.5, and 36 vs 32 fps; power draw is similar. libmali stays the default.
 
 ## 2026-10-23 - image `44d6084` (first public candidate)
 
