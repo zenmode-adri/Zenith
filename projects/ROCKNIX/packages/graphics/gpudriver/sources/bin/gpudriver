@@ -90,7 +90,6 @@ case "$1" in
       echo "gpudriver: panfrost no enlazo ninguna GPU; se vuelve a libmali" >&2
       set_setting ${GPU_DRIVER_SETTING_KEY} libmali
       load_driver libmali
-      @DTB_OVERLAY_UNLOAD@
     fi
     ;;
   "libmali")
