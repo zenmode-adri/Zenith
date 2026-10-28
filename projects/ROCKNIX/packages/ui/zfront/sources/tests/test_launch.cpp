@@ -64,7 +64,56 @@ int main() {
   CHECK(launch::escape_path("/r/it's [!].gb") == "/r/it\\'s\\ \\[\\!\\].gb");
   CHECK(launch::escape_path("/r//x/") == "/r/x");
   CHECK(launch::escape_path("/r/a&b$c^d.gb") == "/r/a\\&b\\$c\\^d.gb");
-  CHECK(launch::escape_path("/r/a`b#c~d|e.gb") == "/r/a`b#c~d|e.gb");  // not escaped by ES
+  CHECK(launch::escape_path("/r/a#c~d.gb") == "/r/a#c~d.gb");  // only special at the start of a word, as in ES
+  // deviation from ES: backtick, `|`, tab and newline are escaped (they ran commands)
+  CHECK(launch::escape_path("/r/a`b|c\td.gb") == "/r/a\\`b\\|c\\\td.gb");
+  CHECK(launch::escape_path("/r/a\nb.gb") == "/r/a\\\nb.gb");
+  {
+    // the escaped path goes through a real shell and must come back as ONE word with the original text, running nothing
+    string d = tmpdir("esc");
+    string marker = d + "/PWNED";
+    vector<string> bad = {"/r/a`touch " + marker + "`.gb", "/r/a|touch " + marker + ".gb", "/r/a$(touch " + marker + ").gb",
+                          "/r/a;touch " + marker + ";.gb", "/r/a&touch " + marker + "&.gb", "/r/a\ttab.gb", "/r/it's (1) [x].gb"};
+    for (const string& raw : bad) {
+      string out = d + "/out.txt";
+      string line = "printf '%s' " + launch::escape_path(raw) + " > " + out;
+      std::ofstream(d + "/cmd.sh") << line << "\n";
+      CHECK_EQ(std::system(("sh " + d + "/cmd.sh").c_str()), 0);
+      CHECK_EQ(::access(marker.c_str(), F_OK), -1);  // nothing ran
+      std::ifstream in(out);
+      string got((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+      CHECK_EQ(got, raw);
+    }
+    // a newline in the name: nothing runs (the file just cannot be found)
+    std::ofstream(d + "/cmd2.sh") << "printf '%s' " << launch::escape_path("/r/x\ntouch " + marker + "\n.gb") << " > " << d << "/out2.txt\n";
+    std::system(("sh " + d + "/cmd2.sh").c_str());
+    CHECK_EQ(::access(marker.c_str(), F_OK), -1);
+    std::system(("rm -rf " + d).c_str());
+  }
+  {
+    // %GAMENAME% / %SYSTEMNAME%: any name reaches the program as ONE argument with its exact text, nothing else runs
+    string d = tmpdir("gname");
+    string marker = d + "/PWNED";
+    System s2;
+    s2.name = "gb";
+    s2.fullname = "GB";
+    s2.command = "printf '%s' %GAMENAME% > " + d + "/out.txt";
+    vector<string> names = {"plain", "two words", "a;touch " + marker + ";b", "$(touch " + marker + ")", "`touch " + marker + "`",
+                            "q\"uote", "back\\slash", "x|y (z)", "it's"};
+    for (const string& nm : names) {
+      Game g2;
+      g2.name = nm;
+      g2.path = "/r/x.gb";
+      string line = launch::build_command(s2, g2, ConfMap(), {});
+      std::ofstream(d + "/c.sh") << line << "\n";
+      CHECK_EQ(std::system(("sh " + d + "/c.sh").c_str()), 0);
+      CHECK_EQ(::access(marker.c_str(), F_OK), -1);
+      std::ifstream in(d + "/out.txt");
+      string got((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+      CHECK_EQ(got, nm);
+    }
+    std::system(("rm -rf " + d).c_str());
+  }
 
   System sys;
   sys.name = "gbc";
@@ -159,6 +208,33 @@ int main() {
     CHECK_EQ(ran.size(), 2ul);  // dedup, one in the event dir + one single, the non-executable file is skipped
     if (ran.size() == 2) CHECK(ran[0].find("10-a.sh /r/My\\ Game.gb \"My Game\" \"My Game\"") != string::npos || ran[0].find("10-a.sh \"/r/My\\ Game.gb\"") != string::npos);
     CHECK_EQ(launch::fire_event(dirs, "game-end", {}, true).size(), 2ul);
+    // arguments reach the script as separate words, whatever they hold, and nothing runs
+    {
+      string marker = d + "/PWNED";
+      if (std::system(("mkdir -p " + d + "/game-selected " + d + "/game-hang").c_str()) != 0) std::abort();
+      write_exec(d + "/game-selected/10-args.sh", "printf '%s|' \"$@\" > " + d + "/args.txt\n");
+      vector<string> evil = {"a b;touch " + marker, "$(touch " + marker + ")", "`touch " + marker + "`"};
+      launch::fire_event(dirs, "game-selected", evil, true);
+      CHECK_EQ(::access(marker.c_str(), F_OK), -1);
+      CHECK_EQ(slurp(d + "/args.txt"), evil[0] + "|" + evil[1] + "|" + evil[2] + "|");
+    }
+    // a script without shebang still runs (sh)
+    {
+      std::ofstream(d + "/game-selected/20-noshebang.sh") << "echo NOSHEBANG >> " << d << "/ns.txt\n";
+      ::chmod((d + "/game-selected/20-noshebang.sh").c_str(), 0755);
+      launch::fire_event(dirs, "game-selected", {}, true);
+      CHECK(slurp(d + "/ns.txt").find("NOSHEBANG") != string::npos);
+    }
+    // a synchronous hook that hangs is killed after the limit
+    {
+      write_exec(d + "/game-hang/10-hang.sh", "sleep 20\n");
+      launch::set_hook_timeout_ms(300);
+      auto th0 = Clock::now();
+      launch::fire_event(dirs, "game-hang", {}, true);
+      double hms = std::chrono::duration<double, std::milli>(Clock::now() - th0).count();
+      launch::set_hook_timeout_ms(30000);
+      CHECK(hms >= 250 && hms < 3000);
+    }
     string txt = slurp(out);
     CHECK(txt.find("S ") != string::npos && txt.find("E 0") != string::npos && txt.find("U game-start") != string::npos && txt.find("U game-end") != string::npos);
     CHECK(txt.find("NOEXEC") == string::npos);

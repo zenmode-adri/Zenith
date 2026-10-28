@@ -128,6 +128,22 @@ if(ZF_INSTALL_THEME)
 endif()
 install(FILES docs/install.md docs/os-contract.md DESTINATION share/doc/zfront)
 install(DIRECTORY docs/os-patches DESTINATION share/doc/zfront)
+# Licences travel with the binary (MIT/zlib/BSD ask for it). They go under share/zfront, NOT share/doc: the image build deletes
+# share/doc from every package. LICENSE and NOTICE.md sit in the repo root, one level above cpp/, and next to this file in the
+# image package's source snapshot.
+foreach(f LICENSE NOTICE.md)
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${f})
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${f} DESTINATION share/zfront/licenses)
+  elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/../${f})
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/../${f} DESTINATION share/zfront/licenses)
+  endif()
+endforeach()
+install(FILES third_party/pugixml/LICENSE.txt DESTINATION share/zfront/licenses RENAME pugixml-LICENSE.txt)
+install(FILES third_party/nanosvg/nanosvg_license.txt DESTINATION share/zfront/licenses RENAME nanosvg-LICENSE.txt)
+install(FILES third_party/libwebp/COPYING DESTINATION share/zfront/licenses RENAME libwebp-COPYING)
+install(FILES third_party/libwebp/AUTHORS DESTINATION share/zfront/licenses RENAME libwebp-AUTHORS)
+install(FILES third_party/libwebp/PATENTS DESTINATION share/zfront/licenses RENAME libwebp-PATENTS)
+install(FILES docs/licenses/OFL-Rubik.txt DESTINATION share/zfront/licenses)
 
 # ---- tests (the image package builds with -DZF_BUILD_TESTS=OFF)
 option(ZF_BUILD_TESTS "build the test executables" ON)

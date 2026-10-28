@@ -33,7 +33,8 @@ constexpr unsigned long kMinPlaytimeSecs = 10;
 /// `" -pNindex I -pNguid G "` per player (player 1 first), at most 8. None gives an empty string.
 std::string controllers_config(const std::vector<JoyInfo>& joys);
 /// `Utils::FileSystem::getEscapedPath` (Linux): generic path, then a backslash before each of `\ '"!$^&*(){}[]?;<>`.
-/// It does NOT escape backtick, `|`, `#` or `~`.
+/// Deviation from ES: backtick, `|`, tab and newline are escaped too (ES leaves them, so a ROM called "a`id`.gb" runs
+/// commands through `sh -c`). `#` and `~` stay as they are: they only matter at the start of a word and a path starts with `/`.
 std::string escape_path(const std::string& p);
 /// Full command line ES would run for `game` (netplay and savestate arguments excluded). An empty `sys.command`
 /// gives an empty string (ES aborts the launch).
@@ -82,12 +83,17 @@ std::vector<std::string> default_script_dirs();
 /// True when `event` has something to run in `dirs` (one `opendir` per dir, no allocation when there is nothing).
 bool has_hooks(const std::vector<std::string>& dirs, std::string_view event);
 /// `Scripting::fireEvent`: every executable file of `<dir>/<event>/` and then every executable plain file of `<dir>/`
-/// (event name as first argument), each dir once, sorted by name; run through `sh -c` with ES's quoting, stdio to
-/// /dev/null. `wait=false` does not wait (children are collected by later `reap_hooks` calls). Returns the lines run.
+/// (event name as first argument), each dir once, sorted by name; spawned directly with the arguments as separate argv
+/// entries (ES builds a quoted `sh -c` line; a name with `$(...)` or `;` must not run anything), stdio to /dev/null, at
+/// most 3 arguments, up to the first empty one. `wait=false` does not wait (children are collected by later `reap_hooks`
+/// calls); `wait=true` kills the script's process group after `set_hook_timeout_ms`. Returns the shell-style lines (logs, tests).
 std::vector<std::string> fire_event(const std::vector<std::string>& dirs, const std::string& event, const std::vector<std::string>& args, bool wait);
 /// Collects finished hook children (non-blocking); costs nothing when there are none.
 void reap_hooks();
-/// `game-start` with (escaped ROM path, stem, game name) / `game-end` without arguments. Free when no script exists.
+/// Time a synchronous hook may run before it is killed (default 30 s). For tests.
+void set_hook_timeout_ms(int ms);
+/// `game-start` with (ROM path, stem, game name) / `game-end` without arguments. Free when no script exists. The path is
+/// the real one (ES passed it shell-escaped, which a script had to undo).
 std::vector<std::string> game_start(const std::vector<std::string>& dirs, const std::string& rom_raw, const std::string& name);
 std::vector<std::string> game_end(const std::vector<std::string>& dirs);
 

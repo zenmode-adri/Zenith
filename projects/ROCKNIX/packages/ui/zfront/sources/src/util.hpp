@@ -11,6 +11,9 @@ using Clock = std::chrono::steady_clock;
 using TimePoint = Clock::time_point;
 
 /// Whole file into `out`; false if it cannot be opened.
+/// Largest file `read_file` accepts (the device has 1 GB of RAM; the biggest real input is a few MB).
+constexpr size_t kMaxReadFile = 256u << 20;
+/// Whole file into `out`. False for a missing file, a directory or other non-regular file, or one over `kMaxReadFile`.
 bool read_file(const std::string& path, std::string& out);
 /// `size` bytes at `offset` (for gamelist spans); false on short read.
 bool read_file_range(const std::string& path, uint64_t offset, size_t size, std::string& out);

@@ -90,7 +90,16 @@ static bool line_has_key(const std::string& line, const std::string& key) {
   return eq != std::string_view::npos && trim(t.substr(0, eq)) == key;
 }
 
-void SystemConf::set(const std::string& key, const std::string& value) {
+// system.cfg is one `key=value` per line and shell scripts read it: a line break inside a key or value would write a
+// second, forged entry ("x\nroot_injected=1"). Line breaks become spaces.
+static std::string one_line(std::string s) {
+  for (char& c : s)
+    if (c == '\n' || c == '\r') c = ' ';
+  return s;
+}
+
+void SystemConf::set(const std::string& key_in, const std::string& value_in) {
+  const std::string key = one_line(key_in), value = one_line(value_in);
   map_[key] = value;
   std::string nl = key + "=" + value;
   bool found = false;
@@ -102,7 +111,8 @@ void SystemConf::set(const std::string& key, const std::string& value) {
   if (!found) lines_.push_back(nl);
 }
 
-void SystemConf::remove(const std::string& key) {
+void SystemConf::remove(const std::string& key_in) {
+  const std::string key = one_line(key_in);
   map_.erase(key);
   std::vector<std::string> keep;
   for (auto& l : lines_)

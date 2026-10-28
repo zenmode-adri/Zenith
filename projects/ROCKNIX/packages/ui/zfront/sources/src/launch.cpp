@@ -51,7 +51,10 @@ static std::string generic_path(const std::string& p) {
 
 std::string escape_path(const std::string& p) {
   std::string b = generic_path(p);
-  for (char c : std::string("\\ '\"!$^&*(){}[]?;<>")) {
+  // ES escapes `\ '"!$^&*(){}[]?;<>`. Backtick, `|`, tab and newline are added here: without them a ROM called
+  // "a`id`.gb" or "a|b.gb" runs commands (the line falls back to `sh -c`). `\<newline>` is a line continuation, so a ROM
+  // with a newline in its name cannot start, but nothing else runs either.
+  for (char c : std::string("\\ '\"!$^&*(){}[]?;<>`|\t\n")) {
     size_t start = 0;
     while (start < b.size()) {
       size_t off = b.find(c, start);
@@ -66,14 +69,18 @@ std::string escape_path(const std::string& p) {
   return b;
 }
 
-// ES `formatCommandLineArgument`: quotes the value when it has a space; escapes `"` either way.
+// ES `formatCommandLineArgument` quotes the value only when it has a space and escapes just `"`. The value (game or system
+// name) comes from gamelist.xml or the scraper and ends up in a shell line, so it is also quoted when it holds anything the
+// shell interprets, and `\`, `$` and backtick are escaped inside the quotes. Plain names come out exactly as in ES.
 static std::string cmdline_arg(const std::string& s) {
+  bool quote = false;
   std::string e;
   for (char c : s) {
-    if (c == '"') e += "\\\"";
-    else e += c;
+    if (c == '"' || c == '\\' || c == '$' || c == '`') e += '\\';
+    e += c;
+    if (std::string_view(" \t\r\n;&|<>(){}[]*?!#~'\"$`\\^").find(c) != std::string_view::npos) quote = true;
   }
-  return s.find(' ') != std::string::npos ? "\"" + e + "\"" : e;
+  return quote ? "\"" + e + "\"" : e;
 }
 
 static void replace_all(std::string& s, const std::string& from, const std::string& to) {
@@ -243,6 +250,26 @@ int spawn_sh(const std::string& line, const SpawnOpts& o) {
   return spawn_raw("/bin/sh", av, o, false);
 }
 
+// A hook script gets its arguments as separate argv entries, never through a shell: game names and paths come from
+// gamelist.xml and could otherwise run commands. A script without a shebang (ENOEXEC) is handed to `sh`, as `sh -c` did.
+int spawn_hook(const std::string& script, const std::string* event, const std::vector<std::string>& args, const SpawnOpts& o) {
+  std::vector<std::string> a{script};
+  if (event) a.push_back(*event);
+  for (size_t i = 0; i < args.size() && i < 3; ++i) {
+    if (args[i].empty()) break;
+    a.push_back(args[i]);
+  }
+  std::vector<const char*> av;
+  for (const std::string& s : a) av.push_back(s.c_str());
+  av.push_back(nullptr);
+  int pid = spawn_raw(av[0], av.data(), o, false);
+  if (pid == -ENOEXEC) {
+    av.insert(av.begin(), "sh");
+    pid = spawn_raw("/bin/sh", av.data(), o, false);
+  }
+  return pid;
+}
+
 // Direct spawn of a simple command; -errno if it is not simple or the exec failed.
 int spawn_simple(const std::string& cmd, const SpawnOpts& o) {
   std::vector<std::string> a;
@@ -260,6 +287,23 @@ int wait_status(int pid) {
     if (errno != EINTR) return -1;
   }
   return st;
+}
+
+int g_hook_timeout_ms = 30000;
+
+// A synchronous hook (`quit`) must not hold the shutdown for ever: after `ms` the whole process group (`own_group`) is killed.
+int wait_status_limited(int pid, int ms) {
+  int st = 0;
+  for (int waited = 0;; waited += 2) {
+    pid_t r = ::waitpid(pid, &st, WNOHANG);
+    if (r == pid) return st;
+    if (r < 0 && errno != EINTR) return -1;
+    if (waited >= ms) break;
+    timespec ts{0, 2 * 1000 * 1000};
+    ::nanosleep(&ts, nullptr);
+  }
+  ::kill(-pid, SIGKILL);
+  return wait_status(pid);
 }
 
 }  // namespace
@@ -373,6 +417,8 @@ std::vector<std::string> unique_dirs(const std::vector<std::string>& dirs) {
 
 }  // namespace
 
+void set_hook_timeout_ms(int ms) { g_hook_timeout_ms = ms; }
+
 void reap_hooks() {
   std::vector<int>& v = hook_pids();
   for (size_t i = 0; i < v.size();) {
@@ -397,34 +443,34 @@ bool has_hooks(const std::vector<std::string>& dirs, std::string_view event) {
 std::vector<std::string> fire_event(const std::vector<std::string>& dirs, const std::string& event, const std::vector<std::string>& args, bool wait) {
   std::vector<std::string> ran;
   reap_hooks();
-  auto exec = [&](std::string line) {
+  auto exec = [&](const std::string& script, const std::string* ev) {
     SpawnOpts o;
     o.quiet = true;
     o.own_group = true;
-    int pid = spawn_sh(line, o);
+    int pid = spawn_hook(script, ev, args, o);
     if (pid > 0) {
-      if (wait) wait_status(pid);
+      if (wait) wait_status_limited(pid, g_hook_timeout_ms);
       else hook_pids().push_back(pid);
     }
-    ran.push_back(std::move(line));
+    ran.push_back(script_line(script, ev, args));  // what a shell line would have looked like: for logs and tests
   };
   std::vector<std::string> u = unique_dirs(dirs), files;
   for (const std::string& d : u) {
     files.clear();
     list_scripts(path_join(d, event), &files);
-    for (const std::string& s : files) exec(script_line(s, nullptr, args));
+    for (const std::string& s : files) exec(s, nullptr);
   }
   for (const std::string& d : u) {
     files.clear();
     list_scripts(d, &files);
-    for (const std::string& s : files) exec(script_line(s, &event, args));
+    for (const std::string& s : files) exec(s, &event);
   }
   return ran;
 }
 
 std::vector<std::string> game_start(const std::vector<std::string>& dirs, const std::string& rom_raw, const std::string& name) {
   if (!has_hooks(dirs, "game-start")) return {};
-  return fire_event(dirs, "game-start", {escape_path(rom_raw), path_stem(rom_raw), name}, false);
+  return fire_event(dirs, "game-start", {generic_path(rom_raw), path_stem(rom_raw), name}, false);
 }
 
 std::vector<std::string> game_end(const std::vector<std::string>& dirs) {

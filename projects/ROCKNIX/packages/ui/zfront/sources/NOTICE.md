@@ -60,5 +60,23 @@ zfront does not bundle them.
 
 ## Zenith theme
 
-The merged Zenith theme (layouts, icons, colours) was made for Zenith. Its own notice is still to be written: fonts and any
-icon taken from elsewhere must be listed there with their licenses before an image is published.
+The Zenith theme (`es-theme-zenith` and its dark overlay, installed under `/usr/share/themes/`) is an original work by
+zenmode-adri released under GPL-2.0; its own notice is `NOTICE.md` inside the theme folder. The third-party parts it bundles are:
+
+| Part | Origin | License |
+|---|---|---|
+| Console logos (`assets/logos/*.webp`, light and dark variants), except the artwork the theme's own notice lists as made for Zenith | *Iconic* EmulationStation theme by Delgan (https://github.com/Delgan/iconic-es), based on *iconic-es-de* by Siddy212; some were resized or recolored for Zenith | CC0 1.0 Universal |
+| Star, battery and network icons (`assets/icons/*.svg`) | The same Iconic theme, unmodified | CC0 1.0 Universal |
+| Font *Rubik* (`assets/fonts/Rubik-Regular.ttf`) | Copyright 2015 The Rubik Project Authors (https://github.com/googlefonts/rubik) | SIL Open Font License 1.1 (text in `cpp/docs/licenses/OFL-Rubik.txt`, installed to `/usr/share/zfront/licenses/`) |
+
+The rest of the theme (menu icons, switches, selector pills, help-bar icons, splash, avatar and the four navigation sounds, which
+are synthesized by a script) is stated by the theme's notice to have been made for Zenith and is covered by the GPL-2.0.
+
+The names and logos of consoles and manufacturers shown by the theme are trademarks of their respective owners; their use here
+only identifies the systems and implies no endorsement. CC0 applies to the artwork of the Iconic theme, not to those marks.
+
+### Fonts loaded from the EmulationStation package at run time
+
+zfront does not bundle them; it loads, if present, the fallback fonts that ship with EmulationStation: Font Awesome (Dave Gandy),
+Droid Sans Fallback (Google, Apache License 2.0), Pyeojin Gothic (Suh Ji-hwan, OFL 1.1) and Vazirmatn (The Vazirmatn Project
+Authors, OFL 1.1). Their licenses are those of the EmulationStation package. No color emoji font is among them.

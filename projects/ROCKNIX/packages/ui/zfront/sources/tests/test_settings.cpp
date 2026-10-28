@@ -9,6 +9,19 @@
 using namespace zf;
 
 int main() {
+  {
+    // a line break in a key or value must not forge another entry
+    SystemConf e = SystemConf::from_text("k=1\n", "");
+    e.set("evil", "x\nroot_injected=1");
+    e.set("k\nk2", "v\r\nk3=w");
+    SystemConf r = SystemConf::from_text(e.text(), "");
+    CHECK(r.get("root_injected") == nullptr);
+    CHECK(r.get("k2") == nullptr && r.get("k3") == nullptr);
+    CHECK(r.get("evil") != nullptr && *r.get("evil") == "x root_injected=1");
+    CHECK(r.get("k k2") != nullptr);
+    e.remove("k\nk2");
+    CHECK(SystemConf::from_text(e.text(), "").get("k k2") == nullptr);
+  }
   SystemConf c = SystemConf::from_text("# comment\nsound.volume=70\ngbc.core=mgba\n; other\nwifi.enabled=1\n");
   CHECK(*c.get("gbc.core") == "mgba");
   CHECK(c.get("missing") == nullptr);

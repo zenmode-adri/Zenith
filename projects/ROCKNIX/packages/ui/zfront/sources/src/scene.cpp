@@ -437,13 +437,16 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
   const ui::Style st = ui::Style::from(th);
   float mx = row_margin(w);
   float cy = th.f("sysInfoY") * h - lift;
-  ImgId name = a.text(cur.full_name, std::round(th.f("fSys") * h * 1.75f), th.color("txt"));
-  float nw = float(a.img(name).w), nh = float(a.img(name).h);
-  float bar_w = std::max(3.0f, std::round(0.0056f * w)), bar_h = std::round(nh * 0.95f);
-  ops.push_back(Op::rect(mx, std::round(cy - bar_h / 2.0f), bar_w, bar_h, system_color(cur.theme_name, st)));
-  ops.push_back(Op::image(name, mx + bar_w + std::round(0.0222f * w), cy - nh / 2.0f, nw, nh));
+  float bar_w = std::max(3.0f, std::round(0.0056f * w));
+  const float gap = std::round(0.0222f * w), name_x = mx + bar_w + gap;
   ImgId info = a.text(games_text(cur.games), th.f("fSys") * h, th.color("dim"));
   float iw = float(a.img(info).w), ih = float(a.img(info).h);
+  // a long name ends in an ellipsis before the game count (same gap as after the bar); a name that fits is drawn as before
+  ImgId name = a.text_ellipsis(cur.full_name, std::round(th.f("fSys") * h * 1.75f), th.color("txt"), (w - mx - iw) - gap - name_x);
+  float nw = float(a.img(name).w), nh = float(a.img(name).h);
+  float bar_h = std::round(nh * 0.95f);
+  ops.push_back(Op::rect(mx, std::round(cy - bar_h / 2.0f), bar_w, bar_h, system_color(cur.theme_name, st)));
+  ops.push_back(Op::image(name, name_x, cy - nh / 2.0f, nw, nh));
   ops.push_back(Op::image(info, w - mx - iw, cy - ih / 2.0f, iw, ih));
   const float hair_y = hairline_y(th, a, w, h, cur);
   ops.push_back(Op::rect(mx, hair_y, w - 2.0f * mx, std::max(1.0f, std::round(h / 720.0f)), st.line));
@@ -455,10 +458,16 @@ void list_view(const Theme& th, Assets& a, const Common& c, float w, float h, co
                size_t cursor, const Status& status, const DetailedData* detail, const std::vector<std::string>* marks, std::vector<Op>& ops) {
   ops.push_back(Op::rect(0, 0, w, h, th.color("bg")));
   push_avatar(th, a, c, w, h, ops);
-  ImgId t = a.text(system_name, std::floor(th.f("fTitle") * h), th.color("txt"));
-  float tw = float(a.img(t).w), thh = float(a.img(t).h);
-  ops.push_back(Op::image(t, th.f("nameX") * w, th.f("avY") * h - thh / 2.0f, tw, thh));
+  const size_t status_first = ops.size();
   status_bar(th, a, w, h, status, ops);
+  // the title ends in an ellipsis before the wifi / battery / clock stack instead of running into it
+  float stack_left = w;
+  for (size_t i = status_first; i < ops.size(); ++i)
+    if (ops[i].kind == Op::Image && ops[i].w > 0) stack_left = std::min(stack_left, ops[i].x);
+  const float title_x = th.f("nameX") * w;
+  ImgId t = a.text_ellipsis(system_name, std::floor(th.f("fTitle") * h), th.color("txt"), stack_left - std::round(0.0222f * w) - title_x);
+  float tw = float(a.img(t).w), thh = float(a.img(t).h);
+  ops.push_back(Op::image(t, title_x, th.f("avY") * h - thh / 2.0f, tw, thh));
   help_bar(th, a, w, h, list_help(), ops);
   if (names.empty()) return;
 

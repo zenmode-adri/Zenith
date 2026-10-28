@@ -14,10 +14,21 @@ void set_writes_blocked(bool blocked) { g_writes_blocked.store(blocked, std::mem
 bool read_file(const std::string& path, std::string& out) {
   FILE* f = std::fopen(path.c_str(), "rb");
   if (!f) return false;
+  // fopen("rb") also opens a directory, and ftell on one gives LONG_MAX: resize() then aborts the process (the build has
+  // no exceptions). Only regular files of a sane size are read; /sys and /proc attributes are regular files too.
+  struct stat st;
+  if (::fstat(::fileno(f), &st) != 0 || !S_ISREG(st.st_mode)) {
+    std::fclose(f);
+    return false;
+  }
   std::fseek(f, 0, SEEK_END);
   long n = std::ftell(f);
   std::fseek(f, 0, SEEK_SET);
   out.clear();
+  if (n > static_cast<long>(kMaxReadFile)) {
+    std::fclose(f);
+    return false;
+  }
   if (n > 0) {
     out.resize(static_cast<size_t>(n));
     size_t got = std::fread(out.data(), 1, out.size(), f);

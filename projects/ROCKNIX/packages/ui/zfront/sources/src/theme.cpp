@@ -19,12 +19,14 @@ const Ratio kRatios[] = {
 };
 
 // Visit `<variables>` in document order (any depth), like XML `descendants()`.
+// Bounded depth: a theme nested 50000 levels would exhaust the stack (real ones nest 3-4 deep).
 template <class F>
-void each_variables(pugi::xml_node n, F&& f) {
+void each_variables(pugi::xml_node n, F&& f, int depth = 0) {
+  if (depth >= 64) return;
   for (pugi::xml_node c : n.children()) {
     if (c.type() != pugi::node_element) continue;
     if (std::string_view(c.name()) == "variables") f(c);
-    each_variables(c, f);
+    each_variables(c, f, depth + 1);
   }
 }
 

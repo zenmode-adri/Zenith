@@ -415,6 +415,24 @@ class Window {
     len_ += size_t(n);
     return true;
   }
+  /// True when the window is full at its size cap: the element being read does not fit.
+  bool at_cap() const { return !mem_ && !eof_ && buf_ && len_ == cap_ && cap_ >= kMaxWindow; }
+  /// Throws away everything up to and including the next `needle`, reading on as needed (memory stays bounded).
+  /// False when the file ends first.
+  bool discard_past(std::string_view needle) {
+    for (;;) {
+      size_t at = std::string_view(data_, len_).find(needle);
+      if (at != std::string_view::npos) {
+        size_t cut = at + needle.size();
+        std::memmove(buf_, buf_ + cut, len_ - cut);
+        len_ -= cut;
+        base_ += cut;
+        return true;
+      }
+      size_t keep = len_ >= needle.size() ? len_ - (needle.size() - 1) : 0;  // the tail may hold half a needle
+      if (!refill(keep)) return false;
+    }
+  }
 
  private:
   static constexpr size_t kMaxWindow = 16u << 20;  // one element bigger than this is treated as malformed
@@ -433,6 +451,7 @@ class Scanner {
     info.opened = true;
     enum { Prolog, Root, Done } st = Prolog;
     size_t pos = 0;
+    bool in_game = false;  // the element being read is a <game>
     while (st != Done) {
       const char* d = w.data();
       const char* end = d + w.len();
@@ -489,7 +508,8 @@ class Scanner {
           bool self = false;
           r = open_tag(p, end, name, self);
           if (r == St::Ok) {
-            if (name == "game" && !self) {
+            in_game = name == "game" && !self;
+            if (in_game) {
               RawGame g;
               r = game_body(p, end, [&](std::string_view tag, std::string_view raw, bool nested, const char*, const char*) { take_field(g, tag, raw, nested, false); });
               if (r == St::Ok && g.has_path) deliver(g, w.base() + pos, w.base() + size_t(p - d), cb, info);
@@ -502,8 +522,12 @@ class Scanner {
       }
       if (r == St::Ok) {
         pos = size_t(p - d);
+        in_game = false;
       } else if (r == St::More) {
-        if (!w.refill(pos)) break;  // truncated file
+        if (!w.refill(pos)) {
+          // a <game> bigger than the window cap (a huge <desc>): skip just that one and go on with the rest of the list
+          if (!(in_game && pos == 0 && w.at_cap() && w.discard_past("</game>"))) break;  // else: truncated file
+        }
         pos = 0;
       } else {
         break;

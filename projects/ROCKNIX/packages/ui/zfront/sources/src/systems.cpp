@@ -58,11 +58,16 @@ std::string gamelist_for(const std::string& name, const std::string& dir) {
   return file_exists(alt) ? alt : p;
 }
 
-void collect_systems(pugi::xml_node n, std::vector<pugi::xml_node>& out) {
+// Real files nest <systemList><system> two deep; a file nested 100000 levels would exhaust the stack (the pugixml DOM
+// itself is built without recursion), so the walk stops at kMaxXmlDepth.
+constexpr int kMaxXmlDepth = 64;
+
+void collect_systems(pugi::xml_node n, std::vector<pugi::xml_node>& out, int depth = 0) {
+  if (depth >= kMaxXmlDepth) return;
   for (pugi::xml_node c : n.children()) {
     if (c.type() != pugi::node_element) continue;
     if (std::string_view(c.name()) == "system") out.push_back(c);
-    collect_systems(c, out);
+    collect_systems(c, out, depth + 1);
   }
 }
 
