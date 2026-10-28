@@ -31,6 +31,23 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
 - Not affected: standalone emulators (PPSSPP, Flycast, DraStic, DuckStation, ScummVM...) do not go through
   `setsettings.sh`.
 
+### GPU driver
+- **The open-source GPU driver (Panfrost) now works on the RK3326, so the driver choice in the menu is usable.** Until
+  now selecting it left the console on software rendering: the GPU and the RAM share one voltage rail (`vdd_logic`),
+  a single-value `opp-microvolt` is read as "exactly X mV", and Panfrost's exact request clashed with the RAM's
+  minimum (1050 mV at 666 MHz) -> `Restricting voltage`, error -22, and the GPU never probed. The Mali driver (libmali)
+  was not affected because its own patch already asks for a minimum. New kernel patch
+  `036-opp-single-voltage-is-minimum`: when a table gives one voltage the OPP core now asks the regulator for "at least
+  X", so the highest minimum of GPU and RAM wins. It works with any device tree (also imported ones) and changes
+  nothing on the CPU rail (same latency, same voltages: 1125 mV at 1008 MHz, 1300 mV at 1296 MHz). Changing the driver
+  still needs a reboot.
+- Measured on an R36 Ultra (God of War: Chains of Olympus, same save state, 1x): Panfrost 6.9-7.0 fps vs libmali
+  7.2-7.3 fps with the governors on automatic (-5 %); with GPU 600 MHz and RAM 666 MHz fixed, 7.7 vs 7.4 fps. With
+  Panfrost the RAM now reaches 666 MHz while the GPU sits at 200-400 MHz and the kernel log shows no voltage
+  warnings. glmark2: 414 vs 419. **Panfrost is not faster: that game is limited by the emulation thread and memory
+  latency, not by the GPU** (the GPU is about 20 % busy), so libmali stays the default. Only this game and glmark2
+  were measured. `opp-single-voltage-minimum`
+
 ## 2026-10-23 - image `44d6084` (first public candidate)
 
 - **Carousel cards with an icon** (Music, Tools, Favorites, All games, Last played, Never played, Collections, Books):
