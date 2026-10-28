@@ -527,6 +527,7 @@ class Scanner {
         if (!w.refill(pos)) {
           // a <game> bigger than the window cap (a huge <desc>): skip just that one and go on with the rest of the list
           if (!(in_game && pos == 0 && w.at_cap() && w.discard_past("</game>"))) break;  // else: truncated file
+          ++info.skipped;
         }
         pos = 0;
       } else {
@@ -839,8 +840,8 @@ bool apply(const std::string& xml_path, const std::string& rom_dir, const std::s
       return splice_file(xml_path, -1, 0, 0, doc, err);
     }
   }
-  if (!info.ok) {
-    err = xml_path + ": malformed gamelist.xml, not modified";
+  if (!info.ok || info.skipped) {  // skipped: an oversized <game> was not read, so it may be this very ROM
+    err = xml_path + (info.ok ? ": has an oversized <game> element, not modified" : ": malformed gamelist.xml, not modified");
     return false;
   }
   uint64_t begin, old_len;
@@ -1022,8 +1023,8 @@ bool gamelist_edit_fields(const std::string& xml_path, const std::string& rom_di
       return splice_file(xml_path, -1, 0, 0, fresh_doc(), err);
     }
   }
-  if (!info.ok) {
-    err = xml_path + ": malformed gamelist.xml, not modified";
+  if (!info.ok || info.skipped) {  // skipped: an oversized <game> was not read, so it may be this very ROM
+    err = xml_path + (info.ok ? ": has an oversized <game> element, not modified" : ": malformed gamelist.xml, not modified");
     return false;
   }
 

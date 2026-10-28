@@ -152,6 +152,13 @@ int main() {
     CHECK_EQ(got, string("./a.gb,./b.gb,./c.gb,"));
     CHECK(info.ok);
     CHECK_EQ(info.games, size_t(3));
+    CHECK_EQ(info.skipped, size_t(1));
+    // writers refuse such a file: the skipped entry could be the very ROM being edited, and nothing may be lost
+    string err;
+    CHECK(!gamelist_set_favorite(gl, d, d + "/b.gb", true, err));
+    CHECK(!err.empty());
+    string after;
+    CHECK(read_file(gl, after) && after == xml);
     CHECK(ms_since(t0) < 5000);
     // a file that ends inside the oversized element: what came before is kept, the structure is reported incomplete
     string cut = xml.substr(0, xml.find("</desc>"));

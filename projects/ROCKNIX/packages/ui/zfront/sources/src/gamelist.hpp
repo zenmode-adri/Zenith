@@ -76,6 +76,8 @@ struct GamelistInfo {
   uint64_t root_begin = 0, root_end = 0;  // byte range of the `<gameList ...>` / `<gameList/>` tag
   uint64_t root_close_begin = 0;  // offset of `</gameList>`
   size_t games = 0;          // `<game>` elements delivered (with a `<path>`)
+  size_t skipped = 0;        // `<game>` elements too big to read (> 16 MiB) that were jumped over: NOT delivered, but still in the
+                             // file. Readers may carry on (`ok` stays true); writers must not edit such a file (see gamelist.cpp)
 };
 
 /// Streams every `<game>` of the file / text through `cb` in document order (`<folder>` and unknown elements are
