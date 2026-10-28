@@ -1,0 +1,32 @@
+--- a/drivers/opp/core.c
++++ b/drivers/opp/core.c
+@@ -941,6 +941,7 @@
+ static int _set_opp_voltage(struct device *dev, struct regulator *reg,
+ 			    struct dev_pm_opp_supply *supply)
+ {
++	unsigned long u_volt_max = supply->u_volt_max;
+ 	int ret;
+ 
+ 	/* Regulator not available for device */
+@@ -953,8 +954,20 @@
+ 	dev_dbg(dev, "%s: voltages (mV): %lu %lu %lu\n", __func__,
+ 		supply->u_volt_min, supply->u_volt, supply->u_volt_max);
+ 
++	/*
++	 * An opp-microvolt with a single value is parsed as min == max, i.e. "exactly X".
++	 * Where a rail is shared (RK3326: GPU and DMC on vdd_logic) an exact request
++	 * conflicts with the other consumer's higher minimum and the transition fails
++	 * with -EINVAL ("Restricting voltage").  Treat it as a minimum instead, like the
++	 * DMC driver and the Mali kbase driver already do; the regulator core then picks
++	 * the highest minimum of all consumers.  On an unshared rail the result is the
++	 * same voltage.  Tables that give an explicit range keep their own maximum.
++	 */
++	if (supply->u_volt_min == supply->u_volt_max)
++		u_volt_max = INT_MAX;
++
+ 	ret = regulator_set_voltage_triplet(reg, supply->u_volt_min,
+-					    supply->u_volt, supply->u_volt_max);
++					    supply->u_volt, u_volt_max);
+ 	if (ret)
+ 		dev_err(dev, "%s: failed to set voltage (%lu %lu %lu mV): %d\n",
+ 			__func__, supply->u_volt_min, supply->u_volt,
