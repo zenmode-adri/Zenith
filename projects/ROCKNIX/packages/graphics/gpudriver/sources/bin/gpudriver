@@ -26,20 +26,6 @@ bind_libs() {   # bind_libs <subdir>   (/usr/lib/<subdir>/X -> /usr/lib/X, igual
   done
 }
 
-# Panfrost cuenta como cargado solo si algun dispositivo de GPU quedo enlazado a el: el modulo puede cargar y aun asi fallar
-# el probe (p. ej. RK3326 con un kernel sin el parche 036: "Restricting voltage" -> -EINVAL) y entonces no hay GPU para nadie.
-# El probe puede aplazarse (EPROBE_DEFER), por eso se espera hasta 3 s.
-PANFROST_SYSFS="${PANFROST_SYSFS:-/sys/bus/platform/drivers/panfrost}"
-panfrost_bound() {
-  n=0
-  while [ ${n} -lt 15 ]; do
-    [ -n "$(find "${PANFROST_SYSFS}" -mindepth 1 -maxdepth 1 -type l ! -name module 2>/dev/null)" ] && return 0
-    sleep 0.2
-    n=$((n+1))
-  done
-  return 1
-}
-
 # When loading a driver, do two things:
 #   * ensure needed driver is loaded and other is not
 #   * ensure graphics related libs are overridden (or not)
@@ -84,13 +70,6 @@ case "$1" in
   "--start")
     get_current_driver
     load_driver ${CONFDRIVER}
-    if [ "${CONFDRIVER}" = "panfrost" ] && ! panfrost_bound; then
-      # Sin GPU el escritorio no arranca: se vuelve a libmali y se deja guardado para que el menu refleje lo que hay.
-      logger -t gpudriver "panfrost no enlazo ninguna GPU; se vuelve a libmali" 2>/dev/null
-      echo "gpudriver: panfrost no enlazo ninguna GPU; se vuelve a libmali" >&2
-      set_setting ${GPU_DRIVER_SETTING_KEY} libmali
-      load_driver libmali
-    fi
     ;;
   "libmali")
     set_setting ${GPU_DRIVER_SETTING_KEY} $1

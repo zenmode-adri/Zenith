@@ -41,9 +41,6 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
   X", so the highest minimum of GPU and RAM wins. It works with any device tree (also imported ones) and changes
   nothing on the CPU rail (same latency, same voltages: 1125 mV at 1008 MHz, 1300 mV at 1296 MHz). Changing the driver
   still needs a reboot.
-- **Safety net for the GPU driver choice.** If Panfrost is selected but no GPU gets bound to it at boot (the module
-  loaded but the probe failed), `gpudriver --start` now falls back to libmali and saves that choice, instead of
-  leaving the desktop without a GPU. The fallback is logged (`logger -t gpudriver`).
 - Measured on an R36 Ultra (God of War: Chains of Olympus, same save state, 1x): Panfrost 6.9-7.0 fps vs libmali
   7.2-7.3 fps with the governors on automatic (-5 %); with GPU 600 MHz and RAM 666 MHz fixed, 7.7 vs 7.4 fps. With
   Panfrost the RAM now reaches 666 MHz while the GPU sits at 200-400 MHz and the kernel log shows no voltage
