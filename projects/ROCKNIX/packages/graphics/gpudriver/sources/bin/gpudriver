@@ -26,6 +26,20 @@ bind_libs() {   # bind_libs <subdir>   (/usr/lib/<subdir>/X -> /usr/lib/X, igual
   done
 }
 
+DMC_DEVFREQ=/sys/class/devfreq/dmc
+
+# dmc_floor: fija la RAM a su frecuencia minima (min_freq ya es el minimo; solo baja max_freq). dmc_release: devuelve el maximo.
+dmc_floor() {
+  [ -d ${DMC_DEVFREQ} ] || return 0
+  DMC_MAX_SAVED=$(cat ${DMC_DEVFREQ}/max_freq)
+  DMC_LOW=$(tr ' ' '\n' < ${DMC_DEVFREQ}/available_frequencies | sort -n | head -1)
+  echo ${DMC_LOW} > ${DMC_DEVFREQ}/min_freq
+  echo ${DMC_LOW} > ${DMC_DEVFREQ}/max_freq
+}
+dmc_release() {
+  [ -n "${DMC_MAX_SAVED}" ] && echo ${DMC_MAX_SAVED} > ${DMC_DEVFREQ}/max_freq
+}
+
 # When loading a driver, do two things:
 #   * ensure needed driver is loaded and other is not
 #   * ensure graphics related libs are overridden (or not)
@@ -49,7 +63,13 @@ load_driver() {
       ;;
     "panfrost")
       modprobe -r mali_kbase
+      # 28-oct: la GPU (vdd_logic) y la RAM (dmc, center-supply) comparten raiL. Al arrancar la RAM esta a 666 MHz y exige >=1050 mV
+      # mientras panfrost pide EXACTAMENTE 950 mV para su primer OPP (200 MHz): "Restricting voltage, 1050000-950000uV" -> -EINVAL,
+      # el probe falla y deja el OPP de la GPU con reguladores asignados (-EBUSY en cualquier reintento hasta reiniciar).
+      # Se baja la RAM a su minimo (950 mV) SOLO durante el probe y se libera despues.
+      dmc_floor
       modprobe @PAN@
+      dmc_release
 
       grep -q /usr/lib/libEGL.so /proc/mounts && find /usr/lib/mali -type f -exec bash -c 'lib={}; umount ${lib/\/mali\//\/}' ';'
       if [ -d /usr/lib/glesonly ]; then
