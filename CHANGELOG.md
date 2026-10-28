@@ -5,7 +5,7 @@ Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribu
 suspend on **RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
 Dates are the build dates. Every entry has a git tag (named in `code`) and details in the commit it points to.
 
-## Next image (built as `1c8a591`, not published yet)
+## Next image (contents tested in the DEBUG build `1c8a591`, tag `image-1c8a591`; not for release: a clean image is still to be built)
 
 ### Choosing the right device tree (DTB)
 - **Zenith DTB Selector replaces the old DTB picker.** One small program for Windows, Linux and macOS (window in
@@ -22,34 +22,36 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
   no `/flash/dtbprobe/state` the script does nothing. **Not yet tested on hardware.**
 
 ### zfront, a new optional front-end
-- **zfront is a second front-end written from scratch in C++17 (SDL2 + OpenGL ES), installed next to EmulationStation.**
+- **zfront is a second front-end written from scratch in C++17 (SDL2), installed next to EmulationStation.**
   EmulationStation stays the default; `Tools > Switch frontend` changes between the two and restarts the front-end
   without waiting (setting `system.frontend`). zfront reads the same `es_settings.cfg`, the same gamelists, the same
-  Zenith theme and the same scripts, so nothing has to be set up twice. `c0d342f`, `5904599`, `e6c29f1`
+  Zenith theme and the same scripts, so nothing has to be set up twice. `zfront-88212b3`
 - **Lighter and faster to come up** (R36 Ultra, large library): first frame 1.0 s instead of 4.1 s, 36 MB of its own
   memory instead of 143 MB, and it sleeps between events instead of polling (2 CPU ticks per 10 s idle). Starting
-  RetroArch from the front-end takes 0.91 s instead of 1.18 s and 40-100 MB more RAM stay free while a game runs. Real gameplay is the same: God of War (PPSSPP) and RetroArch show no frame-rate difference
-  between the two front-ends.
+  RetroArch from the front-end takes 0.91 s instead of 1.18 s and 40-100 MB more RAM stay free while a game runs. Real gameplay is the same: God of War (PPSSPP) shows no frame-rate difference between the two
+  front-ends (the only game measured).
 - **Menus grouped by intention** instead of one long "System" list (about 50 rows): 8 groups, an Inactivity block, the
   panel adjustment and language/time as sub-screens, a floating help pill shared by the carousel, the lists and the
   menus. Brightness and volume keep their own buttons.
 - **Motion tuned for a small screen:** exponential carousel glide that follows the EmulationStation curve, a slower
   repeat when the d-pad is held (it used to race through the carousel), windows that fade in and out, toast messages
-  above the help bar, and the first open of every menu warmed up in idle time so it costs 1.5 ms instead of 50-90 ms.
+  above the help bar, and the main menu and five sub-menus are built in idle time after start so their first open no
+  longer stutters (main menu and Games: 1.5 ms instead of 50-90 ms; Display and Battery: worst frame 10-12 ms;
+  Controllers and Network are not pre-built because opening them starts Bluetooth/Wi-Fi).
 - **"Continue playing" row** under the carousel: Down gives it focus, A resumes from the last save state without going
-  through the save-state manager; games whose ROM no longer exists are hidden. Works at 4:3 (640x480) as well; this
-  row has not been tried on the console with real ROMs yet.
+  through the save-state manager; games whose ROM no longer exists are hidden. **Not tried on the console with real
+  ROMs yet**, and the 4:3 (640x480) layout that makes room for it has only been checked with the test harness.
 - **Navigation sounds** (scroll, back, menu, launch) with the Zenith theme sounds, only when `EnableSounds` is on,
-  mixed so overlapping sounds do not click. The audio device is closed 4 s after the last sound, so no stream stays
+  mixed to avoid clicks when sounds overlap (still to be confirmed by ear). The audio device is closed 4 s after the last sound, so no stream stays
   open while idle. If you hear nothing, check that `audio.device` is `speakers` (it can be left on `headphone`).
 - **Systems reload live:** toggling "Show empty systems" no longer asks to restart the front-end.
 - **Suspend from the menu and as a screensaver type** are offered now (they were hidden because zfront looked for a
   `pm-suspend` binary that Zenith does not ship; it checks the real sleep hook and runs `systemctl suspend`). The
   power button is unchanged. Not tried on the console yet.
 - Included: `LICENSE` and `NOTICE.md` for zfront. `runemu --prepare` prepares the RetroArch configuration while idle
-  and the launch reuses it if nothing changed (start to exec 830 -> about 510 ms). `launch-fast`
+  and the launch reuses it if nothing changed (start to exec 830 -> about 510 ms). `zfront-88212b3`
 - Theme: new menu icons (display, battery, library) and 16 text-only logos of the dark theme redrawn in clean white
-  without the white outline. `c21bb69`, `32e4cd9`, `a199e27`
+  without the white outline. `zfront-88212b3`
 
 ### Opening a game
 - **RetroArch games start 0.2-0.5 s faster.** `setsettings.sh` (the script that writes the per-game RetroArch
@@ -75,7 +77,7 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
   loaded but the probe failed), `gpudriver --start` saves libmali as the driver and reboots once, instead of leaving the
   desktop on software rendering. It reboots rather than swapping drivers in place because, on the Ultra, loading
   `mali_kbase` after Panfrost had taken the GPU in the same boot hangs the kernel (measured). It only reboots when the
-  setting was really saved, so it cannot loop. Logged with `logger -t gpudriver`.
+  setting was really saved, so it cannot loop. Logged with `logger -t gpudriver`. `gpudriver-fallback-reboot`
 - Measured on an R36 Ultra (God of War: Chains of Olympus, same save state, 1x): Panfrost 6.9-7.0 fps vs libmali
   7.2-7.3 fps with the governors on automatic (-5 %); with GPU 600 MHz and RAM 666 MHz fixed, 7.7 vs 7.4 fps. With
   Panfrost the RAM now reaches 666 MHz while the GPU sits at 200-400 MHz and the kernel log shows no voltage
