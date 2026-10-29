@@ -34,6 +34,10 @@ developed and measured on the **R36 Ultra**.
   first-boot screens.
 - **Mainline kernel**: Linux 6.12 with upstream drivers, plus a patch set for the RK3326.
 - **R36 Tuner Next** built in: CPU governor and frequencies, turbo steps, benchmarks and a monitor.
+- **zfront**, an optional lighter front-end next to EmulationStation (which stays the default): first screen in 1.0 s instead
+  of 4.1 s and about a quarter of the memory. See [`docs/ZFRONT.md`](docs/ZFRONT.md).
+- **Zenith DTB Selector** to pick the right screen/device tree for your console from Windows, Linux or macOS, with a test
+  mode for clones whose model is unknown. See [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 
 ## Screenshots
 
@@ -71,6 +75,23 @@ make them faster? Mostly no) and [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 >
 > Thanks to AURKNIX and ROCKNIX for the base these numbers start from.
 
+### zfront vs EmulationStation
+
+zfront is an optional second front-end, written from scratch and installed next to EmulationStation (ES). It reads the same
+settings, gamelists, theme and scripts, so you can switch back and forth from `Tools > Switch frontend`. Measured on an
+**R36 Ultra** (one run each, not a statistical benchmark):
+
+| | EmulationStation | zfront |
+|---|---:|---:|
+| First screen after start (large library) | 4.1 s | **1.0 s** |
+| Front-end memory in the menus | 143 MB | **36 MB** |
+| Front-end memory while a game runs | 170 MB | **22.5 MB** |
+| CPU when idle (ticks per 10 s) | 35 | **2** |
+| Start RetroArch from the front-end | 1.18 s | **0.91 s** |
+
+It does **not** make games faster: in God of War (the only game measured) the frame rate is the same with both. ES is still
+the default; zfront has not been tried yet on the console with a physical pad, real sound or suspend from its menu.
+
 ### Boot and power
 - GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD
   probing in the initramfs.
@@ -90,6 +111,22 @@ make them faster? Mostly no) and [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
   1.0 s instead of 4.1 s, 36 MB of memory instead of 143 MB, almost no CPU when idle; in the only game measured (God of
   War) the frame rate is the same as with EmulationStation. Still unchecked on the console: a physical pad, real sound and
   suspend from its menu. Details in [`docs/ZFRONT.md`](docs/ZFRONT.md) and the [CHANGELOG](CHANGELOG.md).
+
+### Opening games and graphics
+- RetroArch games start 0.2-0.5 s faster: the script that writes the per-game configuration went from about 220 processes to
+  about 40 and produces byte-identical files (compared on 14 systems).
+- **The open-source GPU driver (Panfrost) now works on the RK3326**, so the `GPU DRIVER` choice in the menu is usable (kernel
+  patch `036-opp-single-voltage-is-minimum`; before it, choosing Panfrost left the console on software rendering). If it
+  fails to bind the GPU at boot, the system saves libmali and reboots once.
+- **libmali stays the default because Panfrost is not faster:** in God of War (1x, automatic governors) Panfrost was 5 %
+  slower; with frame skip off at 2x/3x/4x libmali was 48 %/24 %/7 % faster; Mario Kart 64 36 vs 32 fps; glmark2 tied.
+  Only those tests were done.
+
+### Choosing the right device tree
+- **Zenith DTB Selector** (Windows, Linux, macOS; window in English, Spanish and Chinese): finds the SD card, lists 86 models,
+  shows what will change before writing, keeps dated backups of `extlinux.conf` and can import your own `.dtb`.
+- **Test mode** for consoles whose DTB cannot be guessed: on each boot it tries the next candidate until you hold a button.
+  **Not yet tested on hardware.**
 
 ### R36 Ultra hardware
 - RK915 Wi-Fi driver fixes, joystick RGB LED driver, RK817 battery gauge, CPU/GPU voltage bins
