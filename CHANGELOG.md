@@ -5,7 +5,7 @@ Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribu
 suspend on **RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
 Dates are the build dates. Every entry has a git tag (named in `code`) and details in the commit it points to.
 
-## Next image (contents tested in the DEBUG build `1c8a591`, tag `image-1c8a591`; not for release: a clean image is still to be built)
+## Next image (contents tested in the DEBUG build `d955804`, installed on an R36 Ultra; the clean image built from the same code has NOT been booted: try it on a spare SD card first)
 
 ### Choosing the right device tree (DTB)
 - **Zenith DTB Selector replaces the old DTB picker.** One small program for Windows, Linux and macOS (window in
@@ -52,6 +52,20 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
   and the launch reuses it if nothing changed (start to exec 830 -> about 510 ms). `zfront-88212b3`
 - Theme: new menu icons (display, battery, library) and 16 text-only logos of the dark theme redrawn in clean white
   without the white outline. `zfront-88212b3`
+
+### zfront: safety review (28 Oct)
+- **Game names can no longer run commands.** `escape_path` (a port of the EmulationStation one) did not escape the backtick, `|`,
+  tab and newline, so a ROM called like that could run a command when launched; `%GAMENAME%`/`%SYSTEMNAME%` were not quoted
+  either. Both fixed. EmulationStation probably has the same flaw (not checked).
+- **User hooks run without a shell** (arguments passed as an array, `game-start` gets the real ROM path); synchronous `quit`
+  hooks are killed after 30 s.
+- **Broken data no longer crashes it:** an `<image>` that points to a folder, pictures larger than 16 Mpx, XML nested more
+  than 64 levels, line breaks inside `system.cfg` values, and a `<game>` bigger than 16 MiB in a gamelist (that entry is
+  skipped instead of losing the rest of the list; gamelists with a skipped entry are never rewritten).
+- **Long system names end in an ellipsis** instead of covering the game counter, Wi-Fi, battery and clock.
+- The HTTP API on port 1234 listens on 127.0.0.1 only. Licences of zfront and of the libraries compiled into it are installed
+  in `/usr/share/zfront/licenses`. 58 test programs pass on a PC (also under ASan/UBSan). **Not seen on the console yet:** the
+  look of the long-title ellipsis, launching a game with an odd name, and a huge gamelist.
 
 ### Opening a game
 - **RetroArch games start 0.2-0.5 s faster.** `setsettings.sh` (the script that writes the per-game RetroArch
