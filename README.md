@@ -87,9 +87,9 @@ make them faster? Mostly no) and [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 - Own first-boot screens, language question and boot banner.
 - **zfront, an optional second front-end** written from scratch in C++17 and installed next to EmulationStation, which stays
   the default (`Tools > Switch frontend`). Same settings, gamelists, theme and scripts. On an R36 Ultra: first screen in
-  1.0 s instead of 4.1 s, 36 MB of memory instead of 143 MB, almost no CPU when idle; games run at the same speed. Still
-  unchecked on the console: a physical pad, real sound and suspend from its menu. Details in the
-  [CHANGELOG](CHANGELOG.md).
+  1.0 s instead of 4.1 s, 36 MB of memory instead of 143 MB, almost no CPU when idle; in the only game measured (God of
+  War) the frame rate is the same as with EmulationStation. Still unchecked on the console: a physical pad, real sound and
+  suspend from its menu. Details in [`docs/ZFRONT.md`](docs/ZFRONT.md) and the [CHANGELOG](CHANGELOG.md).
 
 ### R36 Ultra hardware
 - RK915 Wi-Fi driver fixes, joystick RGB LED driver, RK817 battery gauge, CPU/GPU voltage bins
