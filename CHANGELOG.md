@@ -116,10 +116,11 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
   many draw calls per frame (~460) and Panfrost's per-call cost shows: 36 vs 32 fps. Power draw is similar. libmali
   stays the default.
 - **Update (2026-11-04): those numbers are for Mesa's stock Panfrost**, the one this image ships. Our patched Panfrost
-  (19 patches to Mesa 26.0.4 plus a PGO and LTO build, not in the image yet) is faster than libmali: in 20 games it
-  matches or beats libmali in 19 on the R36S and in all 20 on the R36 Ultra, God of War is +52-56 % faster, and glmark2
-  scores 434 vs 380 (R36S) and 414 vs 358 (Ultra). libmali stays the default for safety and compatibility until the
-  patched driver is in the image. Details: `docs/PANFROST-STUDY.md` and the README.
+  (19 patches to Mesa 26.0.4 plus a PGO and LTO build, not in the image yet) is 39 % faster than stock Panfrost with
+  the games running free, and close to libmali when you play: at real speed on the R36S, from −7 % to +15 % in five
+  N64 games, and God of War (with PPSSPP's frame skipping) 7.8 fps with libmali vs 8.4 with patched Panfrost. glmark2
+  scores 434 vs 380 (R36S) and 414 vs 358 (Ultra). libmali stays the default for safety and compatibility. Details:
+  `docs/PANFROST-STUDY.md` and the README.
 
 ## v0.1.0 - 2026-10-23 (first public release, pre-release)
 

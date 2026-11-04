@@ -1,8 +1,11 @@
 # Panfrost vs libmali on the Mali-G31: 20 games, three drivers
 
-**Short answer: a patched Panfrost is now as fast as Arm's libmali or faster in 19 of 20 games** on the R36S, and in all
-20 on the R36 Ultra (a game counts as a tie within ±5 %). It is much faster than Panfrost as Mesa ships it. This is a
-measurement report: **Zenith keeps libmali as the default for safety and compatibility, and the patched Panfrost is
+**Short answer: with the games running free, a patched Panfrost is as fast as Arm's libmali or faster in 19 of 20 games**
+on the R36S, and in all 20 on the R36 Ultra (a game counts as a tie within ±5 %), and much faster than Panfrost as Mesa
+ships it. **When you play, the difference is small**: at real speed on the R36S (vsync and audio sync on) it goes from
+−7 % to +15 % in five N64 games, and God of War with PPSSPP's default frame skipping runs at 7.8 fps with libmali and
+8.4 with patched Panfrost (it is limited by the CPU). The real-speed tables are in the README. This is a measurement
+report: **Zenith keeps libmali as the default for safety and compatibility, and the patched Panfrost is
 built into the next image** (in the current release, the Panfrost in the `GPU DRIVER` menu is the stock one).
 
 | | R36S | R36 Ultra |
@@ -13,8 +16,11 @@ built into the next image** (in the current release, the Panfrost in the `GPU DR
 | Stock Panfrost vs libmali, geometric mean | −24.8 % | −23.3 % |
 | glmark2 score: libmali / stock / patched | 380 / 386 / **434** | 358 / 368 / **414** |
 
-> **Read this first.** Games run in **uncapped fast-forward**, so the numbers show how much headroom each driver has.
-> In normal play any game above 60 fps on all three drivers plays the same. All tests ran **with the sound off**.
+> **Read this first.** Games run in **uncapped fast-forward** with fixed clocks, so the numbers show how much headroom
+> each driver has, not how a game feels. In normal play any game above 60 fps on all three drivers plays the same, and
+> games below it gain much less than these tables show. **God of War ran without frame skipping**, which nobody plays on
+> these consoles: its 22 fps here are not what you get when playing (7.8 vs 8.4 fps with frame skipping). All tests ran
+> **with the sound off**.
 
 ## The three drivers
 
