@@ -95,13 +95,18 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
 - Measured on an R36 Ultra (God of War: Chains of Olympus, same save state, 1x): Panfrost 6.9-7.0 fps vs libmali
   7.2-7.3 fps with the governors on automatic (-5 %); with GPU 600 MHz and RAM 666 MHz fixed, 7.7 vs 7.4 fps. With
   Panfrost the RAM now reaches 666 MHz while the GPU sits at 200-400 MHz and the kernel log shows no voltage
-  warnings. glmark2: 414 vs 419. **Panfrost is not faster: that game is limited by the emulation thread and memory
+  warnings. glmark2: 414 vs 419. **Stock Panfrost is not faster: that game is limited by the emulation thread and memory
   latency, not by the GPU** (the GPU is about 20 % busy), so libmali stays the default. Only this game and glmark2
   were measured. `opp-single-voltage-minimum`
 - When the GPU is the bottleneck (God of War with frame skip off at 2x/3x/4x) libmali is faster: 10.2/6.0/3.7 fps vs
   6.9/4.9/3.5 (+48 %/+24 %/+7 %). Mario Kart 64 in a race is not GPU-bound (same fps at 640x480 and 1920x1440) but has
   many draw calls per frame (~460) and Panfrost's per-call cost shows: 36 vs 32 fps. Power draw is similar. libmali
   stays the default.
+- **Update (2026-11-04): those numbers are for Mesa's stock Panfrost**, the one this image ships. Our patched Panfrost
+  (19 patches to Mesa 26.0.4 plus a PGO and LTO build, not in the image yet) is faster than libmali: in 20 games it
+  matches or beats libmali in 19 on the R36S and in all 20 on the R36 Ultra, God of War is +52-56 % faster, and glmark2
+  scores 434 vs 380 (R36S) and 414 vs 358 (Ultra). libmali stays the default for safety and compatibility until the
+  patched driver is in the image. Details: `docs/PANFROST-STUDY.md` and the README.
 
 ## v0.1.0 - 2026-10-23 (first public release, pre-release)
 

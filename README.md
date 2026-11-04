@@ -62,9 +62,10 @@ Measured on an **R36 Ultra**. Details and the git tag of every change are in [`C
 measurements, with charts: [`docs/COMPILER-STUDY.md`](docs/COMPILER-STUDY.md) (does compiling the emulators differently
 make them faster? Mostly no) and [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 
-GPU drivers: [`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md) compares libmali, stock Panfrost and a patched Panfrost
-in 20 games on the R36S and the R36 Ultra, with screenshots. The patched Panfrost matches or beats libmali in 19 of 20 games
-on the R36S and in all 20 on the Ultra; it is not in the image yet.
+GPU drivers: [`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md) compares libmali, stock Panfrost and our patched
+Panfrost in 20 games on the R36S and the R36 Ultra, with screenshots. Our Panfrost is faster than libmali (it matches or
+beats it in 19 of 20 games on the R36S and in all 20 on the Ultra); libmali stays the default for safety and
+compatibility until it is in the image.
 
 | | AURKNIX (base) | Zenith | Change |
 |---|---:|---:|---:|
@@ -122,9 +123,42 @@ the default; zfront has not been tried yet on the console with a physical pad, r
 - **The open-source GPU driver (Panfrost) now works on the RK3326**, so the `GPU DRIVER` choice in the menu is usable (kernel
   patch `036-opp-single-voltage-is-minimum`; before it, choosing Panfrost left the console on software rendering). If it
   fails to bind the GPU at boot, the system saves libmali and reboots once.
-- **libmali stays the default because Panfrost is not faster:** in God of War (1x, automatic governors) Panfrost was 5 %
-  slower; with frame skip off at 2x/3x/4x libmali was 48 %/24 %/7 % faster; Mario Kart 64 36 vs 32 fps; glmark2 tied.
-  Only those tests were done.
+- **libmali stays the default, for safety and compatibility.** It is the driver this image has been tested with the
+  longest, it offers OpenGL ES 3.2 (Panfrost 3.1), and our patched Panfrost (below) is not in the image yet. The Panfrost
+  you can pick today in the `GPU DRIVER` menu is Mesa's stock driver, which is slower than libmali (about -24 % on
+  average over the 20 games of the study).
+
+### GPU driver: our patched Panfrost (coming in a future image)
+Panfrost is the open-source driver for the Mali-G31. With our 19 patches to Mesa 26.0.4 (17 active), plus a build with
+profile-guided optimisation (PGO) and link-time optimisation (LTO), **it is now faster than libmali**: in 20 games it
+matches or beats libmali in 19 on the R36S and in all 20 on the R36 Ultra (+4.4 % and +6.5 % on average, ties within
+5 %), it is 39 % faster than stock Panfrost, and it scores 434 vs 380 (R36S) and 414 vs 358 (Ultra) in glmark2. Biggest
+gains over libmali: God of War +52-56 %, Wave Race 64 +15-17 %, Zelda: Ocarina of Time +15-16 %, Mario Kart 64
+(ParaLLEl) +14-15 %. Zero GPU faults in every test. Full study with screenshots of the same frame on all three drivers:
+[`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md). It arrives in a future image; until then libmali stays the default.
+
+What the patches do (all general, nothing per game). Each gain was measured on its own, on the game named, so they do
+not add up:
+- **Index data read from cached memory** (`003`): the min/max scan of index buffers used to read write-combined GPU
+  memory at about 5 MB/s; it now reads a cached copy. God of War +8 % at 2x.
+- **Buffer mappings kept and a cheaper buffer path** (`001`, `002`): buffers that go back to the cache keep their CPU
+  mapping, and tracing and labelling work is gone from the hot path.
+- **Mesa's GL thread (glthread) allowed** (`004`, `005`): Panfrost now declares what Mesa needs to run OpenGL calls on
+  a second thread, with the locking that makes it safe. Mario Kart 64 (ParaLLEl) +23 %.
+- **Shader compiler tuned for the emulators' ubershaders** (`008`-`013`, `019`): uniforms that decide branches and
+  texture maths become constants so the compiler removes code and registers, plus folded half-precision conversions
+  and better instruction scheduling on Bifrost. GoldenEye 23.5 -> 32 fps on the Ultra with `008`-`013`, then +4-6 %
+  with `019`.
+- **Up to three frames in flight instead of one** (`014`): the driver no longer waits for the previous frame at every
+  swap. GoldenEye +7 % (Ultra) and +13 % (R36S) with two frames. Cost: up to two frames of extra input delay (not
+  measured).
+- **CPU readbacks from cached memory** (`017`): reading the picture back (what ParaLLEl does at the `veryhigh` accuracy of
+  a fresh install) goes through cached memory instead of write-combined memory. Mario Kart 64 (ParaLLEl) +24 %.
+- **Tile CRC only on buffers that reach the screen** (`018`): God of War +2 %.
+- **A Panfrost bug fixed** (`015`): the varying linkage between shaders was reused with the wrong fragment-shader
+  variant, so the GPU read the wrong descriptors (page faults and GPU resets). Now 0 faults.
+- **Everything on by default** (`016`), no environment variables. `006` and `007` are built in but off (no gain).
+- **PGO and LTO build:** God of War +8 %, other games 0 to +3 %.
 
 ### Choosing the right device tree
 - **Zenith DTB Selector** (Windows, Linux, macOS; window in English, Spanish and Chinese): finds the SD card, lists 86 models,

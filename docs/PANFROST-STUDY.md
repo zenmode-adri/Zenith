@@ -2,7 +2,8 @@
 
 **Short answer: a patched Panfrost is now as fast as Arm's libmali or faster in 19 of 20 games** on the R36S, and in all
 20 on the R36 Ultra (a game counts as a tie within ±5 %). It is much faster than Panfrost as Mesa ships it. This is a
-measurement report: **the Zenith image still uses libmali by default, and the patched Panfrost is not in the image yet.**
+measurement report: **the Zenith image keeps libmali as the default for safety and compatibility, and the patched
+Panfrost is not in the image yet** (the Panfrost in the `GPU DRIVER` menu today is the stock one).
 
 | | R36S | R36 Ultra |
 |---|---:|---:|
