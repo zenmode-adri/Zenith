@@ -233,26 +233,51 @@ is drawn).
 ### At real speed
 
 Measured again on the **R36S** the way you play: vsync and audio sync on (sound muted), the same save states, the CPU
-at 1296 MHz in every column, one run per point, so differences under 5 % may be noise. The core settings are not those of the free-running test, so the
-numbers of the two tables cannot be compared with each other.
+at 1296 MHz in every column, one run per point, so differences under 5 % may be noise. The core settings are not those
+of the free-running test, so these numbers cannot be compared with the tables above. "Auto" is how the console ships
+(GPU and RAM on their automatic governors); "RAM fixed" pins only the RAM at 666 MHz; "GPU + RAM fixed" pins the GPU at
+600 MHz and the RAM at 666 MHz, which is what the new performance mode does. Panfrost is our patched one.
 
-| Game (N64) | libmali | patched Panfrost | libmali, performance mode | patched Panfrost, performance mode |
-|---|---:|---:|---:|---:|
-| Mario Tennis | 19.3 | 18.0 | 25.0 | **26.6** |
-| Wave Race 64 | 35.1 | 40.5 | 38.9 | **44.7** |
-| Mario Kart 64 (ParaLLEl) | 21.3 | 22.3 | 24.5 | **24.8** |
-| GoldenEye 007 | 39.6 | 38.1 | 37.8 | **40.7** |
-| Zelda: Ocarina of Time | 15.5 | 16.1 | 16.5 | **16.6** |
+fps at real speed:
 
-- **With the default automatic clocks the two drivers are close** (−7 % to +15 %). In these games the automatic
-  governors keep the GPU at 200-400 MHz and the RAM mostly at 328 MHz: they only count busy time and bandwidth, and an
-  emulator uses the GPU in short bursts while the CPU waits for it.
-- **The new performance mode is the bigger gain, with either driver** (next image): the GPU at 600 MHz and the RAM at
-  666 MHz while a game runs, back to automatic when it ends. Mario Tennis goes from 19 to 25 fps with libmali and from
-  18 to 27 with Panfrost. Off by default; it can be turned on for all games, per system or per game. Heat and battery
-  use in long sessions are not measured yet.
-- **God of War** with PPSSPP's default frame skipping: 7.8 fps with libmali, 8.2 with stock Panfrost and 8.4 with
-  patched Panfrost. The emulator thread uses a whole CPU core, so the GPU driver changes little there.
+| Game (N64) | libmali auto | libmali RAM fixed | libmali GPU + RAM fixed | Panfrost auto | Panfrost RAM fixed | Panfrost GPU + RAM fixed |
+|---|---:|---:|---:|---:|---:|---:|
+| Mario Tennis | 19.3 | 22.7 | 25.0 | 18.0 | 22.4 | **26.6** |
+| Wave Race 64 | 35.1 | 37.6 | 38.9 | 40.5 | **44.9** | 44.7 |
+| Mario Kart 64 (ParaLLEl) | 21.3 | 23.8 | 24.5 | 22.3 | 24.5 | **24.8** |
+| GoldenEye 007 | 39.6 | 36.9 | 37.8 | 38.1 | **40.8** | 40.7 |
+| Zelda: Ocarina of Time | 15.5 | **16.6** | 16.5 | 16.1 | **16.7** | 16.6 |
+
+The same games with the same settings but uncapped (fast-forward, no vsync, no audio sync), to see how much headroom
+each setting leaves:
+
+| Game (N64) | libmali auto | libmali RAM fixed | libmali GPU + RAM fixed | Panfrost auto | Panfrost GPU fixed | Panfrost RAM fixed | Panfrost GPU + RAM fixed |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Mario Tennis | 20.9 | 26.8 | 29.4 | 15.7 | 25.9 | 28.6 | **29.3** |
+| Wave Race 64 | 40.8 | 45.0 | 47.4 | 47.5 | 59.9 | 65.0 | **65.7** |
+| Mario Kart 64 (ParaLLEl) | 25.5 | 30.4 | 33.2 | 26.8 | 32.0 | 31.0 | **37.5** |
+| GoldenEye 007 | 41.4 | 35.5 | 37.0 | 38.8 | 39.3 | **43.1** | 42.8 |
+| Zelda: Ocarina of Time | 21.1 | 24.7 | 24.7 | 24.7 | 24.6 | **28.6** | **28.6** |
+
+- **With the default automatic clocks the two drivers are close**: at real speed from −7 % (Mario Tennis) to +15 %
+  (Wave Race 64).
+- **The automatic clocks are the main brake, with either driver.** During Mario Kart 64 and Zelda the GPU spent most of
+  the time at 200 MHz (its lowest step) and the RAM at 328 MHz; in Mario Tennis the GPU went up to 400 MHz. The
+  governors only count busy time and bandwidth (the GPU jumps to its top speed above 45 % busy with Panfrost and 60 %
+  with libmali, the RAM above 40 %), and an emulator uses the GPU in short bursts while the CPU waits for it, so the
+  load they see stays low.
+- **The RAM matters as much as the GPU:** pinning only the RAM already gives a large part of the gain
+  (Panfrost at real speed: Mario Tennis 18.0 -> 22.4, Wave Race 64 40.5 -> 44.9).
+- **The new performance mode** (next image) pins the GPU at 600 MHz and the RAM at 666 MHz while a game runs and puts
+  both back on automatic when it ends. It is off by default and can be turned on for all games, per system or per
+  game. Best results: Mario Tennis 19.3 -> 25.0 fps with libmali and 18.0 -> 26.6 with Panfrost; Wave Race 64 35.1 ->
+  38.9 (libmali) and 40.5 -> 44.7 (Panfrost). Heat and battery use in long sessions are not measured yet (the R36 Ultra
+  shut down with the GPU pinned at 600 MHz in long God of War sessions).
+- **Zelda** barely moves (15.5 to 16.7 fps in every column): at real speed it is held back by something else.
+- **GoldenEye with libmali** was slower with fixed clocks than on auto, in both tests; not explained.
+- **God of War** (PSP, PPSSPP with its default frame skipping): 7.8 fps with libmali, 8.2 with stock Panfrost and 8.4
+  with patched Panfrost. The emulator thread uses a whole CPU core, so neither the driver nor the GPU clock changes
+  much there.
 
 ---
 
