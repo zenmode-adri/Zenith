@@ -277,8 +277,8 @@ is drawn).
 
 <table>
 <tr>
-<td align="center"><img src="docs/panfrost-study/gow.jpg" width="420"/><br/><sub>God of War, R36S: same frame on the three drivers</sub></td>
-<td align="center"><img src="docs/panfrost-study/s_ge.jpg" width="420"/><br/><sub>GoldenEye 007, R36S: same frame on the three drivers</sub></td>
+<td align="center"><img src="docs/panfrost-study/s_tennis.jpg" width="420"/><br/><sub>Mario Tennis, R36S: same frame on the three drivers (fps of the free-running test)</sub></td>
+<td align="center"><img src="docs/panfrost-study/s_ge.jpg" width="420"/><br/><sub>GoldenEye 007, R36S: same frame on the three drivers (fps of the free-running test)</sub></td>
 </tr>
 </table>
 

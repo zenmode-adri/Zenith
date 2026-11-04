@@ -145,12 +145,8 @@ Full run of every scene, 720x720 window, GPU 600 MHz and RAM 666 MHz, mean of tw
 
 ## Screenshots (R36S)
 
-Same frame on all three drivers, with the measured fps on top. God of War (PPSSPP) cannot be advanced frame by frame
-this way: its picture is a live capture with the emulator's own counter.
-
-**God of War: Chains of Olympus** (PSP · PPSSPP)
-
-![God of War: Chains of Olympus: libmali, stock Panfrost and patched Panfrost](panfrost-study/gow.jpg)
+Same frame on all three drivers, with the fps of this free-running test on top (not the fps you get when playing).
+God of War is not shown: it ran without frame skipping, which is not how it is played.
 
 **GoldenEye 007** (N64 · Mupen64Plus-Next)
 
