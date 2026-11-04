@@ -242,9 +242,10 @@ each setting leaves:
   with patched Panfrost. The emulator thread uses a whole CPU core, so neither the driver nor the GPU clock changes
   much there.
 
-**R36 Ultra**, patched Panfrost, same method and games, plus RAM at 786 MHz. The 786 MHz step is a **test device tree,
-not in the image**: the RAM still starts at 666 MHz and only switches to 786 while running (starting the RAM at 786
-was not reliable on these boards). "Auto" lets the governors pick, with the RAM allowed up to 666 or 786 MHz; "fixed"
+**R36 Ultra**, patched Panfrost, same method and games, plus RAM at 786 MHz. The 786 MHz step comes **in the next
+image** on the same boards dArkOSen enables it on: the original R36S (V12/V20/V21/V22/Y02, Plus, R36H, R45H, R46H),
+the R36S Sauce and the R36 Ultra. Clones and other models stay at 666 MHz. The RAM still starts at 666 MHz and only
+switches to 786 while running (starting the RAM at 786 was not reliable on these boards), at 1.1 V like dArkOSen. "Auto" lets the governors pick, with the RAM allowed up to 666 or 786 MHz; "fixed"
 pins the GPU at 600 MHz and the RAM at 666 or 786 MHz.
 
 fps at real speed:
@@ -261,8 +262,9 @@ fps at real speed:
   Mario Kart 64 and Zelda do not move with any setting.
 - **RAM at 786 MHz adds little on top:** Mario Tennis +6 %, GoldenEye +2 %, Wave Race 64 +1 % (one run, so the
   smaller ones may be noise). On automatic clocks the governor almost never takes the RAM to 786.
-- **Stability so far:** no crash in these runs (67 °C at most), and `memtester` found no errors in about 14 minutes at
-  786 MHz (one full pass of 300 MB). That is not long enough to call it safe for every unit, so it stays a test.
+- **Stable in our tests:** no crash in these runs (67 °C at most), and `memtester` (300 MB) ran its 6 full passes in
+  57 minutes at 786 MHz with no errors (65 °C at most), on one R36 Ultra. The original R36S boards get it because
+  dArkOSen ships it on them; we have not tested those ourselves.
 
 ### Free-running test (20 games)
 
