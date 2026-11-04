@@ -277,8 +277,8 @@ is drawn).
 
 <table>
 <tr>
-<td align="center"><img src="docs/panfrost-study/s_tennis.jpg" width="420"/><br/><sub>Mario Tennis, R36S: same frame on the three drivers (fps of the free-running test)</sub></td>
-<td align="center"><img src="docs/panfrost-study/s_ge.jpg" width="420"/><br/><sub>GoldenEye 007, R36S: same frame on the three drivers (fps of the free-running test)</sub></td>
+<td align="center"><img src="docs/panfrost-study/s_mvc2.jpg" width="420"/><br/><sub>Marvel vs. Capcom 2 (Dreamcast), R36S: same frame on the three drivers (fps of the free-running test)</sub></td>
+<td align="center"><img src="docs/panfrost-study/s_mk.jpg" width="420"/><br/><sub>Mario Kart 64 (N64), R36S: same frame on the three drivers (fps of the free-running test)</sub></td>
 </tr>
 </table>
 
