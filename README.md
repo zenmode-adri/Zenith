@@ -33,6 +33,9 @@ developed and measured on the **R36 Ultra**.
 - **Own interface**: light and dark theme, redesigned dialogs, keyboard, sliders and carousel, a clean Tools menu and
   first-boot screens.
 - **Mainline kernel**: Linux 6.12 with upstream drivers, plus a patch set for the RK3326.
+- **Faster open GPU driver** (next image): our patched Panfrost matches or beats Arm's libmali in 19 of 20 games on the
+  R36S and all 20 on the R36 Ultra, and is 39 % faster than stock Panfrost. libmali stays the default. See
+  [Panfrost vs libmali](#panfrost-vs-libmali).
 - **R36 Tuner Next** built in: CPU governor and frequencies, turbo steps, benchmarks and a monitor.
 - **zfront**, an optional lighter front-end next to EmulationStation (which stays the default): first screen in 1.0 s instead
   of 4.1 s and about a quarter of the memory. See [`docs/ZFRONT.md`](docs/ZFRONT.md).
@@ -64,8 +67,8 @@ make them faster? Mostly no) and [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 
 GPU drivers: [`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md) compares libmali, stock Panfrost and our patched
 Panfrost in 20 games on the R36S and the R36 Ultra, with screenshots. Our Panfrost is faster than libmali (it matches or
-beats it in 19 of 20 games on the R36S and in all 20 on the Ultra); libmali stays the default for safety and
-compatibility until it is in the image.
+beats it in 19 of 20 games on the R36S and in all 20 on the Ultra). It is built into the next image, and libmali stays
+the default for safety and compatibility. Summary in [Panfrost vs libmali](#panfrost-vs-libmali).
 
 | | AURKNIX (base) | Zenith | Change |
 |---|---:|---:|---:|
@@ -124,18 +127,20 @@ the default; zfront has not been tried yet on the console with a physical pad, r
   patch `036-opp-single-voltage-is-minimum`; before it, choosing Panfrost left the console on software rendering). If it
   fails to bind the GPU at boot, the system saves libmali and reboots once.
 - **libmali stays the default, for safety and compatibility.** It is the driver this image has been tested with the
-  longest, it offers OpenGL ES 3.2 (Panfrost 3.1), and our patched Panfrost (below) is not in the image yet. The Panfrost
-  you can pick today in the `GPU DRIVER` menu is Mesa's stock driver, which is slower than libmali (about -24 % on
-  average over the 20 games of the study).
+  longest and it offers OpenGL ES 3.2 (Panfrost 3.1). In the current release the Panfrost of the `GPU DRIVER` menu is
+  Mesa's stock driver, which is slower than libmali (about -24 % on average over the 20 games of the study); from the
+  next image it is our patched driver (below).
 
-### GPU driver: our patched Panfrost (coming in a future image)
+### GPU driver: our patched Panfrost (in the next image)
 Panfrost is the open-source driver for the Mali-G31. With our 19 patches to Mesa 26.0.4 (17 active), plus a build with
 profile-guided optimisation (PGO) and link-time optimisation (LTO), **it is now faster than libmali**: in 20 games it
 matches or beats libmali in 19 on the R36S and in all 20 on the R36 Ultra (+4.4 % and +6.5 % on average, ties within
 5 %), it is 39 % faster than stock Panfrost, and it scores 434 vs 380 (R36S) and 414 vs 358 (Ultra) in glmark2. Biggest
 gains over libmali: God of War +52-56 %, Wave Race 64 +15-17 %, Zelda: Ocarina of Time +15-16 %, Mario Kart 64
 (ParaLLEl) +14-15 %. Zero GPU faults in every test. Full study with screenshots of the same frame on all three drivers:
-[`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md). It arrives in a future image; until then libmali stays the default.
+[`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md). It is built into the next image (installed by OTA and tested on an
+R36S and an R36 Ultra), and libmali stays the default. To use it, pick `GPU DRIVER > Panfrost` in the menu, or run
+`gpudriver panfrost` and reboot; `gpudriver libmali` and a reboot go back.
 
 What the patches do (all general, nothing per game). Each gain was measured on its own, on the game named, so they do
 not add up:
@@ -159,6 +164,9 @@ not add up:
   variant, so the GPU read the wrong descriptors (page faults and GPU resets). Now 0 faults.
 - **Everything on by default** (`016`), no environment variables. `006` and `007` are built in but off (no gain).
 - **PGO and LTO build:** God of War +8 %, other games 0 to +3 %.
+- **Per-program settings** (`/usr/share/drirc.d/01-zenith-panfrost.conf`, read only by Mesa, ignored by libmali):
+  glthread on for RetroArch and PPSSPP, and PPSSPP also hides `GL_OES_copy_image` so it uses a faster blit instead.
+  Stand-alone emulators (Flycast, Mupen64Plus) get no per-program settings yet.
 
 ### Choosing the right device tree
 - **Zenith DTB Selector** (Windows, Linux, macOS; window in English, Spanish and Chinese): finds the SD card, lists 86 models,
@@ -173,6 +181,50 @@ not add up:
 > [!NOTE]
 > Zenith adds no new emulators and does not update cores; those come from AURKNIX. The work is on boot, suspend,
 > responsiveness and the interface.
+
+## Panfrost vs libmali
+
+20 games on an **R36S** and an **R36 Ultra**, three drivers: Arm's **libmali** (the Zenith default), **stock Panfrost**
+(Mesa 26.0.4 as shipped) and **our patched Panfrost** (19 patches, PGO + LTO). Every game starts from the same save
+state and the fps are counted over the same frames, in uncapped fast-forward, with the CPU at 1296 MHz, the GPU at
+600 MHz and the RAM at 666 MHz, two runs each. Full tables, method and screenshots of all 20 games:
+[`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md).
+
+| | R36S | R36 Ultra |
+|---|---:|---:|
+| Patched Panfrost vs libmali: wins / ties (±5 %) / losses, out of 20 | **7 / 12 / 1** | **8 / 12 / 0** |
+| Patched Panfrost vs libmali, geometric mean of the 20 games | **+4.4 %** | **+6.5 %** |
+| Patched vs stock Panfrost, geometric mean | **+38.9 %** | **+38.9 %** |
+| Stock Panfrost vs libmali, geometric mean | −24.8 % | −23.3 % |
+| glmark2 score: libmali / stock / patched | 380 / 386 / **434** | 358 / 368 / **414** |
+
+Biggest differences (fps, libmali -> patched Panfrost):
+
+| Game | System · core | R36S | R36 Ultra |
+|---|---|---:|---:|
+| God of War: Chains of Olympus | PSP · PPSSPP | 14.7 -> **22.3** (+52 %) | 13.6 -> **21.2** (+56 %) |
+| Wave Race 64 | N64 · Mupen64Plus-Next | 57.0 -> **65.4** (+15 %) | 53.6 -> **62.9** (+17 %) |
+| Zelda: Ocarina of Time | N64 · ParaLLEl N64 | 25.1 -> **28.7** (+15 %) | 24.2 -> **28.1** (+16 %) |
+| Mario Kart 64 | N64 · ParaLLEl N64 | 33.6 -> **38.4** (+14 %) | 32.2 -> **37.1** (+15 %) |
+| Mega Man 64 | N64 · Mupen64Plus-Next | 127.8 -> **139.7** (+9 %) | 123.8 -> **134.8** (+9 %) |
+| GoldenEye 007 | N64 · Mupen64Plus-Next | **44.0** -> 41.3 (−6 %) | **42.0** -> 40.9 (−3 %) |
+
+GoldenEye on the R36S is the only game where libmali stays ahead by more than 5 %. No GPU faults in any run, and stock
+and patched Panfrost draw the same picture in 18 of the 19 games compared pixel by pixel (the patches do not change what
+is drawn).
+
+<table>
+<tr>
+<td align="center"><img src="docs/panfrost-study/gow.jpg" width="420"/><br/><sub>God of War, R36S: libmali, stock and patched Panfrost</sub></td>
+<td align="center"><img src="docs/panfrost-study/s_ge.jpg" width="420"/><br/><sub>GoldenEye 007, R36S: same frame on the three drivers</sub></td>
+</tr>
+</table>
+
+> [!NOTE]
+> Under RetroArch in **fullscreen, libmali never goes above 60 fps**: it accepts the request for no vsync, but nothing
+> changes. Windowed it runs free, so libmali was measured both ways and every game uses its best result. Not measured:
+> battery use and input latency (Panfrost keeps up to three frames in flight, which can add up to two frames of delay).
+> Five of the games were also used to train the PGO profile.
 
 ---
 

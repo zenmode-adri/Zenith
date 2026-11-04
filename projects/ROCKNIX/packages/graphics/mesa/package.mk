@@ -98,9 +98,35 @@ else
   PKG_MESON_OPTS_TARGET+=" -Dvulkan-drivers="
 fi
 
+# Zenith (RK3326): Panfrost is built with profile-guided optimisation (PGO) and LTO. The profile
+# (pgo/RK3326, .gcda files keyed by object path in the build directory) was trained on the console
+# with the patches in patches/RK3326 applied; it only matches that source and this build setup.
+# Functions whose source differs from the profiled one (coverage mismatch) are built without profile.
+ZENITH_MESA_PGO="${PKG_DIR}/pgo/${DEVICE}/mesa-${PKG_VERSION}-pgo.tar.xz"
+
+pre_configure_target() {
+  if [ "${DEVICE}" = "RK3326" ] && [ -f "${ZENITH_MESA_PGO}" ]; then
+    TARGET_CFLAGS+=" -fprofile-use -fprofile-correction -Wno-error=coverage-mismatch -flto=auto -ffat-lto-objects"
+    TARGET_CXXFLAGS+=" -fprofile-use -fprofile-correction -Wno-error=coverage-mismatch -flto=auto -ffat-lto-objects"
+    TARGET_LDFLAGS+=" -flto=4 -fuse-linker-plugin"
+  fi
+}
+
+post_configure_target() {
+  # gcc looks for each .gcda next to its object file
+  if [ "${DEVICE}" = "RK3326" ] && [ -f "${ZENITH_MESA_PGO}" ]; then
+    tar xJf "${ZENITH_MESA_PGO}" -C "${PKG_BUILD}/.${TARGET_NAME}"
+  fi
+}
+
 post_makeinstall_target() {
   # While this likely breaks panfrost vulkan, it does fix vulkaninfo on libmali-vulkan
   if [ "${DEVICE}" = "S922X" ]; then
     rm -f ${INSTALL}/usr/lib/libvulkan_panfrost.so ${INSTALL}/usr/share/vulkan/icd.d/panfrost_icd.*.json
+  fi
+  # per-program Panfrost settings (glthread, copy_image hidden from PPSSPP); libmali ignores drirc
+  if [ -f "${PKG_DIR}/config/${DEVICE}/01-zenith-panfrost.conf" ]; then
+    mkdir -p ${INSTALL}/usr/share/drirc.d
+    cp ${PKG_DIR}/config/${DEVICE}/01-zenith-panfrost.conf ${INSTALL}/usr/share/drirc.d/
   fi
 }

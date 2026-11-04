@@ -1,0 +1,26 @@
+diff -ruN a/pan_resource.c b/pan_resource.c
+--- a/src/gallium/drivers/panfrost/pan_resource.c
++++ b/src/gallium/drivers/panfrost/pan_resource.c
+@@ -834,9 +834,21 @@
+    unsigned bytes_per_pixel = MAX2(pres->base.nr_samples, 1) *
+                               util_format_get_blocksize(pres->base.format);
+ 
++   /* Transaction elimination only pays off where tiles stay the same between
++    * frames (what is shown on screen); offscreen targets that are redrawn
++    * every frame only pay for the checksums. PAN_CRC_ALL=1 checksums every
++    * render target as before. */
++   static int crc_all = -1;
++   if (crc_all < 0)
++      crc_all = getenv("PAN_CRC_ALL") != NULL;
++
++   bool shown = pres->base.bind & (PIPE_BIND_SCANOUT | PIPE_BIND_DISPLAY_TARGET |
++                                   PIPE_BIND_SHARED);
++
+    return pres->base.bind & PIPE_BIND_RENDER_TARGET && panfrost_is_2d(pres) &&
+           bytes_per_pixel <= bytes_per_pixel_max &&
+-          pres->base.last_level == 0 && !(dev->debug & PAN_DBG_NO_CRC);
++          pres->base.last_level == 0 && !(dev->debug & PAN_DBG_NO_CRC) &&
++          (shown || crc_all);
+ }
+ 
+ static bool

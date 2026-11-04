@@ -1,0 +1,86 @@
+diff -ruN a/pan_job.c b/pan_job.c
+--- a/src/gallium/drivers/panfrost/pan_job.c
++++ b/src/gallium/drivers/panfrost/pan_job.c
+@@ -66,6 +66,8 @@
+    batch->seqnum = ++ctx->batches.seqnum;
+ 
+    batch->bos = UTIL_DYNARRAY_INIT;
++   batch->last_bo = NULL;
++   batch->last_bo_flags = 0;
+ 
+    batch->minx = batch->miny = ~0;
+    batch->maxx = batch->maxy = 0;
+@@ -132,6 +134,8 @@
+    util_unreference_framebuffer_state(&batch->key);
+ 
+    util_dynarray_fini(&batch->bos);
++   batch->last_bo = NULL;
++   batch->last_bo_flags = 0;
+ 
+    memset(batch, 0, sizeof(*batch));
+    BITSET_CLEAR(ctx->batches.active, batch_idx);
+@@ -234,6 +238,17 @@
+ static bool panfrost_batch_uses_resource(struct panfrost_batch *batch,
+                                          struct panfrost_resource *rsrc);
+ 
++static inline bool
++pan_opt_batch(void)
++{
++   static int v = -1;
++   if (v < 0) {
++      const char *e = getenv("PAN_OPT");
++      v = e && (strtoul(e, NULL, 0) & 16);
++   }
++   return v;
++}
++
+ static void
+ panfrost_batch_update_access(struct panfrost_batch *batch,
+                              struct panfrost_resource *rsrc, bool writes)
+@@ -313,6 +328,11 @@
+    if (!bo)
+       return;
+ 
++   const bool opt = pan_opt_batch();
++
++   if (opt && bo == batch->last_bo && !(flags & ~batch->last_bo_flags))
++      return;
++
+    pan_bo_access *entry =
+       panfrost_batch_get_bo_access(batch, panfrost_bo_handle(bo));
+    pan_bo_access old_flags = *entry;
+@@ -322,11 +342,17 @@
+       panfrost_bo_reference(bo);
+    }
+ 
+-   if (old_flags == flags)
+-      return;
++   if (old_flags != flags) {
++      flags |= old_flags;
++      *entry = flags;
++   } else {
++      flags = old_flags;
++   }
+ 
+-   flags |= old_flags;
+-   *entry = flags;
++   if (opt) {
++      batch->last_bo = bo;
++      batch->last_bo_flags = flags;
++   }
+ }
+ 
+ static uint32_t
+diff -ruN a/pan_job.h b/pan_job.h
+--- a/src/gallium/drivers/panfrost/pan_job.h
++++ b/src/gallium/drivers/panfrost/pan_job.h
+@@ -65,6 +65,9 @@
+ 
+    /* BOs referenced not in the pool */
+    unsigned num_bos;
++   /* PAN_OPT&16: ultimo BO anadido y sus permisos (cache de panfrost_batch_add_bo_old) */
++   struct panfrost_bo *last_bo;
++   uint32_t last_bo_flags;
+    struct util_dynarray bos;
+ 
+    /* Pool owned by this batch (released when the batch is released) used for

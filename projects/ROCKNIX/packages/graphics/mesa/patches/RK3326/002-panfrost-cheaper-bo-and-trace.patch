@@ -1,0 +1,89 @@
+diff -ruN a/pan_bo.c b/pan_bo.c
+--- a/src/gallium/drivers/panfrost/pan_bo.c
++++ b/src/gallium/drivers/panfrost/pan_bo.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include <errno.h>
++#include <stdlib.h>
+ #include <fcntl.h>
+ #include <pthread.h>
+ #include <stdio.h>
+@@ -202,6 +203,18 @@
+  * cache. If it fails, it returns NULL signaling the caller to allocate a new
+  * BO. */
+ 
++/* The madvise ioctls (evictable/unevictable) cost two syscalls per BO cache
++ * round trip; the user-space cache already frees BOs unused for >2 s. */
++static bool
++bo_madvise_enabled(void)
++{
++   static int enabled = -1;
++
++   if (enabled < 0)
++      enabled = getenv("PAN_BO_MADVISE") != NULL;
++   return enabled;
++}
++
+ static struct panfrost_bo *
+ panfrost_bo_cache_fetch(struct panfrost_device *dev, size_t size,
+                         uint32_t flags, const char *label, bool dontwait)
+@@ -224,7 +237,7 @@
+       list_del(&entry->bucket_link);
+       list_del(&entry->lru_link);
+ 
+-      if (!pan_kmod_bo_make_unevictable(entry->kmod_bo)) {
++      if (bo_madvise_enabled() && !pan_kmod_bo_make_unevictable(entry->kmod_bo)) {
+          panfrost_bo_free(entry);
+          continue;
+       }
+@@ -279,7 +292,8 @@
+    struct list_head *bucket = pan_bucket(dev, MAX2(panfrost_bo_size(bo), 4096));
+    struct timespec time;
+ 
+-   pan_kmod_bo_make_evictable(bo->kmod_bo);
++   if (bo_madvise_enabled())
++      pan_kmod_bo_make_evictable(bo->kmod_bo);
+ 
+    /* Add us to the bucket */
+    list_addtail(&bo->bucket_link, bucket);
+@@ -581,10 +595,14 @@
+                           bool set_kernel_label)
+ {
+    const char *old_label = bo->label;
++   static int kernel_labels = -1;
+ 
+    bo->label = label;
+ 
+-   if (set_kernel_label)
++   if (kernel_labels < 0)
++      kernel_labels = getenv("PAN_KERNEL_LABELS") != NULL;
++
++   if (set_kernel_label && kernel_labels)
+       pan_kmod_set_bo_label(bo->dev->kmod.dev, bo->kmod_bo, label);
+ 
+    return old_label;
+diff -ruN a/cpu_trace.h b/cpu_trace.h
+--- a/src/util/perf/cpu_trace.h
++++ b/src/util/perf/cpu_trace.h
+@@ -160,6 +160,12 @@
+ static inline void *
+ _mesa_trace_scope_begin(const char *format, ...)
+ {
++#if !defined(HAVE_PERFETTO) && !defined(HAVE_GPUVIS) && !defined(HAVE_SYSPROF) && \
++    !DETECT_OS_ANDROID
++   /* No tracing backend: formatting the name would be pure overhead. */
++   (void)format;
++   return NULL;
++#else
+    char name[_MESA_TRACE_SCOPE_MAX_NAME_LENGTH];
+    va_list args;
+ 
+@@ -170,6 +176,7 @@
+    assert(len < _MESA_TRACE_SCOPE_MAX_NAME_LENGTH);
+ 
+    return _mesa_trace_scope_begin_name(name);
++#endif
+ }
+ 
+ static inline void *

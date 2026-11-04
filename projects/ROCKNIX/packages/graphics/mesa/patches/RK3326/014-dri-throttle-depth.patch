@@ -1,0 +1,78 @@
+diff -ruN a/dri_drawable.c b/dri_drawable.c
+--- a/src/gallium/frontends/dri/dri_drawable.c
++++ b/src/gallium/frontends/dri/dri_drawable.c
+@@ -37,6 +37,22 @@
+ #include "util/format/u_format.h"
+ #include "util/u_memory.h"
+ #include "util/u_inlines.h"
++#include <stdlib.h>
++
++static unsigned
++pan_throttle_depth(void)
++{
++   static int v = -1;
++   if (v < 0) {
++      const char *e = getenv("PAN_THROTTLE_DEPTH");
++      v = e ? atoi(e) : 1;
++      if (v < 1)
++         v = 1;
++      if (v > 4)
++         v = 4;
++   }
++   return v;
++}
+ 
+ #include "state_tracker/st_context.h"
+ 
+@@ -210,6 +226,9 @@
+ 
+    screen->base.screen->fence_reference(screen->base.screen,
+          &drawable->throttle_fence, NULL);
++   for (i = 0; i < 4; i++)
++      screen->base.screen->fence_reference(screen->base.screen,
++            &drawable->throttle_ring[i], NULL);
+ 
+    /* Notify the st manager that this drawable is no longer valid */
+    st_api_destroy_drawable(&drawable->base);
+@@ -530,12 +549,23 @@
+ 
+       st_context_flush(st, flush_flags, &new_fence, args.ctx ? notify_before_flush_cb : NULL, &args);
+ 
+-      /* throttle on the previous fence */
+-      if (drawable->throttle_fence) {
+-         screen->fence_finish(screen, NULL, drawable->throttle_fence, OS_TIMEOUT_INFINITE);
+-         screen->fence_reference(screen, &drawable->throttle_fence, NULL);
++      unsigned depth = pan_throttle_depth();
++      if (depth > 1) {
++         /* throttle on the fence from `depth` frames ago */
++         unsigned i = drawable->throttle_pos++ % depth;
++         if (drawable->throttle_ring[i]) {
++            screen->fence_finish(screen, NULL, drawable->throttle_ring[i], OS_TIMEOUT_INFINITE);
++            screen->fence_reference(screen, &drawable->throttle_ring[i], NULL);
++         }
++         drawable->throttle_ring[i] = new_fence;
++      } else {
++         /* throttle on the previous fence */
++         if (drawable->throttle_fence) {
++            screen->fence_finish(screen, NULL, drawable->throttle_fence, OS_TIMEOUT_INFINITE);
++            screen->fence_reference(screen, &drawable->throttle_fence, NULL);
++         }
++         drawable->throttle_fence = new_fence;
+       }
+-      drawable->throttle_fence = new_fence;
+    }
+    else if (flags & (__DRI2_FLUSH_DRAWABLE | __DRI2_FLUSH_CONTEXT)) {
+       st_context_flush(st, flush_flags, NULL, args.ctx ? notify_before_flush_cb : NULL, &args);
+diff -ruN a/dri_drawable.h b/dri_drawable.h
+--- a/src/gallium/frontends/dri/dri_drawable.h
++++ b/src/gallium/frontends/dri/dri_drawable.h
+@@ -62,6 +62,9 @@
+    int swap_interval;
+ 
+    struct pipe_fence_handle *throttle_fence;
++   /* PAN_THROTTLE_DEPTH: vallas de los ultimos fotogramas y posicion en el anillo */
++   struct pipe_fence_handle *throttle_ring[4];
++   unsigned throttle_pos;
+    bool flushing; /* prevents recursion in dri_flush */
+ 
+    /**

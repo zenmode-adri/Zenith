@@ -1,0 +1,19 @@
+diff -ruN a/pan_screen.c b/pan_screen.c
+--- a/src/gallium/drivers/panfrost/pan_screen.c
++++ b/src/gallium/drivers/panfrost/pan_screen.c
+@@ -1193,6 +1193,15 @@
+    if (!screen)
+       return NULL;
+ 
++   /* Politica medida en la R36 (Mali-G31): valores por defecto que el entorno puede sobrescribir */
++   if (!getenv("PAN_R36_NO_DEFAULTS")) {
++      setenv("PAN_OPT", "264096", 0);
++      setenv("PAN_BO_KEEP_MAX", "262144", 0);
++      setenv("PAN_THROTTLE_DEPTH", "3", 0);
++      setenv("PAN_GLTHREAD", "1", 0);
++      setenv("PAN_RB_CACHED", "1", 0);
++   }
++
+    struct panfrost_device *dev = pan_device(&screen->base);
+ 
+    driParseConfigFiles(config->options, config->options_info, 0,

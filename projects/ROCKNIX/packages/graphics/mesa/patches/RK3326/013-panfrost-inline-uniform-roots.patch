@@ -1,0 +1,305 @@
+diff -ruN a/shader_info.h b/shader_info.h
+--- a/src/compiler/shader_info.h
++++ b/src/compiler/shader_info.h
+@@ -35,7 +35,7 @@
+ #endif
+ 
+ #define MAX_XFB_BUFFERS        4
+-#define MAX_INLINABLE_UNIFORMS 12
++#define MAX_INLINABLE_UNIFORMS 48
+ 
+ typedef struct shader_info {
+    const char *name;
+@@ -212,7 +212,7 @@
+    uint8_t xfb_stride[MAX_XFB_BUFFERS];
+ 
+    uint16_t inlinable_uniform_dw_offsets[MAX_INLINABLE_UNIFORMS];
+-   uint8_t num_inlinable_uniforms:4;
++   uint8_t num_inlinable_uniforms;
+ 
+    /* The size of the gl_ClipDistance[] array, if declared. */
+    uint8_t clip_distance_array_size:4;
+diff -ruN a/pan_context.h b/pan_context.h
+--- a/src/gallium/drivers/panfrost/pan_context.h
++++ b/src/gallium/drivers/panfrost/pan_context.h
+@@ -433,6 +433,10 @@
+    bool inline_off;
+    uint8_t inl_n;
+    uint16_t inl_off[MAX_INLINABLE_UNIFORMS];
++
++   /* PAN_OPT&262144: cuantos de inl_off son flags (008) y si ya se volvio a solo flags */
++   uint8_t inl_nflags;
++   bool roots_off;
+ };
+ 
+ /* The binary artefacts of compiling a shader. This differs from
+diff -ruN a/pan_disk_cache.c b/pan_disk_cache.c
+--- a/src/gallium/drivers/panfrost/pan_disk_cache.c
++++ b/src/gallium/drivers/panfrost/pan_disk_cache.c
+@@ -165,6 +165,8 @@
+    driver_flags |= ((uint64_t)(midgard_debug | bifrost_debug) << 32);
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 32))
+       driver_flags |= 1ull << 62;
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 262144))
++      driver_flags |= 1ull << 39;
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 1024))
+       driver_flags |= 1ull << 51;
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 512))
+diff -ruN a/pan_screen.c b/pan_screen.c
+--- a/src/gallium/drivers/panfrost/pan_screen.c
++++ b/src/gallium/drivers/panfrost/pan_screen.c
+@@ -657,6 +657,155 @@
+    caps->max_variable_threads_per_block = 1024; // TODO
+ }
+ 
++/* PAN_OPT&262144: dwords del bloque 0 de las que cuelga matematica que solo depende de uniforms */
++#define PAN_UROOT_DW 128
++
++static void
++pan_add_uniform_roots(nir_shader *c)
++{
++   nir_function_impl *impl = nir_shader_get_entrypoint(c);
++   nir_index_ssa_defs(impl);
++   unsigned n = impl->ssa_alloc;
++   uint64_t *mask = calloc(2 * n, sizeof(uint64_t));
++   int32_t *ubo_dw = malloc(n * sizeof(int32_t));
++   bool *uni = calloc(n, sizeof(bool));
++   unsigned cost[PAN_UROOT_DW] = {0};
++
++   for (unsigned i = 0; i < n; ++i)
++      ubo_dw[i] = -1;
++
++   nir_foreach_block(block, impl) {
++      nir_foreach_instr(instr, block) {
++         if (instr->type == nir_instr_type_load_const) {
++            uni[nir_instr_as_load_const(instr)->def.index] = true;
++         } else if (instr->type == nir_instr_type_intrinsic) {
++            nir_intrinsic_instr *in = nir_instr_as_intrinsic(instr);
++            if (in->intrinsic == nir_intrinsic_load_ubo &&
++                nir_src_is_const(in->src[0]) && nir_src_as_uint(in->src[0]) == 0 &&
++                nir_src_is_const(in->src[1]) && in->def.bit_size == 32 &&
++                (nir_src_as_uint(in->src[1]) % 4) == 0) {
++               unsigned dw = nir_src_as_uint(in->src[1]) / 4;
++               if (dw + in->def.num_components <= PAN_UROOT_DW) {
++                  uni[in->def.index] = true;
++                  ubo_dw[in->def.index] = dw;
++               }
++            }
++         } else if (instr->type == nir_instr_type_alu) {
++            nir_alu_instr *a = nir_instr_as_alu(instr);
++            unsigned d = a->def.index;
++            bool u = true;
++            uint64_t m0 = 0, m1 = 0;
++
++            for (unsigned s = 0; s < nir_op_infos[a->op].num_inputs; ++s) {
++               unsigned si = a->src[s].src.ssa->index;
++               if (!uni[si]) {
++                  u = false;
++                  break;
++               }
++               if (ubo_dw[si] >= 0) {
++                  unsigned nc = nir_ssa_alu_instr_src_components(a, s);
++                  for (unsigned k = 0; k < nc; ++k) {
++                     unsigned b = ubo_dw[si] + a->src[s].swizzle[k];
++                     if (b < 64)
++                        m0 |= 1ull << b;
++                     else if (b < PAN_UROOT_DW)
++                        m1 |= 1ull << (b - 64);
++                  }
++               } else {
++                  m0 |= mask[2 * si];
++                  m1 |= mask[2 * si + 1];
++               }
++            }
++            if (!u)
++               continue;
++
++            uni[d] = true;
++            mask[2 * d] = m0;
++            mask[2 * d + 1] = m1;
++
++            unsigned w;
++            switch (a->op) {
++            case nir_op_mov:
++            case nir_op_vec2:
++            case nir_op_vec3:
++            case nir_op_vec4:
++            case nir_op_fneg:
++            case nir_op_fabs:
++               w = 0;
++               break;
++            case nir_op_frcp:
++            case nir_op_frsq:
++            case nir_op_fsqrt:
++            case nir_op_fexp2:
++            case nir_op_flog2:
++            case nir_op_fdiv:
++            case nir_op_fpow:
++               w = 5;
++               break;
++            default:
++               w = 1;
++               break;
++            }
++            if (!w)
++               continue;
++            for (unsigned b = 0; b < PAN_UROOT_DW; ++b) {
++               uint64_t bit = b < 64 ? (m0 >> b) : (m1 >> (b - 64));
++               if (bit & 1)
++                  cost[b] += w;
++            }
++         }
++      }
++   }
++
++   unsigned num = c->info.num_inlinable_uniforms;
++   unsigned added = 0;
++   unsigned nflags = num;
++   while (num < MAX_INLINABLE_UNIFORMS - 1) {
++      unsigned best = 0, bc = 0;
++      for (unsigned b = 0; b < PAN_UROOT_DW; ++b) {
++         if (cost[b] > bc) {
++            bc = cost[b];
++            best = b;
++         }
++      }
++      if (bc < 2)
++         break;
++      cost[best] = 0;
++      if (getenv("PAN_UROOT_MAX") && added >= (unsigned)atoi(getenv("PAN_UROOT_MAX")))
++         break;
++      if (getenv("PAN_UROOT_SKIP") && strstr(getenv("PAN_UROOT_SKIP"), "x") == NULL) {
++         char tag[16];
++         snprintf(tag, sizeof(tag), ",%u,", best);
++         char lst[256];
++         snprintf(lst, sizeof(lst), ",%s,", getenv("PAN_UROOT_SKIP"));
++         if (strstr(lst, tag))
++            continue;
++      }
++      if (getenv("PAN_INLINE_DEBUG"))
++         fprintf(stderr, "[R36-INLINE] raiz dw=%u coste=%u\n", best, bc);
++
++      bool dup = false;
++      for (unsigned i = 0; i < num; ++i)
++         dup |= c->info.inlinable_uniform_dw_offsets[i] == best;
++      if (!dup) {
++         c->info.inlinable_uniform_dw_offsets[num++] = best;
++         added++;
++      }
++   }
++
++   if (getenv("PAN_INLINE_DEBUG"))
++      fprintf(stderr, "[R36-INLINE] raices de uniforms: %u flags + %u raices\n",
++              c->info.num_inlinable_uniforms, added);
++   c->info.num_inlinable_uniforms = num;
++   /* El ultimo hueco (st solo lee los num primeros) guarda cuantos son flags: al llegar al tope de variantes
++    * el driver vuelve a inlinar solo esos (008) en vez de a la variante generica. */
++   c->info.inlinable_uniform_dw_offsets[MAX_INLINABLE_UNIFORMS - 1] = nflags;
++
++   free(mask);
++   free(ubo_dw);
++   free(uni);
++}
++
+ /* PAN_OPT&32: calcula los uniforms inlinables sobre una copia (sin alterar el NIR de st) y los anota en su info.
+  * st copia luego `prog->info = prog->nir->info` y manda los valores con set_inlinable_constants(). */
+ static void
+@@ -672,6 +821,8 @@
+    NIR_PASS(_, c, nir_opt_algebraic);
+    NIR_PASS(_, c, nir_opt_constant_folding);
+    nir_find_inlinable_uniforms(c);
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 262144))
++      pan_add_uniform_roots(c);
+ 
+    nir->info.num_inlinable_uniforms = c->info.num_inlinable_uniforms;
+    memcpy(nir->info.inlinable_uniform_dw_offsets,
+diff -ruN a/pan_shader.c b/pan_shader.c
+--- a/src/gallium/drivers/panfrost/pan_shader.c
++++ b/src/gallium/drivers/panfrost/pan_shader.c
+@@ -20,7 +20,29 @@
+ #include "pan_nir.h"
+ #include "shader_enums.h"
+ 
+-#define INLINE_MAX_VARIANTS 8
++static inline bool
++pan_opt_uinl(void)
++{
++   static int v = -1;
++   if (v < 0) {
++      const char *e = getenv("PAN_OPT");
++      v = e && (strtoul(e, NULL, 0) & 262144);
++   }
++   return v;
++}
++
++static inline unsigned
++pan_inline_maxv(void)
++{
++   static int v = -1;
++   if (v < 0) {
++      const char *e = getenv("PAN_INLINE_MAXV");
++      v = e ? atoi(e) : 64;
++   }
++   return v;
++}
++
++#define INLINE_MAX_VARIANTS (pan_opt_uinl() ? pan_inline_maxv() : 8)
+ 
+ static inline bool
+ pan_opt_inline(void)
+@@ -338,7 +360,8 @@
+    if (pan_opt_inline() && !uncompiled->inline_off && uncompiled->inl_n &&
+        ctx->inline_for[MESA_SHADER_FRAGMENT] == uncompiled &&
+        ctx->inline_n[MESA_SHADER_FRAGMENT] == uncompiled->inl_n) {
+-      key->nr_inline = uncompiled->inl_n;
++      key->nr_inline = uncompiled->roots_off ? uncompiled->inl_nflags
++                                             : uncompiled->inl_n;
+       memcpy(key->inline_vals, ctx->inline_vals[MESA_SHADER_FRAGMENT],
+              key->nr_inline * sizeof(uint32_t));
+       memcpy(key->inline_off, uncompiled->inl_off,
+@@ -473,9 +496,35 @@
+    }
+ 
+    if (compiled == NULL && key.fs.nr_inline && type == MESA_SHADER_FRAGMENT) {
+-      if (uncompiled->inline_variants >= INLINE_MAX_VARIANTS) {
++      if (uncompiled->inline_variants >= INLINE_MAX_VARIANTS &&
++          pan_opt_uinl() && !uncompiled->roots_off &&
++          uncompiled->inl_nflags < key.fs.nr_inline) {
++         /* Demasiadas combinaciones de uniforms raiz: vuelve a inlinar solo los flags (008) */
++         unsigned nf = uncompiled->inl_nflags;
++         uncompiled->roots_off = true;
++         uncompiled->inline_variants = 0;
++         if (getenv("PAN_INLINE_DEBUG"))
++            fprintf(stderr, "[R36-INLINE] FALLBACK a solo %u flags\n", nf);
++         key.fs.nr_inline = nf;
++         memset(key.fs.inline_vals + nf, 0,
++                (MAX_INLINABLE_UNIFORMS - nf) * sizeof(uint32_t));
++         memset(key.fs.inline_off + nf, 0,
++                (MAX_INLINABLE_UNIFORMS - nf) * sizeof(uint16_t));
++         util_dynarray_foreach(&uncompiled->variants,
++                               struct panfrost_compiled_shader, so) {
++            if (memcmp(&key, &so->key, sizeof(key)) == 0) {
++               compiled = so;
++               break;
++            }
++         }
++         if (compiled == NULL && nf)
++            uncompiled->inline_variants++;
++      } else if (uncompiled->inline_variants >= INLINE_MAX_VARIANTS) {
+          /* Demasiadas combinaciones de valores: este shader vuelve a la variante generica */
+          uncompiled->inline_off = true;
++         if (getenv("PAN_INLINE_DEBUG"))
++            fprintf(stderr, "[R36-INLINE] FALLBACK a variante generica tras %u variantes\n",
++                    uncompiled->inline_variants);
+          key.fs.nr_inline = 0;
+          memset(key.fs.inline_vals, 0, sizeof(key.fs.inline_vals));
+          memset(key.fs.inline_off, 0, sizeof(key.fs.inline_off));
+@@ -552,6 +601,8 @@
+       so->inl_n = nir->info.num_inlinable_uniforms;
+       memcpy(so->inl_off, nir->info.inlinable_uniform_dw_offsets,
+              sizeof(so->inl_off));
++      so->inl_nflags = pan_opt_uinl() ? MIN2(so->inl_off[MAX_INLINABLE_UNIFORMS - 1], so->inl_n)
++                                      : so->inl_n;
+       if (getenv("PAN_INLINE_DEBUG"))
+          fprintf(stderr, "[R36-INLINE] shader FS: %u uniforms inlinables\n",
+                  (unsigned)so->inl_n);

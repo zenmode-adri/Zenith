@@ -1,0 +1,16 @@
+diff -ruN a/pan_screen.c b/pan_screen.c
+--- a/src/gallium/drivers/panfrost/pan_screen.c
++++ b/src/gallium/drivers/panfrost/pan_screen.c
+@@ -922,6 +922,12 @@
+ 
+    /* We hard-code this value as it is dictated by driver uAPI */
+    caps->max_label_length = 4096;
++
++   /* EXPERIMENTAL: lets Mesa enable glthread (mesa_glthread=true) */
++   if (getenv("PAN_GLTHREAD")) {
++      caps->map_unsynchronized_thread_safe = true;
++      caps->allow_mapped_buffers_during_execution = true;
++   }
+ }
+ 
+ static void

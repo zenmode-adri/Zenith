@@ -1,0 +1,38 @@
+diff -ruN a/pan_cmdstream.c b/pan_cmdstream.c
+--- a/src/gallium/drivers/panfrost/pan_cmdstream.c
++++ b/src/gallium/drivers/panfrost/pan_cmdstream.c
+@@ -2814,6 +2814,11 @@
+    bool prelink =
+       (point_coord_mask == 0) && !vs->info.separable && !fs->info.separable;
+ 
++   /* The cached linkage is only valid for the fragment shader variant it was
++    * built for: variants of one fragment shader may read different inputs */
++   if (prelink && vs->linkage.bo != NULL && vs->linkage_fs != fs->bin.gpu)
++      prelink = false;
++
+    /* Try to reduce copies */
+    struct pan_linkage _linkage;
+    struct pan_linkage *linkage = prelink ? &vs->linkage : &_linkage;
+@@ -2823,6 +2828,8 @@
+       struct panfrost_pool *pool = prelink ? &ctx->descs : &batch->pool;
+ 
+       panfrost_emit_varying_descs(pool, vs, fs, point_coord_mask, linkage);
++      if (prelink)
++         vs->linkage_fs = fs->bin.gpu;
+    }
+ 
+    unsigned present = linkage->present, stride = linkage->stride;
+diff -ruN a/pan_context.h b/pan_context.h
+--- a/src/gallium/drivers/panfrost/pan_context.h
++++ b/src/gallium/drivers/panfrost/pan_context.h
+@@ -390,6 +390,10 @@
+    /* Linked varyings, for non-separable programs */
+    struct pan_linkage linkage;
+ 
++   /* GPU address of the fragment shader binary the cached linkage was built
++    * for (a fragment shader can have several variants with different inputs) */
++   uint64_t linkage_fs;
++
+    struct pipe_stream_output_info stream_output;
+ 
+    struct panfrost_shader_key key;

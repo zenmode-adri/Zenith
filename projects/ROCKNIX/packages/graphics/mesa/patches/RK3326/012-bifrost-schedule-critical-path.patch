@@ -1,0 +1,78 @@
+diff -ruN a/pan_disk_cache.c b/pan_disk_cache.c
+--- a/src/gallium/drivers/panfrost/pan_disk_cache.c
++++ b/src/gallium/drivers/panfrost/pan_disk_cache.c
+@@ -165,6 +165,8 @@
+    driver_flags |= ((uint64_t)(midgard_debug | bifrost_debug) << 32);
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 32))
+       driver_flags |= 1ull << 62;
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 1024))
++      driver_flags |= 1ull << 51;
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 512))
+       driver_flags |= 1ull << 63;
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 256)) {
+diff -ruN a/bi_schedule.c b/bi_schedule.c
+--- a/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c
++++ b/src/panfrost/compiler/bifrost/bifrost/bi_schedule.c
+@@ -24,6 +24,9 @@
+     * scheduled before (after) this instruction. */
+    unsigned *dep_counts;
+    BITSET_WORD **dependents;
++
++   /* PAN_OPT&1024: longest chain of instructions still to be scheduled after this one */
++   unsigned *height;
+ };
+ 
+ /* State of a single tuple and clause under construction */
+@@ -491,6 +494,15 @@
+    bi_create_dependency_graph(st, inorder, is_blend);
+    st.worklist = BITSET_CALLOC(st.count);
+ 
++   st.height = calloc(st.count, sizeof(st.height[0]));
++   for (unsigned i = 0; i < st.count; ++i) {
++      unsigned h = 0, j;
++      /* every dependent of i has a lower index than i */
++      BITSET_FOREACH_SET(j, st.dependents[i], st.count)
++         h = MAX2(h, st.height[j] + 1);
++      st.height[i] = h;
++   }
++
+    for (unsigned i = 0; i < st.count; ++i) {
+       if (st.dep_counts[i] == 0)
+          BITSET_SET(st.worklist, i);
+@@ -502,6 +514,7 @@
+ static void
+ bi_free_worklist(struct bi_worklist st)
+ {
++   free(st.height);
+    free(st.dep_counts);
+    free(st.dependents);
+    free(st.instructions);
+@@ -1243,6 +1256,15 @@
+ {
+    unsigned i, best_idx = ~0;
+    signed best_cost = INT_MAX;
++   static int use_height = -1;
++   static int height_w = 4096;
++   if (use_height < 0) {
++      const char *e = getenv("PAN_OPT");
++      use_height = e && (strtoul(e, NULL, 0) & 1024);
++      const char *w = getenv("PAN_HEIGHT_W");
++      if (w)
++         height_w = strtol(w, NULL, 0);
++   }
+ 
+    BITSET_FOREACH_SET(i, st.worklist, st.count) {
+       bi_instr *instr = st.instructions[i];
+@@ -1252,6 +1274,12 @@
+ 
+       signed cost = bi_instr_cost(instr, tuple);
+ 
++      if (use_height) {
++         /* cost first, then the longest remaining chain (critical path),
++          * then (as before) the later instruction */
++         cost = cost * height_w - (signed)MIN2(st.height[i], 4000);
++      }
++
+       /* Tie break in favour of later instructions, under the
+        * assumption this promotes temporary usage (reducing pressure
+        * on the register file). This is a side effect of a prepass

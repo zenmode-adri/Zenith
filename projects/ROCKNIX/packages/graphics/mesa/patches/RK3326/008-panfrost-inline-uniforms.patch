@@ -1,0 +1,267 @@
+diff -ruN a/shader_info.h b/shader_info.h
+--- a/src/compiler/shader_info.h
++++ b/src/compiler/shader_info.h
+@@ -35,7 +35,7 @@
+ #endif
+ 
+ #define MAX_XFB_BUFFERS        4
+-#define MAX_INLINABLE_UNIFORMS 4
++#define MAX_INLINABLE_UNIFORMS 12
+ 
+ typedef struct shader_info {
+    const char *name;
+diff -ruN a/pan_context.h b/pan_context.h
+--- a/src/gallium/drivers/panfrost/pan_context.h
++++ b/src/gallium/drivers/panfrost/pan_context.h
+@@ -114,6 +114,11 @@
+    /* Per shader stage dirty state */
+    enum pan_dirty_shader dirty_shader[MESA_SHADER_STAGES];
+ 
++   /* PAN_OPT&32: ultimos valores de uniforms inlinables recibidos y a que shader pertenecen */
++   uint8_t inline_n[MESA_SHADER_STAGES];
++   uint32_t inline_vals[MESA_SHADER_STAGES][MAX_INLINABLE_UNIFORMS];
++   const void *inline_for[MESA_SHADER_STAGES];
++
+    /* Unowned pools, so manage yourself. */
+    struct panfrost_pool descs, shaders;
+ 
+@@ -345,6 +350,11 @@
+    uint8_t clip_plane_enable;
+ 
+    bool line_smooth;
++
++   /* PAN_OPT&32: valores de uniforms inlinados (nir_inline_uniforms) */
++   uint8_t nr_inline;
++   uint32_t inline_vals[MAX_INLINABLE_UNIFORMS];
++   uint16_t inline_off[MAX_INLINABLE_UNIFORMS];
+ };
+ 
+ struct panfrost_vs_key {
+@@ -417,6 +427,12 @@
+ 
+    /* If gl_FragColor was lowered, we need to optimize the stores later */
+    bool fragcolor_lowered;
++
++   /* PAN_OPT&32: variantes con uniforms inlinados creadas / inlinado desactivado */
++   uint8_t inline_variants;
++   bool inline_off;
++   uint8_t inl_n;
++   uint16_t inl_off[MAX_INLINABLE_UNIFORMS];
+ };
+ 
+ /* The binary artefacts of compiling a shader. This differs from
+diff -ruN a/pan_disk_cache.c b/pan_disk_cache.c
+--- a/src/gallium/drivers/panfrost/pan_disk_cache.c
++++ b/src/gallium/drivers/panfrost/pan_disk_cache.c
+@@ -163,6 +163,8 @@
+    /* Consider any flags affecting the compile when caching */
+    uint64_t driver_flags = screen->dev.debug;
+    driver_flags |= ((uint64_t)(midgard_debug | bifrost_debug) << 32);
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 32))
++      driver_flags |= 1ull << 62;
+ 
+    screen->disk_cache = disk_cache_create(renderer, timestamp, driver_flags);
+ #endif
+diff -ruN a/pan_screen.c b/pan_screen.c
+--- a/src/gallium/drivers/panfrost/pan_screen.c
++++ b/src/gallium/drivers/panfrost/pan_screen.c
+@@ -657,6 +657,29 @@
+    caps->max_variable_threads_per_block = 1024; // TODO
+ }
+ 
++/* PAN_OPT&32: calcula los uniforms inlinables sobre una copia (sin alterar el NIR de st) y los anota en su info.
++ * st copia luego `prog->info = prog->nir->info` y manda los valores con set_inlinable_constants(). */
++static void
++panfrost_finalize_nir_inline(struct pipe_screen *pscreen, struct nir_shader *nir,
++                             bool optimize)
++{
++   if (nir->info.stage != MESA_SHADER_FRAGMENT)
++      return;
++
++   nir_shader *c = nir_shader_clone(NULL, nir);
++   NIR_PASS(_, c, nir_lower_alu_to_scalar, NULL, NULL);
++   NIR_PASS(_, c, nir_opt_copy_prop);
++   NIR_PASS(_, c, nir_opt_algebraic);
++   NIR_PASS(_, c, nir_opt_constant_folding);
++   nir_find_inlinable_uniforms(c);
++
++   nir->info.num_inlinable_uniforms = c->info.num_inlinable_uniforms;
++   memcpy(nir->info.inlinable_uniform_dw_offsets,
++          c->info.inlinable_uniform_dw_offsets,
++          sizeof(nir->info.inlinable_uniform_dw_offsets));
++   ralloc_free(c);
++}
++
+ static void
+ panfrost_init_screen_caps(struct panfrost_screen *screen)
+ {
+@@ -924,6 +947,9 @@
+    caps->max_label_length = 4096;
+ 
+    /* EXPERIMENTAL: lets Mesa enable glthread (mesa_glthread=true) */
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 32))
++      caps->call_finalize_nir_in_linker = true;
++
+    if (getenv("PAN_GLTHREAD")) {
+       caps->map_unsynchronized_thread_safe = true;
+       caps->allow_mapped_buffers_during_execution = true;
+@@ -1102,6 +1128,8 @@
+    screen->base.destroy = panfrost_destroy_screen;
+ 
+    screen->base.get_screen_fd = panfrost_get_screen_fd;
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 32))
++      screen->base.finalize_nir = panfrost_finalize_nir_inline;
+    screen->base.get_name = panfrost_get_name;
+    screen->base.get_vendor = panfrost_get_vendor;
+    screen->base.get_device_vendor = panfrost_get_device_vendor;
+diff -ruN a/pan_shader.c b/pan_shader.c
+--- a/src/gallium/drivers/panfrost/pan_shader.c
++++ b/src/gallium/drivers/panfrost/pan_shader.c
+@@ -20,6 +20,19 @@
+ #include "pan_nir.h"
+ #include "shader_enums.h"
+ 
++#define INLINE_MAX_VARIANTS 8
++
++static inline bool
++pan_opt_inline(void)
++{
++   static int v = -1;
++   if (v < 0) {
++      const char *e = getenv("PAN_OPT");
++      v = e && (strtoul(e, NULL, 0) & 32);
++   }
++   return v;
++}
++
+ static struct panfrost_uncompiled_shader *
+ panfrost_alloc_shader(const nir_shader *nir)
+ {
+@@ -110,6 +123,21 @@
+ 
+    nir_shader *s = nir_shader_clone(NULL, ir);
+ 
++   if (s->info.stage == MESA_SHADER_FRAGMENT && key->fs.nr_inline) {
++      NIR_PASS(_, s, nir_inline_uniforms, key->fs.nr_inline,
++               key->fs.inline_vals, key->fs.inline_off);
++
++      bool inl_progress;
++      do {
++         inl_progress = false;
++         NIR_PASS(inl_progress, s, nir_opt_constant_folding);
++         NIR_PASS(inl_progress, s, nir_opt_algebraic);
++         NIR_PASS(inl_progress, s, nir_opt_if, 0);
++         NIR_PASS(inl_progress, s, nir_opt_dead_cf);
++         NIR_PASS(inl_progress, s, nir_opt_dce);
++      } while (inl_progress);
++   }
++
+    /* While graphics shaders are preprocessed at CSO create time, compute
+     * kernels are not preprocessed until they're cloned since the driver does
+     * not get ownership of the NIR from compute CSOs. Do this preprocessing now.
+@@ -307,6 +335,16 @@
+ {
+    const nir_shader *nir = uncompiled->nir;
+ 
++   if (pan_opt_inline() && !uncompiled->inline_off && uncompiled->inl_n &&
++       ctx->inline_for[MESA_SHADER_FRAGMENT] == uncompiled &&
++       ctx->inline_n[MESA_SHADER_FRAGMENT] == uncompiled->inl_n) {
++      key->nr_inline = uncompiled->inl_n;
++      memcpy(key->inline_vals, ctx->inline_vals[MESA_SHADER_FRAGMENT],
++             key->nr_inline * sizeof(uint32_t));
++      memcpy(key->inline_off, uncompiled->inl_off,
++             key->nr_inline * sizeof(uint16_t));
++   }
++
+    struct panfrost_device *dev = pan_device(ctx->base.screen);
+    struct pipe_framebuffer_state *fb = &ctx->pipe_framebuffer;
+    struct pipe_rasterizer_state *rast = (void *)ctx->rasterizer;
+@@ -391,6 +429,7 @@
+    struct panfrost_context *ctx = pan_context(pctx);
+    ctx->uncompiled[type] = hwcso;
+    ctx->prog[type] = NULL;
++   ctx->inline_for[type] = NULL;
+ 
+    ctx->dirty |= PAN_DIRTY_TLS_SIZE;
+    ctx->dirty_shader[type] |= PAN_DIRTY_STAGE_SHADER;
+@@ -433,6 +472,28 @@
+       }
+    }
+ 
++   if (compiled == NULL && key.fs.nr_inline && type == MESA_SHADER_FRAGMENT) {
++      if (uncompiled->inline_variants >= INLINE_MAX_VARIANTS) {
++         /* Demasiadas combinaciones de valores: este shader vuelve a la variante generica */
++         uncompiled->inline_off = true;
++         key.fs.nr_inline = 0;
++         memset(key.fs.inline_vals, 0, sizeof(key.fs.inline_vals));
++         memset(key.fs.inline_off, 0, sizeof(key.fs.inline_off));
++         util_dynarray_foreach(&uncompiled->variants,
++                               struct panfrost_compiled_shader, so) {
++            if (memcmp(&key, &so->key, sizeof(key)) == 0) {
++               compiled = so;
++               break;
++            }
++         }
++      } else {
++         uncompiled->inline_variants++;
++         if (getenv("PAN_INLINE_DEBUG"))
++            fprintf(stderr, "[R36-INLINE] variante %u con %u uniforms inlinados\n",
++                    uncompiled->inline_variants, key.fs.nr_inline);
++      }
++   }
++
+    if (compiled == NULL)
+       compiled = panfrost_new_variant_locked(ctx, uncompiled, &key);
+ 
+@@ -487,6 +548,15 @@
+    so->stream_output = cso->stream_output;
+    so->nir = nir;
+ 
++   if (pan_opt_inline() && nir->info.stage == MESA_SHADER_FRAGMENT) {
++      so->inl_n = nir->info.num_inlinable_uniforms;
++      memcpy(so->inl_off, nir->info.inlinable_uniform_dw_offsets,
++             sizeof(so->inl_off));
++      if (getenv("PAN_INLINE_DEBUG"))
++         fprintf(stderr, "[R36-INLINE] shader FS: %u uniforms inlinables\n",
++                 (unsigned)so->inl_n);
++   }
++
+    /* PLS lowering is not taken care of by glsl_to_nir(), so do it here. */
+    if (nir->info.stage == MESA_SHADER_FRAGMENT &&
+        nir->info.fs.accesses_pixel_local_storage) {
+@@ -685,9 +755,35 @@
+    info->preferred_simd_size = info->simd_sizes;
+ }
+ 
++static void
++panfrost_set_inlinable_constants(struct pipe_context *pctx,
++                                 mesa_shader_stage stage, uint num_values,
++                                 uint32_t *values)
++{
++   struct panfrost_context *ctx = pan_context(pctx);
++
++   if (!pan_opt_inline() || stage != MESA_SHADER_FRAGMENT ||
++       !ctx->uncompiled[stage] || num_values > MAX_INLINABLE_UNIFORMS)
++      return;
++
++   if (ctx->inline_for[stage] == ctx->uncompiled[stage] &&
++       ctx->inline_n[stage] == num_values &&
++       !memcmp(ctx->inline_vals[stage], values, num_values * sizeof(uint32_t)))
++      return;
++
++   ctx->inline_for[stage] = ctx->uncompiled[stage];
++   ctx->inline_n[stage] = num_values;
++   memcpy(ctx->inline_vals[stage], values, num_values * sizeof(uint32_t));
++
++   ctx->dirty |= PAN_DIRTY_TLS_SIZE;
++   ctx->dirty_shader[stage] |= PAN_DIRTY_STAGE_SHADER;
++   panfrost_update_shader_variant(ctx, stage);
++}
++
+ void
+ panfrost_shader_context_init(struct pipe_context *pctx)
+ {
++   pctx->set_inlinable_constants = panfrost_set_inlinable_constants;
+    pctx->create_vs_state = panfrost_create_shader_state;
+    pctx->delete_vs_state = panfrost_delete_shader_state;
+    pctx->bind_vs_state = panfrost_bind_vs_state;

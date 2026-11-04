@@ -1,0 +1,49 @@
+diff -ruN a/pan_bo.c b/pan_bo.c
+--- a/src/gallium/drivers/panfrost/pan_bo.c
++++ b/src/gallium/drivers/panfrost/pan_bo.c
+@@ -102,11 +102,18 @@
+    return NULL;
+ }
+ 
++static void panfrost_bo_munmap(struct panfrost_bo *bo);
++
+ static void
+ panfrost_bo_free(struct panfrost_bo *bo)
+ {
+    MESA_TRACE_FUNC();
+ 
++   /* BOs sitting in the BO cache keep their CPU mapping (see
++    * panfrost_bo_unreference), so it has to go away here, when the BO is
++    * really released. */
++   panfrost_bo_munmap(bo);
++
+    struct pan_kmod_bo *kmod_bo = bo->kmod_bo;
+    struct pan_kmod_vm *vm = bo->dev->kmod.vm;
+    uint64_t gpu_va = bo->ptr.gpu;
+@@ -451,8 +458,24 @@
+     * lock, let's make sure it's still not referenced before freeing it.
+     */
+    if (p_atomic_read(&bo->refcnt) == 0) {
+-      /* When the reference count goes to zero, we need to cleanup */
+-      panfrost_bo_munmap(bo);
++      /* When the reference count goes to zero, we need to cleanup.
++       * The CPU mapping is NOT dropped here: a BO that goes back to the BO
++       * cache is very likely to be reused within a frame (descriptor pools,
++       * shadow BOs, uploads) and unmapping it made every reuse pay an mmap
++       * plus one page fault per page, then an munmap again.  The mapping
++       * is released by panfrost_bo_free() when the BO leaves the cache.
++       * PAN_BO_KEEP_MAX (bytes) limits this to BOs up to that size. */
++      {
++         static size_t keep_max = 0;
++         static bool keep_init;
++         if (!keep_init) {
++            const char *e = getenv("PAN_BO_KEEP_MAX");
++            keep_max = e ? (size_t)strtoull(e, NULL, 0) : (size_t)-1;
++            keep_init = true;
++         }
++         if (panfrost_bo_size(bo) > keep_max)
++            panfrost_bo_munmap(bo);
++      }
+ 
+       if (dev->debug & (PAN_DBG_TRACE | PAN_DBG_SYNC))
+          pandecode_inject_free(dev->decode_ctx, bo->ptr.gpu,

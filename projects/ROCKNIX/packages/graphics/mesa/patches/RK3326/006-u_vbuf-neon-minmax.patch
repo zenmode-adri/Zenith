@@ -1,0 +1,102 @@
+diff -ruN a/u_vbuf.c b/u_vbuf.c
+--- a/src/gallium/auxiliary/util/u_vbuf.c
++++ b/src/gallium/auxiliary/util/u_vbuf.c
+@@ -1274,6 +1274,67 @@
+             mgr->ve->nonzero_stride_vb_mask)) != 0;
+ }
+ 
++#if defined(__ARM_NEON)
++#include <arm_neon.h>
++#endif
++
++static inline bool
++u_vbuf_opt8(void)
++{
++   static int v = -1;
++   if (v < 0) {
++      const char *e = getenv("PAN_OPT");
++      v = e && (strtoul(e, NULL, 0) & 8);
++   }
++   return v;
++}
++
++/* min/max de n elementos de `size` bytes (1, 2 o 4), sin reinicio de primitiva. */
++static void
++u_vbuf_scan_minmax(const uint8_t *p, unsigned n, unsigned size,
++                   unsigned *mn, unsigned *mx)
++{
++   unsigned lo = *mn, hi = *mx, i = 0;
++#if defined(__ARM_NEON)
++   if (size == 2 && n >= 8) {
++      uint16x8_t vmin = vdupq_n_u16(0xffff), vmax = vdupq_n_u16(0);
++      for (; i + 8 <= n; i += 8) {
++         uint16x8_t v = vld1q_u16((const uint16_t *)p + i);
++         vmin = vminq_u16(vmin, v);
++         vmax = vmaxq_u16(vmax, v);
++      }
++      lo = MIN2(lo, vminvq_u16(vmin));
++      hi = MAX2(hi, vmaxvq_u16(vmax));
++   } else if (size == 4 && n >= 4) {
++      uint32x4_t vmin = vdupq_n_u32(~0u), vmax = vdupq_n_u32(0);
++      for (; i + 4 <= n; i += 4) {
++         uint32x4_t v = vld1q_u32((const uint32_t *)p + i);
++         vmin = vminq_u32(vmin, v);
++         vmax = vmaxq_u32(vmax, v);
++      }
++      lo = MIN2(lo, vminvq_u32(vmin));
++      hi = MAX2(hi, vmaxvq_u32(vmax));
++   } else if (size == 1 && n >= 16) {
++      uint8x16_t vmin = vdupq_n_u8(0xff), vmax = vdupq_n_u8(0);
++      for (; i + 16 <= n; i += 16) {
++         uint8x16_t v = vld1q_u8(p + i);
++         vmin = vminq_u8(vmin, v);
++         vmax = vmaxq_u8(vmax, v);
++      }
++      lo = MIN2(lo, vminvq_u8(vmin));
++      hi = MAX2(hi, vmaxvq_u8(vmax));
++   }
++#endif
++   for (; i < n; i++) {
++      unsigned v = size == 4 ? ((const uint32_t *)p)[i]
++                 : size == 2 ? ((const uint16_t *)p)[i] : p[i];
++      if (v > hi) hi = v;
++      if (v < lo) lo = v;
++   }
++   *mn = lo;
++   *mx = hi;
++}
++
+ static void
+ u_vbuf_get_minmax_index_mapped(const struct pipe_draw_info *info,
+                                unsigned count,
+@@ -1286,6 +1347,30 @@
+       return;
+    }
+ 
++   if (!info->primitive_restart && u_vbuf_opt8()) {
++      const unsigned size = info->index_size;
++      uint8_t tmp[4096] __attribute__((aligned(16)));
++      const uint8_t *p = (const uint8_t *)indices;
++      size_t bytes = (size_t)count * size;
++      unsigned lo = ~0u, hi = 0;
++
++      while (bytes) {
++         size_t n = MIN2(bytes, sizeof(tmp));
++         const uint8_t *src = p;
++         if (!info->has_user_indices) {
++            /* BO write-combined: copiar a memoria con cache antes de explorar */
++            memcpy(tmp, p, n);
++            src = tmp;
++         }
++         u_vbuf_scan_minmax(src, n / size, size, &lo, &hi);
++         p += n;
++         bytes -= n;
++      }
++      *out_min_index = lo;
++      *out_max_index = hi;
++      return;
++   }
++
+    switch (info->index_size) {
+    case 4: {
+       const unsigned *ui_indices = (const unsigned*)indices;

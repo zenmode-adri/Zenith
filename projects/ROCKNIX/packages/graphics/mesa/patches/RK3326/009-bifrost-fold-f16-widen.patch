@@ -1,0 +1,73 @@
+diff -ruN a/pan_disk_cache.c b/pan_disk_cache.c
+--- a/src/gallium/drivers/panfrost/pan_disk_cache.c
++++ b/src/gallium/drivers/panfrost/pan_disk_cache.c
+@@ -165,6 +165,8 @@
+    driver_flags |= ((uint64_t)(midgard_debug | bifrost_debug) << 32);
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 32))
+       driver_flags |= 1ull << 62;
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 128))
++      driver_flags |= 1ull << 60;
+ 
+    screen->disk_cache = disk_cache_create(renderer, timestamp, driver_flags);
+ #endif
+diff -ruN a/bi_opt_mod_props.c b/bi_opt_mod_props.c
+--- a/src/panfrost/compiler/bifrost/bi_opt_mod_props.c
++++ b/src/panfrost/compiler/bifrost/bi_opt_mod_props.c
+@@ -180,6 +180,47 @@
+    }
+ }
+ 
++static inline bool
++bi_widen_enabled(void)
++{
++   static int v = -1;
++   if (v < 0) {
++      const char *e = getenv("PAN_OPT");
++      v = e && (strtoul(e, NULL, 0) & 128);
++   }
++   return v;
++}
++
++/* F16_TO_F32(x) as operand 0/1 of FMA.f32/FADD.f32 -> x with widen swizzle (H0/H1) */
++static bool
++bi_fuse_widen(bi_context *ctx, bi_instr *I, bi_instr *mod, unsigned s)
++{
++   if (!bi_widen_enabled() || ctx->arch > 8 || s > 1)
++      return false;
++   if (mod->op != BI_OPCODE_F16_TO_F32)
++      return false;
++   if (I->op != BI_OPCODE_FMA_F32 && I->op != BI_OPCODE_FADD_F32)
++      return false;
++   if (I->src[s].swizzle != BI_SWIZZLE_H01)
++      return false;
++
++   bi_index repl = mod->src[0];
++   if (repl.type != BI_INDEX_NORMAL || repl.abs || repl.neg)
++      return false;
++   if (repl.swizzle != BI_SWIZZLE_H0 && repl.swizzle != BI_SWIZZLE_H1)
++      return false;
++
++   enum bi_swizzle other = I->src[1 - s].swizzle;
++   if (other != BI_SWIZZLE_H01 &&
++       !(other == BI_SWIZZLE_H0 && repl.swizzle == BI_SWIZZLE_H0))
++      return false;
++
++   repl.abs = I->src[s].abs;
++   repl.neg = I->src[s].neg;
++   I->src[s] = repl;
++   return true;
++}
++
+ void
+ bi_opt_mod_prop_forward(bi_context *ctx)
+ {
+@@ -213,6 +254,9 @@
+ 
+          bi_fuse_small_int_to_f32(ctx, I, mod);
+ 
++         if (bi_fuse_widen(ctx, I, mod, s))
++            continue;
++
+          if (bi_is_fabsneg(mod->op, size)) {
+             if (mod->src[0].abs && !bi_takes_fabs(ctx->arch, I, mod->src[0], s))
+                continue;

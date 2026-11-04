@@ -1,0 +1,161 @@
+diff -ruN a/pan_resource.c b/pan_resource.c
+--- a/src/gallium/drivers/panfrost/pan_resource.c
++++ b/src/gallium/drivers/panfrost/pan_resource.c
+@@ -1551,7 +1551,17 @@
+        rsrc->modifier != DRM_FORMAT_MOD_LINEAR)
+       return NULL;
+ 
+-   struct panfrost_transfer *transfer = rzalloc(pctx, struct panfrost_transfer);
++   /* glthread (PAN_GLTHREAD): a caller-requested UNSYNCHRONIZED buffer map may run on the
++    * application thread while the driver thread draws. Keep it free of shared state:
++    * no ctx-parented allocation and no BO replacement (see below). */
++   static int glt_env = -1;
++   if (glt_env < 0)
++      glt_env = getenv("PAN_GLTHREAD") != NULL;
++   const bool glt_unsync = glt_env && (usage & PIPE_MAP_UNSYNCHRONIZED) &&
++                           resource->target == PIPE_BUFFER;
++
++   struct panfrost_transfer *transfer =
++      rzalloc(glt_unsync ? NULL : pctx, struct panfrost_transfer);
+    transfer->base.level = level;
+    transfer->base.usage = usage;
+    transfer->base.box = *box;
+@@ -1632,6 +1642,9 @@
+    bool create_new_bo = usage & PIPE_MAP_DISCARD_WHOLE_RESOURCE;
+    bool copy_resource = false;
+ 
++   if (glt_unsync)
++      create_new_bo = false;
++
+    if (!(usage & PIPE_MAP_UNSYNCHRONIZED) &&
+        !(resource->flags & PIPE_RESOURCE_FLAG_MAP_PERSISTENT) &&
+        (usage & PIPE_MAP_WRITE) && panfrost_any_batch_reads_rsrc(ctx, rsrc)) {
+diff -ruN a/glthread.c b/glthread.c
+--- a/src/mesa/main/glthread.c
++++ b/src/mesa/main/glthread.c
+@@ -435,6 +435,31 @@
+ void
+ _mesa_glthread_finish_before(struct gl_context *ctx, const char *func)
+ {
++   {
++      static const char *gs_file = (const char *)1;
++      static struct { const char *f; unsigned long n; } gs[512];
++      static unsigned long gs_calls;
++      if (gs_file == (const char *)1)
++         gs_file = getenv("R36_GLSYNC");
++      if (gs_file) {
++         unsigned i = 0;
++         while (i < 512 && gs[i].f && gs[i].f != func)
++            i++;
++         if (i < 512) {
++            gs[i].f = func;
++            gs[i].n++;
++         }
++         if ((++gs_calls & 255) == 0) {
++            FILE *o = fopen(gs_file, "w");
++            if (o) {
++               for (i = 0; i < 512 && gs[i].f; i++)
++                  fprintf(o, "%lu %s\n", gs[i].n, gs[i].f);
++               fclose(o);
++            }
++         }
++      }
++   }
++
+    _mesa_glthread_finish(ctx);
+ 
+    /* Uncomment this if you want to know where glthread syncs. */
+diff -ruN a/pan_minmax_cache.c b/pan_minmax_cache.c
+--- a/src/panfrost/shared/pan_minmax_cache.c
++++ b/src/panfrost/shared/pan_minmax_cache.c
+@@ -61,8 +61,8 @@
+    return ht_key;
+ }
+ 
+-bool
+-pan_minmax_cache_get(struct pan_minmax_cache *cache, unsigned index_size,
++static bool
++pan_minmax_cache_get_locked(struct pan_minmax_cache *cache, unsigned index_size,
+                      unsigned start, unsigned count, unsigned *min_index,
+                      unsigned *max_index)
+ {
+@@ -87,8 +87,8 @@
+    return found;
+ }
+ 
+-void
+-pan_minmax_cache_add(struct pan_minmax_cache *cache, unsigned index_size,
++static void
++pan_minmax_cache_add_locked(struct pan_minmax_cache *cache, unsigned index_size,
+                      unsigned start, unsigned count, unsigned min_index,
+                      unsigned max_index)
+ {
+@@ -114,8 +114,8 @@
+  * buffer, that may invalidate the min/max. Check what's been cached vs
+  * what we've written, and throw out invalid entries. */
+ 
+-void
+-pan_minmax_cache_invalidate(struct pan_minmax_cache *cache, unsigned index_size,
++static void
++pan_minmax_cache_invalidate_locked(struct pan_minmax_cache *cache, unsigned index_size,
+                             size_t offset, size_t size)
+ {
+    /* Ensure there is a cache to invalidate and a write */
+@@ -153,3 +153,41 @@
+    cache->size = valid_count;
+    cache->index = 0;
+ }
++
++bool
++pan_minmax_cache_get(struct pan_minmax_cache *cache, unsigned index_size,
++                     unsigned start, unsigned count, unsigned *min_index,
++                     unsigned *max_index)
++{
++   if (!cache)
++      return false;
++   simple_mtx_lock(&cache->lock);
++   bool r = pan_minmax_cache_get_locked(cache, index_size, start, count,
++                                        min_index, max_index);
++   simple_mtx_unlock(&cache->lock);
++   return r;
++}
++
++void
++pan_minmax_cache_add(struct pan_minmax_cache *cache, unsigned index_size,
++                     unsigned start, unsigned count, unsigned min_index,
++                     unsigned max_index)
++{
++   if (!cache)
++      return;
++   simple_mtx_lock(&cache->lock);
++   pan_minmax_cache_add_locked(cache, index_size, start, count, min_index,
++                               max_index);
++   simple_mtx_unlock(&cache->lock);
++}
++
++void
++pan_minmax_cache_invalidate(struct pan_minmax_cache *cache, unsigned index_size,
++                            size_t offset, size_t size)
++{
++   if (!cache)
++      return;
++   simple_mtx_lock(&cache->lock);
++   pan_minmax_cache_invalidate_locked(cache, index_size, offset, size);
++   simple_mtx_unlock(&cache->lock);
++}
+diff -ruN a/pan_minmax_cache.h b/pan_minmax_cache.h
+--- a/src/panfrost/shared/pan_minmax_cache.h
++++ b/src/panfrost/shared/pan_minmax_cache.h
+@@ -9,10 +9,12 @@
+ #include <stdbool.h>
+ #include <stdint.h>
+ #include <stddef.h>
++#include "util/simple_mtx.h"
+ 
+ #define PANFROST_MINMAX_SIZE 64
+ 
+ struct pan_minmax_cache {
++   simple_mtx_t lock; /* cero = abierto (implementacion futex) */
+    uint64_t keys[PANFROST_MINMAX_SIZE];
+    uint64_t values[PANFROST_MINMAX_SIZE];
+    unsigned size;

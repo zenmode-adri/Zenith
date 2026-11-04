@@ -1,0 +1,85 @@
+diff -ruN a/pan_disk_cache.c b/pan_disk_cache.c
+--- a/src/gallium/drivers/panfrost/pan_disk_cache.c
++++ b/src/gallium/drivers/panfrost/pan_disk_cache.c
+@@ -165,6 +165,8 @@
+    driver_flags |= ((uint64_t)(midgard_debug | bifrost_debug) << 32);
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 32))
+       driver_flags |= 1ull << 62;
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 512))
++      driver_flags |= 1ull << 63;
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 256)) {
+       const char *pm = getenv("PAN_PSCHED_MIN");
+       driver_flags |= (1ull << 59) | ((uint64_t)(((pm ? strtoul(pm, NULL, 0) : 40) / 8) & 7) << 56);
+diff -ruN a/bi_opt_mod_props.c b/bi_opt_mod_props.c
+--- a/src/panfrost/compiler/bifrost/bi_opt_mod_props.c
++++ b/src/panfrost/compiler/bifrost/bi_opt_mod_props.c
+@@ -221,6 +221,61 @@
+    return true;
+ }
+ 
++static inline bool
++bi_cvtpair_enabled(void)
++{
++   static int v = -1;
++   if (v < 0) {
++      const char *e = getenv("PAN_OPT");
++      v = e && (strtoul(e, NULL, 0) & 512);
++   }
++   return v;
++}
++
++/* MKVEC.v2i16(V2F32_TO_V2F16(x,x), V2F32_TO_V2F16(y,y)) -> V2F32_TO_V2F16(x,y) */
++static void
++bi_fuse_cvt_pairs(bi_context *ctx)
++{
++   if (!bi_cvtpair_enabled() || ctx->arch >= 9)
++      return;
++
++   bi_instr **lut = calloc(sizeof(bi_instr *), ctx->ssa_alloc);
++
++   bi_foreach_instr_global_safe(ctx, I) {
++      bi_foreach_dest(I, d) {
++         if (bi_is_ssa(I->dest[d]))
++            lut[I->dest[d].value] = I;
++      }
++
++      if (I->op != BI_OPCODE_MKVEC_V2I16)
++         continue;
++      if (!bi_is_ssa(I->src[0]) || !bi_is_ssa(I->src[1]))
++         continue;
++      if (I->src[0].abs || I->src[0].neg || I->src[1].abs || I->src[1].neg)
++         continue;
++
++      bi_instr *ca = lut[I->src[0].value];
++      bi_instr *cb = lut[I->src[1].value];
++      if (!ca || !cb || ca->op != BI_OPCODE_V2F32_TO_V2F16 ||
++          cb->op != BI_OPCODE_V2F32_TO_V2F16)
++         continue;
++      if (ca->clamp != cb->clamp || ca->round != cb->round)
++         continue;
++      if (memcmp(&ca->src[0], &ca->src[1], sizeof(bi_index)) != 0 ||
++          memcmp(&cb->src[0], &cb->src[1], sizeof(bi_index)) != 0)
++         continue;
++
++      bi_builder b = bi_init_builder(ctx, bi_before_instr(I));
++      bi_instr *n = bi_v2f32_to_v2f16_to(&b, I->dest[0], ca->src[0], cb->src[0]);
++      n->clamp = ca->clamp;
++      n->round = ca->round;
++      lut[n->dest[0].value] = n;
++      bi_remove_instruction(I);
++   }
++
++   free(lut);
++}
++
+ void
+ bi_opt_mod_prop_forward(bi_context *ctx)
+ {
+@@ -270,6 +325,7 @@
+    }
+ 
+    free(lut);
++   bi_fuse_cvt_pairs(ctx);
+ }
+ 
+ /* RSCALE has restrictions on how the clamp may be used, only used for

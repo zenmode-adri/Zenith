@@ -1,0 +1,119 @@
+diff -ruN a/pan_disk_cache.c b/pan_disk_cache.c
+--- a/src/gallium/drivers/panfrost/pan_disk_cache.c
++++ b/src/gallium/drivers/panfrost/pan_disk_cache.c
+@@ -167,6 +167,9 @@
+       driver_flags |= 1ull << 62;
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 262144))
+       driver_flags |= 1ull << 39;
++   if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 262144) &&
++       !(getenv("PAN_UROOT_BRANCH") && atoi(getenv("PAN_UROOT_BRANCH")) <= 0))
++      driver_flags |= 1ull << 37;
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 1024))
+       driver_flags |= 1ull << 51;
+    if (getenv("PAN_OPT") && (strtoul(getenv("PAN_OPT"), NULL, 0) & 512))
+diff -ruN a/pan_screen.c b/pan_screen.c
+--- a/src/gallium/drivers/panfrost/pan_screen.c
++++ b/src/gallium/drivers/panfrost/pan_screen.c
+@@ -658,7 +658,7 @@
+ }
+ 
+ /* PAN_OPT&262144: dwords del bloque 0 de las que cuelga matematica que solo depende de uniforms */
+-#define PAN_UROOT_DW 128
++#define PAN_UROOT_DW 256
+ 
+ static void
+ pan_add_uniform_roots(nir_shader *c)
+@@ -666,7 +666,10 @@
+    nir_function_impl *impl = nir_shader_get_entrypoint(c);
+    nir_index_ssa_defs(impl);
+    unsigned n = impl->ssa_alloc;
+-   uint64_t *mask = calloc(2 * n, sizeof(uint64_t));
++   uint64_t *mask = calloc(4 * n, sizeof(uint64_t));
++   static int branch_w = -1;
++   if (branch_w < 0)
++      branch_w = getenv("PAN_UROOT_BRANCH") ? atoi(getenv("PAN_UROOT_BRANCH")) : 8;
+    int32_t *ubo_dw = malloc(n * sizeof(int32_t));
+    bool *uni = calloc(n, sizeof(bool));
+    unsigned cost[PAN_UROOT_DW] = {0};
+@@ -694,7 +697,7 @@
+             nir_alu_instr *a = nir_instr_as_alu(instr);
+             unsigned d = a->def.index;
+             bool u = true;
+-            uint64_t m0 = 0, m1 = 0;
++            uint64_t mm[4] = {0};
+ 
+             for (unsigned s = 0; s < nir_op_infos[a->op].num_inputs; ++s) {
+                unsigned si = a->src[s].src.ssa->index;
+@@ -706,22 +709,33 @@
+                   unsigned nc = nir_ssa_alu_instr_src_components(a, s);
+                   for (unsigned k = 0; k < nc; ++k) {
+                      unsigned b = ubo_dw[si] + a->src[s].swizzle[k];
+-                     if (b < 64)
+-                        m0 |= 1ull << b;
+-                     else if (b < PAN_UROOT_DW)
+-                        m1 |= 1ull << (b - 64);
++                     if (b < PAN_UROOT_DW)
++                        mm[b / 64] |= 1ull << (b % 64);
+                   }
+                } else {
+-                  m0 |= mask[2 * si];
+-                  m1 |= mask[2 * si + 1];
++                  for (unsigned q = 0; q < 4; ++q)
++                     mm[q] |= mask[4 * si + q];
+                }
+             }
+-            if (!u)
++            if (!u) {
++               /* A uniform-only boolean feeding non-uniform logic (iand, ior,
++                * bcsel...): inlining it can fold the whole branch/select */
++               if (branch_w > 0) {
++                  for (unsigned s2 = 0; s2 < nir_op_infos[a->op].num_inputs; ++s2) {
++                     nir_def *sd = a->src[s2].src.ssa;
++                     if (!uni[sd->index] || sd->bit_size != 1)
++                        continue;
++                     for (unsigned b = 0; b < PAN_UROOT_DW; ++b)
++                        if ((mask[4 * sd->index + b / 64] >> (b % 64)) & 1)
++                           cost[b] += branch_w;
++                  }
++               }
+                continue;
++            }
+ 
+             uni[d] = true;
+-            mask[2 * d] = m0;
+-            mask[2 * d + 1] = m1;
++            for (unsigned q = 0; q < 4; ++q)
++               mask[4 * d + q] = mm[q];
+ 
+             unsigned w;
+             switch (a->op) {
+@@ -749,7 +763,7 @@
+             if (!w)
+                continue;
+             for (unsigned b = 0; b < PAN_UROOT_DW; ++b) {
+-               uint64_t bit = b < 64 ? (m0 >> b) : (m1 >> (b - 64));
++               uint64_t bit = mm[b / 64] >> (b % 64);
+                if (bit & 1)
+                   cost[b] += w;
+             }
+@@ -757,6 +771,20 @@
+       }
+    }
+ 
++   if (branch_w > 0) {
++      nir_foreach_block(block, impl) {
++         nir_if *nif = nir_block_get_following_if(block);
++         if (!nif)
++            continue;
++         nir_def *cd = nif->condition.ssa;
++         if (!uni[cd->index])
++            continue;
++         for (unsigned b = 0; b < PAN_UROOT_DW; ++b)
++            if ((mask[4 * cd->index + b / 64] >> (b % 64)) & 1)
++               cost[b] += branch_w;
++      }
++   }
++
+    unsigned num = c->info.num_inlinable_uniforms;
+    unsigned added = 0;
+    unsigned nflags = num;

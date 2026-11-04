@@ -7,6 +7,19 @@ Dates are the build dates. Every entry has a git tag (named in `code`) and detai
 
 ## Next image (contents tested in the DEBUG build `d955804`, installed on an R36 Ultra; the clean image built from the same code has NOT been booted: try it on a spare SD card first)
 
+### GPU: patched Panfrost driver built into the image (libmali stays the default)
+- **Mesa's open Panfrost driver now ships patched for the Mali-G31: 19 patches, built with profile-guided
+  optimisation (PGO) and link-time optimisation (LTO).** libmali is still the default driver for safety and
+  compatibility; `gpudriver panfrost` + reboot (or the GPU DRIVER menu) switches to it. The full study (20 games on
+  an R36S and an R36 Ultra, libmali vs stock Panfrost vs patched Panfrost) is in [`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md).
+- **Per-program settings in `/usr/share/drirc.d/01-zenith-panfrost.conf`** (read only by Mesa, ignored by libmali):
+  threaded GL (`glthread`) for RetroArch and PPSSPP, and PPSSPP also hides `GL_OES_copy_image`/`GL_EXT_copy_image`.
+  Stand-alone emulators (Flycast, Mupen64Plus) are left unchanged: their A/B test was not valid and is pending.
+- **Checked in the DEBUG build `0933111`, installed by OTA on an R36 Ultra and an R36S, with the packaged library and no
+  environment variables:** in a separate quick test on the Ultra it gives the same fps as the study's library (God of
+  War 20.4 vs 20.3, Zelda: Ocarina of Time 29.5 vs 29.6; a different method from the study, so not comparable with its
+  tables); glthread active in RetroArch and PPSSPP; no GPU faults in the kernel log. Not profiled: shader compilation and driver start-up (3 source files).
+
 ### Choosing the right device tree (DTB)
 - **Zenith DTB Selector replaces the old DTB picker.** One small program for Windows, Linux and macOS (window in
   Chinese, English and Spanish) that finds the SD card by itself, lists 86 models grouped by brand, shows exactly what

@@ -1,0 +1,152 @@
+diff -ruN a/pan_helpers.c b/pan_helpers.c
+--- a/src/gallium/drivers/panfrost/pan_helpers.c
++++ b/src/gallium/drivers/panfrost/pan_helpers.c
+@@ -134,7 +134,23 @@
+ 
+    if (needs_indices) {
+       /* Fallback */
+-      u_vbuf_get_minmax_index(&ctx->base, info, draw, min_index, max_index);
++      struct pipe_draw_info shadow_info;
++      const struct pipe_draw_info *scan_info = info;
++
++      /* Scan the CPU-cached copy of the index buffer when it covers the draw */
++      if (!info->has_user_indices && rsrc->index_shadow) {
++         unsigned lo = draw->start * info->index_size;
++         unsigned hi = lo + draw->count * info->index_size;
++
++         if (lo >= rsrc->index_shadow_lo && hi <= rsrc->index_shadow_hi) {
++            shadow_info = *info;
++            shadow_info.has_user_indices = true;
++            shadow_info.index.user = rsrc->index_shadow;
++            scan_info = &shadow_info;
++         }
++      }
++
++      u_vbuf_get_minmax_index(&ctx->base, scan_info, draw, min_index, max_index);
+ 
+       if (!info->has_user_indices)
+          pan_minmax_cache_add(rsrc->index_cache, info->index_size, draw->start,
+diff -ruN a/pan_resource.c b/pan_resource.c
+--- a/src/gallium/drivers/panfrost/pan_resource.c
++++ b/src/gallium/drivers/panfrost/pan_resource.c
+@@ -241,6 +241,7 @@
+    pan_resource_afbcp_stop(rsrc);
+ 
+    free(rsrc->index_cache);
++   free(rsrc->index_shadow);
+    free(rsrc->damage.tile_map.data);
+ 
+    util_range_destroy(&rsrc->valid_buffer_range);
+@@ -1765,6 +1766,8 @@
+          pan_minmax_cache_invalidate(
+             rsrc->index_cache, util_format_get_blocksize(rsrc->base.format),
+             transfer->base.box.x, transfer->base.box.width);
++         pan_index_shadow_invalidate(rsrc, transfer->base.box.x,
++                                     transfer->base.box.width);
+       }
+ 
+       return bo->ptr.cpu + rsrc->plane.layout.slices[level].offset_B +
+@@ -2385,6 +2388,7 @@
+       pan_minmax_cache_invalidate(prsrc->index_cache,
+                                   util_format_get_blocksize(prsrc->base.format),
+                                   transfer->box.x, transfer->box.width);
++      pan_index_shadow_invalidate(prsrc, transfer->box.x, transfer->box.width);
+    }
+ 
+    /* Derefence the resource */
+@@ -2547,6 +2551,61 @@
+ }
+ 
+ void
++pan_index_shadow_invalidate(struct panfrost_resource *rsrc, unsigned x,
++                            unsigned width)
++{
++   if (!rsrc->index_shadow)
++      return;
++
++   if (x + width <= rsrc->index_shadow_lo || x >= rsrc->index_shadow_hi)
++      return;
++
++   rsrc->index_shadow_lo = rsrc->index_shadow_hi = 0;
++}
++
++/* Index buffers are uploaded with glBufferSubData by some apps (PPSSPP). Keep
++ * a copy in normal cached memory so the min/max index scan never has to read
++ * the write-combined BO. Any other write to the buffer drops the copy. */
++static void
++panfrost_buffer_subdata(struct pipe_context *pctx, struct pipe_resource *buffer,
++                        unsigned usage, unsigned offset, unsigned size,
++                        const void *data)
++{
++   struct panfrost_resource *rsrc = pan_resource(buffer);
++
++   u_default_buffer_subdata(pctx, buffer, usage, offset, size, data);
++
++   static int disabled = -1;
++   if (disabled < 0)
++      disabled = getenv("PAN_NO_INDEX_SHADOW") != NULL;
++
++   if (disabled || !rsrc->index_cache || buffer->width0 > (16u << 20))
++      return;
++
++   if (!rsrc->index_shadow) {
++      rsrc->index_shadow = malloc(buffer->width0);
++      if (!rsrc->index_shadow)
++         return;
++      rsrc->index_shadow_lo = rsrc->index_shadow_hi = 0;
++   }
++
++   /* u_default_buffer_subdata invalidated any overlapping range already */
++   if (rsrc->index_shadow_hi == rsrc->index_shadow_lo) {
++      rsrc->index_shadow_lo = offset;
++      rsrc->index_shadow_hi = offset + size;
++   } else if (offset == rsrc->index_shadow_hi) {
++      rsrc->index_shadow_hi = offset + size;
++   } else if (offset + size == rsrc->index_shadow_lo) {
++      rsrc->index_shadow_lo = offset;
++   } else {
++      rsrc->index_shadow_lo = offset;
++      rsrc->index_shadow_hi = offset + size;
++   }
++
++   memcpy(rsrc->index_shadow + offset, data, size);
++}
++
++void
+ panfrost_resource_context_init(struct pipe_context *pctx)
+ {
+    pctx->buffer_map = u_transfer_helper_transfer_map;
+@@ -2559,7 +2618,7 @@
+    pctx->flush_resource = panfrost_flush_resource;
+    pctx->invalidate_resource = panfrost_invalidate_resource;
+    pctx->transfer_flush_region = u_transfer_helper_transfer_flush_region;
+-   pctx->buffer_subdata = u_default_buffer_subdata;
++   pctx->buffer_subdata = panfrost_buffer_subdata;
+    pctx->texture_subdata = u_default_texture_subdata;
+    pctx->clear_buffer = u_default_clear_buffer;
+    pctx->clear_render_target = panfrost_clear_render_target;
+diff -ruN a/pan_resource.h b/pan_resource.h
+--- a/src/gallium/drivers/panfrost/pan_resource.h
++++ b/src/gallium/drivers/panfrost/pan_resource.h
+@@ -99,6 +99,11 @@
+    /* Cached min/max values for index buffers */
+    struct pan_minmax_cache *index_cache;
+ 
++   /* CPU-cached copy of the bytes [index_shadow_lo, index_shadow_hi) of an index buffer, filled by
++    * buffer_subdata. Lets the min/max scan avoid reading the (write-combined) BO. */
++   uint8_t *index_shadow;
++   unsigned index_shadow_lo, index_shadow_hi;
++
+    /* Whether the resource owns the backing BO's label */
+    bool owns_label;
+ 
+@@ -106,6 +111,9 @@
+    struct pan_afbcp *afbcp;
+ };
+ 
++void pan_index_shadow_invalidate(struct panfrost_resource *rsrc, unsigned x,
++                                 unsigned width);
++
+ static inline struct panfrost_resource *
+ pan_resource(struct pipe_resource *p)
+ {
