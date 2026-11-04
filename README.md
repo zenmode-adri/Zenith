@@ -199,7 +199,7 @@ Measured on the **R36S** the way you play: vsync and audio sync on (sound muted)
 at 1296 MHz in every column, one run per point, so differences under 5 % may be noise. The core settings are not those
 of the free-running test, so these numbers cannot be compared with the tables below. "Auto" is how the console ships
 (GPU and RAM on their automatic governors); "RAM fixed" pins only the RAM at 666 MHz; "GPU + RAM fixed" pins the GPU at
-600 MHz and the RAM at 666 MHz, which is what the new performance mode does. Panfrost is our patched one.
+600 MHz and the RAM at 666 MHz, which is what the new performance mode does on models without the 786 MHz step. Panfrost is our patched one.
 
 fps at real speed:
 
@@ -231,7 +231,7 @@ each setting leaves:
   load they see stays low.
 - **The RAM matters as much as the GPU:** pinning only the RAM already gives a large part of the gain
   (Panfrost at real speed: Mario Tennis 18.0 -> 22.4, Wave Race 64 40.5 -> 44.9).
-- **The new performance mode** (next image) pins the GPU at 600 MHz and the RAM at 666 MHz while a game runs and puts
+- **The new performance mode** (next image) pins the GPU at 600 MHz and the RAM at its top step (786 MHz on the models that have it, 666 MHz on the rest) while a game runs and puts
   both back on automatic when it ends. It is off by default and can be turned on for all games, per system or per
   game. Best results: Mario Tennis 19.3 -> 25.0 fps with libmali and 18.0 -> 26.6 with Panfrost; Wave Race 64 35.1 ->
   38.9 (libmali) and 40.5 -> 44.7 (Panfrost). Heat and battery use in long sessions are not measured yet (the R36 Ultra
@@ -250,7 +250,7 @@ pins the GPU at 600 MHz and the RAM at 666 or 786 MHz.
 
 fps at real speed:
 
-| Game (N64) | Auto, RAM up to 666 | Auto, RAM up to 786 | Fixed GPU 600 + RAM 666 (performance mode) | Fixed GPU 600 + RAM 786 |
+| Game (N64) | Auto, RAM up to 666 | Auto, RAM up to 786 | Fixed GPU 600 + RAM 666 | Fixed GPU 600 + RAM 786 (performance mode in the next image) |
 |---|---:|---:|---:|---:|
 | Mario Tennis | 15.7 | 19.8 | 27.2 | **29.0** |
 | Wave Race 64 | 41.9 | 46.4 | 48.4 | **49.0** |
@@ -258,7 +258,7 @@ fps at real speed:
 | Mario Kart 64 (ParaLLEl) | 24.8 | **25.0** | 24.8 | 24.8 |
 | Zelda: Ocarina of Time | **16.8** | 16.6 | 16.5 | 16.6 |
 
-- **The performance mode is the big step on the Ultra too:** Mario Tennis +74 %, GoldenEye +16 %, Wave Race 64 +15 %.
+- **Fixing the clocks is the big step on the Ultra too:** Mario Tennis +74 %, GoldenEye +16 %, Wave Race 64 +15 %.
   Mario Kart 64 and Zelda do not move with any setting.
 - **RAM at 786 MHz adds little on top:** Mario Tennis +6 %, GoldenEye +2 %, Wave Race 64 +1 % (one run, so the
   smaller ones may be noise). On automatic clocks the governor almost never takes the RAM to 786.
