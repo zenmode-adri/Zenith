@@ -62,6 +62,10 @@ Measured on an **R36 Ultra**. Details and the git tag of every change are in [`C
 measurements, with charts: [`docs/COMPILER-STUDY.md`](docs/COMPILER-STUDY.md) (does compiling the emulators differently
 make them faster? Mostly no) and [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 
+GPU drivers: [`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md) compares libmali, stock Panfrost and a patched Panfrost
+in 20 games on the R36S and the R36 Ultra, with screenshots. The patched Panfrost matches or beats libmali in 19 of 20 games
+on the R36S and in all 20 on the Ultra; it is not in the image yet.
+
 | | AURKNIX (base) | Zenith | Change |
 |---|---:|---:|---:|
 | Power-on to menu | 33 s | **15 s** | **-53 %** |
