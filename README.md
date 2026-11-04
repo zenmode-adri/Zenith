@@ -242,6 +242,28 @@ each setting leaves:
   with patched Panfrost. The emulator thread uses a whole CPU core, so neither the driver nor the GPU clock changes
   much there.
 
+**R36 Ultra**, patched Panfrost, same method and games, plus RAM at 786 MHz. The 786 MHz step is a **test device tree,
+not in the image**: the RAM still starts at 666 MHz and only switches to 786 while running (starting the RAM at 786
+was not reliable on these boards). "Auto" lets the governors pick, with the RAM allowed up to 666 or 786 MHz; "fixed"
+pins the GPU at 600 MHz and the RAM at 666 or 786 MHz.
+
+fps at real speed:
+
+| Game (N64) | Auto, RAM up to 666 | Auto, RAM up to 786 | Fixed GPU 600 + RAM 666 (performance mode) | Fixed GPU 600 + RAM 786 |
+|---|---:|---:|---:|---:|
+| Mario Tennis | 15.7 | 19.8 | 27.2 | **29.0** |
+| Wave Race 64 | 41.9 | 46.4 | 48.4 | **49.0** |
+| GoldenEye 007 | 34.8 | 35.6 | 40.2 | **41.1** |
+| Mario Kart 64 (ParaLLEl) | 24.8 | **25.0** | 24.8 | 24.8 |
+| Zelda: Ocarina of Time | **16.8** | 16.6 | 16.5 | 16.6 |
+
+- **The performance mode is the big step on the Ultra too:** Mario Tennis +74 %, GoldenEye +16 %, Wave Race 64 +15 %.
+  Mario Kart 64 and Zelda do not move with any setting.
+- **RAM at 786 MHz adds little on top:** Mario Tennis +6 %, GoldenEye +2 %, Wave Race 64 +1 % (one run, so the
+  smaller ones may be noise). On automatic clocks the governor almost never takes the RAM to 786.
+- **Stability so far:** no crash in these runs (67 °C at most), and `memtester` found no errors in about 14 minutes at
+  786 MHz (one full pass of 300 MB). That is not long enough to call it safe for every unit, so it stays a test.
+
 ### Free-running test (20 games)
 
 20 games on an **R36S** and an **R36 Ultra**, three drivers: Arm's **libmali** (the Zenith default), **stock Panfrost**
