@@ -16,6 +16,8 @@ Zenith would not exist without them.
   gauge and sleep fixes, ROCKNIX #3305), whose kernel patches Zenith carries for suspend and resume.
 - **KK** (AveyondFly), who ported the PX30 memory (DMC) frequency scaling from the Rockchip BSP
   (AveyondFly/distribution_rocknix commit `2c34156`, "rk3326: add dmc").
+- **djparentx** ([dArkOSen-R36S](https://github.com/djparentx/dArkOSen-R36S), built from dArkOS): which R36S boards get the
+  786 MHz memory step, and its 1.1 V, were read from its device trees.
 
 ## Maintainer
 

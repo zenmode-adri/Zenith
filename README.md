@@ -243,7 +243,7 @@ each setting leaves:
   much there.
 
 **R36 Ultra**, patched Panfrost, same method and games, plus RAM at 786 MHz. The 786 MHz step comes **in the next
-image** on the same boards dArkOSen enables it on: the original R36S (V12/V20/V21/V22/Y02, Plus, R36H, R45H, R46H),
+image** (not in this repository's source yet) on the same boards [dArkOSen](https://github.com/djparentx/dArkOSen-R36S) enables it on: the original R36S (V12/V20/V21/V22/Y02, Plus, R36H, R45H, R46H),
 the R36S Sauce and the R36 Ultra. Clones and other models stay at 666 MHz. The RAM still starts at 666 MHz and only
 switches to 786 while running (starting the RAM at 786 was not reliable on these boards), at 1.1 V like dArkOSen. "Auto" lets the governors pick, with the RAM allowed up to 666 or 786 MHz; "fixed"
 pins the GPU at 600 MHz and the RAM at 666 or 786 MHz.
