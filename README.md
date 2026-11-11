@@ -27,22 +27,24 @@ said next to it.
 
 ## Features
 
-- **zfront, a front-end written for these consoles, is the default.** On the R36 Ultra it shows its first screen in
-  **1.0 s** (EmulationStation: 4.1 s), starts a RetroArch game **0.27 s sooner** (0.91 s vs 1.18 s) and stays at about a
+- **zfront, a front-end written for these consoles, is the default.** On the R36 Ultra the console is ready
+  **about 13 s after power-on** (12.8-13.4 s; EmulationStation on the same image: 15.6-18.2 s), zfront shows its first
+  screen in **1.0 s** (EmulationStation: 4.1 s), starts a RetroArch game **0.27 s sooner** (0.91 s vs 1.18 s) and stays at about a
   quarter of the memory in the menus, and a running game can use **32-48 MB more RAM** (two games, two runs each). It reads the same settings,
   game lists and scripts as EmulationStation, which stays installed one menu away (`Tools > Switch frontend`).
   See [zfront and EmulationStation](#zfront-and-emulationstation).
 - **Six themes on one grid:** Zenith Minimal (default) and Zenith Next, each light and dark, plus XMB, Art Book, Iconic
   and TechDweeb remade for zfront, laid out on square cells and checked by a test at nine screen sizes.
-- **Fast boot and suspend:** about **15 s** from power-on to the menu (33 s on the base image), sleep in **2.3 s**, wake
-  in **4.3 s** (measured on v0.1.0 with EmulationStation; zfront is ready sooner, see below).
+- **Fast boot and suspend:** about **13 s** from power-on to the menu with zfront (33 s on the base image), sleep in
+  **2.3 s**, wake in **4.3 s**.
+- **Battery screen and R36 Tuner Next:** charge, current use, history and what used the most, in the menu; and a full
+  tuner for CPU, GPU and RAM clocks, voltage curves, profiles, benchmarks and a stability test, with live graphs. See
+  [R36 Tuner Next](#r36-tuner-next).
 - **Patched Panfrost (open GPU driver) in the image:** +39 % over stock Panfrost and close to Arm's libmali when you play
   (from -7 % to +15 % in five N64 games at real speed). libmali stays the default. See
   [Panfrost vs libmali](#panfrost-vs-libmali).
 - **Performance mode** (off by default): GPU and RAM at full speed while a game runs. Mario Tennis 19.3 -> 25.0 fps
   (libmali, R36S). **RAM at 786 MHz** on the models that have that step.
-- **R36 Tuner Next** built in: CPU governor and frequencies, turbo steps, undervolt, benchmarks, a stability test and a
-  monitor.
 - **Send files from your phone:** a web page with a QR code (off by default) to upload games, folders, BIOS and saves.
 - **Zenith DTB Selector** to pick the right device tree for your console from Windows, Linux or macOS. See
   [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
@@ -62,7 +64,26 @@ Taken on an R36 Ultra (720x720) running v0.2.0, with the small test library of t
 <tr>
 <td align="center"><img src="docs/images/zfront-menu.png" width="280"/><br/><sub>Main menu (Zenith Next)</sub></td>
 <td align="center"><img src="docs/images/zfront-battery.png" width="280"/><br/><sub>Battery and power</sub></td>
+<td align="center"><img src="docs/images/zfront-battery-performance.png" width="280"/><br/><sub>Battery &amp; performance settings</sub></td>
+</tr>
+<tr>
 <td align="center"><img src="docs/images/zfront-next-light.png" width="280"/><br/><sub>Zenith Next, light</sub></td>
+<td></td><td></td>
+</tr>
+</table>
+
+**R36 Tuner Next**, built in (opened from the Tools menu)
+
+<table>
+<tr>
+<td align="center"><img src="docs/images/tuner-home.png" width="280"/><br/><sub>Home: live temperature, CPU, GPU and RAM, profiles</sub></td>
+<td align="center"><img src="docs/images/tuner-settings.png" width="280"/><br/><sub>Settings: governors, maximum clocks, performance mode</sub></td>
+<td align="center"><img src="docs/images/tuner-cpu-curve.png" width="280"/><br/><sub>CPU voltage curve</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/images/tuner-advanced.png" width="280"/><br/><sub>Advanced: voltages, factory settings, recovery</sub></td>
+<td align="center"><img src="docs/images/tuner-tests.png" width="280"/><br/><sub>Tests: stability test and benchmarks</sub></td>
+<td></td>
 </tr>
 </table>
 
@@ -97,14 +118,15 @@ make them faster? Mostly no) and [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 
 | | AURKNIX (base) | Zenith | Change |
 |---|---:|---:|---:|
-| Power-on to menu | 33 s | **15 s** | **-53 %** |
+| Power-on to menu (zfront, three boots) | 33 s | **12.8-13.4 s** | **about -60 %** |
 | Opening a game (EmulationStation) | 6.29 s | **3.85 s** | **-39 %** |
 | Suspend | 3.5 s | **2.3 s** | **-34 %** |
 | Resume | 8 s | **4.3 s** | **-46 %** |
 | First button press after idle (EmulationStation) | 225-245 ms | **11 ms** | **-95 %** |
 
-> AURKNIX is the base image Zenith started from. Zenith's boot time comes from the boot log plus the bootloader
-> (3.11 s -> 2.11 s). These times were measured on the first release, with EmulationStation as the front-end.
+> AURKNIX is the base image Zenith started from (its 33 s was timed with a stopwatch). Zenith's boot time is the moment
+> the front-end draws its first frame, on the kernel clock, plus the 2.1 s of the bootloader; v0.1.0 measured 15.4 s that
+> way with EmulationStation. The other rows were measured on v0.1.0 with EmulationStation.
 >
 > Thanks to AURKNIX and ROCKNIX for the base these numbers start from.
 
@@ -120,6 +142,7 @@ Measured on an **R36 Ultra**, one or two runs per point (not a statistical bench
 
 | | EmulationStation | zfront |
 |---|---:|---:|
+| Power-on to menu, same v0.2.0 image (three boots each) | 15.6 / 17.0 / 18.2 s | **12.8 / 13.4 / 13.4 s** |
 | First screen after start (large library) | 4.1 s | **1.0 s** |
 | Ready after a restart of the front-end | 5-6 s | **3-4 s** |
 | Start a RetroArch game from the front-end | 1.18 s | **0.91 s** |
@@ -203,8 +226,6 @@ game running free and no frame skipping, so they do not add up and are smaller w
   Stand-alone emulators (Flycast, Mupen64Plus) get no per-program settings yet.
 
 ### Hardware, battery and tuning
-- **R36 Tuner Next** is built in, with undervolt through the device tree and a boot safety net. Voltage changes were
-  tested on an R36 Ultra only in part, and other models only in simulation.
 - GPU clock fix (patch `037`): stepping the GPU limit through 480 MHz froze an R36 Ultra and an R36S within about a minute
   (6 of 6) before it; with it, more than 25,000 steps per console without a freeze.
 - Chip-bin voltage columns are chosen after correcting the chip measurement for temperature (6 boots between 40 and 52.5 C
@@ -213,6 +234,16 @@ game running free and no frame skipping, so they do not add up and are smaller w
   instead of about 0.34 s) and show the volume bar at 0 % and 100 %; Samba asks for the root password.
 - Battery gauge tables for the R36S panel 4 family, R36XX Pro Max, R40XX and R45H/R46H follow the maker's, checked only by
   building the device trees.
+
+### R36 Tuner Next
+
+R36 Tuner Next is built into Zenith and opens from the Tools menu. Its home page shows live graphs of temperature and of
+the CPU, GPU and RAM clocks, with three profiles (Power saver, Balanced, Performance). The Settings tab sets the
+governors, the maximum CPU, GPU and RAM clocks, turbo and the performance mode for games; Advanced edits the CPU and GPU
+voltage curves and the memory steps, compares what is saved with what the kernel uses, restores the factory values and
+explains how to recover from a PC; Tests runs a stability test (CPU, memory and GPU with error detection) and CPU,
+memory and GPU benchmarks, with a history of results. Voltage changes go through the device tree with a boot safety net;
+they were tested on an R36 Ultra only in part, and on other models only in simulation.
 
 ### Choosing the right device tree
 - **Zenith DTB Selector** (Windows, Linux, macOS; window in English, Spanish and Chinese): finds the SD card, lists 86 models,
