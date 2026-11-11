@@ -19,8 +19,8 @@ what the built-in updater looks for.
 
 - **zfront is now the default front-end** on new installs: Zenith's own front-end, written in C++ for these 1 GB consoles,
   with two new themes, **Zenith Minimal** and **Zenith Next**. On the R36 Ultra it shows its first screen in 1.0 s
-  (EmulationStation: 4.1 s), starts a RetroArch game 0.27 s sooner (0.91 s vs 1.18 s) and leaves a running game about
-  40-45 MB more free RAM. EmulationStation stays installed and themed (`Tools > Switch frontend`); an update never
+  (EmulationStation: 4.1 s), starts a RetroArch game 0.27 s sooner (0.91 s vs 1.18 s) and leaves a running game 32-48 MB
+  more RAM (God of War and Dead or Alive 2, two runs each). EmulationStation stays installed and themed (`Tools > Switch frontend`); an update never
   switches someone who already uses it.
 - **Patched Panfrost (open GPU driver) is in the image.** libmali remains the default driver; Panfrost is a choice
   (`gpudriver panfrost` and a reboot, or the GPU DRIVER menu). If Panfrost cannot start, the system goes back to libmali

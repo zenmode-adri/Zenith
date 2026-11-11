@@ -29,7 +29,7 @@ said next to it.
 
 - **zfront, a front-end written for these consoles, is the default.** On the R36 Ultra it shows its first screen in
   **1.0 s** (EmulationStation: 4.1 s), starts a RetroArch game **0.27 s sooner** (0.91 s vs 1.18 s) and stays at about a
-  quarter of the memory in the menus, so a running game has **about 40-45 MB more free RAM**. It reads the same settings,
+  quarter of the memory in the menus, and a running game can use **32-48 MB more RAM** (two games, two runs each). It reads the same settings,
   game lists and scripts as EmulationStation, which stays installed one menu away (`Tools > Switch frontend`).
   See [zfront and EmulationStation](#zfront-and-emulationstation).
 - **Six themes on one grid:** Zenith Minimal (default) and Zenith Next, each light and dark, plus XMB, Art Book, Iconic
@@ -124,12 +124,17 @@ Measured on an **R36 Ultra**, one or two runs per point (not a statistical bench
 | Ready after a restart of the front-end | 5-6 s | **3-4 s** |
 | Start a RetroArch game from the front-end | 1.18 s | **0.91 s** |
 | Front-end memory in the menus | 143 MB | **36 MB** |
-| Front-end memory while a game runs (God of War, PSP) | 90-100 MB | **10-11 MB** |
-| RAM the game could still use (God of War / Dead or Alive 2) | 456-472 / 480-488 MB | **504 / 528 MB** |
+| Front-end memory while a game runs (God of War, PSP; PSS) | 90-100 MB | **10-11 MB** |
+| RAM the game could still take, God of War (two runs) | 472 / 456 MB | **504 / 504 MB** |
+| RAM the game could still take, Dead or Alive 2 (two runs) | 480 / 488 MB | **528 / 528 MB** |
 | CPU when idle on the menu (ticks per 10 s) | 35 | **0-2** |
 
 - It does **not** make games run faster: in God of War (the only game compared) the frame rate is the same with both.
 - What it gives a game is room: before a launch zfront drops every picture it can rebuild and hands the memory back.
+  The game gains 32-48 MB, less than the 80-90 MB the two front-ends differ by: when memory runs short the kernel
+  compresses part of the idle front-end's memory (zram), so EmulationStation takes less from a game than its size
+  suggests (our reading, not measured on its own). "Could still take" was measured by filling the memory until 80 MB
+  were left, with the game running.
 - It does what ES does on this image (game lists and keys, collections, metadata editor, scrapers, music, video previews,
   manuals, netplay, Kiosk and Kid modes) and adds a continue-playing row, save backups, a library check, play
   statistics, a battery screen and the phone file transfer. Details in [`docs/ZFRONT.md`](docs/ZFRONT.md).
