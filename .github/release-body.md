@@ -8,16 +8,16 @@ Everything that changed, with the measurements: [CHANGELOG.md](https://github.co
 > treat them as beta.
 
 ## Highlights
-- **zfront, Zenith's own front-end, is now the default**: first screen in 1.0 s instead of 4.1 s and about a quarter of
-  EmulationStation's memory. Two new themes, **Zenith Minimal** (light) and **Zenith Next** (dark); XMB, Art Book,
-  Iconic and TechDweeb remade on the same grid. EmulationStation stays installed (`Tools > Switch frontend`).
+- **zfront, Zenith's own front-end, is now the default**. Measured on the R36 Ultra against EmulationStation: first
+  screen in 1.0 s (4.1 s), a RetroArch game starts 0.27 s sooner (0.91 s vs 1.18 s), and a running game has about
+  40-45 MB more free RAM. Two new themes, **Zenith Minimal** and **Zenith Next**; XMB, Art Book, Iconic and TechDweeb
+  remade on the same grid. EmulationStation stays installed and themed, one menu away (`Tools > Switch frontend`).
 - **Patched Panfrost** (open GPU driver) in the image: +38.9 % over stock Panfrost and +4.4 % / +6.5 % over libmali
   (R36S / R36 Ultra, 20 games, free-running test). libmali stays the default.
 - **Performance mode** (off by default): GPU and RAM at full speed while a game runs (Mario Tennis 19.3 -> 25.0 fps with
   libmali on the R36S). **RAM at 786 MHz** on the models that have that step.
 - **R36 Tuner Next** built in, with undervolt and a fix for the GPU freezes around 480 MHz.
 - **Send files from your phone** through a web page with a QR code (off by default).
-- **Updates from Zenith's own releases**: from this version on, the built-in updater offers new releases.
 - Faster volume keys, controller mapping that can always be cancelled, Spanish everywhere, and many fixes.
 
 ## Downloads

@@ -17,16 +17,17 @@ what the built-in updater looks for.
 
 ### Highlights
 
-- **zfront is now the default front-end** on new installs. It is Zenith's own front-end, written in C++, with two new
-  themes: **Zenith Minimal** (light, the default) and **Zenith Next** (dark). EmulationStation stays installed and can be
-  chosen in `Tools > Switch frontend`. An update never switches someone who already uses EmulationStation.
+- **zfront is now the default front-end** on new installs: Zenith's own front-end, written in C++ for these 1 GB consoles,
+  with two new themes, **Zenith Minimal** and **Zenith Next**. On the R36 Ultra it shows its first screen in 1.0 s
+  (EmulationStation: 4.1 s), starts a RetroArch game 0.27 s sooner (0.91 s vs 1.18 s) and leaves a running game about
+  40-45 MB more free RAM. EmulationStation stays installed and themed (`Tools > Switch frontend`); an update never
+  switches someone who already uses it.
 - **Patched Panfrost (open GPU driver) is in the image.** libmali remains the default driver; Panfrost is a choice
   (`gpudriver panfrost` and a reboot, or the GPU DRIVER menu). If Panfrost cannot start, the system goes back to libmali
   by itself.
 - **Performance mode** (GPU and RAM at full speed while a game runs) is in the image, **off by default**.
 - **RAM at 786 MHz** on the models that have that step (R36 Ultra and the boards listed below).
 - **R36 Tuner Next** built in, with undervolt and a fix for the hard freezes around a 480 MHz GPU clock.
-- **Updates now come from Zenith's own releases** (`github.com/zenmode-adri/Zenith`), never from the original AURKNIX.
 - **Send files from your phone** through a web page (off by default, 4-digit PIN, QR code to scan).
 - **Zenith DTB Selector** to pick the right screen/device tree for your console from Windows, Linux or macOS.
 
