@@ -46,6 +46,8 @@ class IdleWaiter {
   void close_pads();
   /// The Wayland socket, or -1. Never read nor closed here. Re-acquire it after every window (re)creation.
   void set_display_fd(int fd);
+  /// A descriptor someone else reads after the sleep (the status bar's uevents), or -1: it only wakes the loop.
+  void set_watch_fd(int fd);
   int display_fd() const { return display_fd_; }
   /// True while the display descriptor is part of the sleep (set, not dropped, not in a spin penalty).
   bool display_active() const { return display_fd_ >= 0 && !spin_off_; }
@@ -57,8 +59,9 @@ class IdleWaiter {
 
   /// Longest sleep right now.
   int cap_ms() const;
-  /// Sleeps until a descriptor is readable, `wake()`, `ms` or `cap_ms()` passed; drains what it owns.
-  void sleep(int ms);
+  /// Sleeps until a descriptor is readable, `wake()`, `ms` or `cap_ms()` passed; drains what it owns. True when the watch descriptor
+  /// is readable (its owner must read it and the loop must act on it: it is not drained here).
+  bool sleep(int ms);
 
   /// Spin guard tuning (tests).
   unsigned spin_limit = 64;
@@ -69,8 +72,8 @@ class IdleWaiter {
   struct WakeFd;
   std::shared_ptr<WakeFd> wake_;
   std::vector<int> pads_;
-  int display_fd_ = -1;
-  std::vector<pollfd> fds_;  // [0] wake, [1..pads] pads, [last] display
+  int display_fd_ = -1, watch_fd_ = -1;
+  std::vector<pollfd> fds_;  // [0] wake, [1..pads] pads, [last - 1] watch, [last] display
   unsigned spins_ = 0;
   bool spin_off_ = false, keys_held_ = false, logged_drop_ = false;
   TimePoint spin_until_{};

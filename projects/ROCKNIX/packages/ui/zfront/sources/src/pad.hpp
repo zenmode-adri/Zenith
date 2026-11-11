@@ -26,6 +26,8 @@ struct JoyInfo {
   std::string name;
   /// Counts SDL reports for pads that are open (-1: unknown). ES's mapping wizard uses them to decide which rows may be skipped.
   int buttons = -1, hats = -1, axes = -1;
+  /// Device node (`/dev/input/eventN`) when SDL knows it: ES's player assignment prefers it to the name (empty: unknown).
+  std::string path;
 };
 
 /// Key-repeat schedule: stages of (duration_ms, delay_ms); the first step is immediate, duration UINT32_MAX = forever.
@@ -39,8 +41,11 @@ struct Profile {
 };
 /// ES game lists and grids: 0.5 s, then every 114 ms, 32 ms after 2.5 s, 16 ms after 6.5 s.
 extern const Profile kQuick;
-/// ES system carousel, menus and tabs: 0.5 s, then every 200 ms.
+/// ES system carousel and tabs: 0.5 s, then every 200 ms.
 extern const Profile kSlow;
+/// Menus and choice lists: 0.5 s, then every 114 ms, 66 ms after 2 s and never faster (a held direction stays readable;
+/// the quick profile ends at a step per frame, which a short menu cannot use).
+extern const Profile kMenu;
 
 enum class InKind : uint8_t { Button, Hat, Axis };
 using DevId = size_t;
@@ -79,7 +84,7 @@ class Pad {
   virtual void clear() {}
   /// Devices currently open.
   virtual std::vector<JoyInfo> joysticks() const { return {}; }
-  /// Repeat schedule for the current screen (default kQuick; carousel and menus ask for kSlow).
+  /// Repeat schedule for the current screen (default kQuick; the carousel asks for kSlow, menus for kMenu).
   virtual void set_profile(Profile p) { (void)p; }
   /// ES `InvertButtons` (swaps A/B) changed in the settings menu: applies at once.
   virtual void set_invert_buttons(bool invert) { (void)invert; }

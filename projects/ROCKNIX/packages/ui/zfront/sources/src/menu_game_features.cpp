@@ -278,18 +278,33 @@ Resolved FeatureDb::resolve(const System& sys, const std::string& emulator, cons
   return r;
 }
 
+// The same walk as `resolve`, stopping at the first thing found (the menu asks it for every system when it opens).
+bool FeatureDb::resolves_any(const System& sys, const std::pair<std::string, std::vector<std::string>>& se, const std::string& core) const {
+  const std::string key = starts_with(se.first, "lr-") ? "libretro" : se.first;
+  const EmuDef* d = nullptr;
+  for (const EmuDef& e : emus_)
+    if (e.name == key) d = &e;
+  if (!d) return false;
+  if (d->flags || !d->custom.empty()) return true;
+  for (const SysFeat& s : d->systems)
+    if (s.name == sys.name && (s.flags || !s.custom.empty())) return true;
+  if (std::find(se.second.begin(), se.second.end(), core) == se.second.end()) return false;
+  for (const CoreDef& c : d->cores) {
+    if (c.name != core) continue;
+    if (c.flags || !c.custom.empty()) return true;
+    for (const SysFeat& s : c.systems)
+      if (s.name == sys.name && (s.flags || !s.custom.empty())) return true;
+  }
+  return false;
+}
+
 bool FeatureDb::system_has_features(const System& sys) const {
   if (!loaded_) return true;
   for (const auto& e : sys.emus) {
     // any core of the emulator (the flags/custom of the emulator count for every core)
-    if (e.second.empty()) {
-      Resolved r = resolve(sys, e.first, std::string());
-      if (r.flags || !r.custom.empty()) return true;
-    }
-    for (const std::string& c : e.second) {
-      Resolved r = resolve(sys, e.first, c);
-      if (r.flags || !r.custom.empty()) return true;
-    }
+    if (e.second.empty() && resolves_any(sys, e, std::string())) return true;
+    for (const std::string& c : e.second)
+      if (resolves_any(sys, e, c)) return true;
   }
   return false;
 }

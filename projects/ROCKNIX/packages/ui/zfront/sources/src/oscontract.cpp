@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cstdio>
 #include <cstdlib>
 #include <map>
@@ -19,7 +20,9 @@
 #endif
 
 #include "launch.hpp"
+#include "music.hpp"
 #include "screensaver.hpp"
+#include "ssmedia.hpp"
 
 namespace zf {
 namespace oscontract {
@@ -34,6 +37,7 @@ struct State {
   std::atomic<bool> quit{false};
   IdleTimer idle;
   screensaver::ResumeDetector resume;  // a suspend (power button) while the screensaver was on
+  bool resumed = false;                // a suspend was noticed (`take_resumed`)
   bool redraw = false;                 // the screensaver started / stopped: the loop must draw
   std::vector<std::string> dirs;
   bool dirs_set = false;
@@ -220,6 +224,10 @@ bool wait_env(const char* var, int timeout_ms, bool want_socket) {
 }  // namespace
 
 bool wait_display() { return wait_env("ES_WAIT_WAYLAND_SOCKET", 10000, true); }
+bool display_ready() {
+  const char* p = std::getenv("ES_WAIT_WAYLAND_SOCKET");
+  return !p || !*p || wait_for_path(p, 0, true);
+}
 bool wait_roms() { return wait_env("ES_WAIT_ROMS_READY", 15000, false); }
 
 void on_first_frame() {
@@ -405,15 +413,17 @@ void screensaver_start(const EsSettings& es) {
     }
     behavior = "black";
   }
-  // zfront ports black and dim; the video / slideshow types of ES fall back to black (ES does too when it has no media)
+  // black and dim are drawn here; slideshow / random video are ssmedia's (it falls back to black, panel off, when there is no media, as ES does)
   screensaver::Mode m = screensaver::mode_for_behavior(behavior);
   t.set_active(true);
   screensaver::set_mode(m);
+  music::on_screensaver(true);  // StopMusicOnScreenSaver
+  if (m == screensaver::Mode::Media) ssmedia::request_start(behavior == "random video");
   s.redraw = true;
   // black: the panel goes off (the es-script does it too; writing it here keeps it working without scripts). dim keeps the
   // light: that is the point of dimming (the fork's 10-backlight-off.sh must skip "dim", see os-patches/0005).
   if (m == screensaver::Mode::Black) backlight(4);
-  fire_event("screensaver-start", {m == screensaver::Mode::Dim ? "dim" : "black"});
+  fire_event("screensaver-start", {m == screensaver::Mode::Dim ? "dim" : m == screensaver::Mode::Media ? behavior : "black"});
   fire_event("sleep");
 }
 
@@ -423,6 +433,8 @@ void screensaver_stop() {
   if (!t.active()) return;
   t.set_active(false);
   screensaver::set_mode(screensaver::Mode::Off);
+  music::on_screensaver(false);
+  ssmedia::on_stop();  // video stopped, pick forgotten
   s.redraw = true;
   backlight(0);  // also after dim: an es-script may have turned the light off
   fire_event("screensaver-stop");
@@ -436,6 +448,12 @@ bool saver_blocked() {
 
 bool resume_pending() { return st().resume.peek(screensaver::clock_offset_ns()); }
 
+bool take_resumed() {
+  bool r = st().resumed;
+  st().resumed = false;
+  return r;
+}
+
 bool take_redraw() {
   bool r = st().redraw;
   st().redraw = false;
@@ -443,7 +461,9 @@ bool take_redraw() {
 }
 
 std::optional<TimePoint> saver_deadline(const EsSettings& es, TimePoint now) {
-  if (!st().idle.active() || screensaver::mode() != screensaver::Mode::Dim) return std::nullopt;
+  if (!st().idle.active()) return std::nullopt;
+  if (screensaver::mode() == screensaver::Mode::Media) return ssmedia::deadline(now);  // fade, swap time, clock
+  if (screensaver::mode() != screensaver::Mode::Dim) return std::nullopt;
   if (!es.get_bool("DrawClock", true)) return std::nullopt;
   timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts);
@@ -457,6 +477,7 @@ void before_acts(const EsSettings& es, TimePoint now, std::vector<Action>& acts,
   t.set_timeout(es.get_int("ScreenSaverTime", 300000));
   if (!t.stamped()) t.input(now);
   bool resumed = s.resume.check(screensaver::clock_offset_ns());
+  if (resumed) s.resumed = true;
   if (t.active()) {
     if (!acts.empty() || raw_input || resumed) {  // the first key only wakes the panel; a suspend wakes it too
       acts.clear();
@@ -518,12 +539,66 @@ Busy::Busy() { ++st().busy; }
 Busy::~Busy() { --st().busy; }
 bool busy() { return st().busy.load() > 0; }
 
+namespace {
+std::atomic<bool> g_quit_request{false};
+}  // namespace
+
+bool take_quit_request() { return g_quit_request.exchange(false); }
+
 bool emukill() {
   if (!game_running()) return false;
-  std::string t = kill_target();
-  if (!safe_process_name(t) || t == "emulationstation" || t == exe_basename()) return false;
-  runner().spawn("killall " + shell_quote(t));
+  // the OS's `set_kill set` writes what input_sense passes to killall: an optional signal, then one or more process names
+  // (start_ppsspp.sh "-9 PPSSPPSDL", runemu.sh "retroarch retroarch32", start_gmu.sh "-HUP gmu.bin")
+  std::vector<std::string> words;
+  const std::string t = kill_target();
+  for (size_t i = 0; i < t.size();) {
+    while (i < t.size() && (t[i] == ' ' || t[i] == '	')) ++i;
+    size_t j = i;
+    while (j < t.size() && t[j] != ' ' && t[j] != '	') ++j;
+    if (j > i) words.push_back(t.substr(i, j - i));
+    i = j;
+  }
+  std::string cmd = "killall";
+  size_t first = 0;
+  if (!words.empty() && words[0].size() > 1 && words[0][0] == '-') {
+    if (words[0].size() > 12 || !safe_process_name(words[0].substr(1))) return false;
+    cmd += " " + words[0];
+    first = 1;
+  }
+  if (first >= words.size()) return false;
+  for (size_t k = first; k < words.size(); ++k) {
+    const std::string& n = words[k];
+    if (!safe_process_name(n) || n[0] == '-' || n == "emulationstation" || n == exe_basename()) return false;
+    cmd += " " + shell_quote(n);
+  }
+  g_quit_request = true;
+  runner().spawn(cmd);
   return true;
+}
+
+std::vector<std::string> kill_names() {
+  std::vector<std::string> names;
+  if (!game_running()) return names;
+  const std::string t = kill_target();
+  bool first = true;
+  for (size_t i = 0; i < t.size();) {
+    while (i < t.size() && (t[i] == ' ' || t[i] == '	')) ++i;
+    size_t j = i;
+    while (j < t.size() && t[j] != ' ' && t[j] != '	') ++j;
+    if (j > i) {
+      std::string w = t.substr(i, j - i);
+      if (first && w.size() > 1 && w[0] == '-') {  // the signal word
+        if (w.size() > 12 || !safe_process_name(w.substr(1))) return {};
+      } else if (!safe_process_name(w) || w[0] == '-' || w == "emulationstation" || w == exe_basename()) {
+        return {};
+      } else {
+        names.push_back(w);
+      }
+      first = false;
+    }
+    i = j;
+  }
+  return names;
 }
 
 // ---- external requests ----------------------------------------------------------------------------------------------

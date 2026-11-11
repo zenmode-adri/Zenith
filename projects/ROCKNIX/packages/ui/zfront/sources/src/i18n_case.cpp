@@ -80,6 +80,9 @@ const Keep kKeep[] = {
     {"FTP", "FTP"}, {"SMB", "SMB"}, {"URL", "URL"}, {"HTTP", "HTTP"}, {"HTTPS", "HTTPS"}, {"SSID", "SSID"},
     {"WPA", "WPA"}, {"PIN", "PIN"}, {"PC", "PC"}, {"TV", "TV"}, {"DVD", "DVD"}, {"CD", "CD"}, {"NTSC", "NTSC"},
     {"PAL", "PAL"}, {"DOS", "DOS"}, {"SMS", "SMS"}, {"PSX", "PSX"}, {"N/A", "N/A"}, {"DHCP", "DHCP"},
+    {"LEDS", "LEDs"}, {"AI", "AI"}, {"IGDB", "IGDB"}, {"SCREENSCRAPER", "ScreenScraper"}, {"ARCADEDB", "ArcadeDB"},
+    {"RETROACHIEVEMENTS", "RetroAchievements"}, {"PPSSPP", "PPSSPP"}, {"PDF", "PDF"}, {"QR", "QR"}, {"ZIP", "ZIP"}, {"MD5", "MD5"},
+    {"WEBDAV", "WebDAV"}, {"SAMBA", "Samba"}, {"TAILSCALE", "Tailscale"}, {"ZEROTIER", "ZeroTier"},
 };
 // Units after a number: "5GHZ" -> "5GHz".
 const Keep kUnits[] = {{"GHZ", "GHz"}, {"MHZ", "MHz"}, {"KHZ", "kHz"}, {"HZ", "Hz"}, {"GB", "GB"}, {"MB", "MB"}, {"KB", "KB"}, {"TB", "TB"}, {"MAH", "mAh"}, {"MS", "ms"}, {"G", "G"}};
@@ -99,6 +102,15 @@ const char* keep_lookup(std::string_view w) {
   for (const Keep& k : kKeep)
     if (ieq_upper(w, k.upper)) return k.shown;
   return nullptr;
+}
+
+// A button of the pad named in a label: B X L R, with the digits of L2 / R3. "A" is left out (the English article) and so is "Y"
+// (the Spanish "and": "OVERCLOCK Y MEDIDORES"); Y keeps its capital only after BUTTON / BOTÓN (`after_button`).
+bool is_button_word(std::string_view w) {
+  if (w.empty() || w.size() > 2) return false;
+  const char c = w[0];
+  if (w.size() == 1) return c == 'B' || c == 'X' || c == 'L' || c == 'R';
+  return (c == 'L' || c == 'R') && w[1] >= '1' && w[1] <= '3';
 }
 
 bool is_edge_punct(char c) { return std::strchr("([{\"'.,:;!?)]}", c) != nullptr && c != 0; }
@@ -123,6 +135,10 @@ void lower_word(std::string_view w, bool cap, std::string& out) {
 
 // One core word (no edge punctuation): acronym table, then its hyphen/slash parts, then a unit after digits, else lower.
 void convert_core(std::string_view core, bool cap, std::string& out) {
+  if (is_button_word(core)) {
+    out += core;
+    return;
+  }
   if (const char* k = keep_lookup(core)) {
     out += k;
     return;
@@ -137,6 +153,7 @@ void convert_core(std::string_view core, bool cap, std::string& out) {
         std::string_view part = core.substr(a, i - a);
         if (!part.empty()) {
           if (const char* k = keep_lookup(part)) out += k;
+          else if (is_button_word(part)) out += part;
           else lower_word(part, cap && first, out);
           first = false;
         }
@@ -181,6 +198,7 @@ std::string sentence_case(std::string_view s) {
   std::string out;
   out.reserve(s.size());
   bool cap = true;  // the next word starts a sentence
+  bool after_button = false;  // the word before was BUTTON / BOTÓN: a lone Y is the button there ("BUTTON Y / WEST")
   size_t i = 0;
   while (i < s.size()) {
     unsigned char ch = static_cast<unsigned char>(s[i]);
@@ -193,10 +211,13 @@ std::string sentence_case(std::string_view s) {
     size_t j = i;
     while (j < s.size() && s[j] != ' ' && s[j] != '\t' && s[j] != '\n') ++j;
     std::string_view tok = s.substr(i, j - i);
-    // printf conversions (%S, %D, %1$S) are copied untouched
+    // a sentence ends with . ! ? (a trailing colon does not start a new one)
+    const bool ends = (tok.back() == '.' || tok.back() == '!' || tok.back() == '?') && !(tok.size() >= 2 && tok.compare(tok.size() - 2, 2, "..") == 0);
+    // printf conversions (%S, %D, %1$S) are copied untouched; "%S." still ends its sentence (the restore question: "...FROM %S. A
+    // BACKUP..." showed "a backup" in lower case)
     if (tok[0] == '%' && tok.size() > 1) {
       out += tok;
-      cap = false;
+      cap = ends;
       i = j;
       continue;
     }
@@ -204,11 +225,13 @@ std::string sentence_case(std::string_view s) {
     while (a < b && is_edge_punct(tok[a])) ++a;
     while (b > a && is_edge_punct(tok[b - 1])) --b;
     out += tok.substr(0, a);
-    if (b > a) convert_core(tok.substr(a, b - a), cap, out);
+    const std::string_view core = tok.substr(a, b - a);
+    if (after_button && core == "Y") out += core;
+    else if (b > a) convert_core(core, cap, out);
+    after_button = core == "BUTTON" || core == "BOT\xC3\x93N";
     out += tok.substr(b);
     cap = b > a ? false : cap;
-    // a sentence ends with . ! ? (a trailing colon does not start a new one)
-    if (!tok.empty() && (tok.back() == '.' || tok.back() == '!' || tok.back() == '?') && !(tok.size() >= 2 && tok.compare(tok.size() - 2, 2, "..") == 0)) cap = true;
+    if (ends) cap = true;
     i = j;
   }
   return out;

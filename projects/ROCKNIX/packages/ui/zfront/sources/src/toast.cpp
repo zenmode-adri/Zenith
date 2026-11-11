@@ -1,6 +1,7 @@
-// Toast overlay: short messages in rounded pills centred horizontally in the free band just above the help bar (the level OSD,
-// ui_osd.cpp, hosted here, stays at the top). The first one sits `kBarGap` (0.35 em) above the help pill and the next ones stack
-// upwards, so a toast never covers the header (title, status) or the volume bar and, in a full list, only brushes the last row.
+// Toast overlay: short messages in rounded pills centred at the top of the screen, like the level OSD (ui_osd.cpp, hosted
+// here). They stack downwards, oldest first, in the slot below the OSD pill and the menu header (title and hairline), so
+// a toast, the volume bar and the title never overlap and the help bar at the bottom is never touched (a toast used to sit just
+// above it and, on short screens, ran into it and into the last row).
 // At rest nothing wakes the loop; with `cx.ui_motion` a toast fades and slides for ~150 ms at each end (`Toasts::moving` keeps
 // the frames coming). Toast texts are kept between frames (a few slots keyed by text), so a visible toast costs no allocation.
 #include <algorithm>
@@ -72,35 +73,36 @@ void draw_toasts(Ctx& cx, std::vector<Op>& out) {
   float dot = std::round(float(px) * 0.55f);
   float text_x = dot + std::round(float(px) * 0.6f);
   float max_w = std::min(cx.w * 0.9f, m.col_w) - 2.0f * pad_x - text_x;
-  // The stack grows upwards from the help pill; it stops under the list top (never into the header).
-  float bottom = ui::help_pill_top(a, cx.th, m) - std::round(float(px) * 0.35f);
-  const float limit = m.list_top;
+  // First slot: below the OSD pill (even while it is hidden, so a toast never jumps when the bar shows up) and below the
+  // header hairline of the menu under it.
+  float y = toast_slot_top(cx, gap);
+  const float limit = m.help_y - float(m.foot_px);  // never into the help bar
 
   for (size_t i = 0; i < items.size(); ++i) {
     const Toast& t = items[i];
     if (t.text.empty() || t.text[0] == '\x1f') continue;
-    if (bottom - h < limit) break;
+    if (y + h > limit) break;
     const size_t from = out.size();
     const ui::Txt& tx = toast_text(a, t.text, px, max_w);
     float tw = tx.w, th = tx.h;
     float w = std::round(tw + 2.0f * pad_x + text_x);
     float x = std::round((cx.w - w) / 2.0f);
-    float top = bottom - h;
-    int r = int(h / 2.0f);
-    g_shapes.pill(a, out, x, top + std::max(std::round(h * 0.06f), 1.0f), w, h, Color{0, 0, 0, uint8_t(st.dark ? 90 : 45)});
+    float top = y;
+    int r = st.radius(h);
+    g_shapes.rrect(a, out, x, top + std::max(std::round(h * 0.06f), 1.0f), w, h, r, Color{0, 0, 0, uint8_t(st.dark ? 90 : 45)});
     g_shapes.framed(a, out, x, top, w, h, r, st.panel, st.line, 1);
     g_shapes.disc(a, out, x + pad_x, top + (h - dot) / 2.0f, int(dot), st.cyan);
     if (!tx.blank) out.push_back(Op::image(tx.id, x + pad_x + text_x, std::floor(top + (h - th) / 2.0f + 0.5f), tw, th, st.txt));
-    if (cx.ui_motion) {  // rises into place with a fade, leaves with a fade and a small sink
+    if (cx.ui_motion) {  // comes in from above with a fade, leaves with a fade and a small lift
       const auto now = std::chrono::steady_clock::now();
       const float age = std::chrono::duration<float>(now - t.since).count();
       const float left = std::chrono::duration<float>(t.until - now).count();
       const float p = motion::ease_out(age / kToastIn);
       const float q = std::clamp(left / kToastOut, 0.0f, 1.0f);
-      motion::shift_y(out, from, (1.0f - p) * h * 0.6f + (1.0f - q) * h * 0.2f, cx.w, cx.h);
+      motion::shift_y(out, from, -(1.0f - p) * h * 0.6f - (1.0f - q) * h * 0.2f, cx.w, cx.h);
       motion::fade(out, from, std::min(p, q));
     }
-    bottom = top - gap;
+    y = top + h + gap;
   }
 }
 

@@ -11,7 +11,9 @@
 ### pipewire-pulse listens on TCP; pactl needs this when dbus registration fails
 export PULSE_SERVER="${PULSE_SERVER:-127.0.0.1:4713}"
 
-VOLUME=$(get_setting "audio.volume")
+### Zenith: una sola lectura de la clave (get_setting carga y analiza todo system.cfg: ~50 ms de cada paso al mantener
+### pulsado el boton de volumen en la R36)
+VOLUME=$(awk -F= '/^audio\.volume=/ {v=$2} END {print v}' "${J_CONF}" 2>/dev/null)
 MAX_VOLUME=100
 MIN_VOLUME=0
 STEP=5

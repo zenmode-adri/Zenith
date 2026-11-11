@@ -71,6 +71,14 @@ OsdBox osd_box(Ctx& cx) {
   return b;
 }
 
+float toast_slot_top(Ctx& cx, float gap) {
+  const OsdBox ob = osd_box(cx);
+  const ui::HeaderBox& hb = ui::header_box();
+  float y = ob.y + ob.h + gap;
+  if (hb.valid) y = std::max(y, hb.line_y + gap);
+  return std::round(y);
+}
+
 void draw_osd(Ctx& cx, std::vector<Op>& out) {
   if (!g_osd.active) return;
   TimePoint now = Clock::now();
@@ -99,8 +107,8 @@ void draw_osd(Ctx& cx, std::vector<Op>& out) {
   int tpx = ui::px_floor(std::floor((cx.th.has("fVol") ? cx.th.f("fVol") : 0.029f) * cx.h));
 
   // soft shadow, then the pill with a hairline border
-  g_cache.shapes.pill(a, out, px0, py0 + std::max(std::round(ph * 0.06f), 1.0f), pw, ph, Color{0, 0, 0, uint8_t(st.dark ? 80 : 40)});
-  g_cache.shapes.framed(a, out, px0, py0, pw, ph, int(ph / 2.0f), st.osd_bg, st.line, 1);
+  g_cache.shapes.rrect(a, out, px0, py0 + std::max(std::round(ph * 0.06f), 1.0f), pw, ph, st.radius(ph), Color{0, 0, 0, uint8_t(st.dark ? 80 : 40)});
+  g_cache.shapes.framed(a, out, px0, py0, pw, ph, st.radius(ph), st.osd_bg, st.line, 1);
 
   float pad = std::round(ph * 0.34f);
   float x = px0 + pad;

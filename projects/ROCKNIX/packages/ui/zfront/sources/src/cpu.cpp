@@ -48,7 +48,7 @@ const std::vector<uint8_t>& resized(std::map<Key, std::vector<uint8_t>>& cache, 
     uint32_t al = pm[i + 3];
     for (int c = 0; c < 3; ++c) pm[i + size_t(c)] = uint8_t((uint32_t(pm[i + size_t(c)]) * al + 127) / 255);
   }
-  std::vector<uint8_t> out = (src.w == w && src.h == h) ? std::move(pm) : resize_rgba(pm.data(), src.w, src.h, w, h, g_sampling == Sampling::Triangle ? Filter::Triangle : Filter::CatmullRom);
+  std::vector<uint8_t> out = resize_rgba(std::move(pm), src.w, src.h, w, h, g_sampling == Sampling::Triangle ? Filter::Triangle : Filter::CatmullRom);
   return cache.emplace(k, std::move(out)).first->second;
 }
 

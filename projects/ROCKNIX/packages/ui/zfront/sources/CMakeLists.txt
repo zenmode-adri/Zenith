@@ -1,4 +1,4 @@
-# zfront (C++17). Out of source:   cmake -S cpp -B /home/epsil/zf-target/<you>-cpp/x86 -G Ninja -DCMAKE_BUILD_TYPE=Release
+# zfront (C++17). Out of source:   cmake -S cpp -B build/x86 -G Ninja -DCMAKE_BUILD_TYPE=Release
 # Adding a module never needs a CMake edit: every src/*.cpp joins the `zf_core` library and every tests/test_*.cpp
 # becomes its own ctest executable (CONFIGURE_DEPENDS: re-run `cmake` or just `ninja`, it notices new files).
 cmake_minimum_required(VERSION 3.16)
@@ -21,7 +21,7 @@ add_link_options(-Wl,--gc-sections)
 
 # ---- FreeType: dynamic libfreetype.so.6 (it is in the image). The PC has no -dev package: headers come from the
 # image sysroot (same API) and the library is linked by file name.
-set(ZF_SYSROOT_INC "/home/epsil/aurknix/build.ROCKNIX-RK3326.aarch64/toolchain/aarch64-rocknix-linux-gnu/sysroot/usr/include"
+set(ZF_SYSROOT_INC ""
     CACHE PATH "headers used when the host has no freetype/SDL2 -dev packages")
 find_path(ZF_FT_INC ft2build.h PATH_SUFFIXES freetype2 HINTS ${ZF_SYSROOT_INC}/freetype2)
 find_library(ZF_FT_LIB NAMES freetype libfreetype.so.6 HINTS /usr/lib/x86_64-linux-gnu /usr/lib64 /usr/lib)
@@ -60,8 +60,13 @@ endif()
 if(NOT "$ENV{SCREENSCRAPER_SOFTNAME}" STREQUAL "")
   set_property(SOURCE src/scraper_ss.cpp APPEND PROPERTY COMPILE_DEFINITIONS "ZF_SS_SOFTNAME=\"$ENV{SCREENSCRAPER_SOFTNAME}\"")
 endif()
+# RetroAchievements web API developer login ("z=<name>&y=<key>"), taken from the build environment like ES's package does
+# ($CHEEVOS_DEV_LOGIN, never committed); without it the profile client (ra_api.cpp) reports that it is not available.
+if(NOT "$ENV{CHEEVOS_DEV_LOGIN}" STREQUAL "")
+  set_property(SOURCE src/ra_api.cpp APPEND PROPERTY COMPILE_DEFINITIONS "ZF_RA_DEV_LOGIN=\"$ENV{CHEEVOS_DEV_LOGIN}\"")
+endif()
 target_compile_options(zf_core PRIVATE -Wall -Wextra -Wno-unused-parameter)
-target_link_libraries(zf_core PUBLIC zf_webp ${ZF_FT_LIB})
+target_link_libraries(zf_core PUBLIC zf_webp ${ZF_FT_LIB} ${CMAKE_DL_LIBS})  # libvlc is dlopen'ed (video.cpp)
 if(ZF_SDL)
   target_include_directories(zf_core SYSTEM PUBLIC ${ZF_SDL_INC})
   target_link_libraries(zf_core PUBLIC ${ZF_SDL_LIB})
@@ -105,7 +110,7 @@ install(DIRECTORY ${CMAKE_BINARY_DIR}/locale/ DESTINATION share/zfront/locale OP
 #   share/doc/zfront               install.md, os-contract.md and the OS patches
 # There is no scripts folder to install: ES event scripts are the user's (`<config>/scripts/<event>/`) and zfront reads the same ones.
 install(TARGETS zfront RUNTIME DESTINATION bin)
-set(ZF_THEME_SRC "/home/epsil/r36s-fork/projects/ROCKNIX/packages/ui/themes/es-theme-zenith" CACHE PATH
+set(ZF_THEME_SRC "${CMAKE_CURRENT_SOURCE_DIR}/../../themes/es-theme-zenith" CACHE PATH
     "es-theme-zenith package folder (theme/ = light, overlay-dark/ = the files that differ in dark), as ES's package builds it")
 option(ZF_INSTALL_THEME "install the merged Zenith theme folders to share/zfront" ON)
 if(ZF_INSTALL_THEME)

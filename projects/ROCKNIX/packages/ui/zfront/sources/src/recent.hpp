@@ -18,6 +18,11 @@ struct RecentItem {
   std::string name;  // rom file stem
   std::string ago;   // "12 min ago"; empty when older than 30 days
   int slot = 0;      // slot the screenshot belongs to: -1 = autosave, >= 0 = numbered slot (see savestates.hpp)
+  time_t mtime = 0;  // when the png was written (0: unknown, e.g. a hand-made item)
+  long sys = -1;     // index in `cx.systems` of its system (-1: the system the carousel stopped on)
+  /// What the image caches (`Assets`, `covers`) key the screenshot by: the path AND the time it was written, so a state saved again
+  /// under the same name (same path) is decoded again instead of showing the old picture.
+  std::string shot_key() const;
 };
 
 /// "12 min ago" / "3 h ago" / "2 d ago"; empty when `then` is in the future or more than 30 days before `now`.

@@ -1,9 +1,11 @@
 #include "systems.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <pugixml.hpp>
 
 #include "scan.hpp"
+#include "uimode.hpp"
 #include "util.hpp"
 
 namespace zf {
@@ -73,13 +75,29 @@ void collect_systems(pugi::xml_node n, std::vector<pugi::xml_node>& out, int dep
 
 }  // namespace
 
-std::string sort_key(const std::string& sort) {
+namespace {
+std::atomic<bool> g_show_hidden{false}, g_ignore_articles{true};
+}  // namespace
+
+void set_load_options(const LoadOptions& o) {
+  g_show_hidden = o.show_hidden;
+  g_ignore_articles = o.ignore_articles;
+}
+LoadOptions load_options() { return LoadOptions{g_show_hidden.load(), g_ignore_articles.load()}; }
+uint8_t load_tag() {  // the UI mode too: Kid keeps only kid games and Kiosk / Kid keep hidden ones out (load_games)
+  return uint8_t((g_show_hidden.load() ? 1 : 0) | (g_ignore_articles.load() ? 0 : 2) | (int(uimode::current()) << 2));
+}
+
+std::string sort_key_opt(const std::string& sort, bool strip_articles) {
   std::string u = utf8_upper(sort);
+  if (!strip_articles) return u;
   for (const char* art : {"THE ", "AN ", "A "}) {
     if (starts_with(u, art)) return u.substr(std::string_view(art).size());
   }
   return u;
 }
+
+std::string sort_key(const std::string& sort) { return sort_key_opt(sort, true); }
 
 namespace {
 
@@ -92,8 +110,9 @@ void append_key(std::string& buf, std::string_view s) {
       ascii = false;
       break;
     }
+  const bool strip = g_ignore_articles.load();
   if (!ascii) {
-    buf += sort_key(std::string(s));
+    buf += sort_key_opt(std::string(s), strip);
     return;
   }
   auto up = [](char c) { return c >= 'a' && c <= 'z' ? char(c - 32) : c; };
@@ -103,7 +122,7 @@ void append_key(std::string& buf, std::string_view s) {
       if (up(s[i]) != a[i]) return false;
     return true;
   };
-  size_t skip = art("THE ") ? 4 : art("AN ") ? 3 : art("A ") ? 2 : 0;
+  size_t skip = !strip ? 0 : art("THE ") ? 4 : art("AN ") ? 3 : art("A ") ? 2 : 0;
   for (size_t i = skip; i < s.size(); ++i) buf.push_back(up(s[i]));
 }
 
@@ -115,7 +134,8 @@ inline uint64_t hash_bytes(std::string_view s) {  // FNV-1a
 
 }  // namespace
 
-std::vector<Game> load_games(const std::string& dir, const std::vector<std::string>& exts, const std::string& gamelist) {
+std::vector<Game> load_games(const std::string& dir, const std::vector<std::string>& exts, const std::string& gamelist, bool* damaged) {
+  if (damaged) *damaged = false;
   GameList files = GameList::scan(dir, Exts(exts));  // names in one buffer, one string per folder
   const size_t n = files.size();
   std::vector<Game> games(n);
@@ -162,7 +182,8 @@ std::vector<Game> load_games(const std::string& dir, const std::vector<std::stri
         h = (h + 1) & (cap - 1);
       }
     };
-    gamelist_scan_file(gamelist, EntryFn::of(on_entry));
+    GamelistInfo info = gamelist_scan_file(gamelist, EntryFn::of(on_entry));
+    if (damaged) *damaged = info.opened && info.saw_markup && !info.ok;
   }
 
   // names, hidden ones out
@@ -170,8 +191,10 @@ std::vector<Game> load_games(const std::string& dir, const std::vector<std::stri
   std::vector<uint32_t> origin;  // original index of each kept game (to find its sortname)
   const bool have_sortnames = !sortnames.empty();
   if (have_sortnames) origin.reserve(n);
+  const bool kid_only = uimode::current() == uimode::Mode::Kid;  // ES: filterKidGame, a game with no <kidgame>true</kidgame> is out
+  const bool show_hidden = g_show_hidden.load() && uimode::current() == uimode::Mode::Full;  // ES: hidden stay hidden in Kiosk and Kid
   for (size_t i = 0; i < n; ++i) {
-    if (games[i].meta.hidden) continue;
+    if ((games[i].meta.hidden && !show_hidden) || (kid_only && !games[i].meta.kid)) continue;
     if (games[i].name.empty()) games[i].name = path_stem(games[i].path);
     if (have_sortnames) origin.push_back(uint32_t(i));
     if (out != i) games[out] = std::move(games[i]);
@@ -222,9 +245,10 @@ std::vector<Game> load_games(const std::string& dir, const std::vector<std::stri
 
 void System::open() {
   if (loaded || !games.empty()) return;
-  games = load_games(rom_dir, exts, gamelist);
+  games = load_games(rom_dir, exts, gamelist, &gamelist_damaged);
   count = games.size();
   loaded = true;
+  load_opts = load_tag();
 }
 
 void System::apply_edit(const GamelistEdit& e) {
@@ -252,6 +276,7 @@ static bool load_impl(const std::string& xml, const std::string& roms_root, Load
     return false;
   }
   out.clear();
+  if (uimode::current() != uimode::Mode::Full) keep_empty = false;  // ES LoadEmptySystems: only in Full mode
   // every <system> element at any depth, in document order
   std::vector<pugi::xml_node> nodes;
   collect_systems(doc, nodes);
@@ -282,9 +307,10 @@ static bool load_impl(const std::string& xml, const std::string& roms_root, Load
     sys.rom_dir = path;
     sys.exts = exts;
     if (mode == LoadMode::Eager) {
-      sys.games = load_games(path, exts, sys.gamelist);
+      sys.games = load_games(path, exts, sys.gamelist, &sys.gamelist_damaged);
       sys.count = sys.games.size();
       sys.loaded = true;
+      sys.load_opts = load_tag();
     } else if (mode == LoadMode::Counted) {
       sys.count = scan_count_games(path, Exts(exts));
     } else {
@@ -295,6 +321,11 @@ static bool load_impl(const std::string& xml, const std::string& roms_root, Load
       } else {
         continue;
       }
+    }
+    if (uimode::current() == uimode::Mode::Kid && !sys.loaded) {  // the count must be of the kid games, which only the gamelist knows
+      sys.games = load_games(path, exts, sys.gamelist, &sys.gamelist_damaged);
+      sys.count = sys.games.size();
+      sys.loaded = true;
     }
     if (sys.count == 0 && !keep_empty) continue;
     auto [emulator, core] = default_emu(s);
@@ -346,27 +377,36 @@ std::pair<std::string, std::string> resolve_emu(const System& sys, const Game& g
   // ES `FileData::getConfigurationName`: '=' and '#' are dropped from the file name (they cannot live in system.cfg keys)
   std::string file = path_filename(game.path);
   file.erase(std::remove_if(file.begin(), file.end(), [](char c) { return c == '=' || c == '#'; }), file.end());
-  auto get = [&](const char* suffix) -> const std::string* {
-    auto it = conf.find(sys.name + "[\"" + file + "\"]." + suffix);
-    if (it != conf.end()) return &it->second;
-    it = conf.find(sys.name + "." + suffix);
-    return it == conf.end() ? nullptr : &it->second;
+  const std::string gkey = sys.name + "[\"" + file + "\"].";
+  const std::string skey = sys.name + ".";
+  // ES (`FileData::getEmulator/getCore`, then `SystemData::getEmulator/getCore`): the per-game value counts only when it is
+  // set, not "auto" and valid; otherwise the system-wide one is tried, and then the default of es_systems.cfg.
+  auto cand = [&](const std::string& prefix, const char* suffix) -> const std::string* {
+    auto it = conf.find(prefix + suffix);
+    if (it == conf.end() || it->second.empty() || it->second == "auto") return nullptr;
+    return &it->second;
   };
   std::string emu = sys.emulator, core = sys.core;
-  if (const std::string* e = get("emulator")) {
+  for (const std::string* pfx : {&gkey, &skey}) {
+    const std::string* e = cand(*pfx, "emulator");
+    if (!e) continue;
     auto it = std::find_if(sys.emus.begin(), sys.emus.end(), [&](const auto& x) { return x.first == *e; });
-    if (it != sys.emus.end()) {
-      if (*e != emu) core = it->second.empty() ? std::string() : it->second.front();
-      emu = *e;
-    }
+    if (it == sys.emus.end()) continue;
+    if (*e != emu) core = it->second.empty() ? std::string() : it->second.front();
+    emu = *e;
+    break;
   }
-  if (const std::string* c = get("core")) {
+  for (const std::string* pfx : {&gkey, &skey}) {
+    const std::string* c = cand(*pfx, "core");
+    if (!c) continue;
     // accepted if ANY emulator entry named `emu` lists it
+    bool ok = false;
     for (const auto& x : sys.emus)
-      if (x.first == emu && std::find(x.second.begin(), x.second.end(), *c) != x.second.end()) {
-        core = *c;
-        break;
-      }
+      if (x.first == emu && std::find(x.second.begin(), x.second.end(), *c) != x.second.end()) ok = true;
+    if (ok) {
+      core = *c;
+      break;
+    }
   }
   return {emu, core};
 }

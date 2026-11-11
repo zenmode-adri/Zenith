@@ -84,7 +84,7 @@ DEV_L2="075-dpad-volbright 500-enable-led"
 # 001-controller es un "exit 0": se mantiene en COM_KNOWN (para que no cuente como no clasificado) pero ya no se ejecuta
 # P1A (crea dirs y deja system.cfg ordenado) va antes de lanzar G y D en paralelo; P1B es el resto del bloque serie
 COM_P1A="001-emulationstation 001-setup"
-COM_P1B="002-device-switch 003-logging 003-upgrade 999-export"
+COM_P1B="002-device-switch 003-logging 003-upgrade 096-r36-tuner-limits 999-export"
 COM_P1="${COM_P1A} ${COM_P1B}"
 COM_PICO="010-pico8"   # tras el montaje de roms (ver tras el lanzamiento de la UI)
 COM_G="003-gpudriver"
@@ -156,6 +156,7 @@ late_done() {   # late_done L1|L2 : cuando acaban las dos, se quita la marca .pe
     then
       rm -f "${PENDING}"
       alog "Late chains L1+L2 complete; fast boot finished OK."
+      [ -f /flash/tuner/state ] && [ -x /usr/bin/r36-dtb ] && /usr/bin/r36-dtb boot-ok >>"${BOOTLOG}" 2>&1   # R36 Tuner: arranque con tuned.dtb confirmado
       { mkdir -p "${STORAGE}/.cache"; early_sig >"${EARLY_STAMP}.tmp" && mv -f "${EARLY_STAMP}.tmp" "${EARLY_STAMP}"; } 2>/dev/null
     else
       # Las cadenas acabaron pero ES no esta listo: el arranque NO se da por bueno. Sin sello el siguiente arranque no sera temprano
@@ -202,7 +203,7 @@ wait_es_ready() {   # wait_es_ready <timeout_s> : ES crea /tmp/emulationstation.
 # La lista se regenera desde /proc/<pid>/maps de ES cuando cambia el binario.
 ES_FRONTEND=emulationstation
 ES_PREFETCH_LIST="${STORAGE}/.cache/es-prefetch.list"
-# zfront (system.frontend=zfront, ver start_es.sh): su binario y sus bibliotecas tienen lista propia; si cae a ES (/run/zfront.failed) la lista queda vieja pero no estorba
+# zfront (system.frontend=zfront, ver start_es.sh; `es` o sin el ajuste: ES): su binario y sus bibliotecas tienen lista propia; si cae a ES (/run/zfront.failed) la lista queda vieja pero no estorba
 if [ "$(get_setting system.frontend)" = "zfront" ] && [ -x /usr/bin/zfront ] && [ ! -e /run/zfront.failed ]
 then
   ES_FRONTEND=zfront
@@ -506,6 +507,12 @@ legacy_boot() {
   alog "Starting ${UI_SERVICE}..."
   systemctl start ${UI_SERVICE} 2>&1 >>${BOOTLOG} &
   alog "UI start requested at $(cut -d' ' -f1 /proc/uptime) (legacy)"
+  # R36 Tuner (fase 2): si la consola sigue viva 30 s despues de pedir la UI, el arranque con tuned.dtb se da por bueno.
+  # (r36-dtb-boot.service, MUY temprano, hace el boot-start.) systemd-run: un proceso suelto podria morir con la unidad.
+  if [ -f /flash/tuner/state ] && [ -x /usr/bin/r36-dtb ]
+  then
+    systemd-run --quiet --on-active=30 --unit=r36-dtb-ok /usr/bin/r36-dtb boot-ok >/dev/null 2>&1
+  fi
 
   DEVICE_CPU_GOVERNOR=$(get_setting system.cpugovernor)
   ${DEVICE_CPU_GOVERNOR} 2>&1 >>${BOOTLOG}

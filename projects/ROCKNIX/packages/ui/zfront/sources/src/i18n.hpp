@@ -121,7 +121,8 @@ bool is_all_caps(std::string_view s);
 /// Sentence case of an all-caps label: "SWITCHES AND SLIDERS" -> "Switches and sliders", "WI-FI PASSWORD" -> "Wi-Fi password",
 /// "SD CARD" -> "SD card", "CONFIGURACIÓN DE RED" -> "Configuración de red". Acronyms, units and brands of a fixed list keep their
 /// spelling (WI-FI IP HDMI SD USB CPU GPU RGB LED BIOS DNS SSH OTA PSP GBA NES SNES PS1 PS2 N64 NDS 3DS RAM FPS CRT LCD ES OS ID VM OK
-/// MAME FBNeo RetroArch Bluetooth...; "5GHZ" -> "5GHz"). A string that is not all caps comes back unchanged.
+/// MAME FBNeo RetroArch Bluetooth LEDs AI IGDB ScreenScraper RetroAchievements PPSSPP PDF...; "5GHZ" -> "5GHz"). A string that is not all
+/// caps comes back unchanged.
 std::string sentence_case(std::string_view s);
 /// What the UI shows for a key no catalog translated: `sentence_case(key)`, kept in a table so the returned pointer is stable
 /// and a repeated call allocates nothing (a string that is not all caps returns `key` itself). `tr()` uses it after the catalog

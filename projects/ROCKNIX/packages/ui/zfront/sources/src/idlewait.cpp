@@ -38,7 +38,13 @@ void IdleWaiter::rebuild() {
   fds_.clear();
   fds_.push_back({wake_->fd, POLLIN, 0});
   for (int fd : pads_) fds_.push_back({fd, POLLIN, 0});
+  fds_.push_back({watch_fd_, POLLIN, 0});
   fds_.push_back({display_fd_, POLLIN, 0});  // poll ignores a negative descriptor
+}
+
+void IdleWaiter::set_watch_fd(int fd) {
+  watch_fd_ = fd;
+  rebuild();
 }
 
 void IdleWaiter::close_pads() {
@@ -75,7 +81,7 @@ int IdleWaiter::cap_ms() const {
   return keys_held_ ? std::min(c, 30) : c;
 }
 
-void IdleWaiter::sleep(int ms) {
+bool IdleWaiter::sleep(int ms) {
   ms = std::max(1, std::min(ms, cap_ms()));
   if (spin_off_ && Clock::now() >= spin_until_) {  // penalty over: try the display descriptor again
     spin_off_ = false;
@@ -87,14 +93,16 @@ void IdleWaiter::sleep(int ms) {
   int r = ::poll(fds_.data(), nfds_t(fds_.size()), ms);
   if (r <= 0) {  // timeout (or a signal)
     spins_ = 0;
-    return;
+    return false;
   }
+  const pollfd& watch = fds_[fds_.size() - 2];
+  const bool watched = watch.fd >= 0 && (watch.revents & POLLIN);
   if (fds_.front().revents & POLLIN) {
     uint64_t v;
     (void)!::read(fds_.front().fd, &v, sizeof v);
   }
   char buf[512];
-  for (size_t i = 1; i + 1 < fds_.size(); ++i) {
+  for (size_t i = 1; i + 2 < fds_.size(); ++i) {  // the pads (not the watch descriptor: its owner reads it)
     pollfd& p = fds_[i];
     if (!p.revents) continue;
     if (p.revents & POLLIN) {
@@ -118,6 +126,7 @@ void IdleWaiter::sleep(int ms) {
   } else {
     spins_ = 0;
   }
+  return watched;
 }
 
 }  // namespace zf

@@ -80,9 +80,9 @@ void do_reboot(Ctx& cx);
 /// the blank lines between paragraphs go and, when the text is long, the closing question moves to the front.
 std::string fit_message(const std::string& text);
 
-/// `cx.sv->jobs.post`, except under a review fixture (`ZF_SYS_FIXTURE`): the preview harness never drains the jobs, so both
-/// halves run at once, on the caller's thread.
-void post(Ctx& cx, std::function<void()> work, std::function<void()> done);
+/// `cx.sv->jobs.post` (or `post_slow` with `slow`: external commands that can take tens of seconds), except under a review
+/// fixture (`ZF_SYS_FIXTURE`): the preview harness never drains the jobs, so both halves run at once, on the caller's thread.
+void post(Ctx& cx, std::function<void()> work, std::function<void()> done, bool slow = false);
 
 /// A list that is read in a job: `opts` is filled by `done`. While it is not loaded the current value stands in.
 struct LazyList {

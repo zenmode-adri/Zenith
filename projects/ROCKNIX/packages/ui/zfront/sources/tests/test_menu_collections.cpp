@@ -45,6 +45,7 @@ void make_ctx(Ctx& cx) {
   CHECK(Theme::from_xml(kVars, "<theme/>", "4/3", cx.th, err));
   cx.w = 640, cx.h = 480;
   cx.sv->cmd.dry_run = true;
+  std::remove((g_tmp + "/es_settings.cfg").c_str());  // each context starts from no file: save now merges with what is on disk
   cx.es = EsSettings::from_text("<?xml version=\"1.0\"?>\n<config>\n</config>\n", g_tmp + "/es_settings.cfg");
 }
 
@@ -187,6 +188,18 @@ int main() {
     // lines ES ignores: blank, '#', and those starting with '0'
     spit(g_tmp + "/collections/custom-Beta.cfg", "# note\n\n0disabled\n  ./roms/gb/A.gb  \n");
     CHECK_EQ(col::members("Beta").size(), size_t(1));
+    // adding to and removing from a file with notes keeps the notes (the lines ES skips are the user's)
+    CHECK(col::add_game("Beta", rom, err, &changed));
+    CHECK(changed);
+    CHECK_EQ(slurp(g_tmp + "/collections/custom-Beta.cfg"), std::string("# note\n\n0disabled\n  ./roms/gb/A.gb  \n./roms/gb/Tetris.gb\n"));
+    CHECK(col::remove_game("Beta", g_tmp + "/storage/roms/gb/A.gb", err, &changed));
+    CHECK(changed);
+    CHECK_EQ(slurp(g_tmp + "/collections/custom-Beta.cfg"), std::string("# note\n\n0disabled\n./roms/gb/Tetris.gb\n"));
+    CHECK(col::remove_game("Beta", rom, err, &changed));
+    CHECK_EQ(slurp(g_tmp + "/collections/custom-Beta.cfg"), std::string("# note\n\n0disabled\n"));
+    CHECK(col::remove_game("Beta", rom, err, &changed));
+    CHECK(!changed);  // not there: the file is not written
+    spit(g_tmp + "/collections/custom-Beta.cfg", "# note\n\n0disabled\n  ./roms/gb/A.gb  \n");
     CHECK(col::remove_game("Alpha", rom, err, &changed));
     CHECK(changed);
     CHECK(!col::contains("Alpha", rom));
@@ -202,6 +215,21 @@ int main() {
     CHECK(!l[0].dynamic);
     CHECK_EQ(l[2].name, std::string("Zeldas"));
     CHECK(l[2].dynamic);
+    // a name that has both files (custom-<name>.cfg and <name>.xcc): the dynamic one wins whatever order the folder lists them in
+    for (int i = 0; i < 12; ++i) {
+      const std::string n = "Twin" + std::to_string(i);
+      spit(g_tmp + "/collections/custom-" + n + ".cfg", "");
+      spit(g_tmp + "/collections/" + n + ".xcc", "<filter name=\"" + n + "\"><text>X</text></filter>");
+    }
+    int twins = 0, dynamic_twins = 0;
+    for (const col::Custom& c : col::list_custom())
+      if (c.name.compare(0, 4, "Twin") == 0) ++twins, dynamic_twins += c.dynamic ? 1 : 0;
+    CHECK_EQ(twins, 12);
+    CHECK_EQ(dynamic_twins, 12);
+    for (int i = 0; i < 12; ++i) {
+      ::unlink((g_tmp + "/collections/custom-Twin" + std::to_string(i) + ".cfg").c_str());
+      ::unlink((g_tmp + "/collections/Twin" + std::to_string(i) + ".xcc").c_str());
+    }
     // the filter round-trips and a foreign element survives an edit
     col::Filter g;
     CHECK(col::read_filter("Zeldas", g));
@@ -420,6 +448,12 @@ int main() {
     CHECK(col::read_filter("Dyn", back));
     CHECK_EQ(back.systems.size(), size_t(1));
     CHECK_EQ(back.systems[0], std::string("gb"));
+    // the filter screen is still open: its next change must not erase the systems the other screen saved
+    CHECK(go(*f, cx, "FAVORITES ONLY"));
+    f->handle(Action::A, cx);
+    CHECK(col::read_filter("Dyn", back));
+    CHECK(!back.only_favorites);
+    CHECK_EQ(back.systems.size(), size_t(1));
     CHECK(open(hf, cx, "menu.collections.filter", "Missing") == nullptr);  // no such file: "Not available"
 
     // delete: confirmation, then file and setting go
@@ -437,6 +471,16 @@ int main() {
     d->tick(0.0f, cx);
     d->handle(Action::Select, cx);
     CHECK_EQ(d->size(), size_t(1));
+    // the last one: the screen says so instead of going blank
+    CHECK(go(*d, cx, l[0].name));
+    Transition ask2 = d->handle(Action::A, cx);
+    CHECK(ask2.kind == Transition::Push);
+    ask2.screen->handle(Action::Left, cx);
+    ask2.screen->handle(Action::A, cx);
+    d->tick(0.0f, cx);
+    d->handle(Action::Select, cx);
+    CHECK_EQ(d->size(), size_t(1));
+    CHECK(d->entry(0).kind == EntryKind::Info);
   }
 
   // ---- screens: one game (favourite + editable collections)
@@ -472,6 +516,24 @@ int main() {
     Menu* m2 = open(h2, cx, "menu.collections.game", arg);
     CHECK_EQ(m2->entry(1).label, std::string("REMOVE FROM MINE"));
     CHECK(open(h2, cx, "menu.collections.game", "gb|/nowhere.gb") == nullptr);
+  }
+
+  // ---- es_settings.cfg that cannot be written: the notice speaks of the settings, not of game data
+  {
+    Ctx cx;
+    make_ctx(cx);
+    cx.es = EsSettings::from_text("<?xml version=\"1.0\"?>\n<config>\n</config>\n", "/nonexistent-zf-dir/es_settings.cfg");
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.collections");
+    CHECK(m != nullptr);
+    CHECK(go(*m, cx, tr("START ON GAMELIST")));
+    m->entry(size_t(m->cursor())).set_b(true);
+    bool settings = false, game_data = false;
+    for (const Toast& x : cx.sv->toasts.items()) {
+      if (x.text == tr("Could not save the settings")) settings = true;
+      if (x.text == tr("COULD NOT SAVE GAME DATA")) game_data = true;
+    }
+    CHECK(settings && !game_data);
   }
 
   int rc = zt::done();

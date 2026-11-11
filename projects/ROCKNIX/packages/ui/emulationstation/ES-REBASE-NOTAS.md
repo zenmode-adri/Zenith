@@ -6,7 +6,7 @@ Parche unico: patches/RK3326/0001-es-rk3326-perf-rebased.patch (los antiguos 000
 Hunks DESCARTADOS (no aplicaban, el codigo cambio; ROCKNIX refactorizo el menu WiFi el 23-sep):
 - 0001/ApiSystem.cpp #4: cache de modos de pantalla wlr-randr (solo sirve con Sway).
 - 0001/GuiMenu.cpp #3 y #5, 0003/GuiMenu.cpp #2 y #3 (toggles WiFi asincronos con GuiLoading).
-Los antiguos estan en /home/epsil/es-patches. Si el menu WiFi vuelve a bloquear la UI, rebasar esos hunks a mano.
+Los antiguos estaban en una copia local (es-patches, fuera del repositorio). Si el menu WiFi vuelve a bloquear la UI, rebasar esos hunks a mano.
 
 ## Correcciones tras el primer intento de compilacion (2026-10-04)
 - package.mk: ES nuevo exige una sola API grafica; ahora -DGLES3=1 (como ROCKNIX upstream), antes GL+GLES2.

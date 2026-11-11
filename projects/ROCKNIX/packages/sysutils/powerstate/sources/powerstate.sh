@@ -15,28 +15,53 @@ unset CURRENT_MODE
 unset AC_STATUS
 ledcontrol $(get_setting led.color)
 
+### On battery, rk817 says "Not charging" whenever the average current is not negative, so the status comes and goes
+### with the load. With no charger online that is still the battery; if no supply reports online, the status is kept.
+battery_status() {
+  local status online found=0
+  status="$(cat /sys/class/power_supply/[bB][aA][tT]*/status 2>/dev/null)"
+  if [ "${status}" = "Not charging" ]; then
+    for online in /sys/class/power_supply/*/online; do
+      [ -e "${online}" ] || continue
+      found=1
+      [ "$(cat "${online}" 2>/dev/null)" = "1" ] && found=2 && break
+    done
+    [ "${found}" = "1" ] && status="Discharging"
+  fi
+  echo "${status}"
+}
+
+### $1 = the level for this power state when no game is running. With no game and nothing chosen in the settings only the first pass
+### sets it: otherwise a status that comes and goes undoes a governor written by hand (R36 Tuner, a measurement).
+set_gpu_level() {
+  local chosen
+  if [ -e "/tmp/.gpu_performance_level" ]; then
+    gpu_performance_level "$(cat /tmp/.gpu_performance_level)"
+    return
+  fi
+  chosen="$(get_setting system.gpuperf)"
+  case "${chosen}" in
+    ""|auto|default) [ -n "${CURRENT_MODE}" ] && return ;;
+  esac
+  gpu_performance_level "$1"
+}
+
 while true; do
-  AC_STATUS="$(cat /sys/class/power_supply/[bB][aA][tT]*/status 2>/dev/null)"
+  AC_STATUS="$(battery_status)"
   if [[ ! "${CURRENT_MODE}" =~ ${AC_STATUS} ]]; then
     case ${AC_STATUS} in
       Disch*)
         log $0 "Switching to battery mode."
-        if [ -e "/tmp/.gpu_performance_level" ]; then
-          GPUPROFILE=$(cat /tmp/.gpu_performance_level)
-        else
-          GPUPROFILE=$(get_setting system.gpuperf)
-        fi
-        if [ -z "${GPUPROFILE}" ]; then
-          GPUPROFILE="auto"
-        fi
-        gpu_performance_level ${GPUPROFILE}
+        GPUPROFILE=$(get_setting system.gpuperf)
+        set_gpu_level "${GPUPROFILE:-auto}"
         if [ "${DEVICE_LED_CHARGING}" = "true" ]; then
           ledcontrol discharging
         fi
       ;;
       *)
         log $0 "Switching to performance mode."
-        gpu_performance_level auto
+        # keeps the level runemu.sh set for the running game (gpuperf or the performance mode)
+        set_gpu_level auto
         if [ "${DEVICE_LED_CHARGING}" = "true" ]; then
           ledcontrol charging
         fi

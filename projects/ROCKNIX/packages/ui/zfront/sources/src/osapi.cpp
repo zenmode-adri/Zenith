@@ -31,11 +31,12 @@ http::Response route(const http::Request& req, const Ops& ops) {
   };
   static const Known kRoutes[] = {{"/notify", true},    {"/notify/clear", true}, {"/launch", true},  {"/runningGame", false},
                                   {"/isIdle", false},   {"/quit", false},       {"/shutdown", false}, {"/restart", false},
-                                  {"/emukill", false}};
+                                  {"/emukill", false}, {"/reloadgames", false}};
   const Known* k = nullptr;
   for (const Known& r : kRoutes)
     if (p == r.path) k = &r;
   if (!k) return err(404, "not found");
+  if (!req.local) return err(403, "local clients only");  // the server listens on the network for /files; the control API stays private
   if ((k->want_post && !post) || (!k->want_post && !get)) return err(405, "method not allowed");
 
   if (p == "/notify") {
@@ -62,6 +63,10 @@ http::Response route(const http::Request& req, const Ops& ops) {
   if (p == "/isIdle") {
     bool idle = !oscontract::game_running() && !oscontract::busy();
     return reply(idle ? 200 : 201, idle ? "[ true ]" : "[ false ]");
+  }
+  if (p == "/reloadgames") {
+    if (ops.reload) ops.reload();
+    return reply(200);
   }
   if (p == "/quit" || p == "/shutdown" || p == "/restart") {
     std::string c;

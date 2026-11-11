@@ -1,4 +1,6 @@
 #include "menu.hpp"
+
+#include "remake.hpp"
 #include "motion.hpp"
 
 #include <algorithm>
@@ -243,7 +245,7 @@ bool Menu::sync(Ctx& cx) {
     refresh_values();
     changed = true;
   }
-  if (!have_layout_ || cx.w != lay_w_ || cx.h != lay_h_) {
+  if (!have_layout_ || cx.w != lay_w_ || cx.h != lay_h_ || lay_gen_ != ui::access().gen) {
     layout(cx);
     changed = true;
   }
@@ -254,18 +256,33 @@ void Menu::layout(Ctx& cx) {
   m_ = ui::Metrics::from(cx.th, cx.w, cx.h);
   st_ = ui::Style::from(cx.th);
   lay_w_ = cx.w, lay_h_ = cx.h;
+  lay_gen_ = ui::access().gen;
   top_.assign(e_.size(), 0.0f);
   hgt_.assign(e_.size(), 0.0f);
-  float y = 0;
-  for (size_t i = 0; i < e_.size(); ++i) {
-    float h = m_.row_h;
-    if (e_[i].kind == EntryKind::Header) h = std::round(m_.row_h * 0.9f);
-    if (e_[i].kind == EntryKind::Separator) h = std::round(m_.row_h * 0.4f);
-    top_[i] = y;
-    hgt_[i] = h;
-    y += h;
+  const auto place = [this] {
+    float y = 0;
+    for (size_t i = 0; i < e_.size(); ++i) {
+      float h = m_.row_h;
+      const float u = float(std::max(m_.u, 1));  // headers and separators are whole cells too: the rows under them stay on the lines
+      if (e_[i].kind == EntryKind::Header) h = std::max(std::round(m_.row_h * 0.9f / u), 1.0f) * u;
+      if (e_[i].kind == EntryKind::Separator) h = std::max(std::round(m_.row_h * 0.4f / u), 1.0f) * u;
+      top_[i] = y;
+      hgt_[i] = h;
+      y += h;
+    }
+    content_h_ = y;
+  };
+  place();
+  // Next: a menu shorter than the viewport spreads over it with taller rows (up to 1.2x) instead of leaving all the room below the card; a menu
+  // that fills the viewport, or scrolls, keeps the theme's row
+  if (m_.grid && remake::next(cx.th) && content_h_ > 0 && content_h_ < m_.list_h) {
+    const float base = m_.row_h;
+    const float u = float(std::max(m_.u, 1));
+    m_.row_h = std::max(std::floor(base * std::min(1.2f, m_.list_h / content_h_) / u) * u, base);  // whole cells
+    place();
+    while (content_h_ > m_.list_h && m_.row_h > base) m_.row_h -= u, place();  // the rounded headers can add a cell each
+    m_.pill_h = m_.row_h;  // the selector is the row: its edges on the lines of the cells
   }
-  content_h_ = y;
   for (Entry& e : e_) e.t_label.reset(), e.t_value.reset(), e.t_icon.reset(), e.value_w = 0;
   t_title_.reset();
   t_hint_.reset();
@@ -280,6 +297,9 @@ void Menu::retarget(bool snap) {
   if (cur_ >= 0 && size_t(cur_) < top_.size()) {
     float c = top_[size_t(cur_)] + hgt_[size_t(cur_)] / 2.0f;
     float raw = std::min(std::max(c - vp / 2.0f, 0.0f), maxs);
+    bool first = true;  // nothing selectable above the cursor: show as much of the info rows above as the cursor allows (they could
+    for (int i = 0; i < cur_ && first; ++i) first = !focusable(size_t(i));  // not be reached otherwise)
+    if (first) raw = std::min(std::max(top_[size_t(cur_)] + hgt_[size_t(cur_)] - vp, 0.0f), maxs);
     float t = raw;
     if (raw < maxs) {  // start the view on an entry boundary: no half-cut row at the top
       t = 0;
@@ -507,6 +527,12 @@ Transition Menu::handle(Action a, Ctx& cx) {
 
 // ---- Menu: drawing ---------------------------------------------------------------------------------------------------
 
+namespace {
+// A selector filled with the accent itself (TechDweeb) would hide the controls of its row, also in the accent.
+constexpr Color kOnAccent = {0, 0, 0, 120};
+bool close_colors(Color a, Color b) { return std::abs(int(a[0]) - int(b[0])) + std::abs(int(a[1]) - int(b[1])) + std::abs(int(a[2]) - int(b[2])) < 40; }
+}  // namespace
+
 void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel, float vis) {
   Assets& a = cx.assets;
   Entry& e = e_[idx];
@@ -515,8 +541,8 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
   const int em = m.em;
   float h = hgt_[idx];
   float cy = y + h / 2.0f;
-  float inset = std::round(m.pill_h * ui::kPillInset);
-  float xl = m.col_x + inset, xr = m.col_x + m.col_w - inset;
+  float inset = m.inset;
+  float xl = m.col_x + inset, xr = m.col_x + m.col_w - scroll_room_ - inset;
   float inner = xr - xl;
 
   if (e.kind == EntryKind::Separator) {
@@ -531,7 +557,7 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
   }
 
   bool dimmed = !e.enabled;
-  float fade = sel ? 0.60f : 0.42f;  // dimmed entries: a little stronger under the cursor so they stay readable
+  float fade = ui::access().contrast ? (sel ? 0.85f : 0.70f) : (sel ? 0.60f : 0.42f);  // dimmed entries: a little stronger under the cursor so they stay readable
   Color lab = dimmed ? ui::with_alpha(sel ? st.cyan_dark : st.txt, fade) : (e.is_danger ? st.danger : (sel ? st.cyan_dark : st.txt));
   Color val = dimmed ? ui::with_alpha(sel ? st.cyan_dark : st.dim, fade) : (sel ? st.cyan_dark : st.dim);
   Color chev = val;
@@ -548,9 +574,11 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
         e.t_icon.id = id;
         if (!e.t_icon.blank) e.t_icon.w = float(a.img(id).w), e.t_icon.h = float(a.img(id).h);
       }
+      const Color icon_tile = remake::menu_icon_tile(cx.th, e.icon_name);  // Iconic: the icon on its coloured tile
+      if (icon_tile[3]) shapes_.rrect(a, out, xl - 2.0f, cy - float(isz) / 2.0f - 2.0f, float(isz) + 4.0f, float(isz) + 4.0f, std::max(3, isz / 4), icon_tile);
       if (!e.t_icon.blank) out.push_back(Op::image(e.t_icon.id, std::round(xl + (float(isz) - e.t_icon.w) / 2.0f), std::round(cy - e.t_icon.h / 2.0f), e.t_icon.w, e.t_icon.h, lab));
     }
-    lx = xl + float(isz) + std::round(0.7f * float(em));
+    lx = xl + std::ceil((float(isz) + std::round(0.7f * float(em))) / float(m.u)) * float(m.u);  // the label starts on a line of the cells
   }
 
   float gap = std::round(1.0f * float(em));
@@ -597,6 +625,10 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
   }
   if (!e.t_label.alive(a)) e.t_label.set(a, e.label, em, std::max(xr - lx - ctrl_w - (ctrl_w > 0 ? gap : 0), 3.0f * float(em)));
   ui::put_text(out, e.t_label, lx, cy, lab);
+  if (remake::audit_sink() && y >= m.list_top && y + h <= m.list_top + m.list_h) {
+    remake::audit(lx, cy - e.t_label.h / 2.0f, e.t_label.w, e.t_label.h, "\"" + e.label.substr(0, 18) + "\"");
+    if (ctrl_w > 0) remake::audit(xr - ctrl_w, cy - float(em) / 2.0f, ctrl_w, float(em), "valor de \"" + e.label.substr(0, 18) + "\"", 'R');
+  }
 
   // controls
   switch (e.kind) {
@@ -604,7 +636,8 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
       float pad = std::max(std::round(sw_h * 0.14f), 2.0f);
       float kd = sw_h - 2.0f * pad;
       const float t = e.kn >= 0.0f ? e.kn : (e.b ? 1.0f : 0.0f);  // 0 = off, 1 = on (the knob in between while it slides)
-      shapes_.pill(a, out, xr - sw_w, cy - sw_h / 2.0f, sw_w, sw_h, t >= 1.0f ? st.sw_on : (t <= 0.0f ? st.sw_off : motion::mix(st.sw_off, st.sw_on, t)));
+      const Color on = sel && close_colors(st.cyan_soft, st.sw_on) ? kOnAccent : st.sw_on;
+      shapes_.pill(a, out, xr - sw_w, cy - sw_h / 2.0f, sw_w, sw_h, t >= 1.0f ? on : (t <= 0.0f ? st.sw_off : motion::mix(st.sw_off, on, t)));
       float kx = (xr - sw_w + pad) + ((xr - pad - kd) - (xr - sw_w + pad)) * t;
       shapes_.disc(a, out, kx, cy - kd / 2.0f, int(kd), st.knob);
       break;
@@ -618,8 +651,9 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
       float frac = e.max > e.min ? float(e.i - e.min) / float(e.max - e.min) : 0.0f;
       float kx = tl + kr + frac * (track_w - kd);
       shapes_.pill(a, out, tl, cy - th / 2.0f, track_w, th, st.track);
-      if (kx - tl > 0) shapes_.pill(a, out, tl, cy - th / 2.0f, std::max(kx - tl, th), th, st.cyan);
+      if (kx - tl > 0) shapes_.pill(a, out, tl, cy - th / 2.0f, std::max(kx - tl, th), th, sel && close_colors(st.cyan_soft, st.cyan) ? kOnAccent : st.cyan);
       if (sel) shapes_.disc(a, out, kx - kr - 2.0f, cy - kr - 2.0f, int(kd) + 4, st.cyan);
+      else if (!st.dark) shapes_.disc(a, out, kx - kr - 1.0f, cy - kr - 1.0f, int(kd) + 2, st.dim);  // a white knob would be lost on a light page
       shapes_.disc(a, out, kx - kr, cy - kr, int(kd), st.knob);
       ui::put_text_right(out, e.t_value, xr, cy, val);
       break;
@@ -661,24 +695,67 @@ void Menu::draw(Ctx& cx, std::vector<Op>& out) {
   const ui::Metrics& m = m_;
   const ui::Style& st = st_;
   out.push_back(Op::rect(0, 0, m.W, m.H, st.bg));
+  if (!ui::access().contrast) remake::menu_backdrop(cx.th, a, m.W, m.H, out);  // high contrast: the plain page, text on pure colour
 
   // header
-  float inset = std::round(m.pill_h * ui::kPillInset);
-  if (!t_title_.alive(a)) t_title_.set(a, spec_.title, m.title_px, m.col_w * 0.72f);
-  ui::put_text(out, t_title_, m.col_x + inset, m.header_cy, st.txt);
-  status_bar(cx.th, a, m.W, m.H, cx.status, out);
-  float title_bottom = m.header_cy + t_title_.h / 2.0f;
+  float inset = m.inset;
+  const size_t stack_from = out.size();
+  status_bar(cx.th, a, m.W, m.H, cx.status, out);  // before the title: a centred title (headerAlign) keeps clear of it
+  if (!t_title_.alive(a)) t_title_.set(a, spec_.title, m.title_px, ui::title_max_w(st, m, out, stack_from, m.col_w * 0.72f));
+  const float title_x = ui::title_x(st, m, m.title_left, t_title_.w);
+  // the box of the title stays under the top margin (a large face is taller than the status bar it is centred on)
+  const remake::Grid grid(m.W, m.H);
+  const float title_cy = std::max(m.header_cy, float(grid.top()) + std::ceil(t_title_.h / 2.0f));
+  ui::put_text(out, t_title_, title_x, title_cy, st.txt);
+  float title_bottom = title_cy + t_title_.h / 2.0f;
   float first_pill_top = m.list_top + (m.row_h - m.pill_h) / 2.0f;
   float line_y = std::round((title_bottom + first_pill_top) / 2.0f);
   out.push_back(Op::rect(m.col_x, line_y, m.col_w, 1, st.line));
+  if (remake::audit_sink()) remake::audit(m.col_x, m.list_top, m.col_w, 0, "columna", 'B', true);
   ui::HeaderBox& hb = ui::header_box();
-  hb = {true, m.col_x + inset, m.col_x + inset + t_title_.w, m.header_cy - t_title_.h / 2.0f, title_bottom, line_y};
+  hb = {true, title_x, title_x + t_title_.w, title_cy - t_title_.h / 2.0f, title_bottom, line_y};
 
   // rows
+  const float bar_w = std::max(std::round(0.007f * m.H), 3.0f);
+  const bool scrolls = content_h_ > m.list_h + 0.5f;
+  // the scrollbar stays inside the column, out of the margin; the room it takes is whole cells, so the right end of every row stays on a line
+  scroll_room_ = scrolls ? std::ceil((bar_w + 2.0f) / float(m.u)) * float(m.u) : 0.0f;
   out.push_back(Op::clip(m.col_x, m.list_top, m.col_w, m.list_h));
+  // Zenith Next: the rows of every group (between two headers) on a card with a hairline between them, as the cards of its home screen
+  // Next's menus are flat (the owner's choice, 10-nov: Next has no boxes anywhere, Minimal has its pills); menuCards = on puts the
+  // rows of every group on a card again
+  const bool next_sel = remake::next(cx.th) && !ui::access().contrast;  // Next's selected row: framed in cyan, with or without cards
+  const bool cards = next_sel && cx.th.str("menuCards", "off") == "on";
+  const int card_r = int(std::round(m.pill_h * 0.32f));
+  if (cards) {
+    const float cw = m.col_w - scroll_room_;
+    const Color card = st.dark ? Color{255, 255, 255, 16} : Color{255, 255, 255, 190};
+    for (size_t i = 0; i < e_.size();) {
+      if (e_[i].kind == EntryKind::Header) {
+        ++i;
+        continue;
+      }
+      size_t j = i;
+      while (j < e_.size() && e_[j].kind != EntryKind::Header) ++j;
+      const float y0 = std::round(m.list_top + top_[i] - scroll_), y1 = std::round(m.list_top + top_[j - 1] + hgt_[j - 1] - scroll_);
+      shapes_.rrect(a, out, m.col_x, y0, cw, y1 - y0, card_r, card);
+      if (remake::audit_sink() && y0 >= m.list_top && y1 <= m.list_top + m.list_h) remake::audit(m.col_x, y0, cw, y1 - y0, "tarjeta", 'B', false, true);
+      for (size_t k = i + 1; k < j; ++k) out.push_back(Op::rect(m.col_x + inset, std::round(m.list_top + top_[k] - scroll_), cw - 2.0f * inset, 1, ui::with_alpha(st.line, 0.7f)));
+      i = j;
+    }
+  }
   if (cur_ >= 0 && size_t(cur_) < e_.size()) {
     float py = std::round(m.list_top + sel_y_ - scroll_ + (m.row_h - m.pill_h) / 2.0f);
-    shapes_.pill(a, out, m.col_x, py, m.col_w, m.pill_h, e_[size_t(cur_)].is_danger ? st.danger_soft : st.cyan_soft);
+    const bool danger = e_[size_t(cur_)].is_danger;
+    if (next_sel) {  // the whole row, framed
+      const float sy = std::round(m.list_top + sel_y_ - scroll_), w = m.col_w - scroll_room_;
+      shapes_.rrect(a, out, m.col_x, sy, w, m.row_h, card_r, danger ? st.danger_soft : st.cyan_soft);
+      shapes_.ring(a, out, m.col_x, sy, w, m.row_h, card_r, std::max(2.0f, std::round(m.H * 0.003f)), danger ? st.danger : st.accent());
+      if (remake::audit_sink()) remake::audit(m.col_x, sy, w, m.row_h, "tarjeta", 'B', false, true);
+    } else {
+      shapes_.selector(a, st, out, m.col_x, py, m.col_w - scroll_room_, m.pill_h, danger ? st.danger_soft : st.cyan_soft, danger ? st.danger : st.accent());  // selStyle
+      if (remake::audit_sink()) remake::audit(m.col_x, py, m.col_w - scroll_room_, m.pill_h, "tarjeta", 'B', false, true);
+    }
   }
   for (size_t i = 0; i < e_.size(); ++i) {
     float y = std::round(m.list_top + top_[i] - scroll_);
@@ -693,12 +770,13 @@ void Menu::draw(Ctx& cx, std::vector<Op>& out) {
   out.push_back(Op::unclip());
 
   // scrollbar
-  if (content_h_ > m.list_h + 0.5f) {
+  if (scrolls) {
     float maxs = content_h_ - m.list_h;
     float th = std::max(std::round(m.list_h * m.list_h / content_h_), 2.0f * float(m.em));
     float ty = m.list_top + std::min(std::max(scroll_ / maxs, 0.0f), 1.0f) * (m.list_h - th);
-    float bw = std::max(std::round(0.007f * m.H), 3.0f);
-    shapes_.pill(a, out, m.col_x + m.col_w + std::max(std::round(inset * 0.35f), 2.0f), ty, bw, th, ui::with_alpha(st.txt, 0.30f));
+    const float bar_x = m.col_x + m.col_w - bar_w;
+    shapes_.pill(a, out, bar_x, ty, bar_w, th, ui::with_alpha(st.txt, 0.30f));
+    if (remake::audit_sink()) remake::audit(bar_x, ty, bar_w, th, "desplazamiento", 'R', true);
   }
 
   // hint of the entry under the cursor + help bar
@@ -729,10 +807,14 @@ void Menu::draw(Ctx& cx, std::vector<Op>& out) {
     }
     if (!e.hint_text.empty()) {
       if (!t_hint_.alive(a)) t_hint_.set(a, e.hint_text, m.small_px, m.col_w - 2.0f * inset);
-      float list_bottom = m.list_top + m.list_h;
-      ui::put_text(out, t_hint_, m.col_x + inset, std::round(list_bottom + (m.help_y - list_bottom) * 0.30f), st.dim);
+      // where the theme puts it, or higher if it would touch the help pill (kept off the bottom margin, see ui::help_pill)
+      const float help_row_top = std::min(ui::help_pill_top(a, cx.th, m), float(grid.bottom() - grid.snap(float(grid.help_h()) * std::max(ui::access().scale(), 1.0f), 3)));
+      const float hy = std::min(m.hint_y, std::round(help_row_top - std::round(float(m.small_px) * 0.3f) - t_hint_.h / 2.0f));
+      ui::put_text(out, t_hint_, m.col_x + inset, hy, st.dim);
+      if (remake::audit_sink()) remake::audit(m.col_x + inset, hy - t_hint_.h / 2.0f, t_hint_.w, t_hint_.h, "pista");
     }
   }
+  if (spec_.help && spec_.help_n) hp = spec_.help, hn = spec_.help_n;
   help_.draw(a, cx.th, m, st, hp, hn, out);
 }
 

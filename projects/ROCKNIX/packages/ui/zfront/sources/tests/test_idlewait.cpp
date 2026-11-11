@@ -191,7 +191,24 @@ void test_pad_hangup_does_not_spin() {
 
 }  // namespace
 
+// The status bar's uevent descriptor only wakes the sleep, its owner reads it: the sleep must say so, or the loop sleeps on (and
+// spins, the descriptor stays readable) until its next deadline and the bar shows the charger 30 s late.
+void test_watch_fd_ends_the_wait() {
+  IdleWaiter iw;
+  Pipe w;
+  iw.set_watch_fd(w.r);
+  TimePoint t = Clock::now();
+  CHECK(!iw.sleep(40));  // nothing readable: a plain timeout
+  CHECK(ms_since(t) >= 38);
+  w.put();
+  t = Clock::now();
+  CHECK(iw.sleep(5000));  // readable: the loop must come out to poll the status
+  CHECK(ms_since(t) < 50);
+  CHECK(w.readable());  // not drained here: its owner reads it
+}
+
 int main() {
+  test_watch_fd_ends_the_wait();
   test_caps();
   test_timeout_and_cap();
   test_wake_from_thread();

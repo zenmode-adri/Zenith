@@ -95,8 +95,8 @@ int main() {
   // ---- pure pieces
   CHECK(screensaver::mode_for_behavior("dim") == screensaver::Mode::Dim);
   CHECK(screensaver::mode_for_behavior("black") == screensaver::Mode::Black);
-  CHECK(screensaver::mode_for_behavior("slideshow") == screensaver::Mode::Black);  // not ported: ES falls back to black too
-  CHECK(screensaver::mode_for_behavior("random video") == screensaver::Mode::Black);
+  CHECK(screensaver::mode_for_behavior("slideshow") == screensaver::Mode::Media);  // ssmedia: its own frame; black when it finds nothing
+  CHECK(screensaver::mode_for_behavior("random video") == screensaver::Mode::Media);
   CHECK(screensaver::mode_for_behavior("") == screensaver::Mode::Black);
   CHECK_EQ(screensaver::ms_to_next_minute(0.0), 60020L);
   CHECK_EQ(screensaver::ms_to_next_minute(59.5), 520L);
@@ -229,6 +229,8 @@ int main() {
     before_acts(es, t0 + milliseconds(1100), acts);
     CHECK(!idle().active() && acts.empty());
     CHECK(!resume_pending());  // consumed
+    CHECK(take_resumed());  // and the status bar is told to read everything again
+    CHECK(!take_resumed());
     auto dl = idle_deadline(es);
     CHECK(dl && *dl == t0 + milliseconds(2100));
     // resume while NOT active: only the count restarts (a minute of idle before the suspend does not count)
@@ -300,16 +302,17 @@ int main() {
     CHECK(dl && *dl > Clock::now());  // the count restarted
   }
 
-  // ---- video / slideshow types are not ported: black
+  // ---- video / slideshow types: the media mode keeps the panel lit (ssmedia falls back to black, panel off, when it finds nothing)
   {
     auto sv = fresh();
     EsSettings es = cfg("slideshow");
     TimePoint t0 = Clock::now();
     input(t0);
     before_acts(es, t0 + milliseconds(1000), none);
-    CHECK(idle().active() && screensaver::mode() == screensaver::Mode::Black);
-    CHECK_EQ(slurp(d + "/bl/a/bl_power"), string("4\n"));
+    CHECK(idle().active() && screensaver::mode() == screensaver::Mode::Media);
+    CHECK(slurp(d + "/bl/a/bl_power") != string("4\n"));
     screensaver_stop();
+    CHECK(screensaver::mode() == screensaver::Mode::Off);
   }
 
   screensaver::set_clock_offset_probe(nullptr);

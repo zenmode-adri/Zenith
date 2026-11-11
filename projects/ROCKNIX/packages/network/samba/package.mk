@@ -182,6 +182,8 @@ post_makeinstall_target() {
   if [ "${SAMBA_SERVER}" = "yes" ]; then
     mkdir -p ${INSTALL}/usr/bin
       cp -PR bin/default/source3/utils/smbpasswd ${INSTALL}/usr/bin
+      cp ${PKG_DIR}/sources/samba-secure ${INSTALL}/usr/bin
+      chmod 0755 ${INSTALL}/usr/bin/samba-secure
 
   fi
 }

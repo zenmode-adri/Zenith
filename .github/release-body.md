@@ -1,34 +1,50 @@
-# Zenith v0.1.0
+# Zenith v0.2.0
 
-Unofficial fork of AURKNIX/ROCKNIX for **RK3326** handhelds (tested on the **R36 Ultra** only).
-What changed and the measurements: [CHANGELOG.md](https://github.com/zenmode-adri/Zenith/blob/main/CHANGELOG.md).
+Unofficial fork of AURKNIX/ROCKNIX for **RK3326** handhelds, developed and measured on the **R36 Ultra**.
+Everything that changed, with the measurements: [CHANGELOG.md](https://github.com/zenmode-adri/Zenith/blob/main/CHANGELOG.md).
 
 > [!WARNING]
-> Pre-release. The files were built and inspected, but the first boot of this exact clean image from a freshly written
-> SD card has not been confirmed yet. Only the R36 Ultra has been tested.
+> **Tested only on the R36 Ultra.** Other RK3326 models use the same image but have not been tried with this release:
+> treat them as beta.
+
+## Highlights
+- **zfront, Zenith's own front-end, is now the default**: first screen in 1.0 s instead of 4.1 s and about a quarter of
+  EmulationStation's memory. Two new themes, **Zenith Minimal** (light) and **Zenith Next** (dark); XMB, Art Book,
+  Iconic and TechDweeb remade on the same grid. EmulationStation stays installed (`Tools > Switch frontend`).
+- **Patched Panfrost** (open GPU driver) in the image: +38.9 % over stock Panfrost and +4.4 % / +6.5 % over libmali
+  (R36S / R36 Ultra, 20 games, free-running test). libmali stays the default.
+- **Performance mode** (off by default): GPU and RAM at full speed while a game runs (Mario Tennis 19.3 -> 25.0 fps with
+  libmali on the R36S). **RAM at 786 MHz** on the models that have that step.
+- **R36 Tuner Next** built in, with undervolt and a fix for the GPU freezes around 480 MHz.
+- **Send files from your phone** through a web page with a QR code (off by default).
+- **Updates from Zenith's own releases**: from this version on, the built-in updater offers new releases.
+- Faster volume keys, controller mapping that can always be cancelled, Spanish everywhere, and many fixes.
 
 ## Downloads
 
 | File | What it is |
 |------|------------|
-| `AURKNIX-RK3326.aarch64-20261023.img.gz` | Full image for a new SD card |
-| `*.sha256` | SHA-256 checksum: verify it before writing anything |
+| `AURKNIX-RK3326.aarch64-20261111.img.gz` | Full image for a new SD card |
+| `AURKNIX-RK3326.aarch64-20261111.tar` | Update package, used by the built-in updater of future releases |
+| `*.sha256` | SHA-256 checksums: verify them before writing anything |
 
 ## Installation
 * Download the image and check its `.sha256`.
-* Decompress the image and write it to an SD card with an imaging tool such as Balena Etcher.
+* Decompress it and write it to an SD card (Balena Etcher, Raspberry Pi Imager, `dd`).
   Check the target disk first: everything on it is erased.
-* Other RK3326 devices: choose the device tree with `/flash/dtbselect` or `DtbselectWin64.exe` on the boot partition.
+* Other RK3326 devices: choose the device tree with **Zenith DTB Selector** on the boot partition
+  (see [docs/DTB-SELECTOR.md](https://github.com/zenmode-adri/Zenith/blob/main/docs/DTB-SELECTOR.md)).
+* **Coming from v0.1.0:** write the image again (back up your saves first). The update menu of v0.1.0 looked at the
+  original AURKNIX repository and does not see this release.
 
 ## Default settings
-* Wi-Fi, SSH and Samba are **off**: enable them from the network settings of the menu.
-* If you turn SSH on, the root password is the factory one, `rocknix`. Change it, and turn SSH off when you do not need it.
-* `systemd.debug_shell=ttyS2` gives a root shell on the serial port; it needs physical access to the board.
+* Wi-Fi, SSH, Samba and the phone file transfer are **off**: enable them from the Network menu.
+* The root password is the factory one, `rocknix`. Change it before turning SSH or Samba on.
 
-## Known limitations
-* Only the R36 Ultra has been tested. Other devices may not boot with the fast-boot changes; if the early boot mode
-  does not reach EmulationStation in time it disables itself.
-* A fixed 560 MHz GPU clock freezes the console and is not offered.
+## Known issues
+* Only the R36 Ultra has been tested; the R36S only on an older development image.
+* The cover scraper (ScreenScraper) does not work in this image: no developer credentials are built in.
+* Performance mode: heat and battery use in long sessions are not measured.
 
 ## Licenses
 Zenith is made of many open-source components, each under its own license; some are for non-commercial use only.

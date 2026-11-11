@@ -1,6 +1,8 @@
 // Stage-0 extension points: ConfLock + SystemConf::persist, CmdRunner, Toasts, Jobs, Registry, tr().
 #include <unistd.h>
 
+#include <signal.h>
+
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -89,6 +91,24 @@ int main() {
   CHECK(o.out.find("hello") != std::string::npos && o.out.find("err") != std::string::npos);
   CmdResult to = r.run("sleep 5", 150);
   CHECK_EQ(to.exit_code, -2);
+  // a timeout kills the whole process group: what sh started (a background `sleep`) must not outlive the command
+  {
+    CmdResult g = r.run("sleep 30 & echo $! > " + d + "/bgpid; wait", 200);
+    CHECK_EQ(g.exit_code, -2);
+    long bg = 0;
+    std::string pid_text = slurp(d + "/bgpid");
+    if (!pid_text.empty()) bg = std::strtol(pid_text.c_str(), nullptr, 10);
+    CHECK(bg > 1);
+    bool dead = false;
+    for (int i = 0; i < 100 && !dead; ++i) {
+      std::string stat = slurp("/proc/" + std::to_string(bg) + "/stat");  // gone, or a zombie waiting for init
+      size_t rp = stat.rfind(") ");
+      dead = stat.empty() || (rp != std::string::npos && rp + 2 < stat.size() && stat[rp + 2] == 'Z');
+      if (!dead) ::usleep(10000);
+    }
+    CHECK(dead);
+    if (!dead && bg > 1) ::kill(pid_t(bg), SIGKILL);
+  }
   r.dry_run = true;
   CmdResult dr = r.run("rm -rf /");
   CHECK(dr.dry && dr.exit_code == 0 && r.log.size() == 1 && r.log[0] == "rm -rf /");
@@ -126,6 +146,23 @@ int main() {
   CHECK(order.size() == 3 && order[0] == 0 && order[1] == 1 && order[2] == 2 && main_thread_done);
   CHECK(woke.load() >= 3);
   CHECK(!jb.drain());
+
+  // ---- jobs: a slow command on the second worker does not hold up the first one (covers, gamelist edits)
+  {
+    Jobs two;
+    std::atomic<bool> slow_done{false}, quick_done{false};
+    two.post_slow([&] { ::usleep(400 * 1000); slow_done = true; }, [] {});
+    ::usleep(20 * 1000);  // the slow job is running
+    two.post([&] { quick_done = true; }, [] {});
+    for (int i = 0; i < 40 && !quick_done; ++i) ::usleep(5000);
+    CHECK(quick_done.load());
+    CHECK(!slow_done.load());  // the quick one did not wait for it
+    CHECK(!two.idle());
+    for (int i = 0; i < 400 && !two.idle(); ++i) ::usleep(5000);
+    CHECK(slow_done.load());
+    CHECK(two.drain());  // both `done` callbacks come out of the same drain
+    CHECK(two.idle());
+  }
 
   // ---- registry + Transition::open
   CHECK(Registry::instance().has("test.dummy"));

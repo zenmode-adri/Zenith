@@ -33,6 +33,7 @@ enum : unsigned {
   kInfo = 256,    // INFORMATION
   kReset = 512,   // SYSTEM MANAGEMENT AND RESET
   kSuspend = 1024,  // DEVICE SUSPEND MODE
+  kUiMode = 2048,   // USER INTERFACE MODE (Full / Kiosk / Kid)
   kNoHdr = 0x4000,  // leave out the section headers (a row of its own inside another menu)
   kAll = 0x3FFF,
 };
@@ -43,11 +44,12 @@ namespace snd_part {
 enum : unsigned {
   kQuick = 1,  // the volume slider alone
   kNav = 32,   // ENABLE NAVIGATION SOUNDS alone
+  kMusic = 64,  // MUSIC group (only when the SDL_mixer library is there)
   kOverlay = 16,  // SHOW OVERLAY WHEN VOLUME CHANGES alone (the volume itself is the hardware buttons' job)
   kVol = 2,    // VOLUME: slider + overlay toggle
   kAudio = 4,  // AUDIO OUTPUT / AUDIO PROFILE
   kBatt = 8,   // audible battery warning + threshold
-  kAll = kVol | kAudio | kBatt | kNav,
+  kAll = kVol | kAudio | kBatt | kNav | kMusic,
 };
 }  // namespace snd_part
 
@@ -61,7 +63,8 @@ enum : unsigned {
   kSaver = 16,   // SCREENSAVER
   kNoHdr = 64,   // leave out the SCREENSAVER SETTINGS header (the group puts its own)
   kTopBar = 32,  // SHOW CLOCK, SHOW BATTERY STATUS under their own header (kDisplay = the same rows under DISPLAY OPTIONS)
-  kAll = 31,
+  kTheme = 128,  // THEME SET (only when more than one Zenith theme is installed)
+  kAll = 31 | 128,
 };
 }  // namespace ui_part
 

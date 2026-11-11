@@ -65,6 +65,7 @@ struct RecentRow {
 std::vector<size_t> recent_visible(const Theme& th, Assets& a, float w, float h, const SystemItem& cur, const RecentRow& r);
 /// Help bar while the row has the focus.
 const HelpPrompts& recent_help();
+/// A carousel that moves up and down.
 
 /// What the text under the carousel (name, count, hairline, "continue playing") shows: it fades out, changes system and fades in
 /// while the carousel moves. `item` = index of the system it shows (-1: the one under the cursor), `alpha` = 0..1.
@@ -75,8 +76,8 @@ struct InfoFade {
 
 /// Positions (unwrapped carousel indices) `system_view` builds for a camera at `cam` with `n` systems: `first..last`. Every tile
 /// that can be on screen is in it, also the half-visible one that is about to slide in from the edge: it must already exist, not
-/// appear when the camera crosses an integer.
-void carousel_span(float cam, int n, int& first, int& last);
+/// appear when the camera crosses an integer. `count` = cards visible at once (theme variable `carCount`, 5 in Zenith).
+void carousel_span(float cam, int n, int& first, int& last, int count = 5);
 
 /// `cam` is the (possibly fractional) carousel position; `cursor_abs` the unwrapped selected item.
 void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, const std::vector<SystemItem>& items, int cursor_abs, float cam,
@@ -84,6 +85,10 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
 
 /// Game list (theme `basic, detailed` textlist): header with avatar and system name, up to `listLines` rows with the
 /// pill selector, the selected game's column (name only, or `detail` through `detailed_column`), status and help bars.
+/// How many characters of `s` fit in `max` pixels at `px` (what `clip_text` keeps), and the text image of that cut. For tests and the lists.
+size_t clip_count(Assets& a, std::string_view s, float px, float max);
+ImgId clip_text(Assets& a, std::string_view s, float px, Color color, float max);
+
 void list_view(const Theme& th, Assets& a, const Common& c, float w, float h, const std::string& system_name, const std::vector<std::string>& names,
                size_t cursor, const Status& status, const DetailedData* detail, const std::vector<std::string>* marks, std::vector<Op>& ops);
 

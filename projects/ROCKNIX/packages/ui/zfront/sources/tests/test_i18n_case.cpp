@@ -33,8 +33,22 @@ int main() {
   CHECK_EQ(sc("SHOW BATTERY STATUS"), std::string("Show battery status"));
   // acronyms and brands keep their spelling, also at the start
   CHECK_EQ(sc("WI-FI PASSWORD"), std::string("Wi-Fi password"));
+  CHECK_EQ(sc("NETWORK DRIVE (SAMBA)"), std::string("Network drive (Samba)"));
+  CHECK_EQ(sc("ENABLE SAMBA"), std::string("Enable Samba"));
+  CHECK_EQ(sc("TAILSCALE LOGIN"), std::string("Tailscale login"));
   CHECK_EQ(sc("WIFI"), std::string("Wi-Fi"));
+  CHECK_EQ(sc("SHOW QR CODE"), std::string("Show QR code"));
+  CHECK_EQ(sc("MOSTRAR CÓDIGO QR"), std::string("Mostrar código QR"));
   CHECK_EQ(sc("IP ADDRESS"), std::string("IP address"));
+  // seen on the device (9-nov): headers and rows of the scraper, LEDs and the AI translation came out as "Igdb", "Leds", "Ai"
+  CHECK_EQ(sc("IGDB"), std::string("IGDB"));
+  CHECK_EQ(sc("SCREENSCRAPER"), std::string("ScreenScraper"));
+  CHECK_EQ(sc("ARCADEDB"), std::string("ArcadeDB"));
+  CHECK_EQ(sc("RETROACHIEVEMENTS SETTINGS"), std::string("RetroAchievements settings"));
+  CHECK_EQ(sc("LEDS"), std::string("LEDs"));
+  CHECK_EQ(sc("AI GAME TRANSLATION"), std::string("AI game translation"));
+  CHECK_EQ(sc("START PPSSPP"), std::string("Start PPSSPP"));
+  CHECK_EQ(sc("VIEW GAME MANUAL (PDF)"), std::string("View game manual (PDF)"));
   CHECK_EQ(sc("SD CARD"), std::string("SD card"));
   CHECK_EQ(sc("CONTROLLER & BLUETOOTH"), std::string("Controller & Bluetooth"));
   CHECK_EQ(sc("USB, HDMI AND LED"), std::string("USB, HDMI and LED"));
@@ -54,6 +68,13 @@ int main() {
   CHECK_EQ(sc("1080P MODE"), std::string("1080p mode"));
   CHECK_EQ(sc("WIDTH: 640"), std::string("Width: 640"));
   CHECK_EQ(sc("(OPTIONAL) NAME"), std::string("(Optional) name"));
+  CHECK_EQ(sc("PRESS B TO CANCEL."), std::string("Press B to cancel."));  // a button letter keeps its capital
+  CHECK_EQ(sc("HOLD L2 OR R3, THEN X"), std::string("Hold L2 or R3, then X"));
+  CHECK_EQ(sc("L/R TO CHANGE"), std::string("L/R to change"));
+  CHECK_EQ(sc("A BUTTON"), std::string("A button"));  // the article stays an article
+  CHECK_EQ(sc("OVERCLOCK Y MEDIDORES"), std::string("Overclock y medidores"));  // the Spanish "and" is not the Y button
+  CHECK_EQ(sc("IMAGEN Y CONTROL"), std::string("Imagen y control"));
+  CHECK_EQ(sc("BUTTON Y / WEST"), std::string("Button Y / west"));  // after BUTTON it is the button
   CHECK_EQ(sc("DONE. RESTART NOW"), std::string("Done. Restart now"));
   CHECK_EQ(sc("LOADING..."), std::string("Loading..."));
   CHECK_EQ(sc("A"), std::string("A"));
@@ -76,6 +97,9 @@ int main() {
   CHECK_EQ(sc("\xd0\x94\xd0\x90"), std::string("\xd0\x94\xd0\x90"));  // Cyrillic: not our business
   CHECK_EQ(sc("\xe8\xae\xbe\xe7\xbd\xae"), std::string("\xe8\xae\xbe\xe7\xbd\xae"));
   CHECK_EQ(sc("%S IS READY"), std::string("%S is ready"));
+  CHECK_EQ(sc("THE ONES FROM %S. A BACKUP IS MADE FIRST."), std::string("The ones from %S. A backup is made first."));  // a sentence ends at "%S."
+  CHECK_EQ(sc("%S? YES"), std::string("%S? Yes"));
+  CHECK_EQ(sc("%S... MORE"), std::string("%S... more"));
   CHECK(i18n::is_all_caps("GAME 2"));
   CHECK(!i18n::is_all_caps("Game 2"));
   CHECK(!i18n::is_all_caps("123"));

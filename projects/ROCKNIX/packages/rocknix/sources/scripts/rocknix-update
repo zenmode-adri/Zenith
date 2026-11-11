@@ -5,8 +5,15 @@
 . /etc/profile
 
 DISTRO_PREFIX="AURKNIX"
-GITHUB_ORG="${GIT_ORGANIZATION:-AveyondFly}"
-GITHUB_REPO_NAME="${GIT_REPO:-distribution_rocknix}"
+# The releases of Zenith itself. Never the upstream AURKNIX ones: their package has the same name and would replace Zenith with it.
+GITHUB_ORG="${GIT_ORGANIZATION:-zenmode-adri}"
+GITHUB_REPO_NAME="${GIT_REPO:-Zenith}"
+case "${GITHUB_ORG}/${GITHUB_REPO_NAME}" in
+  AveyondFly/*|ROCKNIX/*)
+    GITHUB_ORG="zenmode-adri"
+    GITHUB_REPO_NAME="Zenith"
+    ;;
+esac
 GITHUB_REPO="${GITHUB_ORG}/${GITHUB_REPO_NAME}"
 GITHUB_API="https://api.github.com/repos/${GITHUB_REPO}"
 
@@ -80,6 +87,8 @@ check_update() {
     release_json=$(fetch_release_json "") || return 1
     target_tag=$(echo "${release_json}" | jq -r '.tag_name // empty')
     [ -n "${target_tag}" ] || return 1
+    # a release that is not an OTA build (its tag is not a build date) is not an update
+    is_forced_version "${target_tag}" || return 1
     if ! version_should_update "${target_tag}" "${custom_force}"; then
       return 1
     fi

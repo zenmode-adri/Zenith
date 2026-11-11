@@ -1,4 +1,4 @@
-From: Claude <noreply@anthropic.com>
+From: zenmode-adri <274425265+zenmode-adri@users.noreply.github.com>
 Subject: [PATCH] exfat: limit directory read-ahead to one page
 
 exfat_find() calls exfat_count_dir_entries() on the child directory of every

@@ -1,0 +1,8 @@
+home
+menu	--script start
+list	--script right,A,down
+demo	--demo list
+sound	--script start,down,A
+widgets	--script start,down,down,down,down,down,down,down,down,A
+quitdlg	--script start,down,down,down,down,down,down,down,A,A
+keyboard	--script start,down,down,down,down,down,down,down,down,A,down,down,down,down,down,down,A

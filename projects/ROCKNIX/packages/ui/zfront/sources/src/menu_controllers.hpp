@@ -75,6 +75,8 @@ class DetectScreen : public Screen {
   bool on_capture(const CaptureEvent& e);
   bool holding() const { return holding_; }
   float progress() const { return held_s_ / kHoldSeconds; }
+  /// Seconds since the last press/release of any pad (the picker closes by itself after `kDetectIdleSeconds`).
+  float idle() const { return idle_s_; }
 
  private:
   PadTap tap_;
@@ -83,6 +85,7 @@ class DetectScreen : public Screen {
   DevId held_dev_ = 0;
   std::string held_guid_, held_name_;
   float held_s_ = 0;
+  float idle_s_ = 0;
   // drawing
   ui::Metrics m_;
   ui::Style st_;
@@ -109,6 +112,8 @@ class ConfigScreen : public Screen {
   /// Writes the file, reloads the pad and fires ES's events. False (and a toast) on failure.
   bool save(Ctx& cx, Hotkey choice);
   bool saved() const { return saved_; }
+  /// Seconds the target pad has kept one input down (-1: nothing held). `kCancelHoldSeconds` of it cancels the wizard.
+  float cancel_hold() const { return cancel_s_; }
 
  private:
   void review_press(const char* name);
@@ -121,6 +126,13 @@ class ConfigScreen : public Screen {
   enum class Want : uint8_t { None, SaveSelect, SaveNone, Cancel } want_ = Want::None;
   bool saved_ = false;
   float idle_s_ = 0;  // seconds since the last input of the target
+  // The way out that needs no working mapping: the same input of the target pad kept down (the pad may be the only one
+  // there is, and half mapped or wrong)
+  bool pad_watched_ = false;  // there is a pad service to ask (tests and the harness have none)
+  float poll_s_ = 0;  // seconds since the target was last looked for among the connected pads
+  float cancel_s_ = -1;
+  InKind cancel_kind_ = InKind::Button;
+  uint16_t cancel_id_ = 0;
   // drawing
   ui::Metrics m_;
   ui::Style st_;
@@ -128,6 +140,7 @@ class ConfigScreen : public Screen {
   ui::HelpBar help_;
   ui::Txt t_title_, t_dev_, t_label_, t_state_, t_note_, t_sum_;
   std::string shown_label_, shown_state_, shown_note_, shown_sum_;
+  std::string line_[4];  // the long lines of the page, built once per layout (a frame at rest allocates nothing)
   float lay_w_ = 0, lay_h_ = 0;
   bool drawn_once_ = false;
   bool needs_redraw_ = false;
@@ -135,6 +148,9 @@ class ConfigScreen : public Screen {
 
 /// Pads known to SDL right now (what `cx.pad` reports; the harness shows two fake ones when ZF_CTL_DEMO is set).
 std::vector<JoyInfo> connected_pads(Ctx& cx);
+/// The name to SHOW for a pad: the driver's internal name of the built-in pad ("retrogame_joypad") reads "Built-in controller";
+/// any other name as it is. Display only: mappings are still saved and looked up under the real name.
+std::string pad_label(const std::string& name);
 /// True when `es_input.cfg` (user or system) has an entry for the pad.
 bool pad_is_configured(const JoyInfo& j);
 

@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <string_view>
 
+#include "gfx.hpp"
 #include "i18n.hpp"
 #include "savestates.hpp"
 #include "util.hpp"
@@ -40,6 +41,11 @@ std::string short_title(const std::string& stem) {
   return stem.substr(0, cut);
 }
 
+std::string RecentItem::shot_key() const {
+  if (mtime == 0) return shot;
+  return shot + kBakeMark + "m" + std::to_string(static_cast<long long>(mtime));  // `decode_fit` ignores the flag letter `m` and its digits
+}
+
 std::vector<RecentItem> recent_states(const System& sys, time_t now, size_t max) {
   struct Hit {
     std::string stem, shot;
@@ -58,7 +64,7 @@ std::vector<RecentItem> recent_states(const System& sys, time_t now, size_t max)
     if (!savestates::parse_name(f.substr(0, f.size() - 4), stem, slot)) continue;  // other screenshots in the folder
     std::string path = path_join(dir, std::string(f));
     struct stat st;
-    if (::stat(path.c_str(), &st) != 0 || st.st_size <= 0) continue;
+    if (::stat(path.c_str(), &st) != 0 || st.st_size < 128) continue;  // no picture in there: an emulator that did not finish writing it
     auto it = std::find_if(hits.begin(), hits.end(), [&](const Hit& h) { return h.stem == stem; });
     if (it == hits.end()) {
       hits.push_back({std::move(stem), std::move(path), st.st_mtime, slot});
@@ -70,7 +76,7 @@ std::vector<RecentItem> recent_states(const System& sys, time_t now, size_t max)
   std::sort(hits.begin(), hits.end(), [](const Hit& a, const Hit& b) { return a.t > b.t; });
   if (hits.size() > max) hits.resize(max);
   std::vector<RecentItem> out;
-  for (Hit& h : hits) out.push_back({std::move(h.shot), std::move(h.stem), ago_text(h.t, now), h.slot});
+  for (Hit& h : hits) out.push_back({std::move(h.shot), std::move(h.stem), ago_text(h.t, now), h.slot, h.t});
   return out;
 }
 

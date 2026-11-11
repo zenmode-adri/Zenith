@@ -1,5 +1,6 @@
 #include "menu_groups.hpp"
 #include "menu_sound.hpp"
+#include "music.hpp"
 #include "sound.hpp"
 
 #include <unistd.h>
@@ -10,6 +11,7 @@
 
 #include "registry.hpp"
 #include "settings.hpp"
+#include "vpreview.hpp"
 #include "ui_osd.hpp"
 #include "util.hpp"
 
@@ -184,6 +186,7 @@ MenuSpec make_sound_spec(Ctx& cx, unsigned parts) {
                         std::string& cur2 = profile ? st->prof : st->dev;
                         if (*code != 0) {  // the script failed: show what is really selected
                           cur2 = prev;
+                          c->sv->toasts.push(tr("Could not change the audio output"), 4000);
                           if (refresh) refresh();
                           return;
                         }
@@ -210,6 +213,8 @@ MenuSpec make_sound_spec(Ctx& cx, unsigned parts) {
             .no_cycle()
             .hint(tr("Available options can change depending on current audio output."));
     }
+
+    if ((parts & sp::kMusic) && music::available()) music::build_menu(m, cx);  // FRONTEND MUSIC ... (music.cpp)
 
     if (!(parts & sp::kBatt)) return;
     m.header((parts & (sp::kVol | sp::kAudio)) ? tr("SOUNDS") : tr("BATTERY WARNING"));

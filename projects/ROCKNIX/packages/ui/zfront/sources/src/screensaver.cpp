@@ -15,10 +15,14 @@ long long (*g_probe)() = nullptr;
 Mode mode() { return g_mode; }
 void set_mode(Mode m) { g_mode = m; }
 
-Mode mode_for_behavior(std::string_view behavior) { return behavior == "dim" ? Mode::Dim : Mode::Black; }
+Mode mode_for_behavior(std::string_view behavior) {
+  if (behavior == "dim") return Mode::Dim;
+  if (behavior == "slideshow" || behavior == "random video") return Mode::Media;
+  return Mode::Black;
+}
 
 void draw(const Ctx& cx, std::vector<Op>& out) {
-  if (g_mode == Mode::Off) return;
+  if (g_mode == Mode::Off || g_mode == Mode::Media) return;  // Media draws its own frame (ssmedia)
   out.push_back(Op::rect(0, 0, cx.w, cx.h, {0, 0, 0, g_mode == Mode::Dim ? kDimAlpha : uint8_t(255)}));
 }
 

@@ -1,126 +1,293 @@
 # Zenith changelog
 
 Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix) (itself a fork of
-[ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, a polished EmulationStation interface and fast
-suspend on **RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
-Dates are the build dates. Every entry has a git tag (named in `code`) and details in the commit it points to.
+[ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, its own front-end (zfront) and fast suspend on
+**RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
+Dates are the build dates.
 
-## Next image (contents tested in the DEBUG build `d955804`, installed on an R36 Ultra; the clean image built from the same code has NOT been booted: try it on a spare SD card first)
+## v0.2.0 — 2026-11-11
 
-### GPU: patched Panfrost driver built into the image (libmali stays the default)
-- **Mesa's open Panfrost driver now ships patched for the Mali-G31: 19 patches, built with profile-guided
-  optimisation (PGO) and link-time optimisation (LTO).** libmali is still the default driver for safety and
-  compatibility; `gpudriver panfrost` + reboot (or the GPU DRIVER menu) switches to it. The full study (20 games on
-  an R36S and an R36 Ultra, libmali vs stock Panfrost vs patched Panfrost) is in [`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md).
-- **Per-program settings in `/usr/share/drirc.d/01-zenith-panfrost.conf`** (read only by Mesa, ignored by libmali):
-  threaded GL (`glthread`) for RetroArch and PPSSPP, and PPSSPP also hides `GL_OES_copy_image`/`GL_EXT_copy_image`.
-  Stand-alone emulators (Flycast, Mupen64Plus) are left unchanged: their A/B test was not valid and is pending.
-- **Checked in the DEBUG build `0933111`, installed by OTA on an R36 Ultra and an R36S, with the packaged library and no
-  environment variables:** in a separate quick test on the Ultra it gives the same fps as the study's library (God of
-  War 20.4 vs 20.3, Zelda: Ocarina of Time 29.5 vs 29.6; a different method from the study, so not comparable with its
-  tables); glthread active in RetroArch and PPSSPP; no GPU faults in the kernel log. Not profiled: shader compilation and driver start-up (3 source files).
+Second public release (the first was v0.1.0, on 23 October 2026). Its release tag is the build date, `20261111`, which is
+what the built-in updater looks for.
 
-### Choosing the right device tree (DTB)
-- **Zenith DTB Selector replaces the old DTB picker.** One small program for Windows, Linux and macOS (window in
-  Chinese, English and Spanish) that finds the SD card by itself, lists 86 models grouped by brand, shows exactly what
-  will change before writing, keeps a dated backup of `extlinux.conf` (the 30 newest, restorable from the tool) and
-  never adds the `ssh` flag. It can also import your own `.dtb`. The Windows version is copied to the root of the
-  card as `ZenithDtbSelector.exe`. Tested on a copy of the real card of an R36 Ultra (all command-line cases and the
-  web interface) and on the console itself: import, apply, reboot with the chosen DTB, restore.
-- **DTB test mode ("try the next one") for clone consoles whose DTB cannot be guessed.** From the selector on a PC
-  you start the mode; on every boot the console shows a test card and waits 12 s for a button (any pad button or
-  VOL+/VOL-, never the power button) to be HELD: if you hold one, that DTB stays; if not, the next candidate is
-  written and the console restarts. Candidates are ordered so the likeliest come first (18 of the 77 DTB). When they
-  run out the original `extlinux.conf` comes back. Only the `FDT` line is ever touched, writes are atomic, and with
-  no `/flash/dtbprobe/state` the script does nothing. **Not yet tested on hardware.**
+> [!WARNING]
+> **Tested only on the R36 Ultra** (720x720). The other RK3326 models use the same image but have **not** been tried with
+> v0.2.0: treat them as beta. The R36S was tested only on an older development image (some of the GPU numbers below come
+> from it).
 
-### zfront, a new optional front-end
-- **zfront is a second front-end written from scratch in C++17 (SDL2), installed next to EmulationStation.**
-  EmulationStation stays the default; `Tools > Switch frontend` changes between the two and restarts the front-end
-  without waiting (setting `system.frontend`). zfront reads the same `es_settings.cfg`, the same gamelists, the same
-  Zenith theme and the same scripts, so nothing has to be set up twice. `zfront-88212b3`
-- **Lighter and faster to come up** (R36 Ultra, large library): first frame 1.0 s instead of 4.1 s, 36 MB of its own
-  memory instead of 143 MB, and it sleeps between events instead of polling (2 CPU ticks per 10 s idle). Starting
-  RetroArch from the front-end takes 0.91 s instead of 1.18 s and 40-100 MB more RAM stay free while a game runs. Real gameplay is the same: God of War (PPSSPP) shows no frame-rate difference between the two
-  front-ends (the only game measured).
-- **Menus grouped by intention** instead of one long "System" list (about 50 rows): 8 groups, an Inactivity block, the
-  panel adjustment and language/time as sub-screens, a floating help pill shared by the carousel, the lists and the
-  menus. Brightness and volume keep their own buttons.
-- **Motion tuned for a small screen:** exponential carousel glide that follows the EmulationStation curve, a slower
-  repeat when the d-pad is held (it used to race through the carousel), windows that fade in and out, toast messages
-  above the help bar, and the main menu and five sub-menus are built in idle time after start so their first open no
-  longer stutters (main menu and Games: 1.5 ms instead of 50-90 ms; Display and Battery: worst frame 10-12 ms;
-  Controllers and Network are not pre-built because opening them starts Bluetooth/Wi-Fi).
-- **"Continue playing" row** under the carousel: Down gives it focus, A resumes from the last save state without going
-  through the save-state manager; games whose ROM no longer exists are hidden. **Not tried on the console with real
-  ROMs yet**, and the 4:3 (640x480) layout that makes room for it has only been checked with the test harness.
-- **Navigation sounds** (scroll, back, menu, launch) with the Zenith theme sounds, only when `EnableSounds` is on,
-  mixed to avoid clicks when sounds overlap (still to be confirmed by ear). The audio device is closed 4 s after the last sound, so no stream stays
-  open while idle. If you hear nothing, check that `audio.device` is `speakers` (it can be left on `headphone`).
-- **Systems reload live:** toggling "Show empty systems" no longer asks to restart the front-end.
-- **Suspend from the menu and as a screensaver type** are offered now (they were hidden because zfront looked for a
-  `pm-suspend` binary that Zenith does not ship; it checks the real sleep hook and runs `systemctl suspend`). The
-  power button is unchanged. Not tried on the console yet.
-- Included: `LICENSE` and `NOTICE.md` for zfront. `runemu --prepare` prepares the RetroArch configuration while idle
-  and the launch reuses it if nothing changed (start to exec 830 -> about 510 ms). `zfront-88212b3`
-- Theme: new menu icons (display, battery, library) and 16 text-only logos of the dark theme redrawn in clean white
-  without the white outline. `zfront-88212b3`
+### Highlights
 
-### zfront: safety review (28 Oct)
-- **Game names can no longer run commands.** `escape_path` (a port of the EmulationStation one) did not escape the backtick, `|`,
-  tab and newline, so a ROM called like that could run a command when launched; `%GAMENAME%`/`%SYSTEMNAME%` were not quoted
-  either. Both fixed. EmulationStation probably has the same flaw (not checked).
-- **User hooks run without a shell** (arguments passed as an array, `game-start` gets the real ROM path); synchronous `quit`
-  hooks are killed after 30 s.
-- **Broken data no longer crashes it:** an `<image>` that points to a folder, pictures larger than 16 Mpx, XML nested more
-  than 64 levels, line breaks inside `system.cfg` values, and a `<game>` bigger than 16 MiB in a gamelist (that entry is
-  skipped instead of losing the rest of the list; gamelists with a skipped entry are never rewritten).
-- **Long system names end in an ellipsis** instead of covering the game counter, Wi-Fi, battery and clock.
-- The HTTP API on port 1234 listens on 127.0.0.1 only. Licences of zfront and of the libraries compiled into it are installed
-  in `/usr/share/zfront/licenses`. 58 test programs pass on a PC (also under ASan/UBSan). **Not seen on the console yet:** the
-  look of the long-title ellipsis, launching a game with an odd name, and a huge gamelist.
+- **zfront is now the default front-end** on new installs. It is Zenith's own front-end, written in C++, with two new
+  themes: **Zenith Minimal** (light, the default) and **Zenith Next** (dark). EmulationStation stays installed and can be
+  chosen in `Tools > Switch frontend`. An update never switches someone who already uses EmulationStation.
+- **Patched Panfrost (open GPU driver) is in the image.** libmali remains the default driver; Panfrost is a choice
+  (`gpudriver panfrost` and a reboot, or the GPU DRIVER menu). If Panfrost cannot start, the system goes back to libmali
+  by itself.
+- **Performance mode** (GPU and RAM at full speed while a game runs) is in the image, **off by default**.
+- **RAM at 786 MHz** on the models that have that step (R36 Ultra and the boards listed below).
+- **R36 Tuner Next** built in, with undervolt and a fix for the hard freezes around a 480 MHz GPU clock.
+- **Updates now come from Zenith's own releases** (`github.com/zenmode-adri/Zenith`), never from the original AURKNIX.
+- **Send files from your phone** through a web page (off by default, 4-digit PIN, QR code to scan).
+- **Zenith DTB Selector** to pick the right screen/device tree for your console from Windows, Linux or macOS.
 
-### Opening a game
-- **RetroArch games start 0.2-0.5 s faster.** `setsettings.sh` (the script that writes the per-game RetroArch
-  configuration right before launch) started about 220 processes per game; it now starts about 40 and produces
-  byte-identical `retroarch.cfg` and `/tmp/.retroarch.cfg` files (compared on 14 systems). Time spent in that
-  script: 0.70 s -> 0.47 s with logging off (the default), 1.01 s -> 0.51 s with `system.loglevel=verbose`.
-  Whole launch, averaged over 7 games (Famicom, Game Boy, SNES, Mega Drive, GBA, N64, PlayStation): 3.54 s -> 3.33 s
-  with logging off, 3.90 s -> 3.41 s with verbose logging. `launch-opt-2`
-- Not affected: standalone emulators (PPSSPP, Flycast, DraStic, DuckStation, ScummVM...) do not go through
-  `setsettings.sh`.
+### zfront front-end
 
-### GPU driver
-- **The open-source GPU driver (Panfrost) now works on the RK3326, so the driver choice in the menu is usable.** Until
-  now selecting it left the console on software rendering: the GPU and the RAM share one voltage rail (`vdd_logic`),
-  a single-value `opp-microvolt` is read as "exactly X mV", and Panfrost's exact request clashed with the RAM's
-  minimum (1050 mV at 666 MHz) -> `Restricting voltage`, error -22, and the GPU never probed. The Mali driver (libmali)
-  was not affected because its own patch already asks for a minimum. New kernel patch
-  `036-opp-single-voltage-is-minimum`: when a table gives one voltage the OPP core now asks the regulator for "at least
-  X", so the highest minimum of GPU and RAM wins. It works with any device tree (also imported ones) and changes
-  nothing on the CPU rail (same latency, same voltages: 1125 mV at 1008 MHz, 1300 mV at 1296 MHz). Changing the driver
-  still needs a reboot.
-- **Safety net for the GPU driver choice.** If Panfrost is selected but no GPU gets bound to it at boot (the module
-  loaded but the probe failed), `gpudriver --start` saves libmali as the driver and reboots once, instead of leaving the
-  desktop on software rendering. It reboots rather than swapping drivers in place because, on the Ultra, loading
-  `mali_kbase` after Panfrost had taken the GPU in the same boot hangs the kernel (measured). It only reboots when the
-  setting was really saved, so it cannot loop. Logged with `logger -t gpudriver`. `gpudriver-fallback-reboot`
-- Measured on an R36 Ultra (God of War: Chains of Olympus, same save state, 1x): Panfrost 6.9-7.0 fps vs libmali
-  7.2-7.3 fps with the governors on automatic (-5 %); with GPU 600 MHz and RAM 666 MHz fixed, 7.7 vs 7.4 fps. With
-  Panfrost the RAM now reaches 666 MHz while the GPU sits at 200-400 MHz and the kernel log shows no voltage
-  warnings. glmark2: 414 vs 419. **Stock Panfrost is not faster: that game is limited by the emulation thread and memory
-  latency, not by the GPU** (the GPU is about 20 % busy), so libmali stays the default. Only this game and glmark2
-  were measured. `opp-single-voltage-minimum`
-- When the GPU is the bottleneck (God of War with frame skip off at 2x/3x/4x) libmali is faster: 10.2/6.0/3.7 fps vs
-  6.9/4.9/3.5 (+48 %/+24 %/+7 %). Mario Kart 64 in a race is not GPU-bound (same fps at 640x480 and 1920x1440) but has
-  many draw calls per frame (~460) and Panfrost's per-call cost shows: 36 vs 32 fps. Power draw is similar. libmali
-  stays the default.
-- **Update (2026-11-04): those numbers are for Mesa's stock Panfrost**, the one this image ships. Our patched Panfrost
-  (19 patches to Mesa 26.0.4 plus a PGO and LTO build, not in the image yet) is 39 % faster than stock Panfrost with
-  the games running free, and close to libmali when you play: at real speed on the R36S, from −7 % to +15 % in five
-  N64 games, and God of War (with PPSSPP's frame skipping) 7.8 fps with libmali vs 8.4 with patched Panfrost. glmark2
-  scores 434 vs 380 (R36S) and 414 vs 358 (Ultra). libmali stays the default for safety and compatibility. Details:
-  `docs/PANFROST-STUDY.md` and the README.
+What it is: a second front-end written from scratch (C++17, SDL2) that reads the same settings, gamelists, theme and
+scripts as EmulationStation, so nothing has to be set up twice.
+
+Measured on an R36 Ultra with a large library (one run each, not a statistical benchmark):
+
+| | EmulationStation | zfront |
+|---|---:|---:|
+| First screen after start | 4.1 s | **1.0 s** |
+| Front-end memory in the menus | 143 MB | **36 MB** |
+| Start RetroArch from the front-end | 1.18 s | **0.91 s** |
+
+It does **not** make games faster: in God of War (the only game measured) the frame rate is the same with both.
+
+**Choice and safety**
+- A fresh install starts zfront. Switching is written down (`system.frontend`) and nothing else changes it. A console that
+  was set up before keeps its front-end.
+- If zfront fails before drawing its first screen, it is started again; only after three failures in a row does
+  EmulationStation take over until the next boot, and your choice stays zfront.
+- Game names can no longer run commands when a game is launched (a name with a backtick, `|`, tab or line break could);
+  user hooks run without a shell; broken data (huge images, deeply nested XML, an oversized gamelist entry) no longer
+  crashes it; the HTTP control API listens on 127.0.0.1 only.
+
+**Everything EmulationStation does, on this image**
+- Game list: sort and filter (name, rating, times played, last played, players, release date, genre, game time; favourites
+  and genre filters), keys (X options, Y search with the on-screen keyboard, L2/R2 jump to the previous/next letter, Start
+  main menu), Left/Right to change system, remembered cursor per system, whole covers, "ago" times.
+- Game options: edit a game's metadata, delete a game (only files inside the system's ROM folder and the media its entry
+  names), random game, collections, launch a game at startup (once per boot), per-system and per-game options, player
+  assignments (players 1-8).
+- Collections as carousel systems (all games, favourites, last played, never played, smart collections and custom ones).
+- Scrapers menu with ScreenScraper, IGDB and ArcadeDB (see Known issues), cancelling a scrape with B, a rescan of the game
+  folders without restarting.
+- Background music, video previews, slideshow and random-video screensavers, game manuals and magazines (page by page,
+  zoom), netplay, Moonlight, The Bezel Project installer, theme configuration for themes that have it.
+- User interface modes **Full / Kiosk / Kid** (a console locked in EmulationStation stays locked), with the unlock code
+  typed with the pad.
+- Suspend from the menu and as a screensaver type; clock in 12 or 24 hours; text size and high contrast.
+- Navigation sounds with the Zenith theme sounds (only when sounds are on).
+- RetroAchievements in the main menu when it is on and an account is set.
+
+**New things only zfront has**
+- **Continue playing** row under the carousel: one resume tile per recent game; A resumes from the last save state.
+- **Resume the last game at startup** (off by default): a 3 s countdown with the game's picture, B cancels.
+- **Library tools:** save backups (back up, restore with an automatic backup first, delete; saves only, no ROMs), a
+  read-only library check (missing BIOS, empty or fake archives, duplicates, games without a picture), play statistics,
+  and a battery estimate per game from recent sessions.
+- **Battery screen:** charge, current use, history, power saver and what used the most.
+- **Performance suggestions** after a game and automatic covers in idle time (both off by default; they never enable
+  anything by themselves).
+- An in-game HOME menu (experimental, off by default).
+- **Status bar** in every theme with icons and the battery percent as tall as the clock digits; charging shown as a bolt
+  inside the battery; changes of charger, Wi-Fi and Bluetooth show at once; the clock, battery and network are read again
+  after a suspend.
+- A fresh grid for every screen: square cells scaled with the screen, equal margins on all four sides, twelve columns.
+  Layout checks cover all six themes at nine screen sizes, in English and Spanish, at normal and large text.
+- **Menus reordered by use.** Main menu: Games, RetroAchievements (when on), Battery & performance, Screen & sound,
+  Network, Library, Controller & Bluetooth, Appearance, System, Quit. Network has Wi-Fi first, then Transfer files and a
+  Services screen (SSH, HTTP, USB gadget, cloud, VPN, host name). A game's own menu starts with Favourite and Scrape.
+  Quit starts with Suspend. Restoring factory settings asks twice. Settings keys and scripts are unchanged.
+- **Held Up/Down in menus** no longer runs away: the repeat does not get faster than one step every 66 ms (lists keep
+  their acceleration).
+- **On-screen keyboard:** R opens a layer of accented letters.
+- **Spanish:** every text translated (597 keys); the web page is also in Spanish.
+
+### Themes
+
+- **Zenith Minimal** (light) is the default; **Zenith Next** (dark) is the new one, with a big card, a soft light in the
+  colour of each system, a continue-playing row, and game lists with the whole cover, its details and the description.
+  Next has no boxes in its menus (flat), a cyan frame on the chosen row, and its gradient takes the strongest colour of the
+  chosen game's cover. `menuCards=on` brings the cards back.
+- **XMB, Art Book, Iconic and TechDweeb** were remade on the same grid for every resolution, each with its own status bar
+  icons. XMB is drawn as a cross with slowly drifting waves, and its battery is the three-cell one of the PSP era.
+- Icons for Screenshots and Media player, logos for seven variant systems, new menu icons, and long genres that scroll
+  inside their box instead of ending in dots.
+- **Smoother:** logos, covers and illustrations are decoded off the drawing thread, and game lists slide instead of
+  jumping. Measured on an R36 Ultra, first time a list opens, key to first new frame: TechDweeb 400 to 111 ms, Iconic 329
+  to 74, XMB 229 to 130, Zenith Next 121 to about 85. Moving through 30 systems in Zenith Next: 59 fps (the classic
+  theme: 60).
+
+### Performance and GPU
+
+**Panfrost, the open GPU driver (Mali-G31)**
+- It now works on the RK3326 (kernel patch `036-opp-single-voltage-is-minimum`; before, choosing it left the console on
+  software rendering). Changing the driver needs a reboot. If no GPU binds to Panfrost at boot, the system saves libmali
+  and reboots once.
+- The image carries Mesa 26.0.4 with 19 Zenith patches (17 active) and a build with profile-guided (PGO) and link-time
+  (LTO) optimisation. Per-program settings (`/usr/share/drirc.d/01-zenith-panfrost.conf`) turn on threaded GL for RetroArch
+  and PPSSPP; libmali ignores them.
+- **libmali stays the default**: it is the driver this image has been tested with the longest, and it offers OpenGL ES 3.2
+  (Panfrost 3.1).
+- **Measured** (R36S and R36 Ultra, 20 games, same save state, uncapped, CPU 1296 MHz, GPU 600 MHz, RAM 666 MHz; full
+  tables in [`docs/PANFROST-STUDY.md`](docs/PANFROST-STUDY.md)):
+  - Patched Panfrost vs libmali, geometric mean over the 20 games: **+4.4 %** (R36S) and **+6.5 %** (R36 Ultra). Wins /
+    ties (within 5 %) / losses: 7 / 12 / 1 (R36S) and 8 / 12 / 0 (Ultra).
+  - Patched vs stock Panfrost: **+38.9 %** on both consoles. Stock Panfrost vs libmali: -24.8 % (R36S) and -23.3 % (Ultra).
+  - glmark2 (libmali / stock / patched): 380 / 386 / **434** on the R36S, 358 / 368 / **414** on the Ultra.
+  - No GPU faults in any run.
+- **At real speed the two drivers are close** (R36S, vsync and audio sync on, default clocks, one run per game, so under
+  5 % may be noise): from -7 % (Mario Tennis) to +15 % (Wave Race 64) in five N64 games. God of War (PSP, PPSSPP with its
+  default frame skipping): 7.8 fps with libmali, 8.2 with stock Panfrost and 8.4 with patched Panfrost; it is limited by
+  the CPU.
+- Not measured: battery use, and input latency (Panfrost keeps up to three frames in flight, which can add up to two
+  frames of delay).
+
+**Performance mode (off by default)**
+- Pins the GPU at 600 MHz and the RAM at its top step (786 MHz where the model has it, 666 MHz on the rest) **while a game
+  runs**, and puts both back on automatic when it ends. Why: the automatic governors only count busy time and bandwidth,
+  and an emulator uses the GPU in short bursts, so they keep the clocks low (in N64 games the GPU sat at 200 MHz and the
+  RAM at 328 MHz).
+- Set it globally, per system or per game: AUTO / ON / OFF (`perfmode` in `system.cfg`). It overrides the GPU scaling
+  governor of that game, in EmulationStation and in zfront.
+- Measured on the R36S at real speed, one run per game (libmali auto -> performance mode with libmali; Panfrost auto ->
+  performance mode with Panfrost): Mario Tennis 19.3 -> 25.0 and 18.0 -> 26.6 fps; Wave Race 64 35.1 -> 38.9 and
+  40.5 -> 44.7. On the R36 Ultra with Panfrost: Mario Tennis 15.7 -> 27.2 fps (RAM up to 666 on auto, vs GPU 600 + RAM 666
+  pinned), GoldenEye 34.8 -> 40.2, Wave Race 64 41.9 -> 48.4. God of War, Mario Kart 64 and Zelda: Ocarina of Time barely
+  move (limited by the CPU or something else).
+- Plugging or unplugging the charger during a game keeps that game's GPU level.
+- **Not measured: heat and battery use in long sessions.** The R36 Ultra shut down with the GPU pinned at 600 MHz in long
+  God of War sessions: that is why it is off by default.
+
+**RAM at 786 MHz**
+- A new top step of the memory table (was 666 MHz), at 1.1 V, on the same boards that dArkOSen enables it on (original
+  R36S V12/V20/V21/V22/Y02, R36S Plus, R36H, R45H, R46H, the R36S Sauce) and on the R36 Ultra. Clones, R36 Ultra V2 / X and
+  every other model stay at 666 MHz. The boot loader still starts the RAM at 666 MHz; the step is used only at run time.
+- Tested only on an R36 Ultra: `memtester` over 300 MB ran 6 full passes in 57 minutes at 786 MHz with no errors (65 C at
+  most). The other boards follow dArkOSen and were **not** tested here. On top of fixed GPU/RAM it adds little (Mario
+  Tennis +6 %, GoldenEye +2 %, Wave Race 64 +1 %, one run). In R36 Tuner it is marked experimental.
+
+**GPU clock freezes fixed**
+- Patch `037-px30-gpu-clock-no-half-divider`: the GPU clock is built like in Rockchip's kernels. Without it, stepping the
+  GPU limit through 480 MHz froze an R36 Ultra and an R36S within about a minute (6 of 6), and a reboot from 480 MHz did
+  not come back (2 of 2). With the patch (kernel alone, both consoles): more than 25,000 steps per console with libmali,
+  three runs with Panfrost, full load, suspend and reboots at 480 MHz, no freeze. Not tested: other models, a real game
+  crossing 480 MHz.
+- Battery status switching between `Discharging` and `Not charging` no longer puts a fixed GPU governor back on automatic.
+
+**R36 Tuner Next (built in) and undervolt**
+- CPU governor and frequencies, turbo steps (1416 MHz at 1350 mV was stable on four cores; 1512 MHz on four cores
+  rebooted the console and is not used by default), benchmarks, a monitor, profiles, clock limits and a stability test that
+  gives each changed frequency its turn under load and waits for the chip to cool at 88 C.
+- Undervolting goes through the device tree with a boot safety net. The kernel now corrects the chip measurement for
+  temperature before choosing the voltage column, like Rockchip's own kernel (6 boots between 40 and 52.5 C all chose the
+  same column; without the correction 5 of them would have chosen another one). R36 Tuner keeps one voltage table, so
+  what passed the test is what runs on every boot. After this update an earlier `tuned.dtb` is dropped on the first boot:
+  make the change again.
+- **Voltage changes and the safety net have been tested on an R36 Ultra only in part** (the stability test passed with one
+  voltage table, peak 88 C); other models were tested only in simulation.
+
+**Games**
+- RetroArch games start 0.2-0.5 s faster: the script that writes the per-game configuration went from about 220 processes
+  to about 40, with byte-identical files (compared on 14 systems). Whole launch averaged over 7 games: 3.54 s -> 3.33 s.
+- **PSP:** PPSSPP 1.20.2 is now the default on RK3326 (the 2021 build stays selectable). Measured on an R36 Ultra with God
+  of War only: with the same settings both run the same; with buffer effects skipped 1.20.2 is faster (25.7 vs 21.9 fps).
+
+### System: boot, suspend, battery, updates, volume, controllers
+
+- **Boot and suspend** (carried over from v0.1.0): about 15 s from power-on to the menu, suspend in 2.3 s, resume in 4.3 s
+  (R36 Ultra, measured with EmulationStation as the front-end).
+- **Updater:** it asks `zenmode-adri/Zenith`, never the original AURKNIX (whose package has the same file name as ours and
+  could have replaced Zenith). A release whose tag is not a build date, like `v0.1.0`, is not offered as an update. Help,
+  home and bug-report links point at Zenith. Updates show a progress bar and can be cancelled (cancelling was not tried on
+  a console).
+- **Volume keys** repeat faster when held: one step every about 0.19 s instead of about 0.34 s (R36 Ultra, CPU at 1 GHz),
+  and a press at 0 % or 100 % now shows the volume bar.
+- **Controller mapping can always be cancelled:** hold any input of the pad being mapped for 3 s and it leaves without
+  saving (it was impossible to leave when the built-in pad was the only one). The wait for a pad ends after 60 s, and an
+  unplugged pad ends it cleanly. The built-in pad shows as "Built-in controller".
+- **Low battery:** the running game is closed with SIGTERM and the system waits up to 15 s and syncs before powering off, so
+  RetroArch can write its autosave and SRAM. The 3.2 V threshold is the same. Tested with stubs only.
+- **Battery gauge** for the R36S panel 4, R36XX Pro Max, R40XX, R40XX Pro Max, R45H and R46H: the voltage-to-charge table now
+  matches the maker's (4.020 V is 95 %, 4.045 V is 100 %), and empty is 3.3 V instead of 3.0 V, so the gauge can reach 0 %.
+  Checked only by building the device trees; **not booted on those consoles**.
+- Saves backup/restore (also from the phone) asks for confirmation on the console; a restore only runs after someone
+  answers Yes there (No is selected).
+- Samba, SSH and the stored Wi-Fi are **off by default** in the release image.
+
+### Network and file transfer
+
+- **Web file transfer from a phone or PC** (off by default; its own listener on port 8080; the PIN has **4 digits** and is
+  shown in the Network menu). Five wrong PINs lock PIN and pairing for 30 s, and a phone already paired is not locked out.
+  - **Scan, allow, done:** `Network > Show QR code` draws a QR code with the address and the PIN. The phone opens the page,
+    the console asks "Allow this device?" (No is selected) and a "yes" remembers the phone, with no PIN next time. Up to ten
+    phones; `Paired devices` lists them and forgets one or all.
+  - **Folders and big files:** upload a whole folder (multi-disc games), files go in 8 MB slices and a cut connection
+    resumes where it stopped; partial files are hidden and removed after two days. The game list is read again after each
+    batch.
+  - **BIOS tab:** which BIOS files are missing, wrong (md5) or fine for the systems you have, with an upload button on each.
+  - **Saves tab:** back up now, download or upload a backup (checked before it is kept: only save files, no links, no paths
+    outside the save folders), restore one (the current saves are backed up first; not while a game runs).
+  - **Manage games:** launch, rename (saves, save states and pictures follow), change the picture, find a picture online
+    (needs a scraper account, see Known issues), move to the trash, restore or empty it after a confirmation.
+  - **Phone remote:** browse, launch and close games.
+  - The page follows the Zenith look (light and dark follow the phone), is served entirely by the console (it fetches
+    nothing from the internet), and is also in Spanish.
+- **`Network > Transfer files`** groups the web page and Samba. A service that fails to start turns its switch back off and
+  says so; the IP, web address and QR code follow a network change without leaving the menu.
+- **Samba asks for a password:** the shares no longer let anyone in as root without one. Log in as `root` with the root
+  password (the one of SSH). Windows 11 already refused the old guest login, so Samba did not work from it at all. Samba
+  stays off by default.
+- A network drive (WebDAV) for Windows Explorer and Finder is **not** in this release.
+- **Choosing the right device tree:** **Zenith DTB Selector** (Windows, Linux, macOS; English, Spanish and Chinese) finds
+  the SD card, lists 86 models, shows what will change before writing, keeps dated backups of `extlinux.conf` and can
+  import your own `.dtb` (tested on a copy of the real card and on an R36 Ultra). Its **test mode** for clones whose model
+  cannot be guessed is **not yet tested on hardware**. See [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
+
+### Fixes
+
+- The frontend no longer crashes once a minute: with the new status bars it crashed 521 times in a day on an R36 Ultra
+  (systemd restarted it 2 s later, so it showed as a blink).
+- "Continue playing" no longer disappears after a game started from it.
+- Scrapers on the console: curl's write-out format made every transfer fail with "Network error"; fixed (ArcadeDB found a
+  test game and wrote its picture, marquee, thumbnail and video).
+- `/emukill` (the API on port 1234) now closes the game in every emulator, including PPSSPP and RetroArch.
+- A game gets more free RAM: before launching, zfront drops every picture it can rebuild and returns the memory.
+- Savestates: the real autosave can no longer be lost after a power cut while a slot was loaded.
+- Settings: `es_settings.cfg` is merged with what other tools wrote and never saved over a damaged file; a `system.cfg`
+  that cannot be read is not rewritten empty; writes are synced before the rename.
+- GPU DRIVER, EJECT MICROSD and other long commands no longer freeze the screen, and report failures.
+- Theme links are made on every boot, so after an update EmulationStation also sees new themes such as Zenith Next.
+- A saves archive from the phone could, through a pax header, extract a file outside the save folders; such records are now
+  refused.
+- Release safety: SSH, Samba, a stored Wi-Fi and verbose logging used to be applied to any image built from a
+  work branch; they now exist only in the debug build.
+- Menus: options no longer show raw lower-case values; settings that cannot be saved say so; Start leaves dialogs, the
+  scraper run and the manual viewer; the brightness slider shows the screen's real level.
+- `powerstate`: a GPU governor set by hand is no longer undone, and the GPU is left alone
+  on a battery change when there is nothing to keep.
+- Names keep their spelling in menus (IGDB, ScreenScraper, LEDs, Samba, QR, ZIP, MD5).
+
+### Known issues
+
+- **Tested only on the R36 Ultra.** Other RK3326 models (R36S and clones) share the image but are untested with this
+  release: beta. The R36S was tested only on an older development image.
+- **The cover scraper (ScreenScraper) does not work in this image:** no developer credentials are built in. IGDB needs
+  your own client id and secret; ArcadeDB worked in a test. "Find a picture online" in the phone page uses the same
+  scraper account.
+- **The root password is still `rocknix`.** SSH and Samba are off by default; change the password before turning them on.
+- libmali is the default GPU driver; the patched Panfrost is a choice and is less compatible (OpenGL ES 3.1, not 3.2).
+- Performance mode: heat and battery use are not measured, and long sessions with the GPU pinned shut down one R36 Ultra.
+- Panfrost can add up to two frames of input delay (not measured). GoldenEye is slower with libmali when the clocks are
+  fixed than on automatic; not explained.
+- The battery tables for the six models above, the DTB Selector test mode, cancelling an update and the low-battery
+  shutdown have not been tried on real consoles in every case (see the entries above).
+- Zenith adds no new emulators and does not update cores (those come from AURKNIX), apart from PPSSPP 1.20.2.
+- v0.1.0's update menu cannot see this release (it looked at the original AURKNIX repository): install v0.2.0 by writing
+  the image. From v0.2.0 on, later releases are offered by the built-in updater.
+
+### Upgrading
+
+- **From v0.1.0 or a development image:** write the new image to an SD card (back up your saves first; writing the image
+  erases the card). The update menu of v0.1.0 looked at the original AURKNIX repository, so it does not see this release.
+- Check the `.sha256` after downloading. For a console other than the R36 Ultra, pick its device tree with Zenith DTB
+  Selector (see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md)).
+- A fresh install starts zfront; `Tools > Switch frontend` changes between zfront and EmulationStation at any time.
+- If you tuned the device tree with R36 Tuner on an earlier development image and kept your settings, an earlier
+  `tuned.dtb` is dropped on the first boot: make the change again.
 
 ## v0.1.0 - 2026-10-23 (first public release, pre-release)
 

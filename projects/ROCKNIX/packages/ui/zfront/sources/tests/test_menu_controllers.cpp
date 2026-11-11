@@ -21,6 +21,7 @@
 #include "menu.hpp"
 #include "menu_controllers.hpp"
 #include "oscontract.hpp"
+#include "players.hpp"
 #include "registry.hpp"
 #include "ui_dialogs.hpp"
 #include "util.hpp"
@@ -405,15 +406,59 @@ int main() {
     CHECK(find("CONTROLLER MAPPING") >= 0);
     CHECK(find("AUTOCONFIGURE RETROARCH HOTKEYS") >= 0);
     CHECK(find("SWITCH CONFIRM & CANCEL BUTTONS") >= 0);  // moved here from USER INTERFACE SETTINGS
-    CHECK(find("retrogame_joypad") >= 0 && find("Some BT Pad") >= 0);
+    CHECK(find("retrogame_joypad") < 0 && find("BUILT-IN CONTROLLER") >= 0 && find("Some BT Pad") >= 0);  // the driver's name is not shown
     CHECK(find("ENABLE RUMBLE") < 0);                  // no sysfs file: hidden
     CHECK(find("ENABLE BLUETOOTH") >= 0);
     CHECK(find("PAIR BLUETOOTH PADS AUTOMATICALLY") >= 0 && find("BLUETOOTH DEVICE LIST") >= 0);  // enabled in system.cfg
     CHECK(find("SHOW CONTROLLER NOTIFICATIONS") >= 0);
-    CHECK(find("SHOW CONTROLLER BATTERY LEVEL") < 0);  // activity off: no battery option
-    int pad0 = find("retrogame_joypad"), pad1 = find("Some BT Pad");
+    CHECK(find("SHOW CONTROLLER ACTIVITY") < 0 && find("SHOW CONTROLLER BATTERY LEVEL") < 0);  // nothing reads them: not offered
+    int pad0 = find("BUILT-IN CONTROLLER"), pad1 = find("Some BT Pad");
     CHECK(m.entry(size_t(pad0)).value_text.empty());       // configured
     CHECK(m.entry(size_t(pad1)).value_text == "Not configured");
+    // the wizard saved a configuration for the second pad while the page is open: the next poll shows it (no reopening)
+    put(paths().user_input, "<inputList><inputConfig type=\"joystick\" deviceName=\"retrogame_joypad\" deviceGUID=\"" + std::string(kGuid) +
+                                "\"><input name=\"a\" type=\"button\" id=\"1\" value=\"1\"/></inputConfig><inputConfig type=\"joystick\" deviceName=\"Some BT Pad\" deviceGUID=\"0300bbbb\"><input name=\"a\" type=\"button\" id=\"1\" value=\"1\"/></inputConfig></inputList>");
+    m.tick(0.0f, cx);
+    m.tick(2.5f, cx);  // the poll sees the changed file and asks for a rebuild
+    m.tick(0.0f, cx);
+    pad1 = find("Some BT Pad");
+    CHECK(pad1 >= 0 && m.entry(size_t(pad1)).value_text.empty());
+    // the eight player rows are not on the page any more: one link to their own screen
+    CHECK(find("ASSIGN CONTROLLERS TO PLAYERS") >= 0 && find("PLAYER ASSIGNMENTS") < 0 && find("P1'S CONTROLLER") < 0);
+    // order: Bluetooth first, then the controller settings, then the pads, the player link last
+    CHECK(find("BLUETOOTH") < find("ENABLE BLUETOOTH") && find("ENABLE BLUETOOTH") < find("PAIR BLUETOOTH PADS AUTOMATICALLY"));
+    CHECK(find("PAIR BLUETOOTH PADS AUTOMATICALLY") < find("PAIR A BLUETOOTH DEVICE MANUALLY") && find("PAIR A BLUETOOTH DEVICE MANUALLY") < find("BLUETOOTH DEVICE LIST"));
+    CHECK(find("BLUETOOTH DEVICE LIST") < find("CONTROLLER MAPPING"));
+    CHECK(find("CONTROLLER MAPPING") < find("SWITCH CONFIRM & CANCEL BUTTONS") && find("SWITCH CONFIRM & CANCEL BUTTONS") < find("AUTOCONFIGURE RETROARCH HOTKEYS"));
+    CHECK(find("AUTOCONFIGURE RETROARCH HOTKEYS") < find("SHOW CONTROLLER NOTIFICATIONS") && find("SHOW CONTROLLER NOTIFICATIONS") < find("CONNECTED CONTROLLERS"));
+    CHECK(find("CONNECTED CONTROLLERS") < find("ASSIGN CONTROLLERS TO PLAYERS"));
+    // ES PLAYER ASSIGNMENTS: P1..P8, "default" or a configured pad; stored as INPUT P<n>NAME/GUID/PATH and used by the launch
+    {
+      std::unique_ptr<Screen> ps = Registry::instance().make("menu.controllers.players", cx, "");
+      CHECK(ps != nullptr);
+      Menu& pm = *static_cast<Menu*>(ps.get());
+      press(pm, cx, Action::Down);  // builds
+      auto pfind = [&](const char* l) -> int {
+        for (size_t i = 0; i < pm.size(); ++i)
+          if (pm.entry(i).label == l) return int(i);
+        return -1;
+      };
+      CHECK(pfind("P1'S CONTROLLER") >= 0 && pfind("P8'S CONTROLLER") >= 0);
+      int pl1 = pfind("P1'S CONTROLLER");
+      if (pl1 >= 0) {
+        const Entry& e = pm.entry(size_t(pl1));
+        CHECK_EQ(e.get_s(), std::string());  // default
+        CHECK_EQ(e.options.size(), size_t(3));  // default + the two configured pads (es_input.cfg above gave "Some BT Pad" its mapping)
+        e.set_s("0");
+        CHECK(slurp(dir + "/es_settings.cfg").find("INPUT P1NAME") != std::string::npos);
+        CHECK(slurp(dir + "/es_settings.cfg").find("retrogame_joypad") != std::string::npos);
+        CHECK_EQ(players::current()[0].name, std::string("retrogame_joypad"));
+        CHECK_EQ(e.get_s(), std::string("0"));
+        e.set_s("");
+        CHECK_EQ(players::current()[0].name, std::string("DEFAULT"));
+      }
+    }
+    players::set(players::Slots{});
     // autohotkeys: system.cfg through the locked read-modify-write; absent = off (ES getBool)
     int ah = find("AUTOCONFIGURE RETROARCH HOTKEYS");
     CHECK(!m.entry(size_t(ah)).get_b());
@@ -491,11 +536,14 @@ int main() {
     FakePad pad;
     pad.reload_from = paths().user_input;
     DevId id = pad.add_device(kGuid, kName, init, 4);
+    pad.list.push_back({0, kGuid, kName, 18, 1, 4});  // what SDL reports for it: the wizard watches that it stays connected
     cx.pad = &pad;
     std::remove(paths().user_input.c_str());
     oscontract::idle().set_timeout(60000);
     ConfigScreen scr(cx, kGuid, kName, 18, 1, 4);
     scr.tick(0.01f, cx);  // installs the sink
+    scr.tick(1.5f, cx);   // still plugged in: it stays open
+    CHECK(scr.take_transition(cx).kind == Transition::None);
     std::vector<Action> acts;
     TimePoint now = Clock::now();
     // the target pad's events never become actions while the wizard listens
@@ -559,6 +607,73 @@ int main() {
     ConfigScreen s3(cx, kGuid, kName, 18, 0, 4);
     s3.tick(95.0f, cx);
     CHECK(s3.take_transition(cx).kind == Transition::Pop);
+  }
+
+  // ---- the pad being mapped is unplugged: the wizard leaves by itself after a second, nothing saved
+  {
+    Ctx cx;
+    make_ctx(cx);
+    std::remove(paths().user_input.c_str());
+    FakePad pad;
+    pad.list.push_back({0, kGuid, kName, 18, 0, 4});
+    cx.pad = &pad;
+    ConfigScreen s(cx, kGuid, kName, 18, 0, 4);
+    s.tick(0.01f, cx);
+    s.tick(1.1f, cx);
+    CHECK(s.take_transition(cx).kind == Transition::None);
+    pad.list.clear();  // unplugged
+    CHECK(s.wake_in().has_value() && *s.wake_in() <= 1.02f);
+    s.tick(1.1f, cx);
+    CHECK(s.take_transition(cx).kind == Transition::Pop);
+    CHECK(!file_exists(paths().user_input) && !s.saved());
+    cx.pad = nullptr;
+  }
+
+  // ---- the way out of the wizard that needs no mapping: one input of the pad kept down for 3 s cancels, nothing saved
+  {
+    Ctx cx;
+    make_ctx(cx);
+    std::remove(paths().user_input.c_str());
+    std::string g = kGuid, n = kName;
+    ConfigScreen s(cx, kGuid, kName, 18, 0, 4);
+    s.tick(0.01f, cx);
+    CHECK(s.on_capture({0, InKind::Button, 3, 1, &g, &n}));  // row 0 (d-pad up) cannot be skipped
+    s.tick(2.5f, cx);
+    CHECK(s.take_transition(cx).kind == Transition::None);
+    CHECK(s.on_capture({0, InKind::Button, 3, 0, &g, &n}));  // released early: the clock restarts
+    CHECK(s.cancel_hold() < 0);
+    s.on_capture({0, InKind::Button, 4, 1, &g, &n});
+    s.tick(2.5f, cx);
+    CHECK(s.take_transition(cx).kind == Transition::None);
+    s.tick(0.6f, cx);
+    CHECK(s.take_transition(cx).kind == Transition::Pop);
+    CHECK(!file_exists(paths().user_input) && !s.saved());
+    // a hat or an axis held counts too, in the review as well
+    ConfigScreen r(cx, kGuid, kName, 18, 0, 4);
+    while (r.wizard().phase() == InputWizard::Phase::Rows) {
+      if (!r.wizard().skip_row()) tap_button(r, uint16_t(60 + r.wizard().row()));
+    }
+    r.on_capture({0, InKind::Hat, 0, 1, &g, &n});
+    r.tick(3.1f, cx);
+    CHECK(r.take_transition(cx).kind == Transition::Pop);
+    CHECK(!file_exists(paths().user_input));
+  }
+  // the device picker nobody touches closes by itself; a press keeps it open
+  {
+    Ctx cx;
+    make_ctx(cx);
+    std::string g = kGuid, n = kName;
+    DetectScreen d(cx);
+    d.tick(0.01f, cx);
+    d.tick(50.0f, cx);
+    CHECK(d.take_transition(cx).kind == Transition::None);
+    d.on_capture({0, InKind::Button, 1, 0, &g, &n});
+    CHECK(d.idle() == 0.0f);
+    d.tick(50.0f, cx);
+    CHECK(d.take_transition(cx).kind == Transition::None);
+    d.tick(11.0f, cx);
+    CHECK(d.wake_in().has_value() && *d.wake_in() == 0.0f);
+    CHECK(d.take_transition(cx).kind == Transition::Pop);
   }
 
   // ---- detect: holding a button for a second picks the pad and replaces itself with the wizard
@@ -679,7 +794,7 @@ int main() {
 
   // ---- drawing at the four sizes: steady state allocates nothing, wizard states all draw
   {
-    const std::string tdir = "/home/epsil/zenith-frontend/theme-dark";
+    const std::string tdir = "/usr/share/zfront/theme-dark";
     if (is_dir(tdir)) {
       const unsigned sizes[4][2] = {{480, 320}, {640, 480}, {720, 405}, {720, 720}};
       for (const auto& wh : sizes) {

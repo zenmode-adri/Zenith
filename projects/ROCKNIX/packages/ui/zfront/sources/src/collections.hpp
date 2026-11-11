@@ -10,8 +10,8 @@
 // Pure functions and small file operations, no UI. Files are written with write_atomic (temp + rename), so a power cut never
 // leaves half a collection; ES writes them in place.
 //
-// The carousel of zfront does not build collection systems yet (that is the system loader's job): `enabled_auto`,
-// `enabled_custom` and `members` are what it needs, with ES's exact reading rules (see `enabled_auto`).
+// The enabled collections become carousel systems in colsys.hpp (`App::refresh_collections`): `enabled_auto`, `enabled_custom` and
+// `members` are what it reads, with ES's exact reading rules (see `enabled_auto`).
 #pragma once
 #include <string>
 #include <string_view>
@@ -126,5 +126,10 @@ std::string fmt(const char* format, const std::string& a, const std::string& b =
 /// and clears it when the menus close (ES's `reloadSystems` / `reloadAll` flags); without a `Ctx::system_loader` it stays set.
 bool reload_needed();
 void set_reload_needed(bool v);
+/// The game lists must be read again from the folders (ES's UPDATE GAMELISTS, `GET /reloadgames`): the next reload reads every
+/// system again, the games already read included. `request_rescan` sets it and `reload_needed` too.
+bool rescan_needed();
+void set_rescan_needed(bool v);
+void request_rescan();
 
 }  // namespace zf::collections

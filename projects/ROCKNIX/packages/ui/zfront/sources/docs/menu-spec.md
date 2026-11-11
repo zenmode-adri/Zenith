@@ -24,6 +24,20 @@ and 1 px minimum shadow offsets.
 | `helpY` | vertical centre of the help bar (of H) | 0.94792 |
 | `volW volH volY fVol` | OSD pill width, height, centre Y, text size | 0.34687 0.07917 0.06667 0.02917 |
 
+### Optional shape properties (themes beyond Zenith)
+
+Read with `Theme::f/str(name, default)`: a theme that does not write them renders exactly as Zenith (the shipped light and dark
+themes are checked pixel by pixel with `tools/zenith-baseline.sh`). Anything not understood falls back to the default.
+
+| Variable | Values (default first) | Effect |
+|---|---|---|
+| `corner` | `1`; 0..1 | roundness of selectors, help bar, toasts, OSD, dialogs and keyboard (0 = square, 1 = pills) |
+| `selStyle` | `fill`; `outline`; `underline`; `bar` | how the selected row is marked. `fill`: the filled pill (menus and dialogs draw it, lists use `pill-*.png`). `outline`: only a ring in the accent colour (`cyan` on dark themes, `cyanDark` on light ones; `danger` on dangerous entries), thickness `max(2, round(0.07 * selector height))`, radius as `corner`. `underline`: a line of that thickness under the row. `bar`: an accent bar at the left edge, width `max(3, round(0.14 * height))`, rounded as `corner`. Applies to the lists of games, the menus and the choice dialogs; the text of the selected row keeps its accent colour. Needs no image: `Shapes::ring/selector` |
+| `headerAlign` | `left`; `center` | title of the menu, keyboard, scraper and input-wizard screens (not the title of the list of games, which is `scene.cpp`'s). `center`: centred in the content column, capped in width so that it ends at the same gap before the wifi / battery / clock stack that the left-aligned one keeps. The OSD and toasts follow the title through `header_box()` |
+| `fontFallback` | empty; `./assets/fonts/x.ttf[, y.ttf]` | extra fonts (paths relative to the theme folder) for glyphs `font` lacks (CJK, emoji). Tried before the standard fallbacks (`DroidSansFallbackFull`, ...), opened on the first missing glyph, skipped when the file is not there. Most themes need nothing: the standard fallbacks are looked up next to `font` |
+
+Not done: `tileAspect` (proportion of the carousel cards) because it changes the geometry of the carousel in `scene.cpp`.
+
 Constants (`ui_style.hpp`): `kTitleScale = 1.22`, `kColMaxH = 1.8`, `kPillInset = 0.55`.
 
 Derived (`Metrics::from`):
@@ -202,3 +216,10 @@ Dialogs: `ui::confirm(text, on_yes)`, `ui::message(text, on_ok, title)`, `ui::ch
 3. Unavailable submenus: hidden, not dimmed.
 4. Keyboard: B deletes a letter and, with the text empty, cancels and closes.
 5. Start in a menu closes the whole menu stack.
+
+## Accessibility: text size and high contrast
+
+SCREEN & SOUND > Appearance: TEXT SIZE (es_settings.cfg TextSize = small | normal | large | xlarge, factors 0.9 / 1 / 1.15 / 1.3) and HIGH CONTRAST (HighContrast). Both are live: ui_prefs::reapply sets ui::access(), and every Menu lays out again when its generation changes.
+- Metrics::from scales em, small, foot and title px by the factor. Above 1 the rows, the selector and the help row grow by the same factor and the viewport shows fewer rows (lines = viewport / row_h, at least 1); below 1 the rows stay. In the remade (grid) themes the title never grows past 85 % of the status bar height, and the help row keeps its bottom on the margin and drops its last prompts when they would pass the side margin.
+- High contrast: Style::from returns the contrast copy of the theme colours (pure white or black text on the theme background, opaque panels, an opaque selection fill with a thick accent ring in every selector style); menus skip the theme backdrop and the Next cards.
+- Not scaled: the carousel, the game lists and the art of the themes.

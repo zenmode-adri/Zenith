@@ -55,7 +55,7 @@ Run run(const std::string& theme_dir, unsigned w, unsigned h, bool with_row) {
 
 int main() {
   std::string dir = std::string(ZF_LOCALE_BUILD) + "/../themes/theme-dark";
-  if (!is_dir(dir)) dir = "/home/epsil/zenith-frontend/theme-dark";
+  if (!is_dir(dir)) dir = "/usr/share/zfront/theme-dark";
   if (!is_dir(dir)) {
     std::printf("[carousel_lift] no theme folder: skipped\n");
     return zt::done();
@@ -81,14 +81,15 @@ int main() {
     // the row fits exactly where it is meant to
     CHECK_EQ(with.box_w > 0, s.row);
     CHECK_EQ(without.box_w, uint32_t(0));
-    if (s.row) CHECK(float(with.box_h) >= std::round(0.085f * h) - 2.0f);  // never squeezed below the row's own minimum
+    const float u = std::max(4.0f, std::floor(std::min(w, h) / 90.0f));
+    if (s.row) CHECK(float(with.box_h) >= std::round(0.085f * h / u) * u - 2.0f);  // never squeezed below the row's own minimum (on whole cells)
     // the card (container = cellW * 1.23) clears the status bar
     const float card_top = cy - th.f("cellW") * w * 1.23f / 2.0f;
     CHECK(card_top > (th.f("stackY") + th.f("stackH")) * h + 0.04f * h);
   }
-  // 720x720 keeps its old row exactly (its tile is limited by the room under the hairline, not by 0.125 of the height)
+  // 720x720: the tile is limited by the room under the hairline (not by 0.125 of the height), then to whole cells: 112x64 (box minus 2)
   Run sq = run(dir, 720, 720, true);
-  CHECK_EQ(sq.box_w, uint32_t(117));
-  CHECK_EQ(sq.box_h, uint32_t(65));
+  CHECK_EQ(sq.box_w, uint32_t(126));  // 16:9 on whole cells (128x72), minus the frame
+  CHECK_EQ(sq.box_h, uint32_t(70));
   return zt::done();
 }

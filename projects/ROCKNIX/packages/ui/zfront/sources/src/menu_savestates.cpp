@@ -318,11 +318,15 @@ class SaveStateScreen : public Screen {
       }
       cards_.push_back(std::move(c));
     }
+    // the card that was selected stays selected; when it is gone (deleted) the cursor stays at that position, on the next card
+    const int was = cur_;
     cur_ = 0;
+    bool found = false;
     if (keep)
       for (size_t i = 0; i < cards_.size(); ++i)
-        if (cards_[i].st.path == *keep) cur_ = int(i);
-    cur_ = std::min(cur_, int(cards_.size()) - 1);
+        if (cards_[i].st.path == *keep) cur_ = int(i), found = true;
+    if (keep && !found) cur_ = was;
+    cur_ = std::max(std::min(cur_, int(cards_.size()) - 1), 0);
     if (laid_) scroll_ = scroll_to();
   }
 
@@ -359,12 +363,29 @@ class SaveStateScreen : public Screen {
 
   void copy(Ctx& cx) {
     if (cur_ < 0 || size_t(cur_) >= cards_.size() || cards_[size_t(cur_)].kind != Card::State) return;
+    if (*copying_) return;
     const System& sys = cx.systems[si_];
-    savestates::copy_to_free_slot(sys, sys.games[gi_], cards_[size_t(cur_)].st);
-    sync(cx);
+    // the copy of a big state (PSP, N64) takes a while on an SD card: it runs on the slow worker and a toast tells the result
+    const savestates::State from = cards_[size_t(cur_)].st;
+    const std::string to = savestates::copy_target(sys, sys.games[gi_], from);
+    if (to.empty()) {
+      cx.sv->toasts.push(tr("AN ERROR OCCURRED"));
+      return;
+    }
+    *copying_ = true;
+    auto ok = std::make_shared<bool>(false);
+    auto flag = copying_;  // shared: the screen may be closed before the copy ends
+    Services* sv = cx.sv.get();
+    sv->jobs.post_slow([from, to, ok] { *ok = savestates::copy_files(from, to); },
+                       [flag, sv, ok] {
+                         *flag = false;
+                         savestates::invalidate();  // the manager (if still open) reloads on its next frame
+                         sv->toasts.push(*ok ? tr("SAVED") : tr("AN ERROR OCCURRED"));
+                       });
   }
 
   size_t si_, gi_;
+  std::shared_ptr<bool> copying_ = std::make_shared<bool>(false);  // a copy (X) is running on the worker
   std::vector<Card> cards_;
   int cur_ = 0, vis_ = 1;
   unsigned gen_ = 0;

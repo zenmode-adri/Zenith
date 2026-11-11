@@ -30,6 +30,9 @@ struct Ctx {
   Common common;
   std::vector<System> systems;
   std::vector<SystemItem> items;  // carousel items, same order as `systems`
+  /// Collections shown as carousel systems (colsys.hpp): after the real ones, never inside `systems`, so every loop over `systems` sees
+  /// real systems only. A card or a list refers to one with the index `systems.size() + j` (`sys_at`).
+  std::vector<System> cols;
   SystemConf conf;
   /// es_settings.cfg (UI options). Menus change it with set_* and `save()`.
   EsSettings es;
@@ -51,6 +54,13 @@ struct Ctx {
   /// not capture the `Ctx` (it is moved into the `App`) nor read the settings itself: the caller passes what it needs. Empty: no
   /// hot reload (demo systems, tests), and the collections menu asks for a restart instead.
   std::function<bool(bool load_empty, std::vector<System>& out, std::string& err)> system_loader;
+
+  /// Systems and collections in one index space (`system_of` and `ListScreen` use it): `i < systems.size()` is a real system, the rest
+  /// are `cols`. `sys_total` is the end of that space.
+  size_t sys_total() const { return systems.size() + cols.size(); }
+  bool is_collection(size_t i) const { return i >= systems.size() && i < sys_total(); }
+  System& sys_at(size_t i) { return i < systems.size() ? systems[i] : cols[i - systems.size()]; }
+  const System& sys_at(size_t i) const { return i < systems.size() ? systems[i] : cols[i - systems.size()]; }
 
   /// Index in `systems` of carousel card `item` (cards and systems differ when some are hidden or sorted).
   size_t system_of(size_t item) const { return item < items.size() && items[item].sys != kItemIsSystem ? items[item].sys : item; }
@@ -142,6 +152,18 @@ class Screen {
   /// `cx.systems` / `cx.items` were replaced: put the cursor on card `item` at once (no glide) and forget everything derived from the
   /// old list (text under the carousel, "continue playing" row, announced system).
   virtual void reset_system_cursor(Ctx& cx, long item) { (void)cx, (void)item; }
+  /// A game list: the carousel card of the system it shows, or -1. When such a list replaces another (Left / Right = previous / next
+  /// system), `App` moves the carousel below to that card so that going back lands on the new system.
+  virtual long shown_item(const Ctx& cx) const {
+    (void)cx;
+    return -1;
+  }
+  /// True when what this screen shows right now is worth keeping as the picture of the next start (snapshot.hpp): only the carousel,
+  /// settled, with the keys on the carousel itself. Everything else (lists, menus, dialogs) says no.
+  virtual bool snapshot_ok(const Ctx& cx) const {
+    (void)cx;
+    return false;
+  }
 };
 
 struct Outcome {
@@ -157,6 +179,11 @@ class App {
   Ctx cx;
 
   Outcome handle(Action a);
+  /// Pushes `s` on the stack without a key press (the boot-time countdown of "resume last game"; the loop draws it next).
+  void push_screen(std::unique_ptr<Screen> s);
+  /// A launch a screen asked for by itself (`Screen::take_transition` returned Launch when its timer ran out): taken once by the loop,
+  /// which runs it like the launch of a key press.
+  std::optional<Outcome> take_pending_launch();
   /// A pad without a mapping was pressed (`Pad::take_unconfigured`): like ES, opens the controller detection screen
   /// (`menu.controllers.detect`) unless a menu or an overlay is already up. True when it was opened.
   bool open_controller_detect();
@@ -170,10 +197,15 @@ class App {
   /// When the top screen's own timer (`Screen::wake_in`) fires, if it has one.
   std::optional<TimePoint> screen_deadline() const;
 
+  /// The frame on screen is the carousel at rest: it is the only screen, nothing slides in or out, no toast, nothing moves. Only then
+  /// is the picture for the next start taken (never with a menu or a dialog open).
+  bool snapshot_eligible() const;
   /// Re-read the status sources that are due; true when the bar must be redrawn.
   bool poll_status(TimePoint now);
-  /// When the event loop must wake up for the status bar.
-  std::optional<TimePoint> status_deadline() const { return status_->next_deadline(); }
+  /// When the event loop must wake up for the status bar (also the next step of XMB's charging animation).
+  std::optional<TimePoint> status_deadline() const;
+  /// The status bar's wake-up descriptor (`StatusSource::wake_fd`).
+  int status_wake_fd() const { return status_ ? status_->wake_fd() : -1; }
   /// Pin the status (harness `--status`).
   void freeze_status(const Status& s);
   /// A background count finished: update the carousel text of system `i`.
@@ -198,6 +230,13 @@ class App {
   /// For the device loop to call once per screen, at an idle moment.
   const std::vector<Op>& warm(const std::string& name);
 
+  /// Rebuilds the collection systems (`colsys::build`) from the current settings and games: on the job thread (the games of the systems
+  /// not read yet are read there), or at once with `now` (harness, tests). The result replaces `cx.cols` only while the carousel is the
+  /// only screen, keeping the cursor on the same card by name; a call while one runs is coalesced into one more run.
+  void refresh_collections(bool now = false);
+  /// A rebuild finished and waits for the carousel to be the only screen (tests).
+  bool collections_pending() const { return cols_have_; }
+
  private:
   Outcome apply(Transition t);
   /// Hot reload of the system list: when the stack is down to the root screen, `collections::reload_needed()` is set, a system
@@ -211,7 +250,17 @@ class App {
   /// Keeps the popped screens alive for the exit motion (bottom first), instead of destroying them.
   void begin_leave(std::vector<std::unique_ptr<Screen>> gone);
 
+  /// Puts the finished collections in `cx.cols` and the cards when the carousel is alone on the stack. True when the cards changed.
+  bool maybe_apply_collections();
+  bool maybe_refresh_collections();
+
   std::vector<std::unique_ptr<Screen>> stack_;
+  std::optional<Outcome> pending_launch_;
+  // collections: a run on the job thread (`cols_busy_`), one more asked meanwhile (`cols_again_`), a result waiting for the root
+  // screen (`cols_have_`); `cols_epoch_` changes when the real systems are replaced, so a result built on the old ones is dropped
+  bool cols_busy_ = false, cols_again_ = false, cols_have_ = false;
+  unsigned cols_epoch_ = 0;
+  std::vector<System> cols_pending_;
   std::unique_ptr<StatusSource> status_;
   std::unique_ptr<CountWorker> counts_;
   std::vector<size_t> count_map_;  // worker job -> system index
@@ -219,6 +268,10 @@ class App {
   std::vector<std::pair<size_t, size_t>> count_tmp_;
   std::vector<Op> ops_;
   bool animating_ = false;
+  /// XMB's charging animation: the cells lit now and when the next one lights (see `Status::charge_frame`).
+  int8_t charge_frame_ = -1;
+  TimePoint charge_next_{};
+  bool charge_anim() const;
   std::vector<Op> warm_;
   // entry motion of the screen at stack index `depth` (seconds since it was pushed); `menu`: windows also slide a little
   struct Enter {

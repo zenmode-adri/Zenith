@@ -41,7 +41,7 @@
  # Traces
 --- /dev/null
 +++ b/drivers/cpufreq/px30_oppvariants.c
-@@ -0,0 +1,382 @@
+@@ -0,0 +1,444 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/*
 + * PX30/RK3326 factory per-bin OPP voltage selection ("L0-L3").
@@ -52,7 +52,9 @@
 + * maps the result to a bin via the DT property "rockchip,pvtm-voltage-sel"
 + * (same triplet format as the BSP DTS), and activates the matching
 + * opp-microvolt-L0..L3 columns with dev_pm_opp_set_prop_name() before the
-+ * CPU and GPU OPP tables are registered.
++ * CPU and GPU OPP tables are registered. Like rockchip_opp_select.c, the
++ * value is moved to rockchip,pvtm-ref-temp first when the table has
++ * rockchip,pvtm-temp-prop and rockchip,thermal-zone.
 + *
 + * Safety: any failure leaves the generic opp-microvolt column in use, which
 + * is exactly the pre-patch behavior. Force a bin with:
@@ -77,6 +79,7 @@
 +#include <linux/platform_device.h>
 +#include <linux/pm_opp.h>
 +#include <linux/regulator/consumer.h>
++#include <linux/thermal.h>
 +
 +int px30_oppvariants_cpu_hook(struct device *dev);
 +
@@ -96,6 +99,10 @@
 +	u32 sample_us;
 +	u32 num;
 +	u32 err;
++	int ref_temp;
++	int temp_prop[2];
++	const char *tz_name;
++	bool temp_valid;
 +	bool valid;
 +};
 +
@@ -194,6 +201,22 @@
 +	if (ret)
 +		pvtm_cfg.err = 1000;
 +
++	/* Temperature correction: all three or none, as in the BSP */
++	{
++		u32 ref, prop[2];
++
++		if (!of_property_read_u32(opp_np, "rockchip,pvtm-ref-temp", &ref) &&
++		    !of_property_read_u32_array(opp_np, "rockchip,pvtm-temp-prop",
++						prop, 2) &&
++		    !of_property_read_string(opp_np, "rockchip,thermal-zone",
++					     &pvtm_cfg.tz_name)) {
++			pvtm_cfg.ref_temp = (int)ref;
++			pvtm_cfg.temp_prop[0] = (s32)prop[0];
++			pvtm_cfg.temp_prop[1] = (s32)prop[1];
++			pvtm_cfg.temp_valid = true;
++		}
++	}
++
 +	pvtm_cfg.valid = true;
 +	return 0;
 +}
@@ -213,6 +236,44 @@
 +	clk = of_clk_get_from_provider(&args);
 +	of_node_put(args.np);
 +	return clk;
++}
++
++/*
++ * The ring oscillator count changes with temperature, so a chip near a
++ * threshold would pick one column on a cold boot and another on a warm one.
++ * Same formula as the BSP: per degree away from the reference temperature,
++ * temp-prop[0] below it and temp-prop[1] above. Any problem: no correction,
++ * and a line saying why.
++ */
++static int px30_pvtm_temp_diff(int raw)
++{
++	struct thermal_zone_device *tz;
++	int temp, diff_temp, diff;
++
++	if (!pvtm_cfg.temp_valid) {
++		pr_info("no temperature correction in DT, PVTM not corrected\n");
++		return 0;
++	}
++	tz = thermal_zone_get_zone_by_name(pvtm_cfg.tz_name);
++	if (IS_ERR_OR_NULL(tz)) {
++		pr_warn("thermal zone %s not ready, PVTM not corrected\n",
++			pvtm_cfg.tz_name);
++		return 0;
++	}
++	if (thermal_zone_get_temp(tz, &temp)) {
++		pr_warn("no temperature from %s, PVTM not corrected\n",
++			pvtm_cfg.tz_name);
++		return 0;
++	}
++	if (temp < -40000 || temp > 125000) {
++		pr_warn("temperature %d out of range, PVTM not corrected\n", temp);
++		return 0;
++	}
++
++	diff_temp = temp / 1000 - pvtm_cfg.ref_temp;
++	diff = diff_temp * pvtm_cfg.temp_prop[diff_temp < 0 ? 0 : 1];
++	pr_info("temp=%d, pvtm=%d (%d + %d)\n", temp, raw + diff, raw, diff);
++	return diff;
 +}
 +
 +static int px30_pvtm_measure(struct device *cpu_dev)
@@ -298,6 +359,7 @@
 +	}
 +
 +	cur = total / pvtm_cfg.num;
++	cur += px30_pvtm_temp_diff(cur);
 +
 +	/* Map value to bin via rockchip,pvtm-voltage-sel triplets */
 +	{

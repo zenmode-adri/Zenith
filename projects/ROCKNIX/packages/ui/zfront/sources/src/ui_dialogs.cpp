@@ -1,5 +1,7 @@
 #include "ui_dialogs.hpp"
 
+#include "remake.hpp"
+
 #include <algorithm>
 #include <cmath>
 
@@ -11,15 +13,36 @@ namespace zf::ui {
 
 namespace {
 
-void draw_scrim(const Metrics& m, const Style& st, std::vector<Op>& out) { out.push_back(Op::rect(0, 0, m.W, m.H, st.scrim)); }
-
-int card_radius(const Metrics& m) { return int(std::lround(m.pill_h * 0.6f)); }
-
-void card(Shapes& sh, Assets& a, std::vector<Op>& out, const Metrics& m, const Style& st, float x, float y, float w, float h) {
-  sh.framed(a, out, x, y, w, h, card_radius(m), st.panel, st.line, 1);
+// A title never taller than the status bar (4 cells): the line of a tall font would stick out over the top margin
+void fit_title(Assets& a, Txt& t, std::string_view s, const Metrics& m, float max_w) {
+  int px = m.title_px;
+  t.set(a, s, px, max_w);
+  while (m.grid && t.h > float(4 * m.u) && px > 8) t.set(a, s, --px, max_w);
 }
 
-float text_inset(const Metrics& m) { return std::round(m.pill_h * kPillInset); }
+void draw_scrim(const Metrics& m, const Style& st, std::vector<Op>& out) { out.push_back(Op::rect(0, 0, m.W, m.H, st.scrim)); }
+
+int card_radius(const Metrics& m, const Style& st) { return int(std::lround(m.pill_h * 0.6f * st.corner)); }
+
+void card(Shapes& sh, Assets& a, std::vector<Op>& out, const Metrics& m, const Style& st, float x, float y, float w, float h) {
+  sh.framed(a, out, x, y, w, h, card_radius(m, st), st.panel, st.line, 1);
+}
+
+float text_inset(const Metrics& m) { return m.inset; }
+
+// On the grid of a remade theme a card takes an even number of columns, centred.
+void snap_card(const Metrics& m, float& x, float& w) {
+  if (!m.grid) return;
+  const remake::Grid g(m.W, m.H);
+  int n = 12;
+  for (int k = 2; k <= 12; k += 2)
+    if (g.span(k) >= w) {
+      n = k;
+      break;
+    }
+  w = g.span(n);
+  x = g.col((12 - n) / 2);
+}
 
 }  // namespace
 
@@ -78,6 +101,8 @@ Transition ConfirmDialog::handle(Action a, Ctx& cx) {
       return Transition::pop();
     case Action::B:
       return Transition::pop();
+    case Action::Start:  // leaves like B (a menu's Start closes the stack; a dialog may sit on edits that a silent close would lose)
+      return Transition::pop();
     default:
       break;
   }
@@ -113,6 +138,8 @@ void ConfirmDialog::draw(Ctx& cx, std::vector<Op>& out) {
   float gap_btn = std::round(1.2f * float(em));
   float card_h = pad + title_h + t_msg_.h + gap_btn + bh + pad;
   float cx0 = std::round((m_.W - card_w) / 2.0f), cy0 = std::round((m_.H - card_h) / 2.0f);
+  snap_card(m_, cx0, card_w);
+  if (remake::audit_sink()) remake::audit(cx0, cy0, card_w, card_h, "tarjeta", 'B', true);
 
   draw_scrim(m_, st_, out);
   card(shapes_, a, out, m_, st_, cx0, cy0, card_w, card_h);
@@ -134,7 +161,7 @@ void ConfirmDialog::draw(Ctx& cx, std::vector<Op>& out) {
     bool red = o_.danger && i == 0;
     Color fill = foc ? (red ? st_.danger : st_.cyan) : st_.btn;
     Color txt = foc ? on_color(fill) : (red ? st_.danger : st_.txt);
-    shapes_.pill(a, out, bx, y, bw, bh, fill);
+    shapes_.rrect(a, out, bx, y, bw, bh, st_.radius(bh), fill);
     const Txt& t = i == 0 ? t_yes_ : t_no_;
     put_text(out, t, bx + std::round((bw - t.w) / 2.0f), y + bh / 2.0f, txt);
     bx += bw + gap;
@@ -157,6 +184,7 @@ void ChoiceDialog::layout(Ctx& cx) {
   st_ = Style::from(cx.th);
   for (Txt& t : t_) t.reset();
   t_title_.reset();
+  widest_ = -1.0f;
   float pad = std::round(float(m_.em));
   float title_h = title_.empty() ? 0.0f : std::round(2.0f * float(m_.em));
   int fit = int(std::floor((0.8f * m_.H - title_h - 2.0f * pad) / m_.row_h));
@@ -204,6 +232,8 @@ Transition ChoiceDialog::handle(Action a, Ctx& cx) {
       break;
     case Action::B:
       return Transition::pop();
+    case Action::Start:  // leaves like B (see ConfirmDialog)
+      return Transition::pop();
     default:
       break;
   }
@@ -232,14 +262,17 @@ void ChoiceDialog::draw(Ctx& cx, std::vector<Op>& out) {
   if (!placed_) tick(0, cx);
   const int em = m_.em;
   float pad = std::round(float(em));
-  // card width from the widest option
-  float widest = 0;
-  for (size_t i = 0; i < opts_.size(); ++i) {
-    if (!t_[i].alive(a)) t_[i].set(a, opts_[i].label, em, 0.9f * m_.W - 6.0f * float(em));
-    widest = std::max(widest, t_[i].w);
+  // card width from the widest option: measured, not made into pictures (249 countries, ~400 time zones would be rasterised on the first frame)
+  const float label_max = 0.9f * m_.W - 6.0f * float(em);
+  if (widest_ < 0.0f) {
+    widest_ = 0.0f;
+    for (const Option& o : opts_) widest_ = std::max(widest_, std::min(std::ceil(a.measure(o.label, float(em))), label_max));
   }
+  const float widest = widest_;
   card_w_ = std::min(std::max(widest + 2.0f * pad + 2.0f * text_inset(m_) + 1.6f * float(em), 14.0f * float(em)), std::min(0.92f * m_.W, m_.col_w));
   card_x_ = std::round((m_.W - card_w_) / 2.0f);
+  snap_card(m_, card_x_, card_w_);
+  if (remake::audit_sink()) remake::audit(card_x_, card_y_, card_w_, card_h_, "tarjeta", 'B', true);
   if (!title_.empty() && !t_title_.alive(a)) t_title_.set(a, title_, em, card_w_ - 2.0f * pad);
 
   draw_scrim(m_, st_, out);
@@ -247,9 +280,8 @@ void ChoiceDialog::draw(Ctx& cx, std::vector<Op>& out) {
   if (!title_.empty()) put_text(out, t_title_, card_x_ + pad, card_y_ + pad + std::round(1.0f * float(em)), st_.dim);
   float rx = card_x_ + pad * 0.5f, rw = card_w_ - pad;
   out.push_back(Op::clip(rx, rows_y_, rw, rows_h_));
-  Color sel_fill = st_.cyan_soft;
   float py = std::round(rows_y_ + sel_y_ - scroll_ + (m_.row_h - m_.pill_h) / 2.0f);
-  shapes_.pill(a, out, rx, py, rw, m_.pill_h, sel_fill);
+  shapes_.selector(a, st_, out, rx, py, rw, m_.pill_h, st_.cyan_soft, st_.accent());  // selStyle
   int first = std::max(int(std::floor(scroll_ / m_.row_h)), 0);
   int last = std::min(first + vis_ + 1, int(opts_.size()) - 1);
   int isz = px_floor(std::floor(1.1f * float(em)));
@@ -257,6 +289,7 @@ void ChoiceDialog::draw(Ctx& cx, std::vector<Op>& out) {
     float cy = std::round(rows_y_ + float(i) * m_.row_h - scroll_ + m_.row_h / 2.0f);
     bool sel = i == cur_;
     Color c = sel ? st_.cyan_dark : st_.txt;
+    if (!t_[size_t(i)].alive(a)) t_[size_t(i)].set(a, opts_[size_t(i)].label, em, label_max);  // only the rows in view get their picture
     put_text(out, t_[size_t(i)], rx + text_inset(m_), cy, c);
     if (i == cur_value_) shapes_.icon(a, out, Icon::Check, rx + rw - text_inset(m_) - float(isz), cy - float(isz) / 2.0f, isz, sel ? st_.cyan_dark : st_.cyan);
   }
@@ -279,7 +312,19 @@ const char* const kLower[4] = {"1234567890", "qwertyuiop", "asdfghjkl_", "zxcvbn
 const char* const kUpper[4] = {"1234567890", "QWERTYUIOP", "ASDFGHJKL_", "ZXCVBNM.-@"};
 const char* const kSymbols[4] = {"!@#$%^&*()", "-_=+[]{}\\|", ";:'\"<>/?`~", ",.\xE2\x82\xAC\xC2\xA3\xC2\xA5\xC2\xB0\xC2\xA9\xC2\xAE\xC2\xBF\xC2\xA1"};
 
-const Prompt kKeyboardHelp[] = {{"A", N_("SELECT")}, {"B", N_("DELETE")}, {"X", N_("SPACE")}, {"Y", N_("SHIFT")}, {"start", N_("OK")}};
+// R opens the accents: the Spanish ones first (a e i o u n u c, with the inverted marks), then the grave and the diaeresis. Lower and
+// upper case share the layer (rows 0/2 and 1/3), so the layer has no shift of its own: SHIFT or 123 leave it.
+const char* const kAccents[4] = {"\xC3\xA1\xC3\xA9\xC3\xAD\xC3\xB3\xC3\xBA\xC3\xB1\xC3\xBC\xC3\xA7\xC2\xBF\xC2\xA1",
+                                 "\xC3\x81\xC3\x89\xC3\x8D\xC3\x93\xC3\x9A\xC3\x91\xC3\x9C\xC3\x87\xC2\xAB\xC2\xBB",
+                                 "\xC3\xA0\xC3\xA8\xC3\xAC\xC3\xB2\xC3\xB9\xC3\xA4\xC3\xAB\xC3\xAF\xC3\xB6\xC3\xA2",
+                                 "\xC3\x80\xC3\x88\xC3\x8C\xC3\x92\xC3\x99\xC3\x84\xC3\x8B\xC3\x8F\xC3\x96\xC3\x82"};
+
+// Select leaves without saving (B only deletes): it was not shown, and on the device the only way out looked like OK
+const Prompt kKeyboardHelp[] = {{"A", N_("SELECT")}, {"B", N_("DELETE")}, {"X", N_("SPACE")}, {"Y", N_("SHIFT")}, {"R", N_("ACCENTS")}, {"start", N_("OK")}, {"select", N_("CANCEL")}};
+
+// a password field also has L: it shows / hides what was typed
+// (eight prompts do not fit the bar at the larger sizes, and the SPACE key is on the screen: X is not listed here)
+const Prompt kKeyboardHelpPw[] = {{"A", N_("SELECT")}, {"B", N_("DELETE")}, {"Y", N_("SHIFT")}, {"R", N_("ACCENTS")}, {"L", N_("SHOW")}, {"start", N_("OK")}, {"select", N_("CANCEL")}};
 
 }  // namespace
 
@@ -291,7 +336,7 @@ KeyboardScreen::KeyboardScreen(KeyboardOpts opts, std::string initial, std::func
 
 void KeyboardScreen::build_layer() {
   rows_.clear();
-  const char* const* src = layer_ == 1 ? kUpper : (layer_ == 2 ? kSymbols : kLower);
+  const char* const* src = layer_ == 1 ? kUpper : (layer_ == 2 ? kSymbols : (layer_ == 3 ? kAccents : kLower));
   for (int r = 0; r < 4; ++r) {
     std::vector<Key> row;
     std::string_view s = src[r];
@@ -440,6 +485,10 @@ Transition KeyboardScreen::handle(Action a, Ctx& cx) {
     case Action::L:
       if (o_.password) reveal_ = !reveal_;
       break;
+    case Action::R:
+      layer_ = layer_ == 3 ? 0 : 3;  // the accents (á é í ó ú ñ ü ç ...); R again goes back to the letters
+      build_layer();
+      break;
     case Action::Start:
       return accept(cx);
     case Action::Select:
@@ -461,10 +510,11 @@ void KeyboardScreen::draw(Ctx& cx, std::vector<Op>& out) {
   }
   const int em = m_.em;
   out.push_back(Op::rect(0, 0, m_.W, m_.H, st_.bg));
-  float xl = m_.col_x + text_inset(m_);
-  if (!t_title_.alive(a)) t_title_.set(a, o_.title, m_.title_px, m_.col_w * 0.7f);
+  const size_t stack_from = out.size();
+  status_bar(cx.th, a, m_.W, m_.H, cx.status, out);  // before the title: a centred title (headerAlign) keeps clear of it
+  if (!t_title_.alive(a)) fit_title(a, t_title_, o_.title, m_, title_max_w(st_, m_, out, stack_from, m_.col_w * 0.7f));
+  float xl = title_x(st_, m_, m_.title_left, t_title_.w);
   put_text(out, t_title_, xl, m_.header_cy, st_.txt);
-  status_bar(cx.th, a, m_.W, m_.H, cx.status, out);
   {
     float title_bottom = m_.header_cy + t_title_.h / 2.0f;
     float first_pill_top = m_.list_top + (m_.row_h - m_.pill_h) / 2.0f;
@@ -480,7 +530,7 @@ void KeyboardScreen::draw(Ctx& cx, std::vector<Op>& out) {
   float kh = std::floor(std::min((free_h - field_h - 6.0f * gap) / 5.0f, key_w * 0.95f));
   float block_h = field_h + 2.0f * gap + 5.0f * kh + 4.0f * gap;
   float fy = m_.list_top + std::floor(std::max(free_h - block_h, 0.0f) * 0.30f);
-  shapes_.framed(a, out, gx, fy, gw, field_h, int(field_h * 0.3f), st_.panel, st_.line, 1);
+  shapes_.framed(a, out, gx, fy, gw, field_h, int(field_h * 0.3f * st_.corner), st_.panel, st_.line, 1);
   // the field's image is rebuilt only when the text or the reveal flag changed (comparing strings allocates nothing; the blink
   // redraws this screen every phase, so a frame at rest must not build a temporary string)
   if (!t_text_.alive(a) || !shown_valid_ || text_ != shown_src_ || reveal_ != shown_rev_) {
@@ -537,7 +587,7 @@ void KeyboardScreen::draw(Ctx& cx, std::vector<Op>& out) {
       Color txt = st_.txt;
       if (k.type == Key::Ok) fill = st_.cyan, txt = on_color(st_.cyan);
       if (lit) txt = st_.cyan_dark;
-      int rad = int(kh * 0.28f);
+      int rad = int(kh * 0.28f * st_.corner);
       if (foc) {
         shapes_.framed(a, out, kx, ky, kw, kh, rad, st_.cyan_soft, st_.cyan, 2);
         txt = st_.cyan_dark;
@@ -550,7 +600,8 @@ void KeyboardScreen::draw(Ctx& cx, std::vector<Op>& out) {
       put_text(out, t, kx + std::round((kw - t.w) / 2.0f), ky + kh / 2.0f, txt);
     }
   }
-  help_.draw(a, cx.th, m_, st_, kKeyboardHelp, 5, out);
+  if (o_.password) help_.draw(a, cx.th, m_, st_, kKeyboardHelpPw, sizeof kKeyboardHelpPw / sizeof *kKeyboardHelpPw, out);
+  else help_.draw(a, cx.th, m_, st_, kKeyboardHelp, sizeof kKeyboardHelp / sizeof *kKeyboardHelp, out);
 }
 
 }  // namespace zf::ui

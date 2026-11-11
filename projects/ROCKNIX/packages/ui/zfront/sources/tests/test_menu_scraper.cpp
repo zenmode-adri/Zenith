@@ -225,6 +225,7 @@ int main() {
       step();
       if (t.requests().find("g2.sfc") != std::string::npos) break;
     }
+    CHECK(s->handle(Action::Start, t.cx).kind == Transition::CloseMenus);  // Start closes every menu, also while it runs
     Transition tr1 = s->handle(Action::B, t.cx);  // stop
     CHECK(tr1.kind == Transition::None);
     bool back = false;
@@ -266,5 +267,107 @@ int main() {
     t.cx.sv->jobs.drain();
     CHECK(count_of(t.gamelist(), "<scrap name=\"ScreenScraper\"") >= 1);
   }
+  // ---- SCRAPE FROM (ES `Scraper`), the IGDB rows, and the options each source shows
+  {
+    Rig t;
+    make_systems(t);
+    {
+      auto s = open(t.cx, "menu.scraper");
+      Menu& m = *menu_of(s);
+      int f = find(m, tr("SCRAPE FROM"));
+      CHECK(f >= 0 && f < find(m, tr("GAMES TO SCRAPE")));
+      CHECK_EQ(es_val(t.cx, "Scraper"), std::string("<unset>"));  // ES's default is ScreenScraper: nothing written until chosen
+      CHECK(focus(m, t.cx, tr("SCRAPE FROM")));
+      m.handle(Action::Right, t.cx);
+      CHECK_EQ(es_val(t.cx, "Scraper"), std::string("IGDB"));
+      m.tick(0.0f, t.cx);
+      CHECK_EQ(m.entry(size_t(find(m, tr("SYSTEMS")))).value_text, std::string("2 / 2"));  // snes and gba are on IGDB, ports is not
+      CHECK(m.entry(size_t(find(m, tr("START")))).enabled);
+      CHECK(focus(m, t.cx, tr("SCRAPE FROM")));
+      m.handle(Action::Right, t.cx);
+      CHECK_EQ(es_val(t.cx, "Scraper"), std::string("ArcadeDB"));
+      m.tick(0.0f, t.cx);
+      CHECK_EQ(m.entry(size_t(find(m, tr("SYSTEMS")))).value_text, std::string("0 / 0"));  // no arcade system here
+      CHECK(!m.entry(size_t(find(m, tr("START")))).enabled);
+      CHECK(find(m, tr("THIS BUILD CANNOT REACH SCREENSCRAPER")) < 0);
+    }
+    // options: only what the source can give
+    auto rows = [&](const char* src) {
+      if (*src) t.cx.es.set_string("Scraper", src);
+      auto s = open(t.cx, "menu.scraper.options");
+      Menu& m = *menu_of(s);
+      std::vector<std::string> v;
+      for (const char* l : {"IMAGE SIZE", "REGION", "SHORT NAME", "RATINGS", "VIDEOS", "MANUALS", "MAPS", "FANART", "BOX BACK", "IMAGE", "NAMES"})
+        if (find(m, tr(l)) >= 0) v.push_back(l);
+      return v;
+    };
+    using V = std::vector<std::string>;
+    CHECK(rows("ScreenScraper") == (V{"IMAGE SIZE", "REGION", "RATINGS", "VIDEOS", "MANUALS", "MAPS", "FANART", "BOX BACK", "IMAGE", "NAMES"}));
+    CHECK(rows("ArcadeDB") == (V{"SHORT NAME", "VIDEOS", "IMAGE", "NAMES"}));
+    CHECK(rows("IGDB") == (V{"FANART", "IMAGE", "NAMES"}));
+    {
+      t.cx.es.set_string("Scraper", "ArcadeDB");
+      auto s = open(t.cx, "menu.scraper.options");
+      Menu& m = *menu_of(s);
+      CHECK(focus(m, t.cx, tr("SHORT NAME")));
+      m.handle(Action::A, t.cx);
+      CHECK(t.cx.es.get_bool("ScrapeShortTitle", false));
+      CHECK(scraper_run_options(t.cx).short_title);
+    }
+    // account: IGDB's client id and secret, ES's keys, the secret hidden; TEST ACCOUNT has nothing to test on ArcadeDB
+    {
+      t.cx.es.set_string("Scraper", "IGDB");
+      auto s = open(t.cx, "menu.scraper.account");
+      Menu& m = *menu_of(s);
+      int id = find(m, tr("CLIENT ID")), sec = find(m, tr("CLIENT SECRET"));
+      CHECK(id >= 0 && sec >= 0);
+      if (id >= 0 && sec >= 0) {
+        m.entry(size_t(id)).set_s("IGDBIDVALUE");
+        m.entry(size_t(sec)).set_s("IGDBSECRETVALUE");
+        CHECK_EQ(es_val(t.cx, "IGDBClientID"), std::string("IGDBIDVALUE"));
+        CHECK_EQ(es_val(t.cx, "IGDBSecret"), std::string("IGDBSECRETVALUE"));
+        CHECK(m.entry(size_t(sec)).password && !m.entry(size_t(id)).password);
+        Options o = scraper_run_options(t.cx);
+        CHECK(o.source == Source::IGDB);
+        CHECK_EQ(o.igdb_id, std::string("IGDBIDVALUE"));
+        CHECK_EQ(o.igdb_secret, std::string("IGDBSECRETVALUE"));
+      }
+      CHECK(find(m, tr("USERNAME")) >= 0 && find(m, tr("PASSWORD")) >= 0);
+      CHECK(m.entry(size_t(find(m, tr("TEST ACCOUNT")))).enabled);
+      CHECK_EQ(m.entry(size_t(find(m, tr("TEST ACCOUNT")))).hint_text, std::string(tr("Asks IGDB for an access token.")));  // names the chosen source
+      t.cx.es.set_string("Scraper", "ArcadeDB");
+      auto s2 = open(t.cx, "menu.scraper.account");
+      CHECK_EQ(menu_of(s2)->entry(size_t(find(*menu_of(s2), tr("TEST ACCOUNT")))).hint_text, std::string(tr("ArcadeDB needs no account.")));
+      CHECK(!menu_of(s2)->entry(size_t(find(*menu_of(s2), tr("TEST ACCOUNT")))).enabled);
+    }
+  }
+
+  // ---- a settings file that cannot be written is told, not silently ignored
+  {
+    Rig t;
+    make_systems(t);
+    t.cx.es = EsSettings::from_text("<?xml version=\"1.0\"?>\n<config>\n</config>\n", "/nonexistent-zf-dir/es_settings.cfg");
+    auto s = open(t.cx, "menu.scraper");
+    Menu& m = *menu_of(s);
+    int at = find(m, tr("FETCH MISSING MEDIA AUTOMATICALLY"));
+    CHECK(at >= 0);
+    if (at >= 0) m.entry(size_t(at)).set_b(true);
+    bool told = false;
+    for (const Toast& x : t.cx.sv->toasts.items())
+      if (x.text == tr("Could not save the settings")) told = true;
+    CHECK(told);
+  }
+
+  // ---- the hints fit one line of the smallest screen (480x320 holds about 75 characters; the Spanish ones are longer, so these are short)
+  {
+    Rig t;
+    make_systems(t);
+    for (const char* name : {"menu.scraper", "menu.scraper.options", "menu.scraper.account"}) {
+      auto s = open(t.cx, name);
+      Menu& m = *menu_of(s);
+      for (size_t i = 0; i < m.size(); ++i) CHECK(m.entry(i).hint_text.size() <= 72);
+    }
+  }
+
   return zt::done();
 }

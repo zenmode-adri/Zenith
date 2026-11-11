@@ -18,7 +18,12 @@
 
 #include "app.hpp"
 #include "gamelist.hpp"
+#include "scraper_src.hpp"
 #include "scraper_ss.hpp"
+
+namespace zf::oscontract {
+class Busy;
+}
 
 namespace zf::scraper {
 
@@ -33,9 +38,14 @@ struct Options {
   bool overwrite_names = true, overwrite_desc = true, overwrite_media = true;  // ScrapeNames / ScrapeDescription / ScrapeOverWrite
   int resize_px = 640;                                                          // ScraperResizeWidth (else Height), 0 = full size
   std::string user, pass, locale;                                               // ScreenScraperUser/Pass, system.language
+  Source source = Source::ScreenScraper;                                        // `Scraper` (SCRAPE FROM)
+  std::string igdb_id, igdb_secret;                                             // IGDBClientID / IGDBSecret
+  bool short_title = false;                                                     // ScrapeShortTitle (ArcadeDB)
   enum class Filter : uint8_t { All, MissingAny, MissingAll } filter = Filter::MissingAny;  // GAMES TO SCRAPE FOR
   int skip_days = 15;                                                           // IGNORE RECENTLY SCRAPED GAMES (0 = no)
   std::vector<size_t> systems;                                                  // indexes into Ctx::systems
+  std::string only_game;                                                        // non-empty: only this ROM (absolute path) of the systems
+  bool background = false;                                                      // automatic covers (autocover.hpp): holds no `oscontract::Busy`, so the screensaver may start
   // engine tuning (tests lower them)
   int min_interval_ms = 1000;  // between two API requests (raised from the account's requests per minute)
   int busy_retry_ms = 15000;   // wait after "too many requests" (a longer Retry-After wins)
@@ -66,6 +76,9 @@ constexpr const char* kMap = "ScrapeMap";
 constexpr const char* kManual = "ScrapeManual";
 constexpr const char* kUser = "ScreenScraperUser";
 constexpr const char* kPass = "ScreenScraperPass";
+constexpr const char* kIgdbId = "IGDBClientID";      // ES GuiScraperStart.cpp:345
+constexpr const char* kIgdbSecret = "IGDBSecret";    // ES GuiScraperStart.cpp:346
+constexpr const char* kShortTitle = "ScrapeShortTitle";  // ES Settings.cpp:260
 constexpr const char* kResizeW = "ScraperResizeWidth";
 constexpr const char* kResizeH = "ScraperResizeHeight";
 }  // namespace key
@@ -74,7 +87,8 @@ enum class Phase : uint8_t { Preparing, Connecting, Running, Stopping, Finished,
 /// Why a game failed (the UI turns it into text with `describe`).
 enum class Err : uint8_t { None, Network, Busy, Server, Write };
 /// Why the whole run stopped.
-enum class Abort : uint8_t { None, BadLogin, ApiClosed, Maintenance, Blacklisted, Quota, TooManyFails, NoNetwork, DiskFull };
+enum class Abort : uint8_t { None, BadLogin, ApiClosed, Maintenance, Blacklisted, Quota, TooManyFails, NoNetwork, DiskFull, InvalidCredentials,
+                           NoCredentials };
 
 const char* describe(Err e);    // translated
 const char* describe(Abort a);  // translated
@@ -89,8 +103,11 @@ struct AccountInfo {
 /// Asks ScreenScraper about the account on the job worker; `done` runs on the main thread. Nothing is written anywhere.
 void check_account(Ctx& cx, const Options& o, std::function<void(const AccountInfo&)> done);
 
-/// Systems of `cx.systems` that ScreenScraper knows (by their `<platform>`), as indexes.
+/// Systems of `cx.systems` that the chosen source knows (by their `<platform>`), as indexes: the `Scraper` setting, or `s`.
 std::vector<size_t> supported_systems(const Ctx& cx);
+std::vector<size_t> supported_systems(const Ctx& cx, Source s);
+/// The chosen source can scrape `cx.systems[sys]` and this build can reach it (the SCRAPE button of the game editor).
+bool system_supported(const Ctx& cx, size_t sys);
 
 struct Stats {
   size_t total = 0;        // games in the queue
@@ -98,6 +115,7 @@ struct Stats {
   size_t found = 0, not_found = 0, errors = 0;
   size_t warnings = 0;     // found, but some media could not be downloaded
   size_t media = 0;        // files downloaded
+  size_t media_games = 0;  // games that got at least one file
   uint64_t bytes = 0;
 };
 
@@ -135,6 +153,7 @@ class Run : public std::enable_shared_from_this<Run> {
   bool working() const { return !finished(); }
   const Stats& stats() const { return st_; }
   Abort abort_reason() const { return abort_; }
+  Source source() const { return o_.source; }
   const std::vector<ErrLine>& errors() const { return errors_; }
   const std::string& system_name() const { return sys_name_; }
   const std::string& game_name() const { return game_name_; }
@@ -183,6 +202,7 @@ class Run : public std::enable_shared_from_this<Run> {
   size_t since_flush_ = 0;
   TimePoint last_flush_{};
   uint64_t version_ = 0;
+  std::unique_ptr<oscontract::Busy> busy_;  // held while the run works: /isIdle says false, the screensaver waits
 };
 
 }  // namespace zf::scraper

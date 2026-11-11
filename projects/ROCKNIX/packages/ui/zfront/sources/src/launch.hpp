@@ -36,9 +36,32 @@ std::string controllers_config(const std::vector<JoyInfo>& joys);
 /// Deviation from ES: backtick, `|`, tab and newline are escaped too (ES leaves them, so a ROM called "a`id`.gb" runs
 /// commands through `sh -c`). `#` and `~` stay as they are: they only matter at the start of a word and a path starts with `/`.
 std::string escape_path(const std::string& p);
-/// Full command line ES would run for `game` (netplay and savestate arguments excluded). An empty `sys.command`
+/// Full command line ES would run for `game` (netplay and savestate arguments excluded). Deliberate deviation: placeholders are
+/// replaced in ONE pass (ES replaces them one after another, so a ROM called "Foo %CORE%.gb" got the core name inside its path). An empty `sys.command`
 /// gives an empty string (ES aborts the launch).
 std::string build_command(const System& sys, const Game& game, const ConfMap& conf, const std::vector<JoyInfo>& joys);
+
+/// ES `LaunchGameOptions` (netPlayMode, ip, port, core). The caller sets a role only for a game whose core has
+/// features="netplay" and with `global.netplay` on (ES `isNetplaySupported`); `Off` leaves `%NETPLAY%` empty.
+enum class NetRole : uint8_t { Off, Host, Join, Watch };
+struct Netplay {
+  NetRole role = NetRole::Off;
+  std::string ip;    // Join / Watch: the room's address (lobby `ip`, or `mitm_ip` of a relayed room)
+  int port = 0;      // Join / Watch
+  std::string core;  // Join from the lobby: the room's core, forced when the system has it (ES `forceCore`)
+};
+/// What ES puts in place of `%NETPLAY%` on ROCKNIX (FileData.cpp, `#if ROCKNIX`): host `--host --port <global.netplay.port> --nick <nick>`,
+/// join and watch `--connect <ip> --port <port> --nick <nick>` (runemu.sh reads these), nothing when off. An empty nick is ES's default
+/// (`default_nickname`). The address, port and nick go into a shell line: an address with anything but letters, digits, `.`, `:`, `-`
+/// gives an empty string (no launch with netplay), and the nick has its shell characters escaped (a plain "Zenith Player" is untouched).
+std::string netplay_args(const Netplay& np, const ConfMap& conf);
+/// "<OS_NAME of os_release> Player" (ES `ApiSystem::getApplicationName() + " Player"`, "ROCKNIX" when the file has no OS_NAME).
+std::string default_nickname(const std::string& os_release = "/etc/os-release");
+/// An address `netplay_args` accepts.
+bool valid_netplay_host(const std::string& ip);
+/// Same as above with ES's netplay behaviour: a role other than Off appends ` %NETPLAY%` when the command has no such token (ES does it
+/// when the core supports netplay) and a Join with a core the system has switches to it, adding `-emulator`/`-core` as ES does.
+std::string build_command(const System& sys, const Game& game, const ConfMap& conf, const std::vector<JoyInfo>& joys, const Netplay& np);
 
 struct ExitError {
   enum Kind { None, Code, LogFile } kind = None;
@@ -72,7 +95,10 @@ bool split_simple(std::string_view cmd, std::vector<std::string>& argv);
 /// Runs `cmd` and waits, inheriting stdio. A command of the simple shape is `posix_spawnp`ed directly (no `sh`);
 /// otherwise, or if the direct spawn fails (script without shebang...), `sh -c` is used. A process killed by a signal
 /// reports 1 (no playcount).
-RunResult run(const std::string& cmd);
+/// `supervise` (optional, the in-game HOME menu, homemenu.hpp): when set, `run` does not block in waitpid but calls
+/// `supervise(pid)` on this thread until the game exits (at least every ~20 ms; the callback should wait on its own descriptors
+/// for up to ~100 ms). Without it the behaviour is the old blocking wait, unchanged.
+RunResult run(const std::string& cmd, const std::function<void(int pid)>& supervise = {});
 /// A SIGTERM (stop, or SIGHUP forwarded by oscontract) arrived while a game ran. `run` handles it itself: the signal is
 /// passed to the game (a second one kills it), `run` waits for it to end and returns normally, and the loop then quits
 /// instead of coming back to the menus. Stays true for the rest of the process.
@@ -173,6 +199,8 @@ struct Request {
 struct Env {
   /// Free audio, joysticks and the window (SDL) just before the game runs / bring them back after.
   std::function<void()> release, restore;
+  /// Optional: called repeatedly while the game runs (see `run`). Empty = the plain blocking wait.
+  std::function<void(int pid)> supervise;
   LaunchPrep* prep = nullptr;
   /// Script dirs; empty = `default_script_dirs()`.
   std::vector<std::string> script_dirs;
@@ -183,12 +211,18 @@ struct Outcome {
   /// Text for the error box ("" if none).
   std::string message;
 };
-/// One whole launch: prep.launched -> game-start (async) -> release -> run -> game-end (async) -> restore. Bookkeeping that
+/// One whole launch: prep.launched -> game-start (async) -> release -> run -> game-end (async) -> undo of the savestate preparation
+/// -> restore. Bookkeeping that
 /// touches disk is NOT done here (see `apply_after`) so the caller can redraw first.
 Outcome execute(const Request& r, const Env& env);
 /// playcount, lastplayed and gametime of game `game` of system `sys` (only when exit was 0): the in-memory game at once,
 /// gamelist.xml on the job thread (`game_played`, gamemeta.hpp). Nothing is reloaded from disk.
 void apply_after(Ctx& cx, size_t sys, size_t game, const Outcome& o);
+/// The game `path` of the system named `sys_name`, looked up now (the lists may have been reloaded while the game ran, so an index
+/// taken before it can point at another game). False when it is not there any more.
+bool find_game(const Ctx& cx, const std::string& sys_name, const std::string& path, size_t& sys, size_t& game);
+/// `apply_after` for the game found by `find_game`; nothing when it is gone.
+void apply_after_path(Ctx& cx, const std::string& sys_name, const std::string& path, const Outcome& o);
 /// Toast text for a failed launch ("AN ERROR OCCURRED: <first line of the message>", translated and cut to one line),
 /// or "" when there was no error to show. Exit codes 200..300 only; `runemu.sh` itself exits 0 or 1, so this rarely fires.
 std::string error_toast(const Outcome& o);

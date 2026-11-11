@@ -326,6 +326,14 @@
 	center-supply = <&vdd_logic>;
 };
 
+/* 786 MHz as a runtime step (boot stays at 666). 1.1 V = dArkOSen's safest bin. dArkOSen enables it on these boards. */
+&dmc_opp_table {
+	opp-786000000 {
+		opp-hz = /bits/ 64 <786000000>;
+		opp-microvolt = <1100000>;
+	};
+};
+
 &cpu0 {
 	cpu-supply = <&vdd_arm>;
 };

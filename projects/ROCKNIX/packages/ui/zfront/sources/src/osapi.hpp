@@ -7,7 +7,8 @@
 //   GET  /quit | /shutdown | /restart                   -> Mode::Quit | Shutdown | Reboot (ES: /restart reboots the SYSTEM)
 //   GET  /emukill                                       -> killall <name in /tmp/.process-kill-data> while a game runs
 //   POST /launch                 body = ROM path        -> launches that game (409 while another one runs)
-//   anything else: 404 JSON; known path with the wrong method: 405.
+//   GET  /reloadgames                                   -> the game folders are read again (ES's endpoint; app: when the menus are closed)
+//   anything else: 404 JSON; known path with the wrong method: 405; a client that is not on 127.0.0.0/8: 403.
 //
 // `route` runs on the HTTP thread: `/runningGame`, `/isIdle` and `/emukill` answer from thread-safe state (the main thread
 // is blocked inside the game, which is exactly when they are asked); everything that touches the UI goes through `Ops`,
@@ -31,6 +32,7 @@ struct Ops {
   std::function<void()> notify_clear;
   std::function<void(oscontract::Mode)> quit;
   std::function<void(std::string rom_path)> launch;
+  std::function<void()> reload;
 };
 
 http::Response route(const http::Request& req, const Ops& ops);

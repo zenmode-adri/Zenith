@@ -40,7 +40,7 @@ int main() {
     CHECK(!ui_prefs::read(es).network);
     CHECK(ui_prefs::read(EsSettings()).network);
   }
-  const std::string dir = "/home/epsil/zenith-frontend/theme-dark";
+  const std::string dir = "/usr/share/zfront/theme-dark";
   if (is_dir(dir)) {
     const unsigned sizes[4][2] = {{480, 320}, {640, 480}, {720, 405}, {720, 720}};
     for (const auto& wh : sizes) {

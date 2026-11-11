@@ -131,7 +131,8 @@ void scan_text(const std::string& text, std::set<Key>& keys) {
     size_t b = sc.i;
     while (sc.i < s.size() && sc.ident_char(s[sc.i])) ++sc.i;
     std::string id = s.substr(b, sc.i - b);
-    bool simple = id == "tr" || id == "N_" || id == "ntr", ctx = id == "ctr" || id == "NC_";
+    // sc("..."): the screens that put tr() in sentence case (play statistics, QR code) mark their keys with it
+    bool simple = id == "tr" || id == "sc" || id == "N_" || id == "ntr", ctx = id == "ctr" || id == "NC_";
     if (!simple && !ctx) continue;
     sc.skip_ws();
     if (sc.i >= s.size() || s[sc.i] != '(') continue;
@@ -181,10 +182,18 @@ std::vector<std::string> placeholders(const char* s) {
   return v;
 }
 
+// Zenith OS fork checkout (real theme fonts, ES catalogs, the image being built): ZF_FORK_DIR, else ~/r36s-fork.
+static std::string fork_dir() {
+  if (const char* e = std::getenv("ZF_FORK_DIR")) return e;
+  const char* h = std::getenv("HOME");
+  return std::string(h ? h : "") + "/r36s-fork";
+}
+
 std::string find_real_locale() {
   std::vector<std::string> c;
   if (const char* e = std::getenv("ZF_TEST_REAL_LOCALE")) c.push_back(e);
-  c.push_back("/home/epsil/verify31/root/usr/config/locale");
+  c.push_back(fork_dir() + "/build.ROCKNIX-RK3326.aarch64/image/system/usr/config/locale");  // the image being built
+  c.push_back("/usr/config/locale");  // an October image: older catalog
   c.push_back("/usr/share/locale");
   c.push_back("/usr/config/locale");
   for (const std::string& d : c)
@@ -326,8 +335,8 @@ int main() {
     CHECK_EQ(std::string(i18n::ntr("%i GAME", "%i GAMES", 14)), std::string("%i JUEGOS"));
     // the carousel and list help bars (sentence case, few actions) follow the language and come back when it changes
     const HelpPrompts& sh = system_help();
-    CHECK_EQ(sh.size(), size_t(3));
-    CHECK_EQ(std::string(sh[2].second), std::string("Menú"));
+    CHECK_EQ(sh.size(), size_t(4));  // CHOOSE, SELECT, RANDOM (X), MENU
+    CHECK_EQ(std::string(sh[3].second), std::string("Menú"));
     const HelpPrompts& lh = list_help();
     CHECK_EQ(lh.size(), size_t(4));
     CHECK_EQ(std::string(lh[0].second), std::string("Iniciar"));
@@ -337,7 +346,7 @@ int main() {
   {
     const HelpPrompts& sh = system_help();
     CHECK_EQ(std::string(sh[0].second), std::string("Choose"));
-    CHECK_EQ(std::string(sh[2].second), std::string("Menu"));
+    CHECK_EQ(std::string(sh[3].second), std::string("Menu"));
     CHECK_EQ(std::string(list_help()[0].second), std::string("Launch"));
   }
   // another language: zfront has no catalog for it, its keys show in English (sentence case), ES's still translate

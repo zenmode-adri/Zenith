@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "remake.hpp"
 #include "check.hpp"
 #include "gfx.hpp"
 #include "scene.hpp"
@@ -72,12 +73,13 @@ void check_theme(const std::string& dir, const char* tag) {
       std::vector<Op> ops;
       std::vector<std::string> names = {"A game"};
       list_view(th, as, c, w, h, long_name ? kLong : std::string("Game Boy Color"), names, 0, st, nullptr, nullptr, ops);
+      // the title: the picture on the status bar's line (it is centred there) nearest the theme's own place (moved onto the grid's lines)
       const Op* title = nullptr;
+      const float line = float(remake::Grid(w, h).status_y());
       for (const Op& o : ops)
-        if (o.kind == Op::Image && o.x == th.f("nameX") * w) {
+        if (o.kind == Op::Image && o.w > 0 && std::abs(o.y + o.h / 2.0f - line) <= 1.5f && o.x < stack_left &&
+            (!title || std::abs(o.x - th.f("nameX") * w) < std::abs(title->x - th.f("nameX") * w)))
           title = &o;
-          break;
-        }
       CHECK(title != nullptr);
       if (!title) {
         std::fprintf(stderr, "  (%s, long=%d): no title op found\n", what, int(long_name));
@@ -98,7 +100,7 @@ int main() {
   bool any = false;
   for (const char* t : {"theme-dark", "theme-light"}) {
     std::string dir = std::string(ZF_LOCALE_BUILD) + "/../themes/" + t;
-    if (!is_dir(dir)) dir = std::string("/home/epsil/zenith-frontend/") + t;
+    if (!is_dir(dir)) dir = std::string("/usr/share/zfront/") + t;
     if (!is_dir(dir)) continue;
     any = true;
     check_theme(dir, t);

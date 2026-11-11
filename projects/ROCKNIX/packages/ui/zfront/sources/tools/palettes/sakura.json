@@ -1,0 +1,5 @@
+{"name":"sakura","mode":"light",
+ "bg":"FBF2F5","txt":"33222B","dim":"5C4650","dimDark":"58424C","tileTxt":"33222B",
+ "accent":"E5527F","accentDark":"8C1A44","accentSoft":"F6C6D6",
+ "surface":"FFFFFF","panel":"FEF8FA","separator":"F0DEE5","track":"E8D0DA",
+ "switchOn":"D2668A","switchOff":"B8A4AD","hint":"624B56","hintBg":"0000000A","scroll":"33222B60","inputBorder":"DFC8D1"}

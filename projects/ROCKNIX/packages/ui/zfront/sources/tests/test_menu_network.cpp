@@ -1,6 +1,9 @@
 // menu.network: parsers (fed with the real formats of wifictl / iwd / tailscale / zerotier) and the three screens, driven
 // through the registry on a fake machine (`ZF_NET_ROOT`) with the command runner in dry-run: the tests check the
 // commands that would run and the values written to system.cfg / es_settings.cfg.
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
 
 #include <cstdio>
@@ -19,6 +22,8 @@
 #include "menu_network_parse.hpp"
 #include "registry.hpp"
 #include "ui_dialogs.hpp"
+#include "webpair.hpp"
+#include "webtransfer.hpp"
 
 using namespace zf;
 using namespace zf::netmenu;
@@ -244,7 +249,8 @@ void test_main_screen() {
     make_ctx(cx, mc, "wifi.enabled=1\n");
     auto s = open(cx, "menu.network");
     Menu& m = *menu_of(s);
-    CHECK(has(m, "IP ADDRESS") && has(m, "INTERNET STATUS") && has(m, "HOSTNAME") && has(m, "SHOW NETWORK INDICATOR"));
+    CHECK(has(m, "IP ADDRESS") && has(m, "INTERNET STATUS") && has(m, "SHOW NETWORK INDICATOR") && has(m, "TRANSFER FILES"));
+    CHECK(has(m, "SERVICES") && !has(m, "HOSTNAME"));  // the SERVICES row always (the console's name is in it), the name not here
     CHECK(!has(m, "ENABLE WI-FI"));
     CHECK(!has(m, "WI-FI NETWORKS"));
     CHECK(!has(m, "ENABLE SSH"));
@@ -260,26 +266,70 @@ void test_main_screen() {
     mc.fixture("ips.txt", "192.168.1.42\n");
     Ctx cx;
     make_ctx(cx, mc, "wifi.enabled=0\nsystem.hostname=zenith\nssh.enabled=1\n");
-    auto s = open(cx, "menu.network");
+    auto s0 = open(cx, "menu.network");
+    Menu& m0 = *menu_of(s0);
+    CHECK(has(m0, "ENABLE WI-FI") && has(m0, "TRANSFER FILES") && has(m0, "SERVICES"));
+    CHECK(!has(m0, "WI-FI NETWORKS") && !has(m0, "WI-FI COUNTRY"));
+    // new order: Wi-Fi, TRANSFER FILES, state, services (the services themselves are one screen away)
+    CHECK(find(m0, "ENABLE WI-FI") < find(m0, "TRANSFER FILES") && find(m0, "TRANSFER FILES") < find(m0, "IP ADDRESS"));
+    CHECK(find(m0, "IP ADDRESS") < find(m0, "INTERNET STATUS") && find(m0, "INTERNET STATUS") < find(m0, "SHOW NETWORK INDICATOR"));
+    CHECK(find(m0, "SHOW NETWORK INDICATOR") < find(m0, "SERVICES"));
+    for (const char* l : {"ENABLE SSH", "ENABLE SIMPLE HTTP SERVER", "USB GADGET FUNCTION", "ENABLE SYNCTHING", "MOUNT CLOUD DRIVE", "TAILSCALE VPN", "ZeroTier One", "HOSTNAME"})
+      CHECK(!has(m0, l));  // none of them on the main screen any more
+    auto s = open(cx, "menu.network.services");
     Menu& m = *menu_of(s);
-    CHECK(has(m, "ENABLE WI-FI"));
-    CHECK(!has(m, "WI-FI NETWORKS") && !has(m, "WI-FI COUNTRY"));
-    for (const char* l : {"ENABLE SSH", "ENABLE SAMBA", "ENABLE SIMPLE HTTP SERVER", "USB GADGET FUNCTION", "ENABLE SYNCTHING", "MOUNT CLOUD DRIVE", "TAILSCALE VPN", "ZeroTier One"})
+    for (const char* l : {"ENABLE SSH", "ENABLE SIMPLE HTTP SERVER", "USB GADGET FUNCTION", "ENABLE SYNCTHING", "MOUNT CLOUD DRIVE", "TAILSCALE VPN", "ZeroTier One", "HOSTNAME"})
       CHECK(has(m, l));
     CHECK(!has(m, "WIREGUARD VPN"));  // no wg0.conf
     CHECK(find(m, "ENABLE SSH") < find(m, "ENABLE SYNCTHING") && find(m, "ENABLE SYNCTHING") < find(m, "TAILSCALE VPN"));
-    CHECK_EQ(m.entry(size_t(find(m, "IP ADDRESS"))).value_text, std::string("192.168.1.42"));
-    CHECK_EQ(m.entry(size_t(find(m, "INTERNET STATUS"))).value_text, std::string("CONNECTED"));
+    CHECK_EQ(m0.entry(size_t(find(m0, "IP ADDRESS"))).value_text, std::string("192.168.1.42"));
+    CHECK_EQ(m0.entry(size_t(find(m0, "INTERNET STATUS"))).value_text, std::string("CONNECTED"));
     CHECK_EQ(m.entry(size_t(find(m, "HOSTNAME"))).kind, EntryKind::Text);
     CHECK_EQ(m.entry(size_t(find(m, "HOSTNAME"))).get_s(), std::string("zenith"));
     CHECK(m.entry(size_t(find(m, "ENABLE SSH"))).get_b());  // ssh.enabled=1 in system.cfg
-    CHECK(!m.entry(size_t(find(m, "ENABLE SAMBA"))).get_b());
+    // file transfer is one row: nothing of the web page or of Samba on this menu
+    for (const char* l : {"WEB FILE TRANSFER", "WEB ADDRESS", "WEB PIN", "ENABLE SAMBA", "SAMBA ADDRESS", "SAMBA USER", "SAMBA PASSWORD"})
+      CHECK(!has(m, l));
+    CHECK_EQ(m0.entry(size_t(find(m0, "TRANSFER FILES"))).value_text, std::string("OFF"));
+    CHECK(find(m, "ENABLE SSH") < find(m, "HOSTNAME"));
+    {
+      auto st = open(cx, "menu.network.transfer");
+      Menu& mt = *menu_of(st);
+      CHECK(has(mt, "WEB FILE TRANSFER") && has(mt, "ENABLE SAMBA"));
+      CHECK(!has(mt, "WEB ADDRESS") && !has(mt, "WEB PIN"));  // web transfer off: only its switch
+      CHECK(!mt.entry(size_t(find(mt, "ENABLE SAMBA"))).get_b());
+      CHECK(!has(mt, "SAMBA USER") && !has(mt, "SAMBA PASSWORD"));  // Samba off: no login rows
+    }
     CHECK_EQ(m.entry(size_t(find(m, "USB GADGET FUNCTION"))).get_s(), std::string("file_transfer"));  // UDC function "mtp"
     CHECK(!log_prefix(cx, "wifictl"));  // Wi-Fi off: no prescan
     // wireguard appears once its config exists
     mc.touch("/storage/.config/wireguard/wg0.conf");
-    auto s2 = open(cx, "menu.network");
+    auto s2 = open(cx, "menu.network.services");
     CHECK(has(*menu_of(s2), "WIREGUARD VPN"));
+  }
+
+  // ---- Samba on: how to log in (no guests: root and the root password)
+  {
+    Machine mc;
+    mc.full_image();
+    mc.fixture("ips.txt", "192.168.1.42\n");
+    Ctx cx;
+    make_ctx(cx, mc, "samba.enabled=1\nroot.password=s3cret\n");
+    {
+      auto sn = open(cx, "menu.network");
+      CHECK_EQ(menu_of(sn)->entry(size_t(find(*menu_of(sn), "TRANSFER FILES"))).value_text, std::string("ON"));  // Samba counts
+      CHECK(!has(*menu_of(sn), "SAMBA PASSWORD"));
+    }
+    auto s = open(cx, "menu.network.transfer");
+    Menu& m = *menu_of(s);
+    CHECK_EQ(m.entry(size_t(find(m, "SAMBA ADDRESS"))).value_text, std::string("\\\\192.168.1.42"));
+    CHECK_EQ(m.entry(size_t(find(m, "SAMBA USER"))).value_text, std::string("root"));
+    CHECK_EQ(m.entry(size_t(find(m, "SAMBA PASSWORD"))).value_text, std::string("s3cret"));
+    CHECK(find(m, "ENABLE SAMBA") < find(m, "SAMBA USER"));
+    CHECK(focus(m, cx, "ENABLE SAMBA"));
+    m.handle(Action::A, cx);  // off: the rows go
+    pump(cx, &m);
+    CHECK(!has(m, "SAMBA USER"));
   }
 
   // ---- several addresses: a row that lists them all
@@ -305,7 +355,7 @@ void test_main_screen() {
     mc.full_image();
     Ctx cx;
     make_ctx(cx, mc, "ssh.enabled=0\nsamba.enabled=1\n");
-    auto s = open(cx, "menu.network");
+    auto s = open(cx, "menu.network.services");
     Menu& m = *menu_of(s);
     cx.sv->cmd.log.clear();
     CHECK(focus(m, cx, "ENABLE SSH"));
@@ -325,15 +375,17 @@ void test_main_screen() {
     CHECK(toast_has(cx, "SSH is off"));
 
     cx.sv->cmd.log.clear();
-    CHECK(focus(m, cx, "ENABLE SAMBA"));
-    m.handle(Action::A, cx);  // was on -> off
-    pump(cx, &m);
+    auto st = open(cx, "menu.network.transfer");  // Samba lives in TRANSFER FILES
+    Menu& mt = *menu_of(st);
+    CHECK(focus(mt, cx, "ENABLE SAMBA"));
+    mt.handle(Action::A, cx);  // was on -> off
+    pump(cx, &mt);
     want = {"systemctl stop nmbd", "systemctl stop smbd", "rm /storage/.cache/services/smb.conf"};
     CHECK_EQ(cx.sv->cmd.log, want);
     CHECK(slurp(mc.cfg()).find("samba.enabled=0") != std::string::npos);
     cx.sv->cmd.log.clear();
-    m.handle(Action::A, cx);
-    pump(cx, &m);
+    mt.handle(Action::A, cx);
+    pump(cx, &mt);
     want = {"mkdir -p /storage/.cache/services/", "touch /storage/.cache/services/smb.conf", "systemctl start nmbd", "systemctl start smbd"};
     CHECK_EQ(cx.sv->cmd.log, want);
 
@@ -359,7 +411,7 @@ void test_main_screen() {
     Machine mc;
     Ctx cx;
     make_ctx(cx, mc, "system.hostname=zenith\n");
-    auto s = open(cx, "menu.network");
+    auto s = open(cx, "menu.network.services");
     Menu& m = *menu_of(s);
     const Entry& h = m.entry(size_t(find(m, "HOSTNAME")));
     h.set_s("my console");
@@ -391,7 +443,7 @@ void test_main_screen() {
     mc.fixture("usb_address.txt", "192.168.7.2\n");
     Ctx cx;
     make_ctx(cx, mc, "");
-    auto s = open(cx, "menu.network");
+    auto s = open(cx, "menu.network.services");
     Menu& m = *menu_of(s);
     cx.sv->cmd.log.clear();
     m.entry(size_t(find(m, "USB GADGET FUNCTION"))).set_s("network");
@@ -404,7 +456,7 @@ void test_main_screen() {
     CHECK_EQ(cx.sv->cmd.log, std::vector<std::string>{"/usr/bin/usbgadget disabled"});
     // without a UDC the entry is not shown
     fs::remove_all(mc.root + "/sys/class/udc");
-    auto s2 = open(cx, "menu.network");
+    auto s2 = open(cx, "menu.network.services");
     CHECK(!has(*menu_of(s2), "USB GADGET FUNCTION"));
   }
 
@@ -417,7 +469,7 @@ void test_main_screen() {
     mc.fixture("zerotier.txt", "200 info 8a93de7f12 1.14.0 ONLINE\n");
     Ctx cx;
     make_ctx(cx, mc, "");
-    auto s = open(cx, "menu.network");
+    auto s = open(cx, "menu.network.services");
     Menu& m = *menu_of(s);
     cx.sv->cmd.log.clear();
     CHECK(focus(m, cx, "TAILSCALE VPN"));
@@ -654,7 +706,8 @@ void test_wifi_list() {
   pump(cx, &m);
   CHECK(log_has(cx, "wifictl connect 'MOVISTAR_2FA1' 'q' 'ES'"));
 
-  // failure: a toast, the pair stays stored (as ES)
+  // failure: a toast, and the pair that worked before (MOVISTAR_2FA1 / q) is put back: the new network was written first only
+  // because `wifictl enable` reads it, a failed join must not replace the stored one
   mc.fixture("connect_fail", "");
   cx.sv->cmd.log.clear();
   CHECK(focus(m, cx, "Cafe Libre"));
@@ -663,6 +716,10 @@ void test_wifi_list() {
   t.screen->handle(Action::Start, cx);
   pump(cx, &m);
   CHECK(toast_has(cx, "Failed to connect"));
+  c = slurp(mc.cfg());
+  CHECK(c.find("wifi.ssid=MOVISTAR_2FA1") != std::string::npos);
+  CHECK(c.find("wifi.key=q") != std::string::npos);
+  CHECK(c.find("Cafe Libre") == std::string::npos);
 
   // SSID with quotes and spaces reaches the shell quoted
   fs::remove(mc.root + "/fixture/connect_fail");
@@ -823,7 +880,186 @@ void test_manual() {
 
 }  // namespace
 
+// The switches say the truth, and what changes by itself shows without leaving the menu.
+void test_live_and_failures() {
+  // which address is given out first: the one of the network a phone is on, not the USB cable or a VPN
+  {
+    using P = std::pair<std::string, std::string>;
+    CHECK_EQ(rank_addresses({P("usb0", "192.168.7.2"), P("wlan0", "192.168.1.42")}), (std::vector<std::string>{"192.168.1.42", "192.168.7.2"}));
+    CHECK_EQ(rank_addresses({P("tailscale0", "100.64.0.9"), P("wlan0", "10.0.0.5"), P("eth0", "10.0.0.6")}),
+             (std::vector<std::string>{"10.0.0.5", "10.0.0.6", "100.64.0.9"}));
+    CHECK_EQ(rank_addresses({P("usb0", "192.168.7.2")}), (std::vector<std::string>{"192.168.7.2"}));
+    CHECK(rank_addresses({}).empty());
+  }
+  // a service that does not start: the switch goes back to off, the setting too, and the toast says so
+  {
+    Machine mc;
+    mc.full_image();
+    mc.fixture("service_fail", "");
+    Ctx cx;
+    make_ctx(cx, mc, "ssh.enabled=0\nsamba.enabled=0\n");
+    auto s = open(cx, "menu.network.services");
+    Menu& m = *menu_of(s);
+    CHECK(focus(m, cx, "ENABLE SSH"));
+    m.handle(Action::A, cx);
+    CHECK(slurp(mc.cfg()).find("ssh.enabled=1") != std::string::npos);  // stored first: the boot daemons read it
+    pump(cx, &m);
+    CHECK(slurp(mc.cfg()).find("ssh.enabled=0") != std::string::npos);
+    CHECK(!m.entry(size_t(find(m, "ENABLE SSH"))).get_b());
+    CHECK(toast_has(cx, "The service did not answer") && !toast_has(cx, "SSH is on"));
+    CHECK(log_at(cx, "systemctl disable sshd") > log_at(cx, "systemctl start sshd"));  // the next boot does not start it either
+    auto st = open(cx, "menu.network.transfer");
+    Menu& mt = *menu_of(st);
+    CHECK(focus(mt, cx, "ENABLE SAMBA"));
+    mt.handle(Action::A, cx);
+    pump(cx, &mt);
+    CHECK(slurp(mc.cfg()).find("samba.enabled=0") != std::string::npos);
+    CHECK(!mt.entry(size_t(find(mt, "ENABLE SAMBA"))).get_b());
+    CHECK(!has(mt, "SAMBA USER"));  // the login rows did not stay
+  }
+  // turning a service OFF that fails to stop stays off (that is what was asked)
+  {
+    Machine mc;
+    mc.full_image();
+    mc.fixture("service_fail", "");
+    Ctx cx;
+    make_ctx(cx, mc, "ssh.enabled=1\n");
+    auto s = open(cx, "menu.network.services");
+    Menu& m = *menu_of(s);
+    CHECK(focus(m, cx, "ENABLE SSH"));
+    m.handle(Action::A, cx);
+    pump(cx, &m);
+    CHECK(slurp(mc.cfg()).find("ssh.enabled=0") != std::string::npos);
+    CHECK(!m.entry(size_t(find(m, "ENABLE SSH"))).get_b());
+    CHECK(toast_has(cx, "The service did not answer"));
+  }
+  // the web transfer whose port is taken: the switch goes back, with a toast
+  {
+    Machine mc;
+    mc.wifi();
+    Ctx cx;
+    make_ctx(cx, mc, "zfront.webtransfer=0\n");
+    int blocker = ::socket(AF_INET, SOCK_STREAM, 0);
+    sockaddr_in sa{};
+    sa.sin_family = AF_INET;
+    sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    sa.sin_port = 0;
+    CHECK(::bind(blocker, reinterpret_cast<sockaddr*>(&sa), sizeof sa) == 0 && ::listen(blocker, 1) == 0);
+    socklen_t sl = sizeof sa;
+    CHECK(::getsockname(blocker, reinterpret_cast<sockaddr*>(&sa), &sl) == 0);
+    webtransfer::set_listen_port(ntohs(sa.sin_port));
+    auto st = open(cx, "menu.network.transfer");
+    Menu& mt = *menu_of(st);
+    CHECK(focus(mt, cx, "WEB FILE TRANSFER"));
+    mt.handle(Action::A, cx);
+    mt.tick(0.0f, cx);
+    CHECK(slurp(mc.cfg()).find("zfront.webtransfer=0") != std::string::npos);
+    CHECK(!mt.entry(size_t(find(mt, "WEB FILE TRANSFER"))).get_b());
+    CHECK(!webtransfer::enabled() && !webtransfer::listening());
+    CHECK(toast_has(cx, "Could not start the web transfer"));
+    CHECK(!has(mt, "WEB ADDRESS"));
+    ::close(blocker);
+    webtransfer::set_listen_port(webtransfer::kWebPort);
+  }
+  // the address changes under an open menu: the rows follow within two seconds, without leaving it
+  {
+    Machine mc;
+    mc.wifi();
+    mc.fixture("ips.txt", "");
+    Ctx cx;
+    make_ctx(cx, mc, "wifi.enabled=1\n");
+    auto s = open(cx, "menu.network");
+    Menu& m = *menu_of(s);
+    CHECK_EQ(m.entry(size_t(find(m, "IP ADDRESS"))).value_text, std::string("NOT CONNECTED"));
+    CHECK_EQ(m.entry(size_t(find(m, "INTERNET STATUS"))).value_text, std::string("NOT CONNECTED"));
+    CHECK(m.wake_in().has_value() && *m.wake_in() <= 2.01f);  // the loop wakes up for it
+    mc.fixture("ips.txt", "192.168.1.42\n");
+    m.tick(0.5f, cx);  // not yet
+    CHECK_EQ(m.entry(size_t(find(m, "IP ADDRESS"))).value_text, std::string("NOT CONNECTED"));
+    m.tick(1.6f, cx);
+    CHECK_EQ(m.entry(size_t(find(m, "IP ADDRESS"))).value_text, std::string("192.168.1.42"));
+    CHECK_EQ(m.entry(size_t(find(m, "INTERNET STATUS"))).value_text, std::string("CONNECTED"));
+    mc.fixture("ips.txt", "");  // the Wi-Fi drops
+    m.tick(2.1f, cx);
+    CHECK_EQ(m.entry(size_t(find(m, "IP ADDRESS"))).value_text, std::string("NOT CONNECTED"));
+    CHECK_EQ(m.entry(size_t(find(m, "INTERNET STATUS"))).value_text, std::string("NOT CONNECTED"));
+    // the QR code screen follows it as well
+    mc.fixture("ips.txt", "192.168.1.42\n");
+    auto q = open(cx, "menu.webqr");
+    CHECK(!q->tick(0.1f, cx));            // nothing changed
+    mc.fixture("ips.txt", "192.168.9.9\n");
+    CHECK(!q->tick(0.5f, cx));            // not yet
+    CHECK(q->tick(2.0f, cx));             // the address changed: the code is made again
+    CHECK(!q->tick(2.1f, cx));            // and nothing more to do
+  }
+}
+
+// What other screens change under a parent that stays below them, and what the Wi-Fi does under an open list.
+void test_follow_the_state() {
+  // the row TRANSFER FILES of the main screen says ON when Samba (or the web transfer) was turned on in the screen above it
+  {
+    Machine mc;
+    mc.full_image();
+    mc.fixture("ips.txt", "192.168.1.42\n");
+    Ctx cx;
+    make_ctx(cx, mc, "samba.enabled=0\n");
+    auto s = open(cx, "menu.network");
+    Menu& m = *menu_of(s);
+    CHECK_EQ(m.entry(size_t(find(m, "TRANSFER FILES"))).value_text, std::string("OFF"));
+    cx.conf.persist("samba.enabled", "1");  // what the screen on top does
+    m.tick(0.5f, cx);
+    CHECK_EQ(m.entry(size_t(find(m, "TRANSFER FILES"))).value_text, std::string("OFF"));  // not yet
+    m.tick(1.6f, cx);
+    CHECK_EQ(m.entry(size_t(find(m, "TRANSFER FILES"))).value_text, std::string("ON"));
+  }
+  // the Wi-Fi list under which the Wi-Fi drops or joins: CONNECTED follows without leaving the list
+  {
+    Machine mc;
+    mc.wifi();
+    mc.fixture("scanlist.txt", kScanlist);
+    mc.fixture("detail.txt", "");
+    mc.fixture("ips.txt", "");
+    Ctx cx;
+    make_ctx(cx, mc, "wifi.enabled=1\nwifi.ssid=Casa 5G\nwifi.country=ES\n");
+    auto s = open(cx, "menu.network.wifi");
+    Menu& m = *menu_of(s);
+    pump(cx, &m);
+    CHECK_EQ(m.entry(0).label, std::string("Casa 5G"));
+    CHECK(m.entry(0).value_text.find("CONNECTED") == std::string::npos);
+    mc.fixture("detail.txt", kDetail);  // the network is joined now
+    mc.fixture("ips.txt", "192.168.1.42\n");
+    m.tick(2.1f, cx);
+    pump(cx, &m);
+    CHECK_EQ(m.entry(size_t(find(m, "Casa 5G"))).value_text, std::string("CONNECTED  100%"));
+    mc.fixture("detail.txt", "");  // and dropped again
+    mc.fixture("ips.txt", "");
+    m.tick(2.1f, cx);
+    pump(cx, &m);
+    CHECK(m.entry(size_t(find(m, "Casa 5G"))).value_text.find("CONNECTED") == std::string::npos);
+  }
+  // the list of paired phones shows one that pairs while it is open
+  {
+    Machine mc;
+    Ctx cx;
+    make_ctx(cx, mc, "");
+    const std::string devfile = mc.root + "/webdevices";
+    ::setenv("ZF_WEBDEVICES", devfile.c_str(), 1);
+    webpair::reload_for_test();
+    auto s = open(cx, "menu.webdevices");
+    Menu& m = *menu_of(s);
+    CHECK(has(m, "NO PAIRED DEVICES"));
+    put(devfile, std::string(64, 'a') + "\tAndroid phone\t1000\t1000\n");
+    webpair::reload_for_test();  // the transfer worker adds it in memory; the test reads the file again
+    m.tick(2.1f, cx);
+    CHECK(has(m, "Android phone") && !has(m, "NO PAIRED DEVICES"));
+    ::unsetenv("ZF_WEBDEVICES");
+    webpair::reload_for_test();
+  }
+}
+
 int main() {
+  test_follow_the_state();
+  test_live_and_failures();
   test_parsers();
   test_main_screen();
   test_known_names();

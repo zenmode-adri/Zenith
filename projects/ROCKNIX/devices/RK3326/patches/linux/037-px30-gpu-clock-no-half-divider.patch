@@ -1,0 +1,53 @@
+From: Zenith <noreply@localhost>
+Subject: [PATCH] clk: rockchip: px30: drop the GPU half divider and its mux
+
+The mainline driver feeds clk_gpu from a mux between an integer divider and a
+half divider (clk_gpu_np5). The only rate that uses the half divider is
+480 MHz (1200 / 2.5), and the clock framework gates whichever of the two
+dividers is not selected.
+
+Measured on RK3326 with mali_kbase: changing the GPU rate across 480 MHz while
+the GPU power domain goes down and comes back up freezes the whole SoC with no
+kernel message, in about a minute of frequency changes, at any temperature and
+at any voltage up to the one used for 600 MHz. The last register state read
+before a freeze is the mux moving to clk_gpu_np5 with PD_GPU off. Keeping both
+dividers ungated from a test program avoids it; ungating only one does not.
+
+The Rockchip kernels made this exact change in 2018 (rockchip-linux/kernel
+488ffe507e "clk: rockchip: px30: fix gpu clk") after f283252018 reported
+"failed to get ack on domain 'pd_gpu'" with clk_gpu_divnp5 gated: clk_gpu_src
+gets the divider and clk_gpu becomes a plain gate. 480 MHz then comes from
+usb480m, which is already a critical clock here (Rockchip 310a0955e9), so the
+frequency table does not change.
+
+--- a/drivers/clk/rockchip/clk-px30.c
++++ b/drivers/clk/rockchip/clk-px30.c
+@@ -179,7 +179,6 @@
+ PNAME(mux_uart0_pmu_p)		= { "clk_uart0_pmu_src", "clk_uart0_np5", "clk_uart0_frac" };
+ PNAME(mux_usbphy_ref_p)		= { "xin24m", "clk_ref24m_pmu" };
+ PNAME(mux_mipidsiphy_ref_p)	= { "xin24m", "clk_ref24m_pmu" };
+-PNAME(mux_gpu_p)		= { "clk_gpu_div", "clk_gpu_np5" };
+ 
+ static struct rockchip_pll_clock px30_pll_clks[] __initdata = {
+ 	[apll] = PLL(pll_rk3328, PLL_APLL, "apll", mux_pll_p,
+@@ -302,17 +301,10 @@
+ 			PX30_CLKGATE_CON(17), 4, GFLAGS),
+ 
+ 	/* PD_GPU */
+-	COMPOSITE_NODIV(0, "clk_gpu_src", mux_4plls_p, 0,
+-			PX30_CLKSEL_CON(1), 6, 2, MFLAGS,
++	COMPOSITE(0, "clk_gpu_src", mux_4plls_p, 0,
++			PX30_CLKSEL_CON(1), 6, 2, MFLAGS, 0, 4, DFLAGS,
+ 			PX30_CLKGATE_CON(0), 8, GFLAGS),
+-	COMPOSITE_NOMUX(0, "clk_gpu_div", "clk_gpu_src", 0,
+-			PX30_CLKSEL_CON(1), 0, 4, DFLAGS,
+-			PX30_CLKGATE_CON(0), 12, GFLAGS),
+-	COMPOSITE_NOMUX_HALFDIV(0, "clk_gpu_np5", "clk_gpu_src", 0,
+-			PX30_CLKSEL_CON(1), 8, 4, DFLAGS,
+-			PX30_CLKGATE_CON(0), 9, GFLAGS),
+-	COMPOSITE_NODIV(SCLK_GPU, "clk_gpu", mux_gpu_p, CLK_SET_RATE_PARENT,
+-			PX30_CLKSEL_CON(1), 15, 1, MFLAGS,
++	GATE(SCLK_GPU, "clk_gpu", "clk_gpu_src", 0,
+ 			PX30_CLKGATE_CON(0), 10, GFLAGS),
+ 	COMPOSITE_NOMUX(0, "aclk_gpu", "clk_gpu", CLK_IGNORE_UNUSED,
+ 			PX30_CLKSEL_CON(1), 13, 2, DFLAGS,

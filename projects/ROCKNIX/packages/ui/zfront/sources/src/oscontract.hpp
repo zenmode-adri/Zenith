@@ -1,6 +1,6 @@
 // MODULE `oscontract` (os-contract): what the rest of the OS expects from "emulationstation", so zfront can replace it
 // without breaking sway rules, sleep.sh, autostart, the tuner... See cpp/docs/os-contract.md (contract + OS patches) and
-// /home/epsil/zf-research/02-contrato-so-es.md (the specification).
+// the OS contract research notes (the specification, kept outside this repository).
 //
 //   startup / wait_*    boot: stale-state cleanup, bl_power=0, set_kill, SIGHUP, bounded waits for sway and the ROMs
 //   on_first_frame      /tmp/emulationstation.ready + the `start` event
@@ -53,6 +53,8 @@ bool wait_for_path(const std::string& path, int timeout_ms, bool want_socket = f
 /// `ES_WAIT_WAYLAND_SOCKET` (max 10 s) / `ES_WAIT_ROMS_READY` (max 15 s), exported by start_es.sh. True when not requested or
 /// satisfied; on a timeout it logs and goes on (like ES).
 bool wait_display();
+/// The same check without waiting: is the display there right now?
+bool display_ready();
 bool wait_roms();
 /// First useful frame: creates the ready file and fires `start`. Idempotent.
 void on_first_frame();
@@ -150,6 +152,9 @@ bool take_redraw();
 std::optional<TimePoint> saver_deadline(const EsSettings& es, TimePoint now);
 /// A suspend happened since the last `before_acts` (cheap: two clock reads). The loop's sleep returns early when true.
 bool resume_pending();
+/// True once per suspend that `before_acts` noticed: the clock, battery and network the bar shows are old (the deadlines are on a
+/// clock that stood still while the machine slept) and must be read again.
+bool take_resumed();
 /// Why the screensaver must not start now.
 bool saver_blocked();
 /// AFTER the actions were handled (a game may have run for hours inside): restart the inactivity count.
@@ -175,6 +180,12 @@ bool busy();
 /// `killall <name in /tmp/.process-kill-data>` when a game runs and the name is a safe process name that is not the
 /// frontend itself. False (nothing done) otherwise.
 bool emukill();
+/// True once after `emukill` stopped the game on purpose (QUIT GAME, the phone, /emukill): the emulator then ends with a non-zero
+/// code, and the launcher counts it as a normal quit (play time, play log, performance suggestions). Reading clears it.
+bool take_quit_request();
+/// The process names of the kill target (what `emukill` would pass to killall, without the signal word), each checked like
+/// `emukill` does (safe name, not the frontend). Empty when no game runs, the file is empty or any name is not acceptable.
+std::vector<std::string> kill_names();
 
 // ---- external requests (HTTP -> device loop) --------------------------------------------------------------------------
 /// Main thread: remember a ROM path to launch (from the `done` callback of a job).

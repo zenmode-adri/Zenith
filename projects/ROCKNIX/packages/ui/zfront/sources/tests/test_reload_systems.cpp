@@ -17,6 +17,7 @@
 #include "check.hpp"
 #include "collections.hpp"
 #include "menu.hpp"
+#include "oscontract.hpp"
 #include "registry.hpp"
 #include "screens.hpp"
 #include "syslist.hpp"
@@ -95,11 +96,16 @@ std::vector<std::string> cards(const Ctx& cx) { return item_names(cx.systems, cx
 std::vector<std::string> v(std::initializer_list<const char*> l) { return std::vector<std::string>(l.begin(), l.end()); }
 
 // Opens the fake window, sets what the settings menus would have set and closes the window with B.
-void change_and_close(App& app, const char* key, const char* value) {
+void change_and_close(App& app, const char* key, const char* value, bool drain = true) {
   app.handle(Action::Start);  // opens the fake "menu.main"
   app.cx.es.set_string(key, value);
   col::set_reload_needed(true);
   app.handle(Action::B);
+  // as the loop does: the jobs drain (a collection build may be running) and the reload that waited for them happens
+  for (int i = 0; drain && i < 400 && !(app.cx.sv->jobs.idle() && !col::reload_needed()); ++i) {
+    app.drain_jobs(Clock::now());
+    if (!app.cx.sv->jobs.idle()) usleep(5000);
+  }
 }
 
 }  // namespace
@@ -322,7 +328,7 @@ int main() {
     bool done = false;
     app.cx.sv->jobs.post([] { std::this_thread::sleep_for(std::chrono::milliseconds(80)); }, [&done] { done = true; });
     int before = ld->calls;
-    change_and_close(app, "HiddenSystems", "nes");
+    change_and_close(app, "HiddenSystems", "nes", false);
     CHECK_EQ(ld->calls, before);  // waiting
     CHECK_EQ(app.cx.items.size(), size_t(3));
     auto until = std::chrono::steady_clock::now() + std::chrono::seconds(5);
@@ -368,6 +374,114 @@ int main() {
     CHECK_EQ(app.cx.items[0].games, 2u);
     CHECK_EQ(app.cx.items[1].games, 1u);
     CHECK_EQ(app.cx.items[2].games, 3u);
+  }
+
+  // ---- a ROM copied into a system that was already opened (and a system that had no games at start) shows up after a rescan
+  // (the bug: the reload that the menus trigger keeps every game list already read, and an unchanged list reloads nothing)
+  {
+    col::set_reload_needed(false);
+    Ctx cx;
+    setup(cx, ld);
+    App app(std::move(cx), std::make_unique<CarouselScreen>(0), make_status_source("/nonexistent"));  // on nes
+    app.tick(0.0f);
+    app.handle(Action::A);  // opens nes: 2 games read
+    CHECK_EQ(app.cx.systems[0].games.size(), size_t(2));
+    app.handle(Action::B);
+    touch(g_tmp + "/roms/nes/z.nes");  // copied over the network while zfront runs
+    col::request_rescan();  // what the LIBRARY entry and GET /reloadgames ask for
+    app.drain_jobs(Clock::now());
+    app.tick(0.0f);
+    app.handle(Action::A);
+    CHECK_EQ(app.cx.systems[0].games.size(), size_t(3));
+    app.handle(Action::B);
+    touch(g_tmp + "/roms/empty/z.x");  // a system that had no games at start
+    col::request_rescan();
+    for (int i = 0; i < 400 && (col::rescan_needed() || !app.cx.sv->jobs.idle()); ++i) {  // a collection build of the last reload may run
+      app.drain_jobs(Clock::now());
+      usleep(5000);
+    }
+    CHECK_EQ(cards(app.cx), v({"nes", "snes", "gb", "empty"}));
+    unlink((g_tmp + "/roms/nes/z.nes").c_str());
+    unlink((g_tmp + "/roms/empty/z.x").c_str());
+  }
+
+  // ---- the LIBRARY entry UPDATE GAMELISTS asks for the rescan; closing the menus reads the folders again (the cursor stays)
+  {
+    col::set_reload_needed(false);
+    col::set_rescan_needed(false);
+    Ctx cx;
+    setup(cx, ld);
+    App app(std::move(cx), std::make_unique<CarouselScreen>(2), make_status_source("/nonexistent"));  // on gb
+    app.tick(0.0f);
+    app.handle(Action::A);
+    CHECK_EQ(app.cx.systems[2].games.size(), size_t(3));
+    app.handle(Action::B);
+    touch(g_tmp + "/roms/gb/g.gb");  // copied while zfront runs
+    std::unique_ptr<Screen> lib = Registry::instance().make("menu.g.library", app.cx, "");
+    CHECK(lib != nullptr);
+    Menu* m = static_cast<Menu*>(lib.get());
+    m->tick(0.0f, app.cx);
+    int want = -1;
+    for (size_t i = 0; i < m->size(); ++i)
+      if (m->entry(i).label == "UPDATE GAMELISTS") want = int(i);
+    CHECK(want >= 0);
+    for (size_t k = 0; k <= m->size() + 1 && m->cursor() != want; ++k) m->handle(Action::Down, app.cx);
+    oscontract::reset_for_test();
+    oscontract::startup(app.cx.sv, true);  // dry-run: events only land in dry_log()
+    Transition t = m->handle(Action::A, app.cx);
+    CHECK(t.kind == Transition::CloseMenus);
+    {  // ES fires "update-gamelists" before it reads the folders again
+      bool seen = false;
+      for (const std::string& l : oscontract::dry_log()) seen = seen || l == "event update-gamelists";
+      CHECK(seen);
+    }
+    CHECK(col::rescan_needed());
+    CHECK(col::reload_needed());
+    app.handle(Action::Start);  // opens the fake main menu
+    app.handle(Action::Start);  // closes it: the carousel reads the folders again
+    CHECK(!col::rescan_needed());
+    CHECK(!col::reload_needed());
+    CHECK_EQ(cards(app.cx), v({"nes", "snes", "gb"}));
+    CHECK(!app.cx.systems[2].loaded);
+    app.tick(0.0f);
+    app.handle(Action::A);
+    CHECK_EQ(app.cx.systems[2].games.size(), size_t(4));
+    app.handle(Action::B);
+    unlink((g_tmp + "/roms/gb/g.gb").c_str());
+  }
+
+  // ---- GET /reloadgames: its job runs on the worker and its callback asks for the rescan on the main thread. The drain that
+  // runs that callback must also reload the carousel (no second drain, no wait for the next key press)
+  {
+    col::set_reload_needed(false);
+    col::set_rescan_needed(false);
+    Ctx cx;
+    setup(cx, ld);
+    App app(std::move(cx), std::make_unique<CarouselScreen>(0), make_status_source("/nonexistent"));  // on nes
+    app.tick(0.0f);
+    app.handle(Action::A);
+    CHECK_EQ(app.cx.systems[0].games.size(), size_t(2));
+    app.handle(Action::B);
+    touch(g_tmp + "/roms/nes/z.nes");
+    bool ran = false;
+    app.cx.sv->jobs.post(nullptr, [&ran] {
+      ran = true;
+      col::request_rescan();
+    });
+    auto until = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    while (!ran && std::chrono::steady_clock::now() < until) {
+      app.drain_jobs(Clock::now());
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+    CHECK(ran);
+    CHECK(!col::rescan_needed());  // the same drain_jobs call that ran the callback reloaded
+    CHECK(!col::reload_needed());
+    CHECK(!app.cx.systems[0].loaded);
+    app.tick(0.0f);
+    app.handle(Action::A);
+    CHECK_EQ(app.cx.systems[0].games.size(), size_t(3));
+    app.handle(Action::B);
+    unlink((g_tmp + "/roms/nes/z.nes").c_str());
   }
 
   // ---- speed: 80 systems, lazy loader, with the SD cache warm (the PC's file cache) -- printed, not asserted

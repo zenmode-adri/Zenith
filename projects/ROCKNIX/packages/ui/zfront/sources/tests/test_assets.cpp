@@ -77,7 +77,7 @@ void test_release() {
 
 std::string theme_dir() {
   const char* e = std::getenv("ZF_THEME_DIR");
-  return e ? e : "/home/epsil/zenith-frontend/theme-dark";
+  return e ? e : "/usr/share/zfront/theme-dark";
 }
 
 void test_wrap() {

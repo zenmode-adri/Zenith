@@ -268,6 +268,84 @@ int main() {
     CHECK(!file_exists(dir + "/Tetris.state.auto.bak"));
   }
 
+  // ---- a game loaded from a slot that saves on exit: that session is kept as the newest state, the real autosave comes back
+  {
+    Ctx cx;
+    make_ctx(cx, "");
+    const System& gb = cx.systems[0];
+    const Game& g = gb.games[0];
+    reset(dir);
+    spit(dir + "/Tetris.state", "A");
+    spit(dir + "/Tetris.state.auto", "OLDAUTO");
+    ss::invalidate();
+    std::string args = ss::begin(gb, g, cx.conf.map(), ss::Pick::Slot, 0);
+    CHECK(!args.empty());
+    CHECK_EQ(slurp(dir + "/Tetris.state.auto"), std::string("A"));
+    spit(dir + "/Tetris.state.auto", "PLAYED");  // RetroArch on exit
+    ss::after_game();
+    CHECK_EQ(slurp(dir + "/Tetris.state.auto"), std::string("OLDAUTO"));
+    CHECK_EQ(slurp(dir + "/Tetris.state"), std::string("A"));
+    CHECK_EQ(slurp(dir + "/Tetris.state1"), std::string("PLAYED"));
+    CHECK(!file_exists(dir + "/Tetris.state.auto.bak") && !file_exists(dir + "/Tetris.state2"));
+    // not touched by the game: nothing extra is left
+    reset(dir);
+    spit(dir + "/Tetris.state", "A");
+    spit(dir + "/Tetris.state.auto", "OLDAUTO");
+    ss::invalidate();
+    ss::begin(gb, g, cx.conf.map(), ss::Pick::Slot, 0);
+    ss::after_game();
+    CHECK_EQ(slurp(dir + "/Tetris.state.auto"), std::string("OLDAUTO"));
+    CHECK(!file_exists(dir + "/Tetris.state1"));
+  }
+
+  // ---- power cut during a game loaded from a slot (fix4 z4 #1): the real autosave is never lost
+  {
+    Ctx cx;
+    make_ctx(cx, "");
+    const System& gb = cx.systems[0];
+    const Game& g = gb.games[0];
+    // the state a crash leaves: the game's newer autosave, and the real one as .bak
+    reset(dir);
+    spit(dir + "/Tetris.state", "A");
+    spit(dir + "/Tetris.state.auto", "NEWER");
+    spit(dir + "/Tetris.state.auto.bak", "REAL");
+    ss::invalidate();
+    // a new launch (plain or from a state) settles it first: the old .bak must not be deleted
+    std::string args = ss::begin(gb, g, cx.conf.map(), ss::Pick::Slot, 0);
+    CHECK(!args.empty());
+    CHECK(slurp(dir + "/Tetris.state1") == "NEWER");  // the newer autosave was kept in the next free slot
+    ss::after_game();
+    CHECK_EQ(slurp(dir + "/Tetris.state.auto"), std::string("REAL"));  // and the real autosave is back
+    CHECK(!file_exists(dir + "/Tetris.state.auto.bak"));
+
+    // a plain launch settles it too, and an autosave equal to a numbered state is not duplicated
+    reset(dir);
+    spit(dir + "/Tetris.state", "A");
+    spit(dir + "/Tetris.state.auto", "A");
+    spit(dir + "/Tetris.state.auto.bak", "REAL");
+    ss::invalidate();
+    ss::begin(gb, g, cx.conf.map(), ss::Pick::None, 0);
+    CHECK_EQ(slurp(dir + "/Tetris.state.auto"), std::string("REAL"));
+    CHECK(!file_exists(dir + "/Tetris.state1"));
+    CHECK(!file_exists(dir + "/Tetris.state.auto.bak"));
+  }
+
+  // ---- the plain launch of the list (default setting, A press): launch_request settles a crash backup before the command is built
+  {
+    reset(dir);
+    Ctx cx;
+    make_ctx(cx, "");
+    spit(dir + "/Tetris.state", "A");
+    spit(dir + "/Tetris.state.auto", "NEWER");
+    spit(dir + "/Tetris.state.auto.bak", "REAL");
+    ss::invalidate();
+    CHECK(ss::launch_request(cx, 0, 0).kind == Transition::None);  // just launch...
+    CHECK_EQ(slurp(dir + "/Tetris.state.auto"), std::string("REAL"));  // ...with the real autosave back
+    CHECK(!file_exists(dir + "/Tetris.state.auto.bak"));
+    CHECK_EQ(slurp(dir + "/Tetris.state1"), std::string("NEWER"));
+    CHECK_EQ(ss::plain_args(cx, 0, 0), std::string(" -state_slot 2"));  // the slot is chosen past the rescued one
+  }
+
   // ---- hooks of the list: A opens the manager only when the setting says so
   {
     reset(dir);
@@ -350,7 +428,18 @@ int main() {
     CHECK(s->handle(Action::Y, cx).kind == Transition::None);  // on the "new game" card: nothing to delete
     s->handle(Action::Right, cx);
     s->handle(Action::X, cx);
+    CHECK(!cx.sv->jobs.idle());  // the copy is a job (slow worker), not work of the draw thread
+    for (int i = 0; i < 1000 && !cx.sv->jobs.idle(); ++i) {
+      cx.sv->jobs.drain();
+      ::usleep(2000);
+    }
+    cx.sv->jobs.drain();
     CHECK_EQ(slurp(dir + "/Tetris.state2"), std::string("NEW"));
+    {  // and the user is told
+      bool said = false;
+      for (const Toast& tt : cx.sv->toasts.items()) said = said || tt.text == tr("SAVED");
+      CHECK(said);
+    }
     Transition ask = s->handle(Action::Y, cx);
     CHECK(ask.kind == Transition::Push && ask.screen);
     CHECK(file_exists(dir + "/Tetris.state2"));  // still there: nothing happens until the answer
@@ -367,9 +456,39 @@ int main() {
     CHECK(!file_exists(dir + "/Tetris.state2"));
   }
 
+  // ---- after deleting a state the cursor stays where it was (on the next card), it does not jump back to START NEW GAME
+  {
+    reset(dir);
+    Ctx cx;
+    make_ctx(cx, "global.savestates=1\n");
+    spit(dir + "/Tetris.state", "OLD");
+    spit(dir + "/Tetris.state1", "NEW");
+    spit(dir + "/Tetris.state2", "MID");
+    set_mtime(dir + "/Tetris.state", 1700000000);
+    set_mtime(dir + "/Tetris.state1", 1700100000);
+    set_mtime(dir + "/Tetris.state2", 1700050000);
+    ss::invalidate();
+    auto s = Registry::instance().make("menu.savestates", cx, ss::make_arg(cx.systems[0], cx.systems[0].games[0]));
+    CHECK(s != nullptr);
+    // cards, newest first: [new game] state1 (NEW) state2 (MID) state (OLD); the cursor goes to MID
+    s->handle(Action::Right, cx);
+    s->handle(Action::Right, cx);
+    Transition ask = s->handle(Action::Y, cx);
+    CHECK(ask.kind == Transition::Push && ask.screen);
+    ask.screen->handle(Action::Left, cx);  // YES
+    ask.screen->handle(Action::A, cx);
+    CHECK(!file_exists(dir + "/Tetris.state2"));
+    // now [new game] state1 (NEW) state (OLD): the cursor is on the third card (OLD), not on the first one
+    Transition t = s->handle(Action::A, cx);
+    CHECK(t.kind == Transition::Launch);
+    CHECK(t.cmd.find(" -autosave 1") != std::string::npos);  // a state was picked, not a new game (" -autosave 0")
+    CHECK_EQ(slurp(dir + "/Tetris.state.auto"), std::string("OLD"));
+    ss::after_game();
+  }
+
   // ---- drawing at the four sizes (needs the real theme and font; skipped where the theme is not installed)
   {
-    const std::string tdir = "/home/epsil/zenith-frontend/theme-dark";
+    const std::string tdir = "/usr/share/zfront/theme-dark";
     if (is_dir(tdir)) {
       reset(dir);
       spit(dir + "/Tetris.state", "OLD");

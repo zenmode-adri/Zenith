@@ -6,8 +6,10 @@
 #include <unistd.h>
 
 #include <chrono>
+#include <cstdlib>
 #include <ctime>
 #include <cstdio>
+#include <stdexcept>
 #include <string>
 #include <thread>
 
@@ -140,6 +142,7 @@ int main() {
     CHECK(has(r.c_str(), "HTTP/1.1 200 OK"));
     CHECK(has(r.c_str(), "m=GET p=/a q=b=1 b="));
     CHECK(has(r.c_str(), "Connection: close"));
+    CHECK(has(r.c_str(), "X-Content-Type-Options: nosniff\r\n") && has(r.c_str(), "Cache-Control: no-store\r\n"));
 
     {  // body in two pieces
       int fd = connect_to(port);
@@ -170,6 +173,27 @@ int main() {
     CHECK(has(talk(port, "POST /x HTTP/1.1\r\nContent-Length: 99999\r\n\r\n").c_str(), "HTTP/1.1 413"));
     CHECK(has(talk(port, "POST /x HTTP/1.1\r\nTransfer-Encoding: chunked\r\n\r\n").c_str(), "HTTP/1.1 501"));
     CHECK(has(talk(port, "DELETE /x HTTP/1.1\r\n\r\n").c_str(), "HTTP/1.1 501"));
+    {  // a client that connects and says nothing (a browser's spare connection) does not hold up the one that has a request
+      int idle1 = connect_to(port), idle2 = connect_to(port);
+      auto t0 = std::chrono::steady_clock::now();
+      string x = talk(port, "GET /quick HTTP/1.1\r\nHost: x\r\n\r\n");
+      long ms = long(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count());
+      CHECK(has(x.c_str(), "p=/quick"));
+      CHECK(ms < 150);  // the idle ones have 400 ms each before they are answered 408
+      CHECK(has(read_all(idle1, 3000).c_str(), "HTTP/1.1 408"));
+      CHECK(has(read_all(idle2, 3000).c_str(), "HTTP/1.1 408"));
+      ::close(idle1);
+      ::close(idle2);
+    }
+    {  // a slow request (two pieces) is answered while an idle connection waits next to it
+      int idle = connect_to(port), fd = connect_to(port);
+      ::send(fd, "GET /slow HTTP/1.1\r\n", 20, 0);
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      ::send(fd, "Host: x\r\n\r\n", 11, 0);
+      CHECK(has(read_all(fd).c_str(), "p=/slow"));
+      ::close(fd);
+      ::close(idle);
+    }
     {  // a client that stalls gets 408 after the deadline and does not block the next one for long
       auto t0 = std::chrono::steady_clock::now();
       int fd = connect_to(port);
@@ -208,6 +232,58 @@ int main() {
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     CHECK(std::clock() - c0 < CLOCKS_PER_SEC / 100);  // < 10 ms of CPU in 500 ms of idling
     s.stop();
+  }
+  // ---- a predicate picks other streamed routes (the default stays POST kStreamPath)
+  {
+    StreamPred pred = [](std::string_view m, std::string_view p) { return m == "POST" && p == "/x/up"; };
+    Request r;
+    CHECK(parse_request("POST /x/up?a=1 HTTP/1.1\r\nContent-Length: 999999\r\n\r\nab", r, pred) == Parse::Stream);
+    CHECK_EQ(r.path, string("/x/up"));
+    CHECK_EQ(r.body, string("ab"));
+    Request r2;
+    CHECK(parse_request("POST /files/upload HTTP/1.1\r\nContent-Length: 999999\r\n\r\n", r2, pred) == Parse::TooLarge);  // not picked
+    Request r3;
+    CHECK(parse_request("POST /files/upload HTTP/1.1\r\nContent-Length: 999999\r\n\r\n", r3) == Parse::Stream);
+  }
+  // ---- a route answers with a file (sent in pieces by the worker) and extra headers; CR/LF in a header drops it
+  {
+    char t[] = "/tmp/zf-httpd-XXXXXX";
+    const string dir = ::mkdtemp(t);
+    const string path = dir + "/big.bin";
+    string data(300 * 1024 + 7, '\0');
+    for (size_t i = 0; i < data.size(); ++i) data[i] = char(i * 7 + 3);
+    if (FILE* f = std::fopen(path.c_str(), "wb")) {
+      std::fwrite(data.data(), 1, data.size(), f);
+      std::fclose(f);
+    }
+    Server s;
+    string err;
+    CHECK(s.start(0,
+                  [path](const Request& q) {
+                    Response x;
+                    if (q.path == "/get") {
+                      x.file = path;
+                      x.content_type = "application/octet-stream";
+                      x.headers = {{"Content-Disposition", "attachment; filename=\"big.bin\""}, {"X-Bad", "a\r\nInjected: 1"}};
+                    } else if (q.path == "/missing") {
+                      x.file = path + ".nope";
+                    }
+                    return x;
+                  },
+                  err));
+    const string got = talk(s.port(), "GET /get HTTP/1.1\r\nHost: x\r\n\r\n");
+    CHECK(has(got, "HTTP/1.1 200"));
+    CHECK(has(got, ("Content-Length: " + std::to_string(data.size()) + "\r\n").c_str()));
+    CHECK(has(got, "Content-Disposition: attachment; filename=\"big.bin\"\r\n"));
+    CHECK(!has(got, "Injected") && !has(got, "X-Bad"));
+    CHECK(has(got, "X-Content-Type-Options: nosniff\r\n") && has(got, "Cache-Control: no-store\r\n"));
+    const size_t he = got.find("\r\n\r\n");
+    CHECK(he != string::npos && got.substr(he + 4) == data);
+    CHECK(has(talk(s.port(), "GET /missing HTTP/1.1\r\nHost: x\r\n\r\n"), "HTTP/1.1 404"));
+    CHECK(has(talk(s.port(), "GET /get HTTP/1.1\r\nHost: x\r\n\r\n"), "HTTP/1.1 200"));  // the worker is free again
+    s.stop();
+    ::unlink(path.c_str());
+    ::rmdir(dir.c_str());
   }
   return zt::done();
 }

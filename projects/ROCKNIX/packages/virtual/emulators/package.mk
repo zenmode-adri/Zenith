@@ -1093,9 +1093,16 @@ makeinstall_target() {
 
   ### Sony Playstation Portable
   case "${DEVICE}" in
-    RK356*|RK3326*)
+    RK356*)
       add_emu_core psp ppsspp ppsspp2021-sa true
       add_emu_core psp ppsspp ppsspp-sa false
+      ;;
+    RK3326*)
+      # PPSSPP 1.20.2 by default: on an R36 Ultra (God of War, same savestate) it matches 2021 with buffer effects on and is 18 %
+      # faster with them skipped; 2021 only looked faster because its default ini is "Non-buffered" (no sky, wrong colours), and
+      # start_ppsspp2021.sh ignores the ES options (resolution, frame skip, vsync, skip buffer effects)
+      add_emu_core psp ppsspp ppsspp-sa true
+      add_emu_core psp ppsspp ppsspp2021-sa false
       ;;
     *)
       add_emu_core psp ppsspp ppsspp2021-sa false

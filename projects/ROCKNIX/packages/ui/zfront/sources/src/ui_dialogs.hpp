@@ -5,7 +5,7 @@
 // (`Transition::open("menu.x")`, `Transition::quit()`...): it replaces the dialog on the stack, so B afterwards goes back
 // to the menu that asked. Buttons: A accepts, B cancels (the NO / cancel result), Left/Right move between buttons.
 // Controls of the keyboard: d-pad moves, A types, B deletes (cancels when the field is empty), X space, Y shift,
-// L shows/hides a password, Start accepts, Select cancels.
+// L shows/hides a password, R opens the accents (a-acute, n-tilde...), Start accepts, Select cancels.
 #pragma once
 #include <functional>
 #include <string>
@@ -70,6 +70,7 @@ class ChoiceDialog : public Screen {
  public:
   ChoiceDialog(std::string title, std::vector<Option> options, std::string current, std::function<void(Ctx&, const std::string&)> on_pick);
   Transition handle(Action a, Ctx& cx) override;
+  Profile repeat_profile() const override { return kMenu; }
   void draw(Ctx& cx, std::vector<Op>& out) override;
   bool overlay() const override { return true; }
   bool is_menu() const override { return true; }
@@ -89,6 +90,7 @@ class ChoiceDialog : public Screen {
   float lay_w_ = 0, lay_h_ = 0;
   float card_x_ = 0, card_y_ = 0, card_w_ = 0, card_h_ = 0, rows_y_ = 0, rows_h_ = 0;
   int vis_ = 0;
+  float widest_ = -1.0f;  // the widest label (measured, no pictures), for the width of the card; < 0: not measured for this layout
   Shapes shapes_;
   Txt t_title_;
 
@@ -110,7 +112,7 @@ class KeyboardScreen : public Screen {
   bool caret_visible() const { return caret_on_; }
 
   const std::string& text() const { return text_; }
-  /// 0 lower case, 1 upper case, 2 symbols.
+  /// 0 lower case, 1 upper case, 2 symbols, 3 accents (R).
   int layer() const { return layer_; }
   bool revealed() const { return reveal_; }
 

@@ -9,6 +9,7 @@
 #pragma once
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace zf {
@@ -80,6 +81,11 @@ std::string usb_mode_from_function(std::string_view function_file);
 
 /// First line of `s`, trimmed.
 std::string first_line(std::string_view s);
+
+/// The addresses of the console in the order to give them out: those of the interfaces a phone on the same network reaches (`wlan*`, `wl*`,
+/// `eth*`, `en*`) first, the others (USB gadget, VPNs, bridges) after them, each group in the order it came. The first one is what the
+/// web address and the QR code show.
+std::vector<std::string> rank_addresses(const std::vector<std::pair<std::string, std::string>>& by_interface);
 
 }  // namespace netmenu
 }  // namespace zf

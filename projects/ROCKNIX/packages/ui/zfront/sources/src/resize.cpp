@@ -27,7 +27,7 @@ uint8_t to_u8(float v) {
 }
 
 // One axis. `vertical`: resample rows (`n_in` -> `n_out` rows of `other` columns), else columns.
-void pass(const std::vector<uint8_t>& in, std::vector<uint8_t>& out, uint32_t w, uint32_t h, uint32_t nw, uint32_t nh, bool vertical, Filter f) {
+void pass(const uint8_t* in, std::vector<uint8_t>& out, uint32_t w, uint32_t h, uint32_t nw, uint32_t nh, bool vertical, Filter f) {
   const uint32_t n_in = vertical ? h : w, n_out = vertical ? nh : nw;
   const uint32_t other = vertical ? w : h;
   float ratio = float(n_in) / float(n_out);
@@ -53,7 +53,7 @@ void pass(const std::vector<uint8_t>& in, std::vector<uint8_t>& out, uint32_t w,
       float t[4] = {0, 0, 0, 0};
       for (size_t i = 0; i < ws.size(); ++i) {
         size_t idx = vertical ? (size_t(left + long(i)) * w + k) : (size_t(k) * w + size_t(left + long(i)));
-        const uint8_t* p = &in[idx * 4];
+        const uint8_t* p = in + idx * 4;
         for (int c = 0; c < 4; ++c) t[c] += float(p[c]) * ws[i];
       }
       size_t oi = vertical ? (size_t(o) * nw + k) : (size_t(k) * nw + o);
@@ -65,12 +65,21 @@ void pass(const std::vector<uint8_t>& in, std::vector<uint8_t>& out, uint32_t w,
 }  // namespace
 
 std::vector<uint8_t> resize_rgba(const uint8_t* src, uint32_t sw, uint32_t sh, uint32_t dw, uint32_t dh, Filter f) {
-  std::vector<uint8_t> in(src, src + size_t(sw) * sh * 4);
-  if (sw == dw && sh == dh) return in;
+  if (sw == dw && sh == dh) return std::vector<uint8_t>(src, src + size_t(sw) * sh * 4);
   std::vector<uint8_t> mid(size_t(sw) * dh * 4);
-  pass(in, mid, sw, sh, sw, dh, true, f);
+  pass(src, mid, sw, sh, sw, dh, true, f);
   std::vector<uint8_t> out(size_t(dw) * dh * 4);
-  pass(mid, out, sw, dh, dw, dh, false, f);
+  pass(mid.data(), out, sw, dh, dw, dh, false, f);
+  return out;
+}
+
+std::vector<uint8_t> resize_rgba(std::vector<uint8_t>&& src, uint32_t sw, uint32_t sh, uint32_t dw, uint32_t dh, Filter f) {
+  if (sw == dw && sh == dh) return std::move(src);
+  std::vector<uint8_t> mid(size_t(sw) * dh * 4);
+  pass(src.data(), mid, sw, sh, sw, dh, true, f);
+  std::vector<uint8_t>().swap(src);  // the source is not needed after the vertical pass: at most two buffers at a time
+  std::vector<uint8_t> out(size_t(dw) * dh * 4);
+  pass(mid.data(), out, sw, dh, dw, dh, false, f);
   return out;
 }
 

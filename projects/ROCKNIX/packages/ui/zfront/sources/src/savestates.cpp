@@ -159,6 +159,7 @@ bool copy_file(const std::string& src, const std::string& dst, uint64_t* hash = 
     if (!ok) break;
   }
   ::close(in);
+  if (ok && !blocked) ok = ::fsync(out) == 0;  // data on disk before the rename: a power cut must not leave an empty state file
   ok = (::close(out) == 0) && ok;
   if (blocked) {
     if (hash && ok) *hash = h;
@@ -296,6 +297,10 @@ std::string plain_args(Ctx& cx, size_t sys, size_t game) {
 
 std::string begin(const System& sys, const Game& g, const ConfMap& conf, Pick pick, int slot) {
   if (!enabled(sys, g, conf)) return {};
+  // an autosave backup left by a game that never reported back (power cut) is settled before anything else touches the files
+  // (also on plain launches); a stale plan would mean no game is running any more, since this is a new launch
+  if (g_plan.active) after_game();
+  recover_files(state_dir(sys), path_stem(g.path));
   if (pick == Pick::None) return plain_args(sys, g, conf);
   std::string dir = state_dir(sys), stem = path_stem(g.path);
   std::vector<State> st = list(sys, g);
@@ -309,6 +314,9 @@ std::string begin(const System& sys, const Game& g, const ConfMap& conf, Pick pi
     if (s.slot == slot) chosen = &s;
   bool inc = incremental(conf);
   std::string args = " -state_slot " + std::to_string(inc ? next : slot);
+  // a backup that could not be put back is never overwritten (it may be the only copy of the real autosave): launch without loading
+  if (!writes_blocked() && (file_exists(state_path(dir, stem, -1) + ".bak") || file_exists(state_path(dir, stem, -1) + ".png.bak")))
+    return " -state_slot " + std::to_string(next);
   if (chosen) args += " -autosave 1";
 
   Plan plan;
@@ -319,15 +327,13 @@ std::string begin(const System& sys, const Game& g, const ConfMap& conf, Pick pi
   plan.auto_file = state_path(dir, stem, -1);
   plan.auto_png = plan.auto_file + ".png";
   if (file_exists(plan.auto_file)) {
-    remove_file(plan.auto_file + ".bak");
     plan.auto_saved = move_file(plan.auto_file, plan.auto_file + ".bak");
   }
   if (file_exists(plan.auto_png)) {
-    remove_file(plan.auto_png + ".bak");
     plan.png_saved = move_file(plan.auto_png, plan.auto_png + ".bak");
   }
   if (chosen) {
-    copy_file(chosen->path, plan.auto_file);
+    plan.auto_hashed = copy_file(chosen->path, plan.auto_file, &plan.auto_hash);
     if (inc && next >= 0 && slot + 1 != next) {
       plan.new_slot_file = state_path(dir, stem, next);
       remove_file(plan.new_slot_file);
@@ -365,6 +371,16 @@ void after_game() {
     uint64_t h = 0;
     if (hash_file(p.new_slot_file, h) && h == p.new_slot_hash) remove_file(p.new_slot_file);  // the game did not touch it
   }
+  // the game saved on exit over the copy: that is the session just played, kept as the newest state instead of thrown away
+  uint64_t ah = 0;
+  if (p.auto_hashed && hash_file(p.auto_file, ah) && ah != p.auto_hash) {
+    invalidate();
+    int next = 0;
+    if (const std::vector<Rec>* r = recs_for(p.dir, p.stem))
+      for (const Rec& x : *r) next = std::max(next, x.slot + 1);
+    const std::string to = state_path(p.dir, p.stem, next);
+    if (move_file(p.auto_file, to) && file_exists(p.auto_png)) move_file(p.auto_png, to + ".png");
+  }
   // the autosave goes back to what it was before the loaded state was copied over it
   remove_file(p.auto_file);
   if (p.auto_saved) move_file(p.auto_file + ".bak", p.auto_file);
@@ -382,34 +398,66 @@ bool remove_state(const System& sys, const Game& g, const State& s) {
   return true;
 }
 
-bool copy_to_free_slot(const System& sys, const Game& g, const State& s) {
+std::string copy_target(const System& sys, const Game& g, const State& s) {
   std::vector<State> all = list(sys, g);
   int slot = next_free_slot(all);
-  if (slot < 0 || s.path.empty()) return false;
-  std::string dir = state_dir(sys), stem = path_stem(g.path);
-  std::string to = state_path(dir, stem, slot);
+  if (slot < 0 || s.path.empty()) return {};
+  return state_path(state_dir(sys), path_stem(g.path), slot);
+}
+
+bool copy_files(const State& s, const std::string& to) {
   if (!copy_file(s.path, to)) return false;
   if (!s.shot.empty()) copy_file(s.shot, to + ".png");
+  return true;
+}
+
+bool copy_to_free_slot(const System& sys, const Game& g, const State& s) {
+  std::string to = copy_target(sys, g, s);
+  if (to.empty() || !copy_files(s, to)) return false;
   invalidate();
   return true;
 }
 
-void recover(const System& sys, const Game& g) {
-  if (g_plan.active) return;  // a game is about to run / running
-  std::string dir = state_dir(sys), stem = path_stem(g.path);
+bool recover_files(const std::string& dir, const std::string& stem) {
   std::string a = state_path(dir, stem, -1);
   bool any = false;
   if (file_exists(a + ".bak")) {
-    remove_file(a);
-    move_file(a + ".bak", a);
-    any = true;
+    // the autosave that is there now is the loaded state's copy or something the game wrote: never delete it. A copy of a
+    // numbered state is dropped (the content is kept); anything else goes to the next free slot.
+    if (file_exists(a)) {
+      uint64_t h = 0;
+      bool dup = false;
+      invalidate();
+      int next = 0;
+      const bool hashed = hash_file(a, h);
+      if (const std::vector<Rec>* r = recs_for(dir, stem))
+        for (const Rec& x : *r) {
+          if (x.slot < 0) continue;
+          next = std::max(next, x.slot + 1);
+          uint64_t h2 = 0;
+          if (hashed && !dup && hash_file(state_path(dir, stem, x.slot), h2) && h2 == h) dup = true;
+        }
+      if (dup) {
+        remove_file(a);
+      } else {
+        std::string to = state_path(dir, stem, next);
+        if (!move_file(a, to)) return any;  // could not keep it: leave both files as they are
+        if (file_exists(a + ".png")) move_file(a + ".png", to + ".png");
+      }
+    }
+    if (move_file(a + ".bak", a)) any = true;
   }
   if (file_exists(a + ".png.bak")) {
-    remove_file(a + ".png");
-    move_file(a + ".png.bak", a + ".png");
-    any = true;
+    remove_file(a + ".png");  // only a screenshot: the one of the autosave that comes back replaces it
+    if (move_file(a + ".png.bak", a + ".png")) any = true;
   }
   if (any) invalidate();
+  return any;
+}
+
+void recover(const System& sys, const Game& g) {
+  if (g_plan.active) return;  // a game is about to run / running
+  recover_files(state_dir(sys), path_stem(g.path));
 }
 
 std::string make_arg(const System& sys, const Game& g) { return sys.name + "|" + g.path; }
@@ -437,6 +485,9 @@ Transition launch_request(Ctx& cx, size_t sys, size_t game) {
   const System& s = cx.systems[sys];
   const Game& g = s.games[game];
   if (!enabled(s, g, cx.conf.map())) return Transition::none();
+  // every A press on the list comes through here before the plain command is built (`plain_args` picks the slot from what is on disk):
+  // an interrupted autosave backup is settled first, so the rescued autosave is already counted when the slot is chosen
+  recover(s, g);
   std::string mode = setting(cx.conf.map(), s, g, "savestates");
   bool show = mode == "1" || (mode == "2" && !list(s, g).empty());
   if (!show) return Transition::none();

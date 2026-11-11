@@ -2,25 +2,31 @@
 
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <unistd.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <thread>
 #include <unordered_map>
 
 #include "gamemeta.hpp"
+#include "oscontract.hpp"
 #include "pugixml.hpp"
+#include "scraper_adb.hpp"
 #include "scraper_hash.hpp"
+#include "scraper_igdb.hpp"
 #include "systems.hpp"
 #include "util.hpp"
 
 namespace zf::scraper {
 
-bool available() { return !ss::dev_login().empty(); }
+bool available() { return available(Source::ScreenScraper); }
 
 namespace {
 std::string iso_local(time_t t) {
@@ -71,6 +77,15 @@ bool kind_wanted(size_t i, const ss::Wish& w) {
   return false;
 }
 
+// ES `getSupportedMedias()`: IGDB gives screenshot, box and fan art; ArcadeDB screenshot, box, marquee, title shot and video
+bool kind_in_source(Source s, size_t i) {
+  switch (s) {
+    case Source::IGDB: return i == 0 || i == 1 || i == 4;
+    case Source::ArcadeDB: return i == 0 || i == 1 || i == 2 || i == 3 || i == 6;
+    default: return true;
+  }
+}
+
 }  // namespace
 
 // ---- options ----------------------------------------------------------------------------------------------------------
@@ -98,6 +113,10 @@ Options Options::load(const Ctx& cx) {
   o.user = str(key::kUser, "");
   o.pass = str(key::kPass, "");
   o.locale = cx.conf.get_or("system.language", "");
+  o.source = source_of(cx.es);
+  o.igdb_id = str(key::kIgdbId, "");
+  o.igdb_secret = str(key::kIgdbSecret, "");
+  o.short_title = cx.es.get_bool(key::kShortTitle, false);
   static const int kDays[] = {0, 1, 7, 15, 31, 90, 365};  // ES's "IGNORE RECENTLY SCRAPED GAMES" list
   long idx = cx.es.get_int("RecentlyScrappedFilter", 3);
   o.skip_days = kDays[idx >= 0 && idx < 7 ? idx : 3];
@@ -124,6 +143,8 @@ const char* describe(Abort a) {
     case Abort::TooManyFails: return tr("TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW");
     case Abort::NoNetwork: return tr("NO NETWORK CONNECTION");
     case Abort::DiskFull: return tr("NO SPACE LEFT ON THE CARD");
+    case Abort::InvalidCredentials: return tr("INVALID CREDENTIALS");
+    case Abort::NoCredentials: return tr("TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST");
     default: return "";
   }
 }
@@ -148,12 +169,26 @@ struct Env {
   Options o;
   ss::Login login;
   std::string tmp, curl;
+  std::string tok;           // IGDB access token (worker thread only)
+  TimePoint tok_until{};
   std::vector<SysInfo> sys;
   bool overwrite_media = true;
   std::shared_ptr<Services> sv;
   unsigned seq = 0;
+  std::atomic<int> pace_ms{0};  // pause between two requests of ONE game (the run's current interval)
+  // Cancel: the main thread creates this file, the shell around every curl notices it and kills curl (B must not wait for a download)
+  std::string cancel_path() const { return tmp.empty() ? std::string() : tmp + "/cancel"; }
+  bool cancelled() const { return !tmp.empty() && ::access(cancel_path().c_str(), F_OK) == 0; }
+  void request_cancel() {
+    if (tmp.empty()) return;
+    int fd = ::open(cancel_path().c_str(), O_WRONLY | O_CREAT | O_CLOEXEC, 0600);
+    if (fd >= 0) ::close(fd);
+  }
   ~Env() {
-    if (!tmp.empty()) ::rmdir(tmp.c_str());
+    if (!tmp.empty()) {
+      ::unlink(cancel_path().c_str());
+      ::rmdir(tmp.c_str());
+    }
   }
 };
 
@@ -198,6 +233,9 @@ std::string cfg_quote(std::string_view s) {
 
 struct Xfer {
   std::string url, out;
+  std::vector<std::string> headers;  // IGDB: "Name: value" lines
+  std::string body;                  // IGDB: POST data (carries the client secret: only in the 0600 config file)
+  bool post = false;
   int max_time = 40;
   uint64_t max_size = 4u << 20;
 };
@@ -212,6 +250,7 @@ struct XRes {
 bool run_curl(Env& env, const std::vector<Xfer>& xs, std::vector<XRes>& res, bool& dry) {
   dry = false;
   res.assign(xs.size(), XRes());
+  if (env.cancelled()) return false;
   std::string cfg_path = env.tmp + "/c" + std::to_string(++env.seq);
   std::string cfg;
   int total_time = 0;
@@ -219,9 +258,15 @@ bool run_curl(Env& env, const std::vector<Xfer>& xs, std::vector<XRes>& res, boo
     if (i) cfg += "next\n";
     cfg += "url = " + cfg_quote(xs[i].url) + "\n";
     cfg += "output = " + cfg_quote(xs[i].out) + "\n";
+    // https stays https, also across redirects; an http URL (ArcadeDB's media links) may move to https: `proto` limits the redirect
+    // too, so "=http" alone made curl refuse it (exit 1, shown as "Network error"). Never file:// or ftp://.
+    cfg += starts_with(xs[i].url, "https://") ? "proto = \"=https\"\nproto-redir = \"=https\"\n" : "proto = \"=http,https\"\nproto-redir = \"=http,https\"\n";
+    for (const std::string& hd : xs[i].headers) cfg += "header = " + cfg_quote(hd) + "\n";
+    if (xs[i].post) cfg += "data-raw = " + cfg_quote(xs[i].body) + "\n";
     cfg += "silent\nlocation\nconnect-timeout = 15\nspeed-limit = 1\nspeed-time = 20\nuser-agent = \"zfront\"\n";
     cfg += "max-time = " + std::to_string(xs[i].max_time) + "\nmax-filesize = " + std::to_string(xs[i].max_size) + "\n";
-    cfg += "write-out = \"@@%{exitcode}|%{http_code}|%{size_download}|%header{retry-after}|%{content_type}\\n\"\n";
+    // a format that starts with @ is a FILE name for curl ("@@..." made every transfer fail with exit 26): a newline first, as ra.cpp
+    cfg += "write-out = \"\\n@@%{exitcode}|%{http_code}|%{size_download}|%header{retry-after}|%{content_type}\\n\"\n";
     total_time += xs[i].max_time + 5;
   }
   int fd = ::open(cfg_path.c_str(), O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0600);
@@ -233,7 +278,9 @@ bool run_curl(Env& env, const std::vector<Xfer>& xs, std::vector<XRes>& res, boo
     ::unlink(cfg_path.c_str());
     return false;
   }
-  CmdResult r = env.sv->cmd.run(shell_quote(env.curl) + " -K " + shell_quote(cfg_path) + " 2>/dev/null", (total_time + 10) * 1000);
+  // curl in the background, a watcher (no stdout, so it does not hold the pipe) kills it as soon as the cancel file exists
+  std::string watch = "(while kill -0 $p 2>/dev/null; do [ -e " + shell_quote(env.cancel_path()) + " ] && kill $p; sleep 1; done) >/dev/null 2>&1 &";
+  CmdResult r = env.sv->cmd.run(shell_quote(env.curl) + " -K " + shell_quote(cfg_path) + " 2>/dev/null & p=$!; " + watch + " wait $p", (total_time + 10) * 1000);
   ::unlink(cfg_path.c_str());
   if (r.dry) {
     dry = true;
@@ -274,10 +321,13 @@ struct Api {
   std::string body;
 };
 
-Api api_get(Env& env, const std::string& url) {
+Api api_call(Env& env, const HttpRequest& rq) {
   Api a;
   std::vector<Xfer> xs(1);
-  xs[0].url = url;
+  xs[0].url = rq.url;
+  xs[0].headers = rq.headers;
+  xs[0].body = rq.body;
+  xs[0].post = rq.post;
   xs[0].out = env.tmp + "/body";
   xs[0].max_time = env.o.api_timeout_s;
   std::vector<XRes> rs;
@@ -289,6 +339,12 @@ Api api_get(Env& env, const std::string& url) {
   if (a.exitcode == 0 && read_file(xs[0].out, a.body) && a.body.size() > (4u << 20)) a.body.resize(4u << 20);
   ::unlink(xs[0].out.c_str());
   return a;
+}
+
+Api api_get(Env& env, const std::string& url) {
+  HttpRequest r;
+  r.url = url;
+  return api_call(env, r);
 }
 
 // first bytes -> extension of what the file really is ("" = not a media file: a ScreenScraper text such as NOMEDIA/CRCOK)
@@ -310,7 +366,25 @@ bool mkdir_p(const std::string& dir) {
   if (is_dir(dir)) return true;
   size_t slash = dir.find_last_of('/');
   if (slash != std::string::npos && slash > 0 && !mkdir_p(dir.substr(0, slash))) return false;
-  return ::mkdir(dir.c_str(), 0755) == 0 || errno == EEXIST;
+  return ::mkdir(dir.c_str(), 0755) == 0 || (errno == EEXIST && is_dir(dir));
+}
+
+// curl exit 23 = write error: "no space on the card" only when the folder's disk is nearly full (else a permission or other error)
+uint64_t min_free_bytes() {
+  long mb = 8;
+  if (const char* e = std::getenv("ZF_SCRAPER_MINFREE_MB"); e && *e) parse_int(e, mb);
+  return uint64_t(mb < 0 ? 0 : mb) << 20;
+}
+bool disk_full(const std::string& path) {
+  struct statvfs sv {};
+  std::string dir = is_dir(path) ? path : path_dir(path);
+  if (::statvfs(dir.c_str(), &sv) != 0) return false;
+  return uint64_t(sv.f_bavail) * uint64_t(sv.f_frsize) < min_free_bytes();
+}
+
+// pause between the requests of one game (one per ScreenScraper system id, one per IGDB platform), like the pause between games
+void pace(const Env& env) {
+  for (int left = std::min(env.pace_ms.load(), 8000); left > 0 && !env.cancelled(); left -= 50) std::this_thread::sleep_for(std::chrono::milliseconds(std::min(left, 50)));
 }
 
 Abort abort_of(ss::Reply r) {
@@ -332,8 +406,153 @@ StepResult fatal_result(Abort a) {
   return r;
 }
 
-// "Check the account": ssuserInfos.php. Wrong login / closed API / no network show up here, before 2000 games are queued up.
+// ---- IGDB / ArcadeDB ------------------------------------------------------------------------------------------------
+enum class Tok : uint8_t { Ok, NoCreds, Rejected, NoNetwork };
+
+// ES `ensureToken`: Twitch client credentials, kept 30 minutes. Worker thread only (the one FIFO worker owns `env.tok`).
+Tok ensure_token(Env& env) {
+  if (!env.tok.empty() && Clock::now() < env.tok_until) return Tok::Ok;
+  env.tok.clear();
+  if (env.o.igdb_id.empty() || env.o.igdb_secret.empty()) return Tok::NoCreds;
+  Api a = api_call(env, igdb::token_request(env.o.igdb_id, env.o.igdb_secret));
+  if (a.dry || !a.started || a.exitcode != 0 || a.http == 0) return Tok::NoNetwork;
+  std::string t;
+  long expires = 0;
+  if (a.http >= 200 && a.http < 300 && igdb::parse_token(a.body, t, expires)) {
+    env.tok = std::move(t);
+    env.tok_until = Clock::now() + std::chrono::seconds(igdb::token_ttl_s(expires));
+    return Tok::Ok;
+  }
+  if (a.http >= 500 || a.http == 429) return Tok::NoNetwork;  // Twitch is in trouble: not the user's credentials
+  return Tok::Rejected;
+}
+
+enum class Hr : uint8_t { Ok, Empty, Net, Timeout, Disk, Busy, Auth, Server };
+
+Hr http_result(const Api& a) {
+  if (a.exitcode == 23) return Hr::Disk;
+  if (a.exitcode == 28) return Hr::Timeout;
+  if (a.exitcode != 0 || a.http == 0) return Hr::Net;
+  if (a.http >= 200 && a.http < 300) return Hr::Ok;
+  if (a.http == 401 || a.http == 403) return Hr::Auth;
+  if (a.http == 429) return Hr::Busy;
+  if (a.http == 404 || a.http == 400) return Hr::Empty;
+  return Hr::Server;
+}
+
+// One game on IGDB or ArcadeDB (searched by the ROM's name, like ES: no hash). True when `found`/`parsed` tell the outcome;
+// false with `res` filled when the step ends otherwise (network, busy, fatal).
+bool ask_other(Env& env, const Item& it, const SysInfo& sys, int attempt, ss::Parsed& parsed, bool& found, StepResult& res) {
+  const Options& o = env.o;
+  std::vector<HttpRequest> reqs;  // tried in order until one knows the game
+  if (o.source == Source::IGDB) {
+    Tok t = ensure_token(env);
+    if (t == Tok::NoNetwork) {
+      res = fatal_result(Abort::NoNetwork);
+      return false;
+    }
+    if (t != Tok::Ok) {
+      res = fatal_result(t == Tok::NoCreds ? Abort::NoCredentials : Abort::InvalidCredentials);
+      return false;
+    }
+    std::string name = search_stem(it.path);
+    std::vector<std::string> pids = igdb::platform_ids(sys.platform);
+    if (pids.empty()) pids.push_back(std::string());
+    for (const std::string& p : pids) reqs.push_back(igdb::game_request(o.igdb_id, env.tok, name, p));
+  } else {
+    reqs.push_back(adb::game_request(path_filename(it.path)));
+  }
+  bool first_req = true;
+  for (const HttpRequest& rq : reqs) {
+    if (!first_req) pace(env);
+    first_req = false;
+    Api a = api_call(env, rq);
+    if (a.dry || !a.started) {
+      res = fatal_result(Abort::NoNetwork);
+      return false;
+    }
+    switch (http_result(a)) {
+      case Hr::Disk:
+        if (disk_full(env.tmp)) {
+          res = fatal_result(Abort::DiskFull);
+        } else {
+          res.kind = StepResult::Kind::Error;
+          res.err = Err::Server;
+        }
+        return false;
+      case Hr::Timeout:  // one more try before it counts as "no network"
+        if (attempt == 0) {
+          res.kind = StepResult::Kind::Retry;
+          res.wait_ms = o.busy_retry_ms;
+          return false;
+        }
+        [[fallthrough]];
+      case Hr::Net:
+        res.kind = StepResult::Kind::Error;
+        res.err = Err::Network;
+        res.network = true;
+        return false;
+      case Hr::Busy:
+        res.kind = StepResult::Kind::Retry;
+        res.wait_ms = std::max(o.busy_retry_ms, a.retry * 1000);
+        return false;
+      case Hr::Auth:
+        if (o.source == Source::IGDB) {  // the token ran out: the retry asks for a new one (and fails for good if the secret is wrong)
+          env.tok.clear();
+          res.kind = StepResult::Kind::Retry;
+          res.wait_ms = 0;
+          return false;
+        }
+        res.kind = StepResult::Kind::Error;
+        res.err = Err::Server;
+        return false;
+      case Hr::Server:
+        res.kind = StepResult::Kind::Error;
+        res.err = Err::Server;
+        return false;
+      case Hr::Empty: continue;
+      case Hr::Ok: break;
+    }
+    // a 2xx that is not an answer we understand is a server problem, never "game unknown" (that would stamp the game as scraped)
+    if (!(o.source == Source::IGDB ? igdb::valid_answer(a.body) : adb::valid_answer(a.body))) {
+      res.kind = StepResult::Kind::Error;
+      res.err = Err::Server;
+      return false;
+    }
+    bool ok = o.source == Source::IGDB ? igdb::parse_games(a.body, o.wish, parsed, o.resize_px) : adb::parse_games(a.body, o.wish, o.short_title, parsed);
+    if (ok && !parsed.name.empty()) {
+      found = true;
+      break;
+    }
+  }
+  return true;
+}
+
+// "Check the account": ssuserInfos.php (IGDB: the token request; ArcadeDB has no account). Wrong login / closed API / no network show up here, before 2000 games are queued up.
 StepResult connect(Env& env, AccountInfo* ai = nullptr) {
+  if (env.o.source == Source::ArcadeDB) {
+    if (ai) ai->reached = true, ai->id = source_name(env.o.source);
+    StepResult r;
+    r.kind = StepResult::Kind::Found;
+    return r;
+  }
+  if (env.o.source == Source::IGDB) {
+    Tok t = ensure_token(env);
+    if (t == Tok::NoNetwork) {
+      if (ai) ai->fail = Abort::NoNetwork;
+      return fatal_result(Abort::NoNetwork);
+    }
+    if (ai) ai->reached = true;
+    if (t != Tok::Ok) {
+      const Abort why = t == Tok::NoCreds ? Abort::NoCredentials : Abort::InvalidCredentials;
+      if (ai) ai->fail = why;
+      return fatal_result(why);
+    }
+    if (ai) ai->id = source_name(env.o.source);
+    StepResult r;
+    r.kind = StepResult::Kind::Found;
+    return r;
+  }
   Api a = api_get(env, ss::user_url(env.login));
   if (a.dry || !a.started || a.exitcode != 0 || a.http == 0) {
     if (ai) ai->fail = Abort::NoNetwork;
@@ -370,67 +589,89 @@ StepResult process(Env& env, const Item& it, int attempt) {
   const SysInfo& sys = env.sys[it.sys];
   const Options& o = env.o;
 
-  // --- identify the ROM
   Ident id;
-  struct stat st {};
-  bool cached = !it.md5.empty() && !it.crc.empty() && ::stat(it.path.c_str(), &st) == 0 && S_ISREG(st.st_mode);
-  std::string ext = path_ext_lower(it.path);
   bool fresh_hash = false;
-  if (cached && ext != ".zip" && ext != ".7z" && ext != ".m3u" && uint64_t(st.st_size) <= kMaxHashBytes) {
-    id.size = uint64_t(st.st_size);
-    id.md5 = it.md5;
-    id.crc = it.crc;
-    id.hashed = true;
-  } else {
-    identify(env.sv->cmd, it.path, sys.extract, id);
-    fresh_hash = id.hashed && (!id.md5.empty() || !id.crc.empty());
-  }
-
-  // --- ask (one request per ScreenScraper system id of the platform, until one knows the game)
-  ss::GameQuery q;
-  q.rom_name = path_filename(it.path);
-  q.md5 = id.md5;
-  q.crc = id.crc;
-  q.size = id.hashed || id.size ? id.size : 0;
-  ss::RomLang rl = ss::rom_lang(q.rom_name, sys.name, sys.platform, o.locale);
-  ss::LangPick lp = ss::pick_lang(rl, o.locale);
   ss::Parsed parsed;
   bool found = false;
-  std::vector<int> ids = sys.ids;
-  if (ids.empty()) ids.push_back(0);
-  for (int sid : ids) {
-    q.system_id = sid;
-    Api a = api_get(env, ss::game_url(env.login, q));
-    if (a.dry || !a.started) return fatal_result(Abort::NoNetwork);
-    if (a.exitcode != 0 || a.http == 0) {
-      if (a.exitcode == 23) return fatal_result(Abort::DiskFull);
-      res.kind = StepResult::Kind::Error;
-      res.err = Err::Network;
-      res.network = true;
-      return res;
+  if (o.source != Source::ScreenScraper) {  // IGDB / ArcadeDB: searched by name, nothing to hash
+    if (!ask_other(env, it, sys, attempt, parsed, found, res)) return res;
+  } else {
+    // --- identify the ROM
+    struct stat st {};
+    bool cached = !it.md5.empty() && !it.crc.empty() && ::stat(it.path.c_str(), &st) == 0 && S_ISREG(st.st_mode);
+    std::string ext = path_ext_lower(it.path);
+    if (cached && ext != ".zip" && ext != ".7z" && ext != ".m3u" && uint64_t(st.st_size) <= kMaxHashBytes) {
+      id.size = uint64_t(st.st_size);
+      id.md5 = it.md5;
+      id.crc = it.crc;
+      id.hashed = true;
+    } else {
+      identify(env.sv->cmd, it.path, sys.extract, id);
+      fresh_hash = id.hashed && (!id.md5.empty() || !id.crc.empty());
     }
-    ss::Reply rep = ss::classify(a.http, a.body);
-    if (ss::is_fatal(rep)) return fatal_result(abort_of(rep));
-    if (rep == ss::Reply::TooFast) {
-      res.kind = StepResult::Kind::Retry;
-      res.wait_ms = std::max(o.busy_retry_ms, a.retry * 1000);
-      return res;
-    }
-    if (rep == ss::Reply::Transient) {
-      res.kind = StepResult::Kind::Error;
-      res.err = Err::Server;
-      return res;
-    }
-    if (rep == ss::Reply::NotFound) continue;
-    if (ss::parse_game(a.body, lp, o.wish, parsed) && !parsed.name.empty()) {
-      found = true;
-      break;
+
+    // --- ask (one request per ScreenScraper system id of the platform, until one knows the game)
+    ss::GameQuery q;
+    q.rom_name = path_filename(it.path);
+    q.md5 = id.md5;
+    q.crc = id.crc;
+    q.size = id.hashed || id.size ? id.size : 0;
+    ss::RomLang rl = ss::rom_lang(q.rom_name, sys.name, sys.platform, o.locale);
+    ss::LangPick lp = ss::pick_lang(rl, o.locale);
+    std::vector<int> ids = sys.ids;
+    if (ids.empty()) ids.push_back(0);
+    bool first_id = true;
+    for (int sid : ids) {
+      if (!first_id) pace(env);  // ScreenScraper counts requests per minute: no burst between the ids of one game
+      first_id = false;
+      q.system_id = sid;
+      Api a = api_get(env, ss::game_url(env.login, q));
+      if (a.dry || !a.started) return fatal_result(Abort::NoNetwork);
+      if (a.exitcode != 0 || a.http == 0) {
+        if (a.exitcode == 23) {
+          if (disk_full(env.tmp)) return fatal_result(Abort::DiskFull);
+          res.kind = StepResult::Kind::Error;
+          res.err = Err::Server;
+          return res;
+        }
+        if (a.exitcode == 28 && attempt == 0) {  // timed out: one more try before it counts as "no network"
+          res.kind = StepResult::Kind::Retry;
+          res.wait_ms = o.busy_retry_ms;
+          return res;
+        }
+        res.kind = StepResult::Kind::Error;
+        res.err = Err::Network;
+        res.network = true;
+        return res;
+      }
+      ss::Reply rep = ss::classify(a.http, a.body);
+      if (ss::is_fatal(rep)) return fatal_result(abort_of(rep));
+      if (rep == ss::Reply::TooFast) {
+        res.kind = StepResult::Kind::Retry;
+        res.wait_ms = std::max(o.busy_retry_ms, a.retry * 1000);
+        return res;
+      }
+      if (rep == ss::Reply::Transient) {
+        res.kind = StepResult::Kind::Error;
+        res.err = Err::Server;
+        return res;
+      }
+      if (rep == ss::Reply::NotFound) continue;
+      if (!ss::parse_game(a.body, lp, o.wish, parsed)) {  // a 2xx we cannot read is a server problem, not "game unknown"
+        res.kind = StepResult::Kind::Error;
+        res.err = Err::Server;
+        return res;
+      }
+      if (!parsed.name.empty()) {
+        found = true;
+        break;
+      }
     }
   }
 
   GameFieldEdit& ed = res.edit;
   ed.rom = it.path;
-  ed.scraper = "ScreenScraper";
+  ed.scraper = source_name(o.source);
   ed.scrape_date = iso_local(std::time(nullptr));
   if (fresh_hash) {
     add_field(ed.fields, "md5", id.md5);
@@ -473,9 +714,12 @@ StepResult process(Env& env, const Item& it, int attempt) {
         continue;
       }
     }
-    if (!mkdir_p(sys.rom_dir + "/" + k.folder)) continue;
+    if (!mkdir_p(sys.rom_dir + "/" + k.folder)) {
+      res.warn = true;
+      continue;
+    }
     Xfer x;
-    x.url = ss::media_url(p.url, k.resize ? o.resize_px : 0, k.resize);
+    x.url = o.source == Source::ScreenScraper ? ss::media_url(p.url, k.resize ? o.resize_px : 0, k.resize) : p.url;
     x.out = base + ".part";
     x.max_time = ki == 3 ? o.video_timeout_s : o.media_timeout_s;
     x.max_size = 600ull << 20;
@@ -501,7 +745,7 @@ StepResult process(Env& env, const Item& it, int attempt) {
         const Dl& d = dlo[i];
         const XRes& x = rs[i];
         bool ok = false;
-        if (x.exitcode == 23) {
+        if (x.exitcode == 23 && disk_full(d.base)) {
           for (const Dl& u : dlo) ::unlink(u.part.c_str());
           return fatal_result(Abort::DiskFull);
         }
@@ -519,6 +763,9 @@ StepResult process(Env& env, const Item& it, int attempt) {
             std::string dest = d.base + real;
             if (::rename(d.part.c_str(), dest.c_str()) == 0) {
               ok = true;
+              // the file the gamelist named (another extension) is replaced by this one: do not leave it behind
+              const std::string& old = it.cur[d.kind];
+              if (!old.empty() && old != dest && starts_with(old, sys.rom_dir + "/")) ::unlink(old.c_str());
               ++res.media;
               res.bytes += x.size;
               const Kind& k = kKinds[d.kind];
@@ -532,6 +779,8 @@ StepResult process(Env& env, const Item& it, int attempt) {
       }
     }
   }
+  // B pressed during the game: the media may be incomplete, so the game is not stamped as scraped (it is done again next time)
+  if (env.cancelled()) return fatal_result(Abort::NoNetwork);
   return res;
 }
 
@@ -550,7 +799,7 @@ time_t parse_iso(const char* s) {
   return std::mktime(&t);
 }
 
-bool read_facts(int fd, const Game& g, Facts& f) {
+bool read_facts(int fd, const Game& g, const char* scraper, Facts& f) {
   uint32_t b = g.meta.span_begin, e = g.meta.span_end;
   if (fd < 0 || e <= b || e - b > (1u << 20)) return false;
   std::string buf(e - b, '\0');
@@ -565,7 +814,7 @@ bool read_facts(int fd, const Game& g, Facts& f) {
   f.crc = std::string(trim(n.child("crc32").text().get()));
   for (size_t i = 0; i < kKindCount; ++i) f.media[i] = std::string(trim(n.child(kKinds[i].tag).text().get()));
   for (pugi::xml_node s : n.children("scrap"))
-    if (std::strcmp(s.attribute("name").value(), "ScreenScraper") == 0) f.scraped = parse_iso(s.attribute("date").value());
+    if (std::strcmp(s.attribute("name").value(), scraper) == 0) f.scraped = parse_iso(s.attribute("date").value());
   return true;
 }
 
@@ -577,8 +826,9 @@ std::vector<Item> prep_system(const Env& env, size_t k) {
   std::vector<Item> out;
   time_t now = std::time(nullptr);
   for (const Game& g : games) {
+    if (!o.only_game.empty() && g.path != o.only_game) continue;
     Facts f;
-    read_facts(fd, g, f);
+    read_facts(fd, g, source_name(o.source), f);
     Item it;
     it.sys = uint32_t(k);
     it.path = g.path;
@@ -593,7 +843,7 @@ std::vector<Item> prep_system(const Env& env, size_t k) {
         std::string p = resolve_rel_path(f.media[i], s.rom_dir);
         if (file_exists(p)) it.cur[i] = p;
       }
-      if (!kind_wanted(i, o.wish)) continue;
+      if (!kind_wanted(i, o.wish) || !kind_in_source(o.source, i)) continue;
       if (it.cur[i].empty()) missing_any = true;
       else any = true;
     }
@@ -647,11 +897,18 @@ static std::shared_ptr<Env> make_env(Ctx& cx, const Options& o) {
   return env;
 }
 
-std::vector<size_t> supported_systems(const Ctx& cx) {
+std::vector<size_t> supported_systems(const Ctx& cx, Source s) {
   std::vector<size_t> v;
   for (size_t i = 0; i < cx.systems.size(); ++i)
-    if (ss::platform_supported(cx.systems[i].platform)) v.push_back(i);
+    if (platform_supported(s, cx.systems[i].platform, cx.systems[i].name)) v.push_back(i);
   return v;
+}
+
+std::vector<size_t> supported_systems(const Ctx& cx) { return supported_systems(cx, source_of(cx.es)); }
+
+bool system_supported(const Ctx& cx, size_t sys) {
+  Source s = source_of(cx.es);
+  return sys < cx.systems.size() && available(s) && platform_supported(s, cx.systems[sys].platform, cx.systems[sys].name);
 }
 
 void check_account(Ctx& cx, const Options& o, std::function<void(const AccountInfo&)> done) {
@@ -676,6 +933,7 @@ std::shared_ptr<Run> Run::create(Ctx& cx, Options o) {
   r->sv_ = cx.sv;
   r->interval_ms_ = r->base_interval_ms_ = o.min_interval_ms;
   r->env_ = make_env(cx, o);
+  r->env_->pace_ms = r->interval_ms_;
   r->o_ = std::move(o);
   r->items_ = std::make_shared<std::vector<Item>>();
   return r;
@@ -684,6 +942,7 @@ std::shared_ptr<Run> Run::create(Ctx& cx, Options o) {
 Run::~Run() = default;
 
 void Run::start() {
+  if (!o_.background) busy_ = std::make_unique<oscontract::Busy>();
   last_flush_ = Clock::now();
   if (env_->tmp.empty() || o_.systems.empty()) {
     st_.total = 0;
@@ -727,6 +986,7 @@ void Run::post_connect() {
                  [self, res] {
                    self->inflight_ = false;
                    if (res->kind == StepResult::Kind::Fatal) {
+                     if (self->cancel_ && res->fatal == Abort::NoNetwork) return self->finalize(Phase::Cancelled);  // curl was killed by B
                      self->abort_ = res->fatal;
                      return self->finalize(Phase::Aborted);
                    }
@@ -744,6 +1004,7 @@ void Run::post_step() {
   if (next_ >= items_->size() || inflight_) return;
   inflight_ = true;
   const Item& it = (*items_)[next_];
+  env_->pace_ms = interval_ms_;
   game_name_ = it.name;
   sys_name_ = env_->sys[it.sys].display;
   bump();
@@ -775,6 +1036,9 @@ void Run::tick() {
 void Run::on_step(StepResult& r) {
   inflight_ = false;
   const Item& it = (*items_)[next_];
+  // after B, a step that did not get its answer was cut by B (the watcher kills curl): not an error of that game, nor done
+  // (it is scraped next time). Only reached under load: the request outlived the watcher's one-second check.
+  if (cancel_ && r.kind != StepResult::Kind::Found && r.kind != StepResult::Kind::NotFound) return finalize(Phase::Cancelled);
   if (r.kind == StepResult::Kind::Fatal) {
     abort_ = r.fatal;
     return finalize(Phase::Aborted);
@@ -805,6 +1069,7 @@ void Run::on_step(StepResult& r) {
       ++st_.found;
       net_fail_streak_ = 0;
       st_.media += r.media;
+      if (r.media > 0) ++st_.media_games;
       st_.bytes += r.bytes;
       if (r.warn) {
         ++st_.warnings;
@@ -848,6 +1113,7 @@ void Run::after_item() {
 void Run::cancel() {
   if (finished() || cancel_) return;
   cancel_ = true;
+  env_->request_cancel();
   bump();
   if (flushing_) return;
   if (inflight_) {
@@ -887,6 +1153,7 @@ void Run::flush(bool last) {
   if (last && edits.empty() && touched.empty()) {  // nothing was written: end at once
     flushing_ = false;
     phase_ = end_;
+    busy_.reset();
     bump();
     if (!watched_ && end_ == Phase::Cancelled) sv_->toasts.push(tr("SCRAPING STOPPED"));
     return;
@@ -918,6 +1185,7 @@ void Run::flush(bool last) {
         if (last) {
           self->flushing_ = false;
           self->phase_ = self->end_;
+          self->busy_.reset();
           if (!self->watched_ && self->end_ != Phase::Finished) {
             self->sv_->toasts.push(self->end_ == Phase::Aborted ? describe(self->abort_) : tr("SCRAPING STOPPED"), 4000);
           } else if (!self->watched_) {
@@ -943,6 +1211,7 @@ void Run::apply_fresh(size_t k, std::vector<Game>&& fresh) {
     g.meta = fresh[it->second].meta;
     g.name = fresh[it->second].name;
   }
+  games_changed();  // an open list shows the new names
 }
 
 }  // namespace zf::scraper

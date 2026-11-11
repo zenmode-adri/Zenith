@@ -33,6 +33,7 @@ struct Rec {
   int clears = 0;
   vector<oscontract::Mode> quits;
   vector<string> launches;
+  int reloads = 0;
   osapi::Ops ops() {
     osapi::Ops o;
     o.notify = [this](string t, int d) {
@@ -42,6 +43,7 @@ struct Rec {
     o.notify_clear = [this] { ++clears; };
     o.quit = [this](oscontract::Mode m) { quits.push_back(m); };
     o.launch = [this](string p) { launches.push_back(p); };
+    o.reload = [this] { ++reloads; };
     return o;
   }
 };
@@ -147,6 +149,18 @@ int main() {
     CHECK_EQ(rec.launches.size(), 1ul);
   }
 
+  // ---- reloadgames (ES's endpoint): the game folders are read again through Ops, GET only
+  {
+    Rec rr;
+    osapi::Ops ro = rr.ops();
+    CHECK_EQ(osapi::route(req("GET", "/reloadgames"), ro).status, 200);
+    CHECK_EQ(rr.reloads, 1);
+    CHECK_EQ(osapi::route(req("POST", "/reloadgames"), ro).status, 405);
+    CHECK_EQ(rr.reloads, 1);
+    osapi::Ops none;  // no callback: still answers
+    CHECK_EQ(osapi::route(req("GET", "/reloadgames"), none).status, 200);
+  }
+
   // ---- emukill: JSON answer, no game = nothing killed
   {
     auto r = osapi::route(req("GET", "/emukill"), ops);
@@ -154,7 +168,7 @@ int main() {
   }
 
   // ---- everything else: 404 JSON
-  for (const char* p : {"/", "/systems", "/systems/gb/games", "/caps", "/reloadgames", "/index.html", "/notify/", "/launch/x", "/messagebox"}) {
+  for (const char* p : {"/", "/systems", "/systems/gb/games", "/caps", "/index.html", "/notify/", "/launch/x", "/messagebox"}) {
     auto r = osapi::route(req("GET", p), ops);
     CHECK_EQ(r.status, 404);
     CHECK(r.content_type == "application/json" && has(r.body, "not found"));

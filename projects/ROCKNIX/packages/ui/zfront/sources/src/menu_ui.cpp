@@ -7,17 +7,23 @@
 //   SWITCH CONFIRM & CANCEL BUTTONS           InvertButtons (es)              shown: Pad::set_invert_buttons, live
 //   SCREEN BRIGHTNESS *                       system.brightness (script)      shown when a backlight exists
 //   SHOW CLOCK                                DrawClock (es)                  shown: ui_prefs, live
+//   SHOW CLOCK IN 12-HOUR FORMAT              ClockMode12 (es)                shown: ui_prefs, live
+//   CAROUSEL TRANSITIONS                      MoveCarousel (es)               shown: off = the carousel camera jumps
+//   QUICK SYSTEM SELECT                       QuickSystemSelect (es)          shown: left / right in a game list = previous / next system
+//   ON-SCREEN HELP                            ShowHelpPrompts (es)            shown: ui_prefs, the help bars are not drawn when off
 //   SHOW BATTERY STATUS                       ShowBattery (es)                shown when the console has a battery
 //   START SCREENSAVER AFTER (0 = never)       ScreenSaverTime (es, ms)        shown: oscontract reads it every loop
 //   SCREENSAVER TYPE                          ScreenSaverBehavior (es)        dim | black | suspend (suspend only where the sleep.sh hook exists)
-//   THEME SET / THEME CONFIGURATION           ThemeSet, Theme*                hidden: zfront has one theme (Zenith)
+//   THEME SET                                 ThemeSet (es)                   shown; the choices of each set are kept like ES does (themecfg::switch_theme)
+//   THEME CONFIGURATION                       Theme*, subset.* (es)           shown when the active ES theme has subsets (menu_theme_cfg.cpp); Zenith has none
 //   GAMELIST VIEW STYLE                       GamelistViewStyle               hidden: zfront picks the view itself
 //   ACCESS GAME OPTIONS WITH NORTH BUTTON     GameOptionsAtNorth              hidden: no game options screen yet
 //   DISABLE TOUCHSCREEN                       DisableTouchscreen              hidden: zfront has no touch input
-//   LIST / GAME LAUNCH TRANSITION             TransitionStyle, Game...        hidden: no transition styles
+//   LIST / GAME LAUNCH TRANSITION             TransitionStyle, Game...        hidden: zfront has one screen transition (no styles to pick)
 //   GAME MEDIAS DURING FAST SCROLLING         ScrollLoadMedias                hidden: fixed settle delay
-//   ON-SCREEN HELP                            ShowHelpPrompts                 hidden: the help bars ignore it (see the report)
-//   STOP MUSIC ON SCREENSAVER, video/slideshow screensavers, GAMELIST OPTIONS, ICONS    hidden: not in zfront
+//   GAMELIST OPTIONS (favourites on top, hidden files, file names, articles)  shown: listopts.cpp
+//   STOP MUSIC ON SCREENSAVER                 StopMusicOnScreenSaver (es)     shown when frontend music is on and libSDL2_mixer loads (music.cpp)
+//   video/slideshow screensavers, ICONS       hidden: not in zfront
 //   (* ES keeps these two in SYSTEM SETTINGS; the task puts them here.)
 //
 // Stores: `cx.es.set_*` + `save()` for es_settings.cfg, `cx.conf.persist` for system.cfg (shared lock), the `brightness`
@@ -28,13 +34,21 @@
 
 #include <dirent.h>
 
+#include "bootargs.hpp"
+
 #include <algorithm>
 #include <cstdio>
+#include <memory>
 #include <optional>
 
+#include "listopts.hpp"
 #include "menu_lang.hpp"
+#include "music.hpp"
+#include "menu_theme_cfg.hpp"
 #include "oscontract.hpp"
 #include "registry.hpp"
+#include "remake.hpp"
+#include "ssmedia.hpp"
 #include "ui_osd.hpp"
 #include "ui_prefs.hpp"
 #include "util.hpp"
@@ -151,12 +165,23 @@ MenuSpec make_ui_spec(unsigned parts) {
   MenuSpec s;
   s.title = tr("USER INTERFACE SETTINGS");
   s.title_key = N_("USER INTERFACE SETTINGS");
-  s.build = [parts](MenuBuilder& m, Ctx& cx) {
+  // A look option was changed: the frontend restarts ONCE, when the menu is left (it restarted at every pick, so trying the four options
+  // meant four restarts). Shared by `build` (which runs again on every refresh) and `on_close`.
+  auto look_dirty = std::make_shared<bool>(false);
+  s.on_close = [look_dirty](Ctx& cx) {
+    if (!*look_dirty) return;
+    *look_dirty = false;
+    cx.sv->toasts.push(tr("Restarting to apply the theme"));
+    oscontract::quit(oscontract::Mode::Quit);  // systemd (Restart=always) starts the frontend again with the new look
+  };
+  s.build = [parts, look_dirty](MenuBuilder& m, Ctx& cx) {
     using namespace ui_part;
     // ---- language (live: the catalogs are mapped, the menus rebuild with the new strings)
     std::vector<Option> langs = available_language_options(ui_language_options());
+    bool appearance = false;  // the APPEARANCE header is already there
     if ((parts & kLang) && langs.size() > 1) {
       m.header(tr("APPEARANCE"));
+      appearance = true;
       m.choice(
            tr("LANGUAGE (REGION)"), langs, [&cx, langs] { return selected_language(langs, cx.conf.get_or("system.language", "")); },
            [&cx](const std::string& code) {
@@ -168,6 +193,98 @@ MenuSpec make_ui_spec(unsigned parts) {
              i18n::set_language(code, ui_language_options());  // LangMenu rebuilds the open menus
            })
           .no_cycle();
+    }
+
+    // ---- theme: ThemeSet (es_settings.cfg). The theme is read once at start, so the frontend restarts to show it.
+    if (parts & kTheme) {
+      std::vector<boot::ThemeChoice> sets = boot::list_theme_sets();
+      if (sets.size() > 1) {
+        if (!appearance) m.header(tr("APPEARANCE"));
+        appearance = true;
+        std::vector<Option> opts;
+        for (const boot::ThemeChoice& t : sets) opts.push_back({t.value, t.label});
+        m.choice(
+             tr("THEME SET"), opts,
+             [&cx, opts] {
+               const std::string* v = cx.es.get("ThemeSet");
+               const std::string cur = v ? *v : std::string("es-theme-zenith");
+               for (const Option& o : opts)
+                 if (o.value == cur) return cur;
+               return opts.front().value;
+             },
+             [&cx](const std::string& v) {
+               const std::string* cur = cx.es.get("ThemeSet");
+               if (cur && *cur == v) return;
+               themecfg::switch_theme(cx, v);  // ES: ThemeSet plus the choices of the old set saved and those of the new one loaded
+               save_es(cx);
+               cx.sv->toasts.push(tr("Restarting to apply the theme"));
+               oscontract::quit(oscontract::Mode::Quit);  // systemd (Restart=always) starts the frontend again with the new theme
+             })
+            .no_cycle()
+            .hint(tr("The frontend restarts to apply the theme"));
+      }
+
+      // ES: THEME CONFIGURATION when the theme hasSubsets(). Not for a theme zfront draws itself: its drawing does not read them
+      if (!remake::active(cx.th) && themecfg::available(cx, m.refresh)) {
+        if (!appearance) m.header(tr("APPEARANCE"));
+        appearance = true;
+        m.submenu(tr("THEME CONFIGURATION"), "menu.ui.theme");
+      }
+
+      // The user's own look over the theme's: variables only (no images), so any theme can be bent a little. Empty = the theme's own.
+      if (!appearance) m.header(tr("APPEARANCE"));
+      appearance = true;
+      auto own = [&](const std::string& title, const std::string& key, std::vector<Option> opts) {
+        opts.insert(opts.begin(), Option{"", tr("Theme default")});
+        m.choice(
+             title, opts,
+             [&cx, key, opts] {
+               const std::string cur = cx.conf.get_or(key, "");
+               for (const Option& o : opts)
+                 if (o.value == cur) return cur;
+               return std::string();
+             },
+             [&cx, key, look_dirty](const std::string& v) {
+               if (cx.conf.get_or(key, "") == v) return;
+               std::string err;
+               if (!(v.empty() ? cx.conf.persist_remove(key, &err) : cx.conf.persist(key, v, &err))) {
+                 cx.sv->toasts.push(tr("Could not save the settings"));
+                 return;
+               }
+               *look_dirty = true;  // saved now; the restart waits for the menu to close
+             })
+            .no_cycle()
+            .hint(tr("The frontend restarts to apply the theme"));
+      };
+      own(tr("SELECTOR STYLE"), "zfront.sel_style",
+          {{"fill", tr("Filled")}, {"outline", tr("Outline")}, {"underline", tr("Underline")}, {"bar", tr("Side bar")}});
+      own(tr("TITLE ALIGNMENT"), "zfront.header_align", {{"left", tr("Left")}, {"center", tr("Centered")}});
+      own(tr("CAROUSEL CARDS"), "zfront.car_count", {{"3", "3"}, {"5", "5"}, {"7", "7"}});
+      own(tr("LIST TEXT CASE"), "zfront.list_case", {{"upper", tr("Uppercase")}, {"lower", tr("Lowercase")}});
+
+      // Accessibility: both live (es_settings.cfg; ui_prefs::reapply publishes them and every open menu lays out again).
+      m.choice(
+           tr("TEXT SIZE"), {{"small", tr("SMALL")}, {"normal", tr("NORMAL")}, {"large", tr("LARGE")}, {"xlarge", tr("EXTRA LARGE")}},
+           [&cx] {
+             const std::string* v = cx.es.get("TextSize");
+             if (v && (*v == "small" || *v == "large" || *v == "xlarge")) return *v;
+             return std::string("normal");
+           },
+           [&cx](const std::string& v) {
+             cx.es.set_string("TextSize", v);
+             save_es(cx);
+             ui_prefs::reapply(cx);
+           })
+          .no_cycle()
+          .hint(tr("Size of the text in menus, dialogs and help bars"));
+      m.toggle(
+           tr("HIGH CONTRAST"), [&cx] { return cx.es.get_bool("HighContrast", false); },
+           [&cx](bool on) {
+             cx.es.set_bool("HighContrast", on);
+             save_es(cx);
+             ui_prefs::reapply(cx);
+           })
+          .hint(tr("Pure white or black text, solid panels and a thicker selector"));
     }
 
     // ---- controls
@@ -205,20 +322,51 @@ MenuSpec make_ui_spec(unsigned parts) {
           save_es(cx);
           ui_prefs::reapply(cx);
         });
-    if ((parts & (kDisplay | kTopBar)) && ui_prefs::has_battery())
-      m.choice(
-          tr("SHOW BATTERY STATUS"), {{"", tr("NO")}, {"icon", tr("ICON")}, {"text", tr("ICON AND TEXT")}},
-          [&cx] {
-            const std::string* v = cx.es.get("ShowBattery");  // ES: empty = no, "text" = icon and percentage, anything else = icon
-            if (!v) return std::string("text");
-            if (v->empty() || *v == "text") return *v;
-            return std::string("icon");
-          },
-          [&cx](const std::string& v) {
-            cx.es.set_string("ShowBattery", v);
+    if (parts & (kDisplay | kTopBar)) {
+      m.toggle(
+          tr("SHOW CLOCK IN 12-HOUR FORMAT"), [&cx] { return cx.es.get_bool("ClockMode12", false); },
+          [&cx](bool on) {
+            cx.es.set_bool("ClockMode12", on);
             save_es(cx);
             ui_prefs::reapply(cx);
           });
+      if ((parts & (kDisplay | kTopBar)) && ui_prefs::has_battery())
+        m.choice(
+            tr("SHOW BATTERY STATUS"), {{"", tr("NO")}, {"icon", tr("ICON")}, {"text", tr("ICON AND TEXT")}},
+            [&cx] {
+              const std::string* v = cx.es.get("ShowBattery");  // ES: empty = no, "text" = icon and percentage, anything else = icon
+              if (!v) return std::string("text");
+              if (v->empty() || *v == "text") return *v;
+              return std::string("icon");
+            },
+            [&cx](const std::string& v) {
+              cx.es.set_string("ShowBattery", v);
+              save_es(cx);
+              ui_prefs::reapply(cx);
+            });
+
+      m.header(tr("NAVIGATION"));  // not about the top bar: they were under its header
+      m.toggle(
+          tr("CAROUSEL TRANSITIONS"), [&cx] { return cx.es.get_bool("MoveCarousel", true); },
+          [&cx](bool on) {
+            cx.es.set_bool("MoveCarousel", on);
+            save_es(cx);
+          });
+      m.toggle(
+          tr("QUICK SYSTEM SELECT"), [&cx] { return cx.es.get_bool("QuickSystemSelect", true); },
+          [&cx](bool on) {
+            cx.es.set_bool("QuickSystemSelect", on);
+            save_es(cx);
+          });
+      m.toggle(
+          tr("ON-SCREEN HELP"), [&cx] { return cx.es.get_bool("ShowHelpPrompts", true); },
+          [&cx](bool on) {
+            cx.es.set_bool("ShowHelpPrompts", on);
+            save_es(cx);
+            ui_prefs::reapply(cx);
+          });
+    }
+    if (parts == kAll) listopts::build_group(m, cx);  // GAMELIST OPTIONS (listopts.cpp)
 
     // ---- screensaver: oscontract starts it when ScreenSaverTime ms pass without input (0 = never)
     if (!(parts & kSaver)) return;
@@ -228,22 +376,26 @@ MenuSpec make_ui_spec(unsigned parts) {
          [&cx](int v) { cx.es.set_int("ScreenSaverTime", long(v) * 60000); })
         .format([](int v) { return v == 0 ? std::string(tr("OFF")) : std::to_string(v) + " min"; })
         .commit([&cx](int) { save_es(cx); });
-    {  // ES: dim, black (+ video / slideshow, not ported) and suspend when the system can suspend
-      std::vector<Option> types = {{"dim", tr("dim")}, {"black", tr("black")}};
+    {  // ES: dim, black, random video, slideshow and suspend when the system can suspend
+      auto shown = [](const char* t) { return i18n::sentence_case(utf8_upper(tr(t))); };  // ES's lower-case words: "Dim", "Random video"
+      std::vector<Option> types = {{"dim", shown("dim")}, {"black", shown("black")}, {"random video", shown("random video")}, {"slideshow", shown("slideshow")}};
       const bool can_suspend = oscontract::suspend_supported();
-      if (can_suspend) types.push_back({"suspend", tr("suspend")});
+      if (can_suspend) types.push_back({"suspend", shown("suspend")});
       m.choice(
           tr("SCREENSAVER TYPE"), types,
           [&cx, can_suspend] {
             const std::string* v = cx.es.get("ScreenSaverBehavior");
-            if (v && *v == "dim") return std::string("dim");
+            if (v && (*v == "dim" || *v == "random video" || *v == "slideshow")) return *v;
             return v && *v == "suspend" && can_suspend ? std::string("suspend") : std::string("black");
           },
-          [&cx](const std::string& v) {
+          [&cx, again = m.refresh](const std::string& v) {
             cx.es.set_string("ScreenSaverBehavior", v);
             save_es(cx);
+            if (again) again();  // the rows of the slideshow / random video appear or go
           });
     }
+    if (music::available()) music::build_saver_row(m, cx);
+    ssmedia::build_rows(m, cx);  // IMAGE/VIDEO DURATION, SHOW GAME INFO, ... for the chosen type (nothing for dim / black / suspend)
   };
   return s;
 }

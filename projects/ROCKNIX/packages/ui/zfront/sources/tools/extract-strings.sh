@@ -11,7 +11,7 @@
 set -eu
 here=$(cd "$(dirname "$0")/.." && pwd)
 out=${1:-$here/zfront.pot}
-es_pot=${2:-${ZF_ES_POT:-/home/epsil/es-new-work/src/locale/emulationstation2.pot}}
+es_pot=${2:-${ZF_ES_POT:?set ZF_ES_POT to EmulationStation's emulationstation2.pot}}
 
 command -v xgettext >/dev/null 2>&1 || { echo "extract-strings: xgettext not found (install GNU gettext)" >&2; exit 1; }
 
@@ -21,7 +21,7 @@ files=$(find src -name '*.cpp' -o -name '*.hpp' | sort)
 # shellcheck disable=SC2086
 xgettext --language=C++ --from-code=UTF-8 --package-name=zfront \
   --msgid-bugs-address=https://github.com/zenmode-adri/Zenith \
-  --keyword=tr:1 --keyword=N_:1 --keyword=NC_:1c,2 --keyword=ntr:1,2 --keyword=ctr:1c,2 --add-comments=TRANSLATORS --sort-by-file \
+  --keyword=tr:1 --keyword=sc:1 --keyword=N_:1 --keyword=NC_:1c,2 --keyword=ntr:1,2 --keyword=ctr:1c,2 --add-comments=TRANSLATORS --sort-by-file \
   -o "$out" $files
 
 n=$(grep -c '^msgid "' "$out" || true)

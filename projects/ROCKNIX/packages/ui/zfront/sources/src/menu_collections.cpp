@@ -15,11 +15,13 @@
 // into the new collection after creating it, UPDATE GAMELISTS (Windows only in ES), and the manufacturer/hardware/year orderings of
 // SORT SYSTEMS (the console's es_systems.cfg has no manufacturer, so ES offers only NO and ALPHABETICALLY there too).
 #include <algorithm>
+#include <map>
 #include <memory>
 
 #include "collections.hpp"
 #include "menu.hpp"
 #include "registry.hpp"
+#include "smartcol.hpp"
 #include "ui_dialogs.hpp"
 #include "util.hpp"
 
@@ -33,7 +35,7 @@ using namespace collections;
 bool es_save(Ctx& cx) {
   std::string err;
   if (cx.es.save(&err)) return true;
-  cx.sv->toasts.push(tr("COULD NOT SAVE GAME DATA"), 4000);  // the same notice the gamelist writer uses
+  cx.sv->toasts.push(tr("Could not save the settings"), 4000);  // es_settings.cfg is not game data
   return false;
 }
 
@@ -119,6 +121,22 @@ std::unique_ptr<Screen> make_auto() {
                  reload();
                });
     }
+    // zfront's own: kept under their own key so ES (which rewrites CollectionSystemsAuto from its list) never drops them
+    m.header(tr("SMART COLLECTIONS"));
+    for (const smartcol::Decl& d : smartcol::decls()) {
+      std::string name = d.name;
+      m.toggle(smartcol::label(d),
+               [&cx, name] {
+                 std::vector<std::string> on = smartcol::enabled(cx.es);
+                 return std::find(on.begin(), on.end(), name) != on.end();
+               },
+               [&cx, name](bool v) {
+                 std::vector<std::string> on = smartcol::enabled(cx.es);
+                 set_member(on, name, v);
+                 es_str(cx, smartcol::kSettingsKey, join_sorted(on));
+                 reload();
+               });
+    }
   };
   return make_menu(std::move(s));
 }
@@ -136,8 +154,13 @@ void write_back(Ctx& cx, const std::shared_ptr<FilterState>& st) {
   reload();
 }
 
+// The filter screen and its SYSTEMS screen share ONE copy while both are open: each used to keep its own and write the whole filter,
+// so saving one erased what the other had just changed.
 std::shared_ptr<FilterState> load_filter(const std::string& name) {
+  static std::map<std::string, std::weak_ptr<FilterState>> live;
+  if (std::shared_ptr<FilterState> p = live[name].lock()) return p;
   auto st = std::make_shared<FilterState>();
+  live[name] = st;
   st->name = name;
   read_filter(name, st->f);
   return st;
@@ -238,7 +261,9 @@ std::unique_ptr<Screen> make_delete() {
   s.title = tr("DELETE COLLECTION");
   s.title_key = N_("DELETE COLLECTION");
   s.build = [](MenuBuilder& m, Ctx& cx) {
-    for (const Custom& c : list_custom()) {
+    const std::vector<Custom> all = list_custom();
+    if (all.empty()) m.info(tr("NO OPTIONS"));  // the last one was just deleted: a note, not a blank screen without a cursor
+    for (const Custom& c : all) {
       std::string name = c.name;
       Refresh refresh = m.refresh;
       m.action(name,
@@ -305,6 +330,11 @@ std::unique_ptr<Screen> make_main() {
     size_t n_auto = 0;
     for (const AutoDecl& d : auto_decls())
       if (std::find(au.begin(), au.end(), d.name) != au.end()) ++n_auto;
+    {
+      std::vector<std::string> sm = smartcol::enabled(cx.es);
+      for (const smartcol::Decl& d : smartcol::decls())
+        if (std::find(sm.begin(), sm.end(), d.name) != sm.end()) ++n_auto;
+    }
     std::vector<Custom> customs = list_custom();
     std::vector<std::string> cu = enabled_custom(cx.es);
     size_t n_custom = 0;

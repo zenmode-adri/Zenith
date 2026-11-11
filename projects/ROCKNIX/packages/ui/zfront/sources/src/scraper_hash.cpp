@@ -29,18 +29,20 @@ constexpr int R[64] = {7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 2
 
 inline uint32_t rol(uint32_t x, int c) { return (x << c) | (x >> (32 - c)); }
 
-uint32_t* crc_table() {
-  static uint32_t t[256];
-  static bool init = false;
-  if (!init) {
+struct CrcTable {
+  uint32_t t[256];
+  CrcTable() {
     for (uint32_t i = 0; i < 256; ++i) {
       uint32_t c = i;
       for (int k = 0; k < 8; ++k) c = (c & 1) ? 0xEDB88320u ^ (c >> 1) : c >> 1;
       t[i] = c;
     }
-    init = true;
   }
-  return t;
+};
+// function-local static: initialised once and thread-safely (the worker and a launch check may both hash)
+const uint32_t* crc_table() {
+  static const CrcTable table;
+  return table.t;
 }
 
 }  // namespace

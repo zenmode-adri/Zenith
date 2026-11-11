@@ -38,7 +38,7 @@ struct ListState {
     if (loading) return;
     loading = true;
     auto out = std::make_shared<std::string>();
-    sv->jobs.post([sv = sv, out] { *out = sv->cmd.run("rocknix-bluetooth list", 30000).out; },
+    sv->jobs.post_slow([sv = sv, out] { *out = sv->cmd.run("rocknix-bluetooth list", 30000).out; },
                   [self = weak_self.lock(), out] {
                     if (!self) return;
                     self->devs = parse_bt_list(*out);
@@ -80,7 +80,7 @@ std::unique_ptr<Screen> make_pair(Ctx& cx) {
                  cx.sv->toasts.push(tr("PLEASE WAIT"), 3000);
                  auto ok = std::make_shared<bool>(false);
                  // trust loops up to 60 s (it ends as soon as the device shows as trusted): the user is waiting anyway
-                 cx.sv->jobs.post(
+                 cx.sv->jobs.post_slow(
                      [sv = cx.sv, dev, ok] {
                        sv->cmd.run("rocknix-bluetooth trust " + shell_quote(dev.id), 75000);
                        for (const BtDevice& t : parse_bt_list(sv->cmd.run("rocknix-bluetooth list", 30000).out))
@@ -159,7 +159,7 @@ std::unique_ptr<Screen> make_list(Ctx& cx) {
     m.separator();
     m.action(tr("REMOVE ALL"),
              [&cx, st] {
-               cx.sv->jobs.post([sv = cx.sv] { sv->cmd.run("rocknix-config forgetBT", 30000); },
+               cx.sv->jobs.post_slow([sv = cx.sv] { sv->cmd.run("rocknix-config forgetBT", 30000); },
                                 [&cx, st] {
                                   cx.sv->toasts.push(tr("BLUETOOTH DEVICES HAVE BEEN DELETED."), 3000);
                                   st->devs.clear();
@@ -203,7 +203,7 @@ std::unique_ptr<Screen> make_device(Ctx& cx, const std::string& arg) {
     st->busy = true;
     cx.sv->toasts.push(tr("PLEASE WAIT"), 3000);
     auto rc = std::make_shared<int>(0);
-    cx.sv->jobs.post([sv = cx.sv, st, verb, timeout_ms, rc] { *rc = sv->cmd.run("rocknix-bluetooth " + verb + " " + shell_quote(st->id), timeout_ms).exit_code; },
+    cx.sv->jobs.post_slow([sv = cx.sv, st, verb, timeout_ms, rc] { *rc = sv->cmd.run("rocknix-bluetooth " + verb + " " + shell_quote(st->id), timeout_ms).exit_code; },
                      [&cx, st, rc, fail] {
                        st->busy = false;
                        if (*rc != 0) cx.sv->toasts.push(tr(fail) + std::string(" ") + st->name, 4000);

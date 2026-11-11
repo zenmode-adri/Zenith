@@ -11,13 +11,19 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <cctype>
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 
 #include "app.hpp"
+#include "autoperf.hpp"
 #include "gamelist.hpp"
 #include "gamemeta.hpp"
+#include "oscontract.hpp"
+#include "players.hpp"
+#include "playstats.hpp"
+#include "power.hpp"
 #include "savestates.hpp"
 #include "settings.hpp"
 #include "util.hpp"
@@ -27,7 +33,9 @@ extern char** environ;
 namespace zf {
 namespace launch {
 
-std::string controllers_config(const std::vector<JoyInfo>& joys) {
+std::string controllers_config(const std::vector<JoyInfo>& connected) {
+  // ES PLAYER ASSIGNMENTS: who is player 1, 2... (connection order when nothing was chosen)
+  const std::vector<JoyInfo> joys = players::order(connected, players::current());
   std::string s;
   for (size_t i = 0; i < joys.size() && i < kMaxPlayers; ++i) {
     std::string n = std::to_string(i + 1);
@@ -83,32 +91,128 @@ static std::string cmdline_arg(const std::string& s) {
   return quote ? "\"" + e + "\"" : e;
 }
 
-static void replace_all(std::string& s, const std::string& from, const std::string& to) {
-  size_t pos = 0;
-  while ((pos = s.find(from, pos)) != std::string::npos) {
-    s.replace(pos, from.size(), to);
-    pos += to.size();
+std::string default_nickname(const std::string& os_release) {
+  std::string name, text;
+  if (read_file(os_release, text)) {
+    size_t i = 0;
+    while (i < text.size()) {
+      size_t e = text.find('\n', i);
+      std::string_view line(text.data() + i, (e == std::string::npos ? text.size() : e) - i);
+      i = e == std::string::npos ? text.size() : e + 1;
+      if (line.compare(0, 8, "OS_NAME=") != 0) continue;
+      std::string_view v = trim(line.substr(8));
+      if (v.size() >= 2 && (v.front() == '"' || v.front() == '\'') && v.back() == v.front()) v = v.substr(1, v.size() - 2);
+      name = std::string(v);
+      break;
+    }
   }
+  if (name.empty()) name = "ROCKNIX";
+  return name + " Player";
+}
+
+bool valid_netplay_host(const std::string& ip) {
+  if (ip.empty() || ip.size() > 253) return false;
+  for (char c : ip)
+    if (!(std::isalnum(static_cast<unsigned char>(c)) || c == '.' || c == ':' || c == '-')) return false;
+  return true;
+}
+
+// The nick is typed by the user (or comes from system.cfg) and lands in a shell line next to the ROM: its shell characters are
+// escaped, spaces stay (ES passes the nick as it is, so "Zenith Player" gives the same line). Tabs and newlines become spaces.
+static std::string netplay_nick(const ConfMap& conf) {
+  auto it = conf.find("global.netplay.nickname");
+  std::string nick = it == conf.end() || it->second.empty() ? default_nickname() : it->second;
+  std::string o;
+  for (char c : nick) {
+    if (c == '\t' || c == '\n' || c == '\r') c = ' ';
+    if (std::string_view("\\'\"!$^&*(){}[]?;<>`|#~").find(c) != std::string_view::npos) o += '\\';
+    o += c;
+  }
+  return o;
+}
+
+std::string netplay_args(const Netplay& np, const ConfMap& conf) {
+  if (np.role == NetRole::Off) return std::string();
+  const std::string nick = netplay_nick(conf);
+  if (np.role == NetRole::Host) {
+    auto it = conf.find("global.netplay.port");
+    std::string port = it == conf.end() ? std::string() : it->second;
+    bool digits = !port.empty() && port.size() <= 5;
+    for (char c : port) digits = digits && c >= '0' && c <= '9';
+    if (!digits) port = "55435";  // ES writes the default into the key when its menu opens; an empty key would give "--port  --nick"
+    return "--host --port " + port + " --nick " + nick;
+  }
+  if (!valid_netplay_host(np.ip) || np.port <= 0 || np.port > 65535) return std::string();
+  return "--connect " + np.ip + " --port " + std::to_string(np.port) + " --nick " + nick;
 }
 
 std::string build_command(const System& sys, const Game& game, const ConfMap& conf, const std::vector<JoyInfo>& joys) {
+  return build_command(sys, game, conf, joys, Netplay());
+}
+
+std::string build_command(const System& sys, const Game& game, const ConfMap& conf, const std::vector<JoyInfo>& joys, const Netplay& np) {
   if (sys.command.empty()) return std::string();
   auto [emulator, core] = resolve_emu(sys, game, conf);
+  std::string templ = sys.command;
+  // ES (FileData.cpp): a CLIENT launch from the lobby runs the room's core when the system has it
+  if (np.role == NetRole::Join && !np.core.empty() && core != np.core) {
+    bool force = false;
+    for (const auto& e : sys.emus) {
+      for (const std::string& c : e.second) {
+        if (force || c != np.core) continue;
+        emulator = e.first;
+        core = c;
+        force = true;
+      }
+    }
+    if (force) {
+      if (templ.find("%EMULATOR%") == std::string::npos && templ.find("-emulator") == std::string::npos) templ += " -emulator %EMULATOR%";
+      if (templ.find("%CORE%") == std::string::npos && templ.find("-core") == std::string::npos) templ += " -core %CORE%";
+    }
+  }
+  if (np.role != NetRole::Off && templ.find("%NETPLAY%") == std::string::npos) templ += " %NETPLAY%";
   const std::string& rom_raw = game.path;
   const char* home = std::getenv("HOME");
-  std::string c = sys.command;  // replacements in ES order, each on the result of the previous one
-  replace_all(c, "%SYSTEM%", sys.name);
-  replace_all(c, "%ROM%", escape_path(rom_raw));
-  replace_all(c, "%BASENAME%", path_stem(rom_raw));
-  replace_all(c, "%ROM_RAW%", rom_raw);
-  replace_all(c, "%EMULATOR%", emulator);
-  replace_all(c, "%CORE%", core);
-  replace_all(c, "%HOME%", home ? home : "");
-  replace_all(c, "%GAMENAME%", cmdline_arg(game.name));
-  replace_all(c, "%SYSTEMNAME%", cmdline_arg(sys.fullname));
-  replace_all(c, "%GAMEINFOXML%", "");
-  replace_all(c, "%CONTROLLERSCONFIG%", controllers_config(joys));
-  replace_all(c, "%NETPLAY%", "");
+  // ES replaces the placeholders one after the other, each on the result of the previous one, so a ROM called
+  // "Foo %CORE%.gb" came out with the core name inside its path. One pass over the template: a value is never scanned again.
+  struct Tok {
+    std::string_view name;
+    std::string val;
+  };
+  const Tok toks[] = {
+      {"SYSTEM", sys.name},
+      {"ROM", escape_path(rom_raw)},
+      {"BASENAME", path_stem(rom_raw)},
+      {"ROM_RAW", rom_raw},
+      {"EMULATOR", emulator},
+      {"CORE", core},
+      {"HOME", home ? home : ""},
+      {"GAMENAME", cmdline_arg(game.name)},
+      {"SYSTEMNAME", cmdline_arg(sys.fullname)},
+      {"GAMEINFOXML", ""},
+      {"CONTROLLERSCONFIG", controllers_config(joys)},
+      {"NETPLAY", netplay_args(np, conf)},
+  };
+  const std::string& t = templ;
+  std::string c;
+  c.reserve(t.size() + 128);
+  for (size_t i = 0; i < t.size();) {
+    if (t[i] == '%') {
+      size_t j = t.find('%', i + 1);
+      if (j != std::string::npos) {
+        std::string_view nm(t.data() + i + 1, j - i - 1);
+        const Tok* hit = nullptr;
+        for (const Tok& k : toks)
+          if (k.name == nm) hit = &k;
+        if (hit) {
+          c += hit->val;
+          i = j + 1;
+          continue;
+        }
+      }
+    }
+    c.push_back(t[i++]);
+  }
   return c;
 }
 
@@ -173,8 +277,17 @@ bool split_simple(std::string_view cmd, std::vector<std::string>& out) {
       case '`':
       case '\n':
         return false;  // expansion (inside quotes) or command syntax (outside)
+      case '~':
+      case '#':
+        // `#` starts a comment and `~` a tilde expansion only at the start of a word (ES leaves them unescaped, so a ROM
+        // called "Game #1 ~ Disc 2.chd" must still be a simple command: it keeps the direct spawn and the idle preparation).
+        // `~` right after `=` or `:` stays conservative (bash expands it there in assignment-like words).
+        if (!q && (!have || (c == '~' && !cur.empty() && (cur.back() == '=' || cur.back() == ':')))) return false;
+        cur.push_back(c);
+        have = true;
+        break;
       case '\'': case ';': case '&': case '|': case '<': case '>': case '(': case ')': case '*': case '?':
-      case '~': case '#': case '{': case '}': case '[': case ']': case '!':
+      case '{': case '}': case '[': case ']': case '!':
         // conservative: some only matter in certain positions, but ES paths are escaped
         if (!q) return false;
         cur.push_back(c);
@@ -323,7 +436,7 @@ void on_term(int) {
 
 bool term_requested() { return g_term_count > 0; }
 
-RunResult run(const std::string& cmd) {
+RunResult run(const std::string& cmd, const std::function<void(int pid)>& supervise) {
   auto t0 = Clock::now();
   RunResult r;
   struct sigaction sa, old;
@@ -331,14 +444,39 @@ RunResult run(const std::string& cmd) {
   sigemptyset(&sa.sa_mask);
   sa.sa_flags = 0;  // no SA_RESTART: a blocked waitpid wakes up (and simply waits again)
   ::sigaction(SIGTERM, &sa, &old);
+  oscontract::take_quit_request();  // a request left from before this game is not about it
   int pid = spawn_simple(cmd, {});
   if (pid <= 0) pid = spawn_sh(cmd, {});  // not simple, or exec failed (sh reports 127 / runs a shebang-less script)
   if (pid > 0) {
     g_game_pid = pid;
     if (g_term_count > 0) ::kill(pid, SIGTERM);  // it arrived before the pid was known
-    int st = wait_status(pid);
+    autoperf::on_spawn(pid);  // no-op unless a caller armed it: samples the GPU, RAM and the game's CPU while we wait
+    int st = 0;
+    if (!supervise) {
+      st = wait_status(pid);
+    } else {
+      // polling wait: the supervisor sleeps on its own descriptors; the floor keeps a callback that returns at once from spinning
+      for (;;) {
+        pid_t w = ::waitpid(pid, &st, WNOHANG);
+        if (w == pid) break;
+        if (w < 0 && errno != EINTR) {
+          st = -1;
+          break;
+        }
+        const TimePoint s0 = Clock::now();
+        supervise(pid);
+        if (Clock::now() - s0 < std::chrono::milliseconds(20)) {
+          timespec ts{0, 20 * 1000 * 1000};
+          ::nanosleep(&ts, nullptr);
+        }
+      }
+    }
+    autoperf::on_exit();
     g_game_pid = 0;
     r.exit_code = (st >= 0 && WIFEXITED(st)) ? WEXITSTATUS(st) : 1;
+    // stopped by us (QUIT GAME, the phone, /emukill): the emulator dies with a code, but the player ended the game, as with its
+    // own exit (seen 9-nov: God of War closed from the phone after 338 s left no play log line and no performance suggestion)
+    if (r.exit_code != 0 && oscontract::take_quit_request()) r.exit_code = 0;
   }
   ::sigaction(SIGTERM, &old, nullptr);
   r.secs = static_cast<unsigned long>(std::chrono::duration_cast<std::chrono::seconds>(Clock::now() - t0).count());
@@ -585,8 +723,9 @@ Outcome execute(const Request& r, const Env& env) {
   std::fprintf(stderr, "zfront: launching at uptime %s: %s\n", uptime_text().c_str(), cmd.c_str());
   game_start(dirs, r.rom_raw, r.name);
   if (env.release) env.release();
-  o.run = run(cmd);
+  o.run = run(cmd, env.supervise);
   game_end(dirs);
+  savestates::after_game();  // HOOK menu-collections: undo of the savestate preparation (no-op without a plan), before anything reads those files again
   if (env.restore && !term_requested()) env.restore();  // being stopped: do not rebuild the window
   std::fprintf(stderr, "zfront: back at uptime %s after %lu s (exit %d)\n", uptime_text().c_str(), o.run.secs, o.run.exit_code);
   o.after = after_launch(o.run.exit_code, o.run.secs);
@@ -603,9 +742,33 @@ Outcome execute(const Request& r, const Env& env) {
 }
 
 void apply_after(Ctx& cx, size_t sys, size_t game, const Outcome& o) {
-  savestates::after_game();  // HOOK menu-collections: undo of the savestate preparation (no-op without a plan)
   if (!o.after.count_play) return;
   game_played(cx, sys, game, o.after.add_gametime);  // memory now, gamelist.xml on the job thread
+}
+
+bool find_game(const Ctx& cx, const std::string& sys_name, const std::string& path, size_t& sys, size_t& game) {
+  for (size_t i = 0; i < cx.systems.size(); ++i) {
+    if (cx.systems[i].name != sys_name) continue;
+    const std::vector<Game>& gs = cx.systems[i].games;
+    for (size_t j = 0; j < gs.size(); ++j)
+      if (gs[j].path == path) {
+        sys = i;
+        game = j;
+        return true;
+      }
+    return false;
+  }
+  return false;
+}
+
+void apply_after_path(Ctx& cx, const std::string& sys_name, const std::string& path, const Outcome& o) {
+  // the play log (GAMES > PLAY STATISTICS): the same sessions the gamelist counts as gametime
+  // (the battery the session used rides in the last column; -1 when it was on the charger, short or not measured)
+  const power::Session bat = power::take_session(o.after.add_gametime);
+  if (o.after.count_play && o.after.add_gametime >= playstats::kMinSecs)
+    playstats::record_ended(sys_name, path, o.after.add_gametime, 0, bat.valid ? bat.drop_pct10 : -1);
+  size_t si = 0, gi = 0;
+  if (find_game(cx, sys_name, path, si, gi)) apply_after(cx, si, gi, o);
 }
 
 std::string error_toast(const Outcome& o) {

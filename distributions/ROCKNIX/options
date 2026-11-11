@@ -8,10 +8,10 @@
   HARDENING_SUPPORT="no"
 
 # The name of the parent organization for updates
-  GIT_ORGANIZATION="AveyondFly"
+  GIT_ORGANIZATION="zenmode-adri"
 
 # The name of the github project for updates
-  GIT_REPO="distribution_rocknix"
+  GIT_REPO="Zenith"
 
 # Name of the Distro to build (full name, without special characters)
   DISTRONAME="AURKNIX"
@@ -23,13 +23,13 @@
   DESCRIPTION="An Open Source firmware."
 
 # Distribution Home URL
-  HOME_URL="https://rocknix.org"
+  HOME_URL="https://github.com/zenmode-adri/Zenith"
 
 # Documentation URL
-  WIKI_URL="https://rocknix.org"
+  WIKI_URL="https://github.com/zenmode-adri/Zenith"
 
 # Where to report bugs
-  BUG_REPORT_URL="https://github.com/AveyondFly/distribution_rocknix/issues"
+  BUG_REPORT_URL="https://github.com/zenmode-adri/Zenith/issues"
 
 # Root password to integrate in the target system
   ROOT_PASSWORD="rocknix"

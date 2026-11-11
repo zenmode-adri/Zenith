@@ -36,6 +36,7 @@ done
 rsync -a --delete ${EXCLUDE} /usr/config/system/ /storage/.config/system/
 rsync -a --ignore-existing /usr/config/game /storage/.config/
 rsync -a /usr/config/modules /storage/.config/
+rsync -a --ignore-existing /usr/config/gmu/playlists/ /storage/.config/gmu/playlists/
 
 if [ -f "/storage/.config/emulationstation/resources/logo.png" ]
 then

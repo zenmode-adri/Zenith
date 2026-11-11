@@ -17,6 +17,7 @@ namespace zf {
 namespace {
 const Stage kQuickStages[] = {{500, 500}, {2000, 114}, {4000, 32}, {UINT32_MAX, 16}};
 const Stage kSlowStages[] = {{500, 500}, {UINT32_MAX, 200}};
+const Stage kMenuStages[] = {{500, 500}, {1500, 114}, {UINT32_MAX, 66}};
 
 std::string lower(std::string s) {
   for (char& c : s)
@@ -61,6 +62,7 @@ inline int zone(int32_t v) { return v > kDeadZone ? 1 : (v < -kDeadZone ? -1 : 0
 
 const Profile kQuick = {kQuickStages, 4};
 const Profile kSlow = {kSlowStages, 2};
+const Profile kMenu = {kMenuStages, 3};
 
 uint32_t repeat_delay_at(Profile p, uint32_t elapsed_ms) {
   uint64_t end = 0;
@@ -500,7 +502,8 @@ class SdlPad final : public PadCore {
       char g[40];
       SDL_JoystickGetGUIDString(SDL_JoystickGetDeviceGUID(i), g, sizeof g);
       const char* nm = SDL_JoystickNameForIndex(i);
-      JoyInfo ji{uint32_t(i), g, nm ? nm : "", -1, -1, -1};
+      JoyInfo ji{uint32_t(i), g, nm ? nm : "", -1, -1, -1, {}};
+      if (const char* pa = SDL_JoystickPathForIndex(i)) ji.path = pa;
       if (const Open* o = find(SDL_JoystickGetDeviceInstanceID(i))) {
         ji.buttons = SDL_JoystickNumButtons(o->js);
         ji.hats = SDL_JoystickNumHats(o->js);

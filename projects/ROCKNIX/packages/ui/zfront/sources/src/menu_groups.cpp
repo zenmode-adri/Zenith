@@ -3,8 +3,10 @@
 
 #include <memory>
 
+#include "collections.hpp"
 #include "menu_lang.hpp"
 #include "menu_ui.hpp"
+#include "oscontract.hpp"
 #include "registry.hpp"
 #include "util.hpp"
 
@@ -61,17 +63,21 @@ std::string language_label(Ctx& cx) {
 
 }  // namespace
 
-// SCREEN & SOUND: what you see and hear. Brightness (+ panel calibration one level down), audio output, LEDs, top bar.
+// SCREEN & SOUND: the console's screen, sound and lights. Brightness (+ panel calibration one level down), audio output, LEDs. How
+// zfront itself looks is APPEARANCE.
 // The volume itself is the hardware buttons' job: only its on-screen overlay is a setting here.
 ZF_REGISTER_SCREEN("menu.g.screen", [](Ctx& cx, const std::string&) {
   using namespace sys_sec;
   std::vector<MenuSpec> parts;
   parts.push_back(system_spec(cx, kBright | kNoHdr));  // no header: the title says it, and the screen is one row too long with it
   if (system_has_section(kPanel)) parts.push_back(links([](MenuBuilder& m, Ctx&) { m.submenu(tr("PANEL ADJUSTMENT"), "menu.g.panel"); }));
-  parts.push_back(sound_spec(cx, snd_part::kAudio | snd_part::kOverlay | snd_part::kNav));
+  parts.push_back(sound_spec(cx, snd_part::kAudio | snd_part::kOverlay | snd_part::kNav | snd_part::kMusic));
   parts.push_back(system_spec(cx, kLeds));
-  parts.push_back(ui_spec(ui_part::kTopBar));
   return group(merge_specs(tr("SCREEN & SOUND"), N_("SCREEN & SOUND"), std::move(parts)));
+});
+// APPEARANCE: how zfront looks. Theme and its configuration, the user's own look, text size and contrast, the top bar, navigation.
+ZF_REGISTER_SCREEN("menu.g.look", [](Ctx&, const std::string&) {
+  return group(merge_specs(tr("APPEARANCE"), N_("APPEARANCE"), {ui_spec(ui_part::kTheme | ui_part::kTopBar)}));
 });
 // Gamma, contrast, saturation, hue: calibration, touched once.
 ZF_REGISTER_SCREEN("menu.g.panel", [](Ctx& cx, const std::string&) {
@@ -88,11 +94,11 @@ ZF_REGISTER_SCREEN("menu.g.power", [](Ctx& cx, const std::string&) {
   parts.push_back(system_spec(cx, kSuspend | kNoHdr));
   parts.push_back(ui_spec(ui_part::kSaver | ui_part::kNoHdr));
   parts.push_back(sound_spec(cx, snd_part::kBatt));
-  if (system_has_section(kTurbo)) parts.push_back(links([](MenuBuilder& m, Ctx&) { m.submenu(tr("ADVANCED"), "menu.g.power.adv"); }));
+  if (system_has_section(kTurbo)) parts.push_back(links([](MenuBuilder& m, Ctx&) { m.submenu(tr("OVERCLOCK & MONITORING"), "menu.g.power.adv"); }));
   return group(merge_specs(tr("BATTERY & PERFORMANCE"), N_("BATTERY & PERFORMANCE"), std::move(parts)));
 });
 ZF_REGISTER_SCREEN("menu.g.power.adv", [](Ctx& cx, const std::string&) {
-  return group(titled(system_spec(cx, sys_sec::kTurbo | sys_sec::kNoHdr), tr("ADVANCED"), N_("ADVANCED")));
+  return group(titled(system_spec(cx, sys_sec::kTurbo | sys_sec::kNoHdr), tr("OVERCLOCK & MONITORING"), N_("OVERCLOCK & MONITORING")));
 });
 
 // LIBRARY: your games. Collections, scraper, the card they live on.
@@ -101,6 +107,20 @@ ZF_REGISTER_SCREEN("menu.g.library", [](Ctx& cx, const std::string&) {
                            {links([](MenuBuilder& m, Ctx&) {
                               m.submenu(tr("GAME COLLECTION SETTINGS"), "menu.collections");
                               m.submenu(tr("SCRAPER"), "menu.scraper");
+                              m.submenu(tr("GAMELIST OPTIONS"), "menu.list_options");
+                              m.submenu(tr("CHECK LIBRARY"), "menu.library_doctor");  // read-only report: BIOS, broken files, duplicates, no pictures
+                              m.submenu(tr("SAVE BACKUPS"), "menu.savebackup");
+                              // like ES's UPDATE GAMELISTS: read the folders again (games copied in while zfront runs); closing the
+                              // menus makes App reload the carousel at once
+                              m.action(tr("UPDATE GAMELISTS"), [](Ctx& c) {
+                                if (!c.system_loader) {  // demo systems and tests: nothing to read again
+                                  c.sv->toasts.push(tr("Restart the front-end to apply the changes."), 3500);
+                                  return Transition::none();
+                                }
+                                oscontract::fire_event("update-gamelists");  // ES (GuiMenu::updateGameLists): the scripts hear about it
+                                collections::request_rescan();
+                                return Transition::close_menus();
+                              });
                             }),
                             system_spec(cx, sys_sec::kStorage)}));
 });
@@ -112,6 +132,7 @@ ZF_REGISTER_SCREEN("menu.g.system", [](Ctx& cx, const std::string&) {
   parts.push_back(system_spec(cx, kInfo | kNoHdr));
   parts.push_back(links([](MenuBuilder& m, Ctx& cx) { m.submenu(tr("LANGUAGE & TIME"), "menu.g.lang").value(language_label(cx)); }));
   parts.push_back(links([](MenuBuilder& m, Ctx&) { m.submenu(tr("UPDATES & DOWNLOADS"), "menu.updates"); }));
+  parts.push_back(system_spec(cx, kUiMode | kNoHdr));  // Full / Kiosk / Kid: not about the language, so not under LANGUAGE & TIME
   parts.push_back(system_spec(cx, kReset | kNoHdr));
   if (system_has_section(kSysAdv)) parts.push_back(links([](MenuBuilder& m, Ctx&) { m.submenu(tr("ADVANCED"), "menu.g.system.adv"); }));
   return group(merge_specs(tr("SYSTEM"), N_("SYSTEM"), std::move(parts)));

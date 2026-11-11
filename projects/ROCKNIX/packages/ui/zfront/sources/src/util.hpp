@@ -33,6 +33,8 @@ uint32_t utf8_next(std::string_view s, size_t& i);
 void utf8_append(std::string& out, uint32_t cp);
 /// Upper case (Latin, Greek, Cyrillic basics), like Rust's `to_uppercase` for the cases games use.
 std::string utf8_upper(std::string_view s);
+/// Lower case, the inverse mapping of `utf8_upper` ("SS" stays "ss").
+std::string utf8_lower(std::string_view s);
 /// `s` with its first letter in capitals ("últimos jugados" -> "Últimos jugados").
 std::string utf8_cap_first(std::string_view s);
 /// Number of code points.

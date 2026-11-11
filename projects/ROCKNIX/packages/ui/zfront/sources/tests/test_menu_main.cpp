@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include <cstdio>
+#include <filesystem>
 #include <cstdlib>
 #include <fstream>
 #include <memory>
@@ -23,6 +24,7 @@
 #include "menu_ui.hpp"
 #include "oscontract.hpp"
 #include "registry.hpp"
+#include "screensaver.hpp"
 #include "ui_dialogs.hpp"
 #include "ui_osd.hpp"
 #include "ui_prefs.hpp"
@@ -161,8 +163,8 @@ bool log_has(const Ctx& cx, const std::string& needle) {
   return false;
 }
 
-const char* kAllScreens[] = {"menu.game",    "menu.g.screen",    "menu.g.power",  "menu.controllers", "menu.network",
-                             "menu.g.library", "menu.g.system", "menu.quit"};
+const char* kAllScreens[] = {"menu.game",      "menu.retroachievements", "menu.battery", "menu.g.screen", "menu.network",
+                             "menu.g.library", "menu.controllers",       "menu.g.look",  "menu.g.system", "menu.quit"};
 
 void render_all(const std::string& out);
 
@@ -218,13 +220,45 @@ int main() {
     CHECK_EQ(app.cx.status.time, std::string("08:15"));
   }
 
+  // ---- menu.battery: a charger plugged while the screen is open shows at once (the bar did, the screen waited for its 5 s)
+  {
+    char bt[] = "/tmp/zf-mm-bat-XXXXXX";
+    CHECK(::mkdtemp(bt) != nullptr);
+    const std::string bd = std::string(bt) + "/sys/class/power_supply/battery/";
+    std::filesystem::create_directories(bd);
+    std::ofstream(bd + "capacity") << "50";
+    std::ofstream(bd + "status") << "Discharging";
+    setenv("ZF_BATTERY_ROOT", bt, 1);
+    setenv("ZF_BATTERY_LOG", (std::string(bt) + "/battery.log").c_str(), 1);
+    Ctx cx;
+    fresh(cx);
+    App app(std::move(cx), std::make_unique<Stub>(), make_status_source("/nonexistent"));
+    Status st = Status::demo("10:00");
+    st.battery = Battery{50, false};
+    app.freeze_status(st);
+    std::unique_ptr<Screen> s = Registry::instance().make("menu.battery", app.cx, "");
+    CHECK(s != nullptr);
+    s->tick(0.1f, app.cx);
+    CHECK(!s->take_redraw());  // nothing changed
+    st.battery = Battery{50, true};
+    app.freeze_status(st);
+    s->tick(0.1f, app.cx);
+    CHECK(s->take_redraw());  // plugged: redrawn now, not 5 s later
+    s->tick(0.1f, app.cx);
+    CHECK(!s->take_redraw());
+    unsetenv("ZF_BATTERY_ROOT");
+    unsetenv("ZF_BATTERY_LOG");
+  }
+
   // ---- menu.main: ES rows, exact screen names, hidden while the screen does not exist, demo only in dry-run
   {
     std::vector<MainRow> rows = main_rows();
-    CHECK_EQ(rows.size(), size_t(8));
+    CHECK_EQ(rows.size(), size_t(10));
     for (size_t i = 0; i < rows.size(); ++i) CHECK_EQ(rows[i].screen, std::string(kAllScreens[i]));
-    CHECK_EQ(rows[0].label, T("GAMES"));
+    CHECK_EQ(rows[0].label, T("GAMES"));  // what is touched often first (diseno-menus/PROPUESTA-REORDEN-10nov.md)
+    CHECK_EQ(rows[1].label, T("RETROACHIEVEMENTS"));  // ES's row, next to the games
     CHECK_EQ(rows[2].icon, std::string("battery"));
+    CHECK_EQ(rows[7].label, T("APPEARANCE"));
 
     Ctx cx;
     fresh(cx);
@@ -237,7 +271,8 @@ int main() {
     press(rm, cx, Action::X);
     CHECK_EQ(rm.title(), T("MAIN MENU"));
     size_t expect = 0;
-    for (const char* s : kAllScreens) expect += Registry::instance().has(s) ? 1 : 0;
+    for (const char* s : kAllScreens)  // the RETROACHIEVEMENTS row is offered only with RetroAchievements on (checked below)
+      expect += std::string(s) != "menu.retroachievements" && Registry::instance().has(s) ? 1 : 0;
     expect += 1;  // WIDGET DEMO: dry-run
     CHECK(rm.size() >= expect);
     CHECK(index_of(rm, "USER INTERFACE SETTINGS") < 0);  // clock and battery are under SCREEN & SOUND, the buttons under CONTROLLER
@@ -270,9 +305,33 @@ int main() {
     two = make_main_menu({{"HERE", "test.main.here", "ui"}, {"GONE", "test.main.gone", "quit"}}, false);
     press(*two, cx, Action::X);
     CHECK_EQ(as_menu(two).size(), size_t(2));
+
+    // the RETROACHIEVEMENTS row: ES shows it when RetroAchievements is on, an account is set and the entry switch is on (default on)
+    auto ra_menu = [&](bool on, const std::string& user, bool entry) {
+      cx.conf.set("global.retroachievements", on ? "1" : "0");
+      cx.conf.set("global.retroachievements.username", user);
+      cx.es.set_bool("RetroachievementsMenuitem", entry);
+      auto m = make_main_menu({}, false);
+      press(*m, cx, Action::X);
+      return m;
+    };
+    {
+      auto on = ra_menu(true, "ana", true);
+      CHECK_EQ(index_of(as_menu(on), "RETROACHIEVEMENTS"), 1);  // after GAMES
+      press(as_menu(on), cx, Action::Down);
+      Transition t = press(as_menu(on), cx, Action::A);
+      CHECK(t.kind == Transition::Open && t.name == "menu.retroachievements");
+    }
+    auto no_row = [&](bool on, const std::string& user, bool entry) {
+      auto m = ra_menu(on, user, entry);
+      return index_of(as_menu(m), "RETROACHIEVEMENTS") < 0;
+    };
+    CHECK(no_row(false, "ana", true));  // RetroAchievements off
+    CHECK(no_row(true, "", true));      // no account
+    CHECK(no_row(true, "ana", false));  // the entry switch off
   }
 
-  // ---- menu.quit: restart / reboot / suspend / shutdown, each behind a YES/NO question
+  // ---- menu.quit: suspend / shutdown / reboot / restart the frontend (the usual first), each behind a YES/NO question
   {
     Ctx cx;
     fresh(cx);
@@ -280,16 +339,16 @@ int main() {
     Menu& m = as_menu(q);
     press(m, cx, Action::X);
     CHECK_EQ(m.title(), T("QUIT"));
-    CHECK_EQ(labels(m), T({"RESTART THE FRONTEND", "RESTART SYSTEM", "SUSPEND SYSTEM", "SHUTDOWN SYSTEM"}));
-    CHECK_EQ(m.entry(0).icon_name, std::string("restart"));
-    CHECK_EQ(m.entry(3).icon_name, std::string("shutdown"));
+    CHECK_EQ(labels(m), T({"SUSPEND SYSTEM", "SHUTDOWN SYSTEM", "RESTART SYSTEM", "RESTART THE FRONTEND"}));
+    CHECK_EQ(m.entry(0).icon_name, std::string("shutdown"));
+    CHECK_EQ(m.entry(3).icon_name, std::string("restart"));
     for (size_t i = 0; i < m.size(); ++i) CHECK(!m.entry(i).confirm_msg.empty());
 
     struct Case {
       int idx;
       oscontract::Mode mode;
       const char* event;
-    } cases[] = {{0, oscontract::Mode::Quit, nullptr}, {1, oscontract::Mode::Reboot, "reboot"}, {3, oscontract::Mode::Shutdown, "shutdown"}};
+    } cases[] = {{1, oscontract::Mode::Shutdown, "shutdown"}, {2, oscontract::Mode::Reboot, "reboot"}, {3, oscontract::Mode::Quit, nullptr}};
     for (const Case& c : cases) {
       bind_os(cx);
       CHECK(!oscontract::quit_requested());
@@ -317,7 +376,7 @@ int main() {
     // suspend: one `systemctl suspend`, no leaving
     bind_os(cx);
     cx.sv->cmd.log.clear();
-    while (m.cursor() != 2) press(m, cx, Action::Down);
+    while (m.cursor() != 0) press(m, cx, Action::Up);
     Transition t = press(m, cx, Action::A);
     auto* dlg = static_cast<ui::ConfirmDialog*>(t.screen.get());
     dlg->handle(Action::Left, cx);
@@ -329,7 +388,34 @@ int main() {
     fresh(cx, true, false);
     auto q2 = Registry::instance().make("menu.quit", cx, "");
     press(*q2, cx, Action::X);
-    CHECK_EQ(labels(as_menu(q2)), T({"RESTART THE FRONTEND", "RESTART SYSTEM", "SHUTDOWN SYSTEM"}));
+    CHECK_EQ(labels(as_menu(q2)), T({"SHUTDOWN SYSTEM", "RESTART SYSTEM", "RESTART THE FRONTEND"}));
+    oscontract::reset_for_test();
+  }
+
+  // ---- menu.quit "quick" (ES: Select in the system carousel): QUICK ACCESS, LAUNCH SCREENSAVER, then the QUIT entries
+  {
+    Ctx cx;
+    fresh(cx);
+    auto q = Registry::instance().make("menu.quit", cx, "quick");
+    Menu& m = as_menu(q);
+    press(m, cx, Action::X);
+    CHECK_EQ(m.title(), T("QUICK ACCESS"));
+    const int ss = index_of(m, "LAUNCH SCREENSAVER");
+    CHECK(ss >= 0);
+    CHECK(index_of(m, "RESTART SYSTEM") > ss);
+    CHECK(index_of(m, "SHUTDOWN SYSTEM") > ss);
+    CHECK(index_of(m, "FAST SHUTDOWN SYSTEM") < 0);  // same as SHUTDOWN: not offered
+    CHECK(goto_label(m, cx, "LAUNCH SCREENSAVER"));
+    bind_os(cx);
+    CHECK(screensaver::mode() == screensaver::Mode::Off);
+    Transition t = press(m, cx, Action::A);
+    CHECK(t.kind == Transition::Pop);  // the menu closes, the screensaver covers the screen
+    CHECK(screensaver::mode() != screensaver::Mode::Off);
+    oscontract::screensaver_stop();
+    // the plain QUIT menu has no screensaver entry
+    auto plain = Registry::instance().make("menu.quit", cx, "");
+    press(*plain, cx, Action::X);
+    CHECK(index_of(as_menu(plain), "LAUNCH SCREENSAVER") < 0);
     oscontract::reset_for_test();
   }
 
@@ -348,13 +434,19 @@ int main() {
     CHECK(index_of(m, "SWITCH CONFIRM & CANCEL BUTTONS") >= 0);
     CHECK(index_of(m, "SCREEN BRIGHTNESS") >= 0);
     CHECK(index_of(m, "SHOW CLOCK") >= 0);
+    CHECK(index_of(m, "SHOW CLOCK IN 12-HOUR FORMAT") >= 0);
+    CHECK(index_of(m, "CAROUSEL TRANSITIONS") >= 0);
+    CHECK(index_of(m, "QUICK SYSTEM SELECT") >= 0);
+    CHECK(index_of(m, "ON-SCREEN HELP") >= 0);
     CHECK(index_of(m, "SHOW BATTERY STATUS") >= 0);
     CHECK(index_of(m, "START SCREENSAVER AFTER") >= 0);
     CHECK(index_of(m, "SCREENSAVER TYPE") >= 0);
     // things zfront does not have are not there
-    for (const char* gone : {"THEME SET", "THEME CONFIGURATION", "GAMELIST VIEW STYLE", "LIST TRANSITION", "GAME LAUNCH TRANSITION", "ON-SCREEN HELP",
-                             "DISABLE TOUCHSCREEN IN EMULATIONSTATION", "SHOW FAVORITES ON TOP", "GAME MEDIAS DURING FAST SCROLLING"})
+    for (const char* gone : {"THEME SET", "THEME CONFIGURATION", "GAMELIST VIEW STYLE", "LIST TRANSITION", "GAME LAUNCH TRANSITION",
+                             "DISABLE TOUCHSCREEN IN EMULATIONSTATION", "GAME MEDIAS DURING FAST SCROLLING"})
       CHECK(index_of(m, gone) < 0);
+    // the GAMELIST OPTIONS group of ES is there (listopts.cpp)
+    CHECK(index_of(m, "SHOW FAVORITES ON TOP") >= 0);
 
     // InvertButtons: stored in es_settings.cfg and applied to the pad at once
     CHECK(goto_label(m, cx, "SWITCH CONFIRM & CANCEL BUTTONS"));
@@ -374,12 +466,28 @@ int main() {
     CHECK(cx.status.time.empty());
     press(m, cx, Action::A);
     CHECK_EQ(cx.status.time, std::string("13:05"));
-    // 12 hours (the SYSTEM menu owns the switch; the status follows the key)
-    cx.es.set_bool("ClockMode12", true);
-    ui_prefs::reapply(cx);
+    // SHOW CLOCK IN 12-HOUR FORMAT (ES ClockMode12, default off): stored, and the status changes now
+    CHECK(goto_label(m, cx, "SHOW CLOCK IN 12-HOUR FORMAT"));
+    CHECK(!m.entry(size_t(m.cursor())).b);
+    press(m, cx, Action::A);
+    CHECK(EsSettings::load(d + "/w/es_settings.cfg").get_bool("ClockMode12", false));
     CHECK_EQ(cx.status.time, std::string("01:05 PM"));
-    cx.es.set_bool("ClockMode12", false);
-    ui_prefs::reapply(cx);
+    press(m, cx, Action::A);
+    CHECK(!EsSettings::load(d + "/w/es_settings.cfg").get_bool("ClockMode12", false));
+    CHECK_EQ(cx.status.time, std::string("13:05"));
+
+    // QUICK SYSTEM SELECT, CAROUSEL TRANSITIONS and ON-SCREEN HELP: ES defaults (on), stored when switched
+    for (const char* key : {"QUICK SYSTEM SELECT", "CAROUSEL TRANSITIONS", "ON-SCREEN HELP"}) {
+      const char* k = std::string(key) == "QUICK SYSTEM SELECT" ? "QuickSystemSelect" : std::string(key) == "CAROUSEL TRANSITIONS" ? "MoveCarousel" : "ShowHelpPrompts";
+      CHECK(goto_label(m, cx, key));
+      CHECK(m.entry(size_t(m.cursor())).b);
+      press(m, cx, Action::A);
+      CHECK(!EsSettings::load(d + "/w/es_settings.cfg").get_bool(k, true));
+      if (std::string(k) == "ShowHelpPrompts") CHECK(!ui_prefs::help_prompts());
+      press(m, cx, Action::A);
+      CHECK(EsSettings::load(d + "/w/es_settings.cfg").get_bool(k, false));
+      CHECK(ui_prefs::help_prompts());
+    }
 
     // SHOW BATTERY STATUS: text -> (cycle) no -> icon -> text; NO is the empty string and survives the file
     CHECK(goto_label(m, cx, "SHOW BATTERY STATUS"));
@@ -432,18 +540,55 @@ int main() {
     CHECK_EQ(oscontract::idle_deadline(cx.es).has_value(), false);  // the timer the loop reads: never
 
     CHECK(goto_label(m, cx, "SCREENSAVER TYPE"));
-    CHECK_EQ(m.entry(size_t(m.cursor())).value_text, std::string("black"));
-    press(m, cx, Action::Right);  // dim, black, suspend: the last one only exists with pm-suspend (this fixture has it)
+    CHECK_EQ(m.entry(size_t(m.cursor())).value_text, std::string("Black"));
+    // dim, black, random video, slideshow, suspend: the last one only exists with pm-suspend (this fixture has it)
+    press(m, cx, Action::Right);
+    CHECK_EQ(*EsSettings::load(d + "/w/es_settings.cfg").get("ScreenSaverBehavior"), std::string("random video"));
+    m.tick(0.0f, cx);  // the rebuild the setter asked for happens at the next sync
+    CHECK(index_of(m, "VIDEO DURATION (SECS)") >= 0);  // the rows of the type appear at once
+    press(m, cx, Action::Right);
+    CHECK_EQ(*EsSettings::load(d + "/w/es_settings.cfg").get("ScreenSaverBehavior"), std::string("slideshow"));
+    m.tick(0.0f, cx);
+    CHECK(index_of(m, "IMAGE DURATION (SECS)") >= 0 && index_of(m, "VIDEO DURATION (SECS)") < 0);
+    press(m, cx, Action::Right);
     CHECK_EQ(*EsSettings::load(d + "/w/es_settings.cfg").get("ScreenSaverBehavior"), std::string("suspend"));
-    // "dim" is a real type now; the ES types zfront does not port (video, slideshow) show as black
+    m.tick(0.0f, cx);
+    CHECK(index_of(m, "IMAGE DURATION (SECS)") < 0);  // suspend has no rows
+    // "dim" and the media types are real types: they show as themselves
     cx.es.set_string("ScreenSaverBehavior", "dim");
     auto u3 = Registry::instance().make("menu.ui", cx, "");
     CHECK(goto_label(as_menu(u3), cx, "SCREENSAVER TYPE"));
-    CHECK_EQ(as_menu(u3).entry(size_t(as_menu(u3).cursor())).value_text, std::string("dim"));
+    CHECK_EQ(as_menu(u3).entry(size_t(as_menu(u3).cursor())).value_text, std::string("Dim"));
     cx.es.set_string("ScreenSaverBehavior", "slideshow");
     auto u4 = Registry::instance().make("menu.ui", cx, "");
     CHECK(goto_label(as_menu(u4), cx, "SCREENSAVER TYPE"));
-    CHECK_EQ(as_menu(u4).entry(size_t(as_menu(u4).cursor())).value_text, std::string("black"));
+    CHECK_EQ(as_menu(u4).entry(size_t(as_menu(u4).cursor())).value_text, std::string("Slideshow"));
+  }
+
+  // ---- the four look options (selector style, title alignment, carousel cards, list text case): saved at once, the frontend restarts ONCE, when the menu is left
+  {
+    Ctx cx;
+    fresh(cx);
+    auto u = Registry::instance().make("menu.ui", cx, "");
+    Menu& m = as_menu(u);
+    CHECK(goto_label(m, cx, "SELECTOR STYLE"));
+    m.entry(size_t(m.cursor())).set_s("outline");
+    CHECK(slurp(d + "/w/system.cfg").find("zfront.sel_style=outline") != std::string::npos);
+    CHECK(!oscontract::quit_requested());  // saved, and nothing restarted yet
+    CHECK(goto_label(m, cx, "LIST TEXT CASE"));
+    m.entry(size_t(m.cursor())).set_s("lower");
+    CHECK(slurp(d + "/w/system.cfg").find("zfront.list_case=lower") != std::string::npos);
+    CHECK(!oscontract::quit_requested());  // two options changed, still no restart
+    press(m, cx, Action::B);               // leaving the menu: the one restart
+    CHECK(oscontract::quit_requested());
+    CHECK_EQ(int(oscontract::quit_mode()), int(oscontract::Mode::Quit));
+    // a menu where nothing was changed leaves without restarting
+    bind_os(cx);
+    auto u2 = Registry::instance().make("menu.ui", cx, "");
+    Menu& m2 = as_menu(u2);
+    CHECK(goto_label(m2, cx, "SELECTOR STYLE"));
+    press(m2, cx, Action::B);
+    CHECK(!oscontract::quit_requested());
   }
 
   // ---- menu.ui without hardware: no backlight row, no battery row
@@ -533,7 +678,7 @@ int main() {
 
   // ---- drawing (real theme): the three screens draw, and a frame at rest allocates nothing
   {
-    const std::string dir = "/home/epsil/zenith-frontend/theme-dark";
+    const std::string dir = "/usr/share/zfront/theme-dark";
     if (is_dir(dir)) {
       Ctx cx;
       fresh(cx);
@@ -589,7 +734,7 @@ void render_all(const std::string& out) {
   // every Ctx stays alive: the toast/OSD caches are keyed on the address of the Assets they were built for
   std::vector<std::unique_ptr<Ctx>> keep;
   for (const char* theme : {"dark", "light"}) {
-    const std::string dir = std::string("/home/epsil/zenith-frontend/theme-") + theme;
+    const std::string dir = std::string("/usr/share/zfront/theme-") + theme;
     if (!is_dir(dir)) continue;
     for (const auto& wh : sizes) {
       keep.push_back(std::make_unique<Ctx>());

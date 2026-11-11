@@ -17,7 +17,7 @@ Font::~Font() {
   if (lib_) FT_Done_FreeType(lib_);
 }
 
-bool Font::load(const std::string& path, std::string& err) {
+bool Font::load(const std::string& path, std::string& err, const std::vector<std::string>& theme_fallbacks) {
   if (FT_Init_FreeType(&lib_)) {
     err = "FreeType init failed";
     return false;
@@ -39,6 +39,12 @@ bool Font::load(const std::string& path, std::string& err) {
   if (const char* e = std::getenv("ZF_FONT_DIR")) font_dirs_.push_back(e);
   font_dirs_.push_back("/storage/.config/emulationstation/resources");
   font_dirs_.push_back("/usr/config/emulationstation/resources");
+  for (const std::string& p : theme_fallbacks) {
+    Fallback f;
+    f.name = p;
+    f.full_path = true;
+    fb_.push_back(f);
+  }
   for (const char* n : {"fontawesome-webfont.ttf", "DroidSansFallbackFull.ttf", "PyeojinGothic-Medium.ttf", "Vazirmatn-Regular.ttf"}) {
     Fallback f;
     f.name = n;
@@ -66,11 +72,12 @@ int Font::pick(uint32_t cp) {
       if (!f.tried) {
         f.tried = true;
         for (const auto& dir : font_dirs_) {
-          if (!FT_New_Face(lib_, path_join(dir, f.name).c_str(), 0, &f.face)) {
+          if (!FT_New_Face(lib_, (f.full_path ? f.name : path_join(dir, f.name)).c_str(), 0, &f.face)) {
             FT_Select_Charmap(f.face, FT_ENCODING_UNICODE);
             break;
           }
           f.face = nullptr;
+          if (f.full_path) break;  // one place only
         }
       }
       if (f.face && FT_Get_Char_Index(f.face, cp)) idx = int(i) + 1;

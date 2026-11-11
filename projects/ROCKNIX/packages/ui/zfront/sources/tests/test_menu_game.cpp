@@ -242,6 +242,13 @@ int main() {
     CHECK_EQ(sh[0], std::string("crt/crt-easymode.glslp"));
     CHECK_EQ(sh[1], std::string("sharp.glslp"));
     CHECK_EQ(mg::filter_list().size(), size_t(1));
+    // a second job that ends late must not reassign the lists the menu holds a reference to
+    const std::string* sh_at = &sh[0];
+    const std::string* fl_at = &mg::filter_list()[0];
+    mg::load_shader_list();
+    mg::load_filter_list();
+    CHECK(&mg::shader_list()[0] == sh_at);
+    CHECK(&mg::filter_list()[0] == fl_at);
     std::vector<std::string> g = mg::cpu_governors();
     CHECK_EQ(g.front(), std::string("default"));
     CHECK_EQ(g.size(), size_t(7));
@@ -300,6 +307,16 @@ int main() {
     CHECK(find(*m, "COLOUR BOOST") >= 0);  // shared feature, preset switch
     CHECK(find(*m, "INTERNAL RESOLUTION") < 0);  // the system does not offer it: hidden, not dimmed
     CHECK(find(*m, "FULL BOOT") < 0);
+    // order of the game menu: favourite and scrape first (when the game is in the list), the emulator's options, the loose actions, DELETE GAME last
+    int fav = find(*m, "ADD TO FAVORITES");
+    if (fav < 0) fav = find(*m, "REMOVE FROM FAVORITES");
+    if (fav >= 0) CHECK(fav < emu);
+    int scr = find(*m, "SCRAPE");
+    if (scr >= 0) CHECK(scr < emu && (fav < 0 || fav < scr));
+    int del = find(*m, "DELETE GAME");
+    CHECK(del == int(m->size()) - 1);
+    CHECK(find(*m, "COLLECTIONS") > ratio && find(*m, "COLLECTIONS") < del);
+    CHECK(find(*m, "RANDOM GAME") > find(*m, "COLLECTIONS"));
 
     // a choice writes `gb["Tetris.gb"].ratio`
     m->entry(size_t(ratio)).set_s("16/9");
@@ -347,14 +364,24 @@ int main() {
     // sliders: plain keeps the default, "auto" removes the line at its lowest step
     int vb = find(*m, "VOLUME BOOST");
     CHECK_EQ(m->entry(size_t(vb)).get_i(), 50);
+    // the steps only move the knob; the file is written once, when the user stops (`commit`) or leaves the menu
+    m->entry(size_t(vb)).set_i(60);
     m->entry(size_t(vb)).set_i(70);
+    CHECK(!has_line(cfg(dir), "gb[\"Tetris.gb\"].volboost=60"));
+    CHECK(!has_line(cfg(dir), "gb[\"Tetris.gb\"].volboost=70"));
+    CHECK_EQ(m->entry(size_t(vb)).get_i(), 70);  // and the knob shows it
+    CHECK(static_cast<bool>(m->entry(size_t(vb)).commit_i));
+    m->entry(size_t(vb)).commit_i(70);
     CHECK(has_line(cfg(dir), "gb[\"Tetris.gb\"].volboost=70"));
     CHECK_EQ(m->entry(size_t(vb)).get_i(), 70);
     int fs = find(*m, "FRAME SKIP");
     CHECK_EQ(m->entry(size_t(fs)).get_i(), -1);
     m->entry(size_t(fs)).set_i(2);
+    CHECK(!has_line(cfg(dir), "gb[\"Tetris.gb\"].frameskip=2"));
+    m->entry(size_t(fs)).commit_i(2);
     CHECK(has_line(cfg(dir), "gb[\"Tetris.gb\"].frameskip=2"));
     m->entry(size_t(fs)).set_i(-1);
+    m->entry(size_t(fs)).commit_i(-1);
     CHECK(cfg(dir).find("frameskip") == std::string::npos);
 
     // the submenu opens the features screen with the right target
@@ -450,6 +477,15 @@ int main() {
     CHECK_EQ(m->title(), std::string("GAMES"));
     int as = find(*m, "AUTO SAVE/LOAD");
     CHECK(as >= 0);
+    // order: WHILE PLAYING, SAVED GAMES, PICTURE AND CONTROL, then the links (statistics, per system last)
+    {
+      int h1 = find(*m, "WHILE PLAYING"), h2 = find(*m, "SAVED GAMES"), h3 = find(*m, "PICTURE AND CONTROL");
+      int rs = find(*m, "RESUME LAST GAME AT STARTUP"), ra = find(*m, "GAME ASPECT RATIO"), lat = find(*m, "LATENCY REDUCTION");
+      int ra_s = find(*m, "RETROACHIEVEMENTS SETTINGS"), st = find(*m, "PLAY STATISTICS"), ps = find(*m, "PER SYSTEM OPTIONS");
+      CHECK(h1 >= 0 && h1 < rs && rs < h2 && h2 < as && as < h3 && h3 < ra && ra < lat);
+      CHECK(lat < ra_s && ra_s < find(*m, "AI GAME TRANSLATION") && find(*m, "AI GAME TRANSLATION") < st && st < ps);
+      CHECK(ps == int(m->size()) - 1);
+    }
     m->entry(size_t(as)).set_b(true);
     CHECK(has_line(cfg(dir), "global.autosave=1"));
     m->entry(size_t(as)).set_b(false);
@@ -474,7 +510,7 @@ int main() {
     CHECK(has_line(cfg(dir), "global.videofilter=Grid3x.filt"));
     m->entry(size_t(vf)).set_s("auto");
     CHECK(find(*m, "AI GAME TRANSLATION") >= 0);
-    CHECK(find(*m, "PER SYSTEM ADVANCED CONFIGURATION") >= 0);
+    CHECK(find(*m, "PER SYSTEM OPTIONS") >= 0);
     CHECK(find(*m, "EXTRA GLOBAL") >= 0);  // from <globalFeatures>
     CHECK(find(*m, "MISSING BIOS CHECK") >= 0);  // rocknix-systems exists in the tree
     // the ES setting that goes with the bios check
@@ -544,6 +580,10 @@ int main() {
     CHECK(find(*m2, "Sega Saturn") >= 0);
     CHECK(find(*m2, "bios/sega_101.bin") >= 0);
     CHECK_EQ(m2->entry(size_t(find(*m2, "bios/sega_101.bin"))).value_text, std::string("INVALID"));
+    // every row of the report is an info row (a button that does nothing is a lie); the MD5 of a missing file is shown
+    for (size_t i = 0; i < m2->size(); ++i) CHECK(m2->entry(i).kind == EntryKind::Info || m2->entry(i).kind == EntryKind::Header);
+    CHECK(find(*m2, "MD5") >= 0);
+    CHECK_EQ(m2->entry(size_t(find(*m2, "MD5"))).value_text, std::string("85ec9ca47d8f6807718151cbcca8b964"));
   }
 
   // ---- the game list opens the options of the game under the cursor with Select

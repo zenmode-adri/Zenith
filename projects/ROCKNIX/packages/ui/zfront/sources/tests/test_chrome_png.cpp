@@ -1,7 +1,7 @@
 // Review pictures of the menu chrome: title, header hairline, the level OSD and a toast over menus with long titles, and a
 // list scrolled so that a section header sits on the edge of the viewport. Runs only when $ZF_CHROME_PNG names an output
 // directory (it does nothing under ctest):
-//   ZF_CHROME_PNG=/home/epsil/zf-out/debts2 ZF_THEME_DIR=/home/epsil/zenith-frontend ./test_chrome_png
+//   ZF_CHROME_PNG=/tmp/zf-out/debts2 ZF_THEME_DIR=/usr/share/zfront ./test_chrome_png
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>

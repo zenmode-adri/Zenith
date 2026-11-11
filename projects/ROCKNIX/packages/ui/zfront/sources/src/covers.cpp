@@ -1,6 +1,7 @@
 #include "covers.hpp"
 
 #include <atomic>
+#include <chrono>
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
@@ -13,10 +14,13 @@ namespace covers {
 namespace {
 
 constexpr size_t kMaxFailed = 64;
+constexpr double kFailedTtl = 60.0;  // seconds: a cover that failed (file still being written, scraper) is tried again after this
 
-// main thread only
-std::unordered_set<std::string>& failed_set() {
-  static std::unordered_set<std::string> s;
+double (*g_now)() = [] { return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count(); };
+
+// main thread only: path -> when it failed
+std::unordered_map<std::string, double>& failed_set() {
+  static std::unordered_map<std::string, double> s;
   return s;
 }
 using Gen = std::shared_ptr<std::atomic<uint64_t>>;
@@ -37,11 +41,32 @@ struct Result {
 
 bool ready(const Assets& a, const std::string& path, uint32_t max_w, uint32_t max_h, ImgId& id) { return a.find_file_fit(path, max_w, max_h, id); }
 
-bool failed(const std::string& path) { return failed_set().count(path) != 0; }
+bool failed(const std::string& path) {
+  auto it = failed_set().find(path);
+  if (it == failed_set().end()) return false;
+  if (g_now() - it->second >= kFailedTtl) {  // expired: ask again
+    failed_set().erase(it);
+    return false;
+  }
+  return true;
+}
 
 void mark_failed(const std::string& path) {
   if (failed_set().size() >= kMaxFailed) failed_set().clear();
-  failed_set().insert(path);
+  failed_set()[path] = g_now();
+}
+
+void cancel_pending() {
+  g_latest.store(++g_gen);  // every job that has not started sees a newer request and skips its decode
+}
+
+void clear_failed() {
+  failed_set().clear();
+  failed_set().rehash(0);
+}
+
+void set_clock_for_test(double (*now)()) {
+  g_now = now ? now : [] { return std::chrono::duration<double>(std::chrono::steady_clock::now().time_since_epoch()).count(); };
 }
 
 size_t in_flight() { return in_flight_map().size(); }

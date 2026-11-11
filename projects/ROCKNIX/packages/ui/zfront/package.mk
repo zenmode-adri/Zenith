@@ -7,7 +7,9 @@ PKG_VERSION="1.0"
 PKG_LICENSE="GPL-2.0"
 PKG_SITE="https://github.com/zenmode-adri"
 PKG_URL=""
-PKG_DEPENDS_TARGET="toolchain SDL2 freetype"
+# SDL2_mixer (music), vlc (video previews and screensaver) and poppler (pdfinfo/pdftoppm, manuals) are loaded or run at runtime
+# (dlopen / external programs, no link): without them those features stay off. ES pulls them in too.
+PKG_DEPENDS_TARGET="toolchain SDL2 freetype SDL2_mixer vlc poppler"
 PKG_DEPENDS_HOST="gettext:host"
 PKG_LONGDESC="zfront: Zenith frontend (replaces EmulationStation when selected)"
 PKG_TOOLCHAIN="cmake"

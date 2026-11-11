@@ -153,6 +153,7 @@
             </storyboard>
           </image>
           <image name="zs-logo">
+            <visible>!exists("${themePath}/assets/logos/tags/" + {system:theme} + ".txt")</visible>
             <pos>0.5 0.5</pos>
             <origin>0.5 0.5</origin>
             <!-- logo box 90 % wide x 50 % tall of the tile (was 72 %); near-square icons stay height-limited, so they do not change -->
@@ -160,6 +161,94 @@
             <linearSmooth>true</linearSmooth>
             <path>{system:logo}</path>
           </image>
+          <!-- sistemas variantes (Hacks, Minis...): el logo de la consola base sube y la palabra va debajo como texto,
+               en el acento para texto (assets/logos/tags, tools/zenith-theme/mk_variant_logos.py) -->
+          <image name="zs-logo-tagged">
+            <visible>exists("${themePath}/assets/logos/tags/" + {system:theme} + ".txt")</visible>
+            <pos>0.5 0.43</pos>
+            <origin>0.5 0.5</origin>
+            <maxSize>0.86 0.40</maxSize>
+            <linearSmooth>true</linearSmooth>
+            <path>{system:logo}</path>
+          </image>
+          <text name="zs-tag-hacks">
+            <visible>exists("${themePath}/assets/logos/tags/hacks/" + {system:theme} + ".txt")</visible>
+            <text>Hacks</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.76</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${cyanDark}</color>
+          </text>
+          <text name="zs-tag-video">
+            <visible>exists("${themePath}/assets/logos/tags/video/" + {system:theme} + ".txt")</visible>
+            <text>Video</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.76</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${cyanDark}</color>
+          </text>
+          <text name="zs-tag-minis">
+            <visible>exists("${themePath}/assets/logos/tags/minis/" + {system:theme} + ".txt")</visible>
+            <text>Minis</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.76</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${cyanDark}</color>
+          </text>
+          <text name="zs-tag-dsiware">
+            <visible>exists("${themePath}/assets/logos/tags/dsiware/" + {system:theme} + ".txt")</visible>
+            <text>DSiWare</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.76</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${cyanDark}</color>
+          </text>
+          <text name="zs-tag-homebrew">
+            <visible>exists("${themePath}/assets/logos/tags/homebrew/" + {system:theme} + ".txt")</visible>
+            <text>Homebrew</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.76</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${cyanDark}</color>
+          </text>
+          <text name="zs-tag-vertical">
+            <visible>exists("${themePath}/assets/logos/tags/vertical/" + {system:theme} + ".txt")</visible>
+            <text>Vertical</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.76</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${cyanDark}</color>
+          </text>
           <text name="zs-logo-text">
             <visible>!exists("${themePath}/assets/logos/" + {system:theme} + ".webp")</visible>
             <value>{system:fullName}</value>
@@ -169,7 +258,8 @@
             <multiLine>true</multiLine>
             <origin>0.5 0.5</origin>
             <pos>0.5 0.5</pos>
-            <size>0.8 0.7</size>
+            <size>0.94 0.7</size>
+            <padding>0.03 0 0.03 0</padding>
             <fontSize>${fLogo}</fontSize>
             <fontPath>${font}</fontPath>
             <color>${tileTxt}</color>
@@ -268,6 +358,32 @@
           <text name="zs-label-ebook">
             <visible>exists("${themePath}/assets/logos/icon-labels/books/" + {system:theme} + ".txt")</visible>
             <text>Books</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-imageviewer">
+            <visible>exists("${themePath}/assets/logos/icon-labels/screenshots/" + {system:theme} + ".txt")</visible>
+            <text>Screenshots</text>
+            <alignment>center</alignment>
+            <verticalAlignment>center</verticalAlignment>
+            <lineSpacing>1</lineSpacing>
+            <origin>0.5 0.5</origin>
+            <pos>0.5 0.671</pos>
+            <size>0.94 0.2</size>
+            <fontSize>${fLabel}</fontSize>
+            <fontPath>${font}</fontPath>
+            <color>${tileTxt}</color>
+          </text>
+          <text name="zs-label-mplayer">
+            <visible>exists("${themePath}/assets/logos/icon-labels/media-player/" + {system:theme} + ".txt")</visible>
+            <text>Media player</text>
             <alignment>center</alignment>
             <verticalAlignment>center</verticalAlignment>
             <lineSpacing>1</lineSpacing>
@@ -426,6 +542,8 @@
     </text>
     <text name="md_genre">
       <pos>${valX} ${meta2}</pos>
+      <autoScroll>horizontal</autoScroll>
+      <autoScrollDelay>2000</autoScrollDelay>
       <origin>0 0</origin>
       <size>${valW} ${metaH}</size>
       <alignment>left</alignment>
@@ -523,6 +641,32 @@
   </view>
 
   <!-- basic: sin metadatos, la lista ocupa todo el ancho -->
+  <!-- 480x320: fMeta is 13 px for zfront, which does not scale. ES scales fonts by 1.31 on short sides under 720 and would draw 17 px and cut "Released"; this size also gives 13 px there -->
+  <view name="basic, detailed" if="${screen.ratio} == '3/2'">
+    <datetime name="md_releasedate"><fontSize>0.0315</fontSize></datetime>
+    <text name="md_genre"><fontSize>0.0315</fontSize></text>
+    <text name="md_players"><fontSize>0.0315</fontSize></text>
+  </view>
+  <view name="detailed" if="${screen.ratio} == '3/2'">
+    <text name="zs-lbl-released" extra="true"><fontSize>0.0315</fontSize></text>
+    <text name="zs-lbl-genre" extra="true"><fontSize>0.0315</fontSize></text>
+    <text name="zs-lbl-players" extra="true"><fontSize>0.0315</fontSize></text>
+    <text name="zs-lbl-rating" extra="true"><fontSize>0.0315</fontSize></text>
+  </view>
+  <!-- A screenshot has no year, genre, players or rating: without this ES writes "Unknown" and empty stars -->
+  <view name="basic, detailed" if="system.theme == 'imageviewer'">
+    <datetime name="md_releasedate"><visible>false</visible></datetime>
+    <text name="md_genre"><visible>false</visible></text>
+    <text name="md_players"><visible>false</visible></text>
+    <rating name="md_rating"><visible>false</visible></rating>
+  </view>
+  <view name="detailed" if="system.theme == 'imageviewer'">
+    <text name="zs-lbl-released" extra="true"><visible>false</visible></text>
+    <text name="zs-lbl-genre" extra="true"><visible>false</visible></text>
+    <text name="zs-lbl-players" extra="true"><visible>false</visible></text>
+    <text name="zs-lbl-rating" extra="true"><visible>false</visible></text>
+  </view>
+
   <view name="basic">
     <textlist name="gamelist">
       <scrollSound>./assets/sounds/scroll.wav</scrollSound>

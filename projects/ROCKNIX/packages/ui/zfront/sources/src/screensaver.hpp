@@ -5,7 +5,7 @@
 //   * `next_minute`: the only wake-up a dimmed screen with a clock needs.
 //
 // ES parity (SystemScreenSaver::renderScreenSaver): black = opaque black over the view, dim = black at alpha 0xA0. Toasts are
-// not drawn while it is on (Window::render skips them). zfront does not port the video / slideshow screensavers.
+// not drawn while it is on (Window::render skips them). The slideshow / random video types are `ssmedia`.
 #pragma once
 #include <cstdint>
 #include <ctime>
@@ -22,14 +22,15 @@ struct Ctx;
 
 namespace screensaver {
 
-enum class Mode : uint8_t { Off, Dim, Black };
+enum class Mode : uint8_t { Off, Dim, Black, Media };  // Media: slideshow / random video (ssmedia.hpp)
 constexpr uint8_t kDimAlpha = 0xA0;  // ES: 0x000000A0
 
 Mode mode();
 void set_mode(Mode m);
 
-/// `ScreenSaverBehavior` -> what zfront does: "dim" -> Dim; "black" and everything zfront does not port (video, slideshow, a
-/// missing key) -> Black. ("suspend" is handled by oscontract: it suspends instead of covering the screen.)
+/// `ScreenSaverBehavior` -> what zfront does: "dim" -> Dim; "slideshow" and "random video" -> Media (ssmedia falls back to Black when
+/// there is nothing to show); "black" and anything else (a missing key) -> Black. ("suspend" is handled by oscontract: it suspends
+/// instead of covering the screen.)
 Mode mode_for_behavior(std::string_view behavior);
 
 /// The overlay of the current mode (nothing when Off): one full-screen rectangle.

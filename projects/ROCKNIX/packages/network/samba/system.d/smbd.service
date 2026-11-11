@@ -9,6 +9,7 @@ ConditionPathExists=/run/samba/smb.conf
 Type=forking
 PIDFile=/run/samba/smbd.pid
 LimitNOFILE=16384
+ExecStartPre=-/usr/bin/samba-secure
 ExecStart=/usr/sbin/smbd
 ExecReload=/bin/kill -HUP $MAINPID
 TimeoutStopSec=1s

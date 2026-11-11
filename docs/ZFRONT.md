@@ -8,8 +8,8 @@ fraction of the memory, and sits idle when nothing is happening, while reading t
 
 > [!NOTE]
 > **Status: working, measured on one device.** Everything below was developed and measured on the **R36 Ultra**
-> (RK3326, Mali-G31, 1 GB RAM). EmulationStation is still Zenith's default frontend and stays installed as a fallback;
-> zfront is opt-in. See [What is not verified yet](#what-is-not-verified-yet).
+> (RK3326, Mali-G31, 1 GB RAM). Since Zenith v0.2.0 zfront is the default frontend of a new install; EmulationStation
+> stays installed and can be chosen in `Tools > Switch frontend`. See [What is not verified yet](#what-is-not-verified-yet).
 
 ## Why a new frontend?
 

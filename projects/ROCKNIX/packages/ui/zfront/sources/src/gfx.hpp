@@ -5,6 +5,7 @@
 // creates a new one). Images the scenes keep for ever (theme tile, frame...) are `pin`ned.
 // Text is made with FreeType (text.hpp), SVG with nanosvg, PNG/JPG with stb_image and WebP with libwebp (imgdec.hpp).
 #pragma once
+#include <cmath>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -45,7 +46,21 @@ struct Op {
   static Op unclip() { return Op{}; }
 };
 
+/// Integer pixel rectangle of an `Op` (what the renderer draws): both EDGES are rounded, not x and w apart, so two ops that
+/// share an edge in float share it in pixels (no 1 px gap or overlap). Same rule as `cpu.cpp`.
+struct PxRect {
+  int x, y, w, h;
+};
+inline PxRect px_rect(const Op& op) {
+  const int x0 = int(std::lround(op.x)), y0 = int(std::lround(op.y));
+  return PxRect{x0, y0, int(std::lround(op.x + op.w)) - x0, int(std::lround(op.y + op.h)) - y0};
+}
+
 class Font;
+
+/// Marca, al final de la ruta de una imagen, de lo que se le hace al decodificarla: `c` recortar a la caja exacta, `rN` esquinas de radio N, `g` gris, `w` blanco (solo
+/// alfa), `a` luz: muy pequena y difuminada, guarda su color mas fuerte en `accent_of`. Asi vale toda la maquinaria de `file_fit` y `covers` (cache, trabajo aparte, fallos).
+inline constexpr const char* kBakeMark = "#bake:";
 
 class Assets {
  public:
@@ -57,7 +72,12 @@ class Assets {
   Assets& operator=(Assets&&) noexcept;
 
   /// Loads the TTF used by every text call.
-  bool load_font(const std::string& path, std::string& err);
+  bool load_font(const std::string& path, std::string& err, const std::vector<std::string>& theme_fallbacks = {});
+  /// Second face of a theme (titles). Until `use_alt_face(true)` every text call uses the main one; without a second face it stays the main one.
+  bool load_alt_font(const std::string& path, std::string& err);
+  void use_alt_face(bool on) { alt_on_ = on && alt_ != nullptr; }
+  /// The strongest colour of a picture baked with `a` (thread safe). False until it has been decoded.
+  static bool accent_of(const std::string& baked_path, Color& out);
 
   const Img& img(ImgId id) const { return imgs_[id]; }
   /// Unique per instance for the whole run (an address can be reused by a later Assets: caches must key on this).
@@ -79,9 +99,30 @@ class Assets {
   bool has_pixels(ImgId id) const { return imgs_[id].state == 0; }
   /// Evicted: not drawable; asking for the same thing again makes a new image with a new id.
   bool evicted(ImgId id) const { return imgs_[id].state == 2; }
+  /// Drops `id` like an eviction (its key is forgotten): asking for the same picture again makes it anew, with its pixels. For
+  /// code that measures a picture the renderer may have released. Pinned pictures keep theirs and are left alone.
+  void forget(ImgId id) {
+    if (id < imgs_.size() && imgs_[id].state != 2 && !pinned_.count(id)) evict(id);
+  }
   /// All textures are gone (window recreated, render device reset): the images that only lived in a texture are
   /// evicted, so the scenes build them again by key on the next frame. Pinned images are untouched.
   void forget_released();
+  /// The game is about to start: evicts EVERY image that is not pinned (CPU copies included, whether or not it was uploaded),
+  /// frees the key strings and hash buckets and the cached ellipsis texts. Everything is rebuilt by key, lazily, when it is
+  /// drawn again. Pinned images keep their pixels. Returns the bytes the budget gave back.
+  size_t drop_unpinned();
+  /// With tracking on, `evict` remembers the ids it dropped so that the renderer destroys just their textures
+  /// (`take_evicted`) instead of walking every id each frame.
+  /// Entries of the cut-text cache (tests).
+  size_t ellipsis_cache_size() const { return ellipsis_cache_.size(); }
+  void track_evictions(bool on) {
+    track_evicted_ = on;
+    if (!on) evicted_log_.clear();
+  }
+  void take_evicted(std::vector<ImgId>& out) {
+    out.clear();
+    out.swap(evicted_log_);
+  }
   /// Call once per drawn frame with the frame's ops: marks the images they use and evicts the least recently used
   /// ones (never pinned, never used in this frame) until the total is under `budget` bytes.
   void end_frame(const std::vector<Op>& ops, size_t budget);
@@ -91,6 +132,12 @@ class Assets {
   /// Like `file` but downscaled at decode time (keeping the aspect ratio) so it fits `max_w x max_h`: covers are
   /// decoded once at the size they will be drawn, not at their full resolution.
   bool file_fit(const std::string& path, uint32_t max_w, uint32_t max_h, ImgId& id);
+  /// Pictures with a size decoded by `file_fit`, on the thread that draws: on the device none should be, it stops the frame (test_layout).
+  size_t inline_fits() const { return inline_fits_; }
+  /// Counts as used this frame though it is not drawn: a picture got ready for the next move must not be the first to go.
+  void touch(ImgId id) {
+    if (id < last_used_.size()) last_used_[id] = frame_;
+  }
   /// The three steps of `file_fit`, for decoding off the main thread (covers.hpp): `decode_fit` touches no `Assets`
   /// state, so a worker may call it; `find_file_fit` only looks the image up; `add_file_fit` inserts a decoded one
   /// under the key `file_fit` uses (an id already there wins and `img` is dropped).
@@ -127,9 +174,15 @@ class Assets {
   std::vector<std::string> keys_;  // empty after eviction
   std::unordered_set<ImgId> pinned_;
   uint64_t frame_ = 0;
-  size_t bytes_ = 0, cpu_bytes_ = 0;
+  size_t bytes_ = 0, cpu_bytes_ = 0, inline_fits_ = 0;
   void evict(ImgId id);
   std::unique_ptr<Font> font_;
+  std::unique_ptr<Font> alt_;
+  bool alt_on_ = false;
+  bool track_evicted_ = false;
+  std::vector<ImgId> evicted_log_;
+  std::unordered_map<std::string, std::string> ellipsis_cache_;  // (face, px, max_w, text) -> the cut text; bounded
+  Font& face() const { return alt_on_ ? *alt_ : *font_; }
 };
 
 }  // namespace zf

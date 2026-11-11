@@ -7,8 +7,8 @@
 //                                              not in the current image), so they are hidden unless it does
 //   SOUNDS   ENABLE AUDIBLE BATTERY WARNING / BATTERY WARNING THRESHOLD -> system.battery.warning / .warning_threshold
 //            (consumed by powerstate.sh, not by the frontend)
-// Hidden on purpose (zfront has no player): MUSIC VOLUME, FRONTEND MUSIC and the whole music group, navigation sounds,
-// video preview audio. Their keys are never touched, so switching back to ES loses nothing.
+//   MUSIC    FRONTEND MUSIC, MUSIC VOLUME, DISPLAY SONG TITLES... -> music.cpp (shown only when libSDL2_mixer loads)
+// Hidden on purpose: video preview audio.
 //
 // Hardware volume keys: the OS handles them (input_sense / adckeys.sh run `volume up|down`, step 5). ES shows its popup
 // because libpulse tells it the sink changed. zfront has no libpulse: the "sound-watch" service watches system.cfg with

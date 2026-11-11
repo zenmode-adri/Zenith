@@ -1,0 +1,5 @@
+{"name":"mono","mode":"dark",
+ "bg":"030303","txt":"FFFFFF","dim":"D6D6D6","dimDark":"CFCFCF","tileTxt":"FFFFFF",
+ "accent":"E6F52E","accentDark":"F2FF5A","accentSoft":"3A3F08",
+ "surface":"1C1C1C","panel":"111111","separator":"333333","track":"4A4A4A",
+ "switchOn":"B5C21F","switchOff":"6A6A6A","hint":"D0D0D0","hintBg":"FFFFFF14","scroll":"FFFFFF70","inputBorder":"707070"}

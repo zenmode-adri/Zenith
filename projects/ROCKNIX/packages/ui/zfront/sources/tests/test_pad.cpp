@@ -119,6 +119,12 @@ void test_stages() {
   CHECK_EQ(repeat_delay_at(kSlow, 0), 500u);
   CHECK_EQ(repeat_delay_at(kSlow, 500), 200u);
   CHECK_EQ(repeat_delay_at(kSlow, 9000), 200u);
+  // menus: bounded, the last stage is not a step per frame
+  CHECK_EQ(repeat_delay_at(kMenu, 0), 500u);
+  CHECK_EQ(repeat_delay_at(kMenu, 500), 114u);
+  CHECK_EQ(repeat_delay_at(kMenu, 1999), 114u);
+  CHECK_EQ(repeat_delay_at(kMenu, 2000), 66u);
+  CHECK_EQ(repeat_delay_at(kMenu, 600000), 66u);
 }
 
 void test_slow() {

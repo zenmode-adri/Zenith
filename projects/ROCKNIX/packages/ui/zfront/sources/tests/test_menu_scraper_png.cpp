@@ -1,6 +1,6 @@
 // Review pictures of the scraper screens: runs only when $ZF_SCR_PNG names an output directory (it does nothing under ctest).
 // Both themes at the four screen sizes, every relevant state, on the fake-curl rig of test_scraper_run.
-//   ZF_SCR_PNG=/home/epsil/zf-out/scraper ZF_THEME_DIR=/home/epsil/zenith-frontend ./test_menu_scraper_png
+//   ZF_SCR_PNG=/tmp/zf-out/scraper ZF_THEME_DIR=/usr/share/zfront ./test_menu_scraper_png
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -296,7 +296,7 @@ int main() {
   const char* out = std::getenv("ZF_SCR_PNG");
   if (!out) return 0;
   const char* root = std::getenv("ZF_THEME_DIR");
-  std::string base = root ? root : "/home/epsil/zenith-frontend";
+  std::string base = root ? root : "/usr/share/zfront";
   fs::create_directories(out);
   const unsigned sizes[4][2] = {{480, 320}, {640, 480}, {720, 405}, {720, 720}};
   for (const char* theme : {"theme-dark", "theme-light"})

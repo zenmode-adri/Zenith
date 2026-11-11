@@ -1,6 +1,7 @@
 #include "registry.hpp"
 
 #include "app.hpp"
+#include "uimode.hpp"
 
 #include <map>
 #include <vector>
@@ -30,9 +31,17 @@ void Registry::start_services(App& app) const {
 
 bool Registry::has(std::string_view name) const { return impl_->m.find(name) != impl_->m.end(); }
 
+std::vector<std::string> Registry::names() const {
+  std::vector<std::string> out;
+  for (const auto& kv : impl_->m) out.push_back(kv.first);
+  return out;
+}
+
 std::unique_ptr<Screen> Registry::make(std::string_view name, Ctx& cx, const std::string& arg) const {
   auto it = impl_->m.find(name);
   if (it == impl_->m.end()) return nullptr;
+  // the one door every menu goes through: a console locked in Kiosk or Kid mode opens nothing but what uimode.hpp allows
+  if (!uimode::screen_allowed(uimode::of(cx.es), name)) return nullptr;
   return it->second(cx, arg);
 }
 

@@ -86,6 +86,7 @@ CmdResult CmdRunner::run(const std::string& cmd, int timeout_ms) {
     return r;
   }
   if (pid == 0) {
+    ::setsid();  // own process group: a timeout kills sh AND what it started (kill(-pid) below)
     ::dup2(pfd[1], 1);
     ::dup2(pfd[1], 2);
     int dn = ::open("/dev/null", O_RDONLY);
@@ -102,6 +103,7 @@ CmdResult CmdRunner::run(const std::string& cmd, int timeout_ms) {
     if (timeout_ms > 0) {
       auto left = std::chrono::duration_cast<std::chrono::milliseconds>(end - SteadyClock::now()).count();
       if (left <= 0) {
+        ::kill(-pid, SIGKILL);
         ::kill(pid, SIGKILL);
         killed = true;
         break;
@@ -187,10 +189,11 @@ Jobs::~Jobs() {
   {
     std::lock_guard<std::mutex> g(m_);
     stop_ = true;
-    todo_.clear();
+    for (Lane& l : lane_) l.todo.clear();
   }
   cv_.notify_all();
-  if (th_.joinable()) th_.join();
+  for (Lane& l : lane_)
+    if (l.th.joinable()) l.th.join();
 }
 
 void Jobs::set_wake(std::function<void()> wake) {
@@ -198,35 +201,40 @@ void Jobs::set_wake(std::function<void()> wake) {
   wake_ = std::move(wake);
 }
 
-void Jobs::post(std::function<void()> work, std::function<void()> done) {
+void Jobs::put(int lane, std::function<void()> work, std::function<void()> done) {
   std::lock_guard<std::mutex> g(m_);
-  todo_.push_back({std::move(work), std::move(done)});
-  if (!started_) {
-    started_ = true;
-    th_ = std::thread([this] { loop(); });
+  Lane& l = lane_[lane];
+  l.todo.push_back({std::move(work), std::move(done)});
+  if (!l.started) {
+    l.started = true;
+    l.th = std::thread([this, lane] { loop(lane); });
   }
-  cv_.notify_one();
+  cv_.notify_all();
 }
 
-void Jobs::loop() {
+void Jobs::post(std::function<void()> work, std::function<void()> done) { put(0, std::move(work), std::move(done)); }
+void Jobs::post_slow(std::function<void()> work, std::function<void()> done) { put(1, std::move(work), std::move(done)); }
+
+void Jobs::loop(int lane) {
   // low priority: the UI thread always wins
   if (::nice(10) == -1) {
   }
+  Lane& l = lane_[lane];
   for (;;) {
     Item it;
     {
       std::unique_lock<std::mutex> g(m_);
-      cv_.wait(g, [this] { return stop_ || !todo_.empty(); });
+      cv_.wait(g, [this, &l] { return stop_ || !l.todo.empty(); });
       if (stop_) return;
-      it = std::move(todo_.front());
-      todo_.pop_front();
-      busy_ = true;
+      it = std::move(l.todo.front());
+      l.todo.pop_front();
+      l.busy = true;
     }
     if (it.work) it.work();
     std::function<void()> wake;
     {
       std::lock_guard<std::mutex> g(m_);
-      busy_ = false;
+      l.busy = false;
       if (it.done) finished_.push_back(std::move(it.done));
       wake = wake_;
     }
@@ -246,7 +254,9 @@ bool Jobs::drain() {
 
 bool Jobs::idle() const {
   std::lock_guard<std::mutex> g(m_);
-  return todo_.empty() && finished_.empty() && !busy_;
+  for (const Lane& l : lane_)
+    if (!l.todo.empty() || l.busy) return false;
+  return finished_.empty();
 }
 
 // ---- tr -------------------------------------------------------------------------------------------------------------

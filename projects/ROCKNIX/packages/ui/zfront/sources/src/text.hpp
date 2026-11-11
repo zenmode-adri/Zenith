@@ -21,7 +21,9 @@ class Font {
   Font(const Font&) = delete;
   Font& operator=(const Font&) = delete;
 
-  bool load(const std::string& path, std::string& err);
+  /// `theme_fallbacks`: full paths of extra faces for glyphs the main face lacks (theme variable `fontFallback`); they are tried
+  /// before the standard fallbacks below, opened lazily too, and one that cannot be opened is skipped.
+  bool load(const std::string& path, std::string& err, const std::vector<std::string>& theme_fallbacks = {});
   /// Glyphs the main face lacks (CJK, Hangul, Arabic, FontAwesome icons) come from the same fallback fonts ES uses
   /// (`fontawesome-webfont`, `DroidSansFallbackFull`, `PyeojinGothic-Medium`, `Vazirmatn-Regular`). They are opened
   /// lazily, on the first missing code point, from: the directory of the main font, `$ZF_FONT_DIR`,
@@ -62,7 +64,8 @@ class Font {
   float kerning(uint32_t left, uint32_t right, int px);
 
   struct Fallback {
-    const char* name;
+    std::string name;      // file name looked up in `font_dirs_`, or a full path (theme fallback)
+    bool full_path = false;
     FT_Face face = nullptr;
     int px = 0;
     bool tried = false;

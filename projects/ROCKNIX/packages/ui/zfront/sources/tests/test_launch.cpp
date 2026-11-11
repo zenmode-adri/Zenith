@@ -363,6 +363,11 @@ int main() {
       slow = true;
       ::usleep(50000);
       p.poll(t0 + ms(700));
+      // on a loaded machine (ctest -j) the shell runs late: wait for it instead of trusting a fixed sleep
+      for (int i = 0; i < 250 && p.running(); ++i) {
+        ::usleep(20000);
+        p.poll(t0 + ms(700));
+      }
       lines.clear();
       gen = 9;
       p.set_target("", t0 + ms(800));
@@ -373,8 +378,12 @@ int main() {
       p.poll(t0 + ms(1100));  // re-armed, previous still running: waits
       CHECK_EQ(lines.size(), 1ul);
       CHECK(p.next_deadline());
-      ::usleep(500000);
-      p.poll(t0 + ms(1300));
+      // the slow one ends, then the re-armed one starts (real time, see above); while it still runs each poll moves the start
+      // retry_ms later, so the clock moves on too
+      for (int i = 0; i < 250 && lines.size() < 2; ++i) {
+        ::usleep(20000);
+        p.poll(t0 + ms(1300 + 60 * i));
+      }
       CHECK_EQ(lines.size(), 2ul);
       CHECK_EQ(lines[1], launch::prepare_line(cmd + " x"));
       ::usleep(500000);

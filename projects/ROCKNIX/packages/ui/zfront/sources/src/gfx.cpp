@@ -1,6 +1,12 @@
 #include <atomic>
 #include "gfx.hpp"
 
+#include <cstring>
+
+#include <unordered_map>
+
+#include <mutex>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -24,7 +30,17 @@ Assets::~Assets() = default;
 Assets::Assets(Assets&&) noexcept = default;
 Assets& Assets::operator=(Assets&&) noexcept = default;
 
-bool Assets::load_font(const std::string& path, std::string& err) { return font_->load(path, err); }
+bool Assets::load_font(const std::string& path, std::string& err, const std::vector<std::string>& theme_fallbacks) {
+  ellipsis_cache_.clear();  // cuts were measured with the old face
+  return font_->load(path, err, theme_fallbacks);
+}
+bool Assets::load_alt_font(const std::string& path, std::string& err) {
+  auto f = std::make_unique<Font>();
+  if (!f->load(path, err)) return false;
+  alt_ = std::move(f);
+  ellipsis_cache_.clear();
+  return true;
+}
 
 ImgId Assets::push(std::string key, Img&& img) {
   bytes_ += img.rgba.size();
@@ -69,8 +85,19 @@ void Assets::evict(ImgId i) {
   im.state = 2;
   if (!keys_[i].empty()) {
     by_key_.erase(keys_[i]);
-    keys_[i].clear();
+    std::string().swap(keys_[i]);  // clear() would keep the buffer of every text key for the rest of the run
   }
+  if (track_evicted_) evicted_log_.push_back(i);
+}
+
+size_t Assets::drop_unpinned() {
+  const size_t before = bytes_;
+  for (ImgId i = 0; i < imgs_.size(); ++i)
+    if (imgs_[i].state != 2 && !pinned_.count(i)) evict(i);
+  by_key_.rehash(0);  // the bucket array of the evicted keys
+  ellipsis_cache_.clear();
+  ellipsis_cache_.rehash(0);
+  return before - bytes_;
 }
 
 void Assets::release_pixels(ImgId id) {
@@ -95,13 +122,152 @@ static std::string fit_key(const std::string& path, uint32_t max_w, uint32_t max
   return head + path;
 }
 
-bool Assets::decode_fit(const std::string& path, uint32_t max_w, uint32_t max_h, Img& im) {
+/// An SVG cover (the Tools icons of the image are .svg in their gamelist), rasterized straight at the size that fits
+/// `max_w x max_h`, as ES draws it. Touches no `Assets` state, like `decode_fit` (worker thread).
+static bool rasterize_svg_fit(const std::string& path, uint32_t max_w, uint32_t max_h, Img& im) {
+  std::string data;
+  if (!read_file(path, data)) return false;
+  data.push_back('\0');  // nanosvg parses in place and needs a NUL-terminated, writable buffer
+  NSVGimage* image = nsvgParse(data.data(), "px", 96.0f);
+  if (!image || image->width <= 0 || image->height <= 0) {
+    if (image) nsvgDelete(image);
+    return false;
+  }
+  float s = std::min(float(max_w) / image->width, float(max_h) / image->height);
+  im.w = std::max<uint32_t>(uint32_t(std::lround(image->width * s)), 1);
+  im.h = std::max<uint32_t>(uint32_t(std::lround(image->height * s)), 1);
+  im.rgba.assign(size_t(im.w) * im.h * 4, 0);
+  NSVGrasterizer* rast = nsvgCreateRasterizer();
+  nsvgRasterize(rast, image, 0, 0, s, im.rgba.data(), int(im.w), int(im.h), int(im.w) * 4);
+  nsvgDeleteRasterizer(rast);
+  nsvgDelete(image);
+  return true;
+}
+
+namespace {
+std::mutex g_accent_m;
+std::unordered_map<std::string, Color>& accents() {
+  static std::unordered_map<std::string, Color> m;
+  return m;
+}
+/// Most colourful hue of the picture: 12 hue buckets weighted by saturation and brightness, their mean colour.
+Color strongest_colour(const Img& im) {
+  double sum[12][3] = {}, weight[12] = {};
+  for (size_t i = 0; i + 3 < im.rgba.size(); i += 4) {
+    if (im.rgba[i + 3] < 128) continue;
+    const float r = im.rgba[i] / 255.0f, g = im.rgba[i + 1] / 255.0f, b = im.rgba[i + 2] / 255.0f;
+    const float mx = std::max({r, g, b}), mn = std::min({r, g, b}), d = mx - mn;
+    if (d < 0.05f) continue;
+    float h = mx == r ? std::fmod((g - b) / d + 6.0f, 6.0f) : mx == g ? (b - r) / d + 2.0f : (r - g) / d + 4.0f;
+    const int k = std::min(11, int(h * 2.0f));
+    const double w = double(d / mx) * (0.3 + mx);
+    weight[k] += w, sum[k][0] += w * r, sum[k][1] += w * g, sum[k][2] += w * b;
+  }
+  int best = 0;
+  for (int k = 1; k < 12; ++k)
+    if (weight[k] > weight[best]) best = k;
+  if (weight[best] <= 0) return Color{200, 200, 200, 255};
+  return Color{uint8_t(sum[best][0] / weight[best] * 255), uint8_t(sum[best][1] / weight[best] * 255), uint8_t(sum[best][2] / weight[best] * 255), 255};
+}
+void box_blur(Img& im) {
+  std::vector<uint8_t> o = im.rgba;
+  const int w = int(im.w), h = int(im.h);
+  for (int y = 0; y < h; ++y)
+    for (int x = 0; x < w; ++x)
+      for (int c = 0; c < 4; ++c) {
+        int s = 0, n = 0;
+        for (int dy = -1; dy <= 1; ++dy)
+          for (int dx = -1; dx <= 1; ++dx) {
+            const int xx = x + dx, yy = y + dy;
+            if (xx < 0 || yy < 0 || xx >= w || yy >= h) continue;
+            s += im.rgba[(size_t(yy) * w + xx) * 4 + c], ++n;
+          }
+        o[(size_t(y) * w + x) * 4 + c] = uint8_t(s / n);
+      }
+  im.rgba.swap(o);
+}
+void round_corners(Img& im, int r) {
+  if (r <= 0) return;
+  r = std::min({r, int(im.w) / 2, int(im.h) / 2});
+  for (int y = 0; y < r; ++y)
+    for (int x = 0; x < r; ++x) {
+      const float d = std::hypot(float(r) - (float(x) + 0.5f), float(r) - (float(y) + 0.5f)) - float(r) + 0.5f;
+      if (d <= 0) continue;
+      const float keep = std::max(0.0f, 1.0f - d);
+      for (int ky : {y, int(im.h) - 1 - y})
+        for (int kx : {x, int(im.w) - 1 - x}) {
+          uint8_t& al = im.rgba[(size_t(ky) * im.w + kx) * 4 + 3];
+          al = uint8_t(float(al) * keep);
+        }
+    }
+}
+}  // namespace
+
+bool Assets::accent_of(const std::string& baked_path, Color& out) {
+  std::lock_guard<std::mutex> lock(g_accent_m);
+  auto it = accents().find(baked_path);
+  if (it == accents().end()) return false;
+  out = it->second;
+  return true;
+}
+
+bool Assets::decode_fit(const std::string& full, uint32_t max_w, uint32_t max_h, Img& im) {
+  const size_t mark = full.rfind(kBakeMark);
+  if (mark != std::string::npos) {
+    const std::string path = full.substr(0, mark), flags = full.substr(mark + std::strlen(kBakeMark));
+    bool crop = false, gray = false, white = false, light = false;
+    int radius = 0;
+    for (size_t i = 0; i < flags.size(); ++i) {
+      const char f = flags[i];
+      if (f == 'c') crop = true;
+      else if (f == 'g') gray = true;
+      else if (f == 'w') white = true;
+      else if (f == 'a') light = true;
+      else if (f == 'r') {
+        radius = 0;
+        while (i + 1 < flags.size() && flags[i + 1] >= '0' && flags[i + 1] <= '9') radius = radius * 10 + (flags[++i] - '0');
+      }
+    }
+    if (crop && path_ext_lower(path) != ".svg") {
+      if (!decode_image_file(path, im) || im.w == 0 || im.h == 0) return false;
+      const float s = std::max(float(max_w) / float(im.w), float(max_h) / float(im.h));
+      const uint32_t nw = std::max<uint32_t>(uint32_t(std::lround(float(im.w) * s)), max_w), nh = std::max<uint32_t>(uint32_t(std::lround(float(im.h) * s)), max_h);
+      if (nw != im.w || nh != im.h) im.rgba = resize_rgba(std::move(im.rgba), im.w, im.h, nw, nh, Filter::Triangle);
+      const uint32_t ox = (nw - max_w) / 2, oy = (nh - max_h) / 2;
+      std::vector<uint8_t> out(size_t(max_w) * max_h * 4);
+      for (uint32_t y = 0; y < max_h; ++y) std::memcpy(&out[size_t(y) * max_w * 4], &im.rgba[(size_t(y + oy) * nw + ox) * 4], size_t(max_w) * 4);
+      im.rgba.swap(out);
+      im.w = max_w;
+      im.h = max_h;
+    } else if (!decode_fit(path, max_w, max_h, im)) {
+      return false;
+    }
+    if (light) {
+      const Color c = strongest_colour(im);
+      {
+        std::lock_guard<std::mutex> lock(g_accent_m);
+        if (accents().size() > 256) accents().clear();
+        accents()[full] = c;
+      }
+      box_blur(im);
+      box_blur(im);
+    }
+    if (gray || white)
+      for (size_t i = 0; i + 3 < im.rgba.size(); i += 4) {
+        const uint8_t v = white ? 255 : uint8_t((im.rgba[i] * 77 + im.rgba[i + 1] * 150 + im.rgba[i + 2] * 29) >> 8);
+        im.rgba[i] = im.rgba[i + 1] = im.rgba[i + 2] = v;
+      }
+    round_corners(im, radius);
+    return true;
+  }
+  const std::string& path = full;
+  if (path_ext_lower(path) == ".svg") return rasterize_svg_fit(path, max_w, max_h, im);
   if (!decode_image_file(path, im)) return false;
   if (im.w > max_w || im.h > max_h) {
     float s = std::min(float(max_w) / float(im.w), float(max_h) / float(im.h));
     uint32_t nw = std::max<uint32_t>(uint32_t(std::lround(float(im.w) * s)), 1);
     uint32_t nh = std::max<uint32_t>(uint32_t(std::lround(float(im.h) * s)), 1);
-    im.rgba = resize_rgba(im.rgba.data(), im.w, im.h, nw, nh, Filter::Triangle);
+    im.rgba = resize_rgba(std::move(im.rgba), im.w, im.h, nw, nh, Filter::Triangle);
     im.w = nw;
     im.h = nh;
   }
@@ -119,6 +285,7 @@ ImgId Assets::add_file_fit(const std::string& path, uint32_t max_w, uint32_t max
 
 bool Assets::file_fit(const std::string& path, uint32_t max_w, uint32_t max_h, ImgId& id) {
   if (find_file_fit(path, max_w, max_h, id)) return true;
+  if (max_w != UINT32_MAX) ++inline_fits_;
   Img im;
   if (!decode_fit(path, max_w, max_h, im)) return false;
   id = add_file_fit(path, max_w, max_h, std::move(im));
@@ -160,17 +327,17 @@ static std::string color_key(Color c) {
 
 static int px_int(float px) { return std::max(int(std::floor(px)), 1); }
 
-float Assets::measure(std::string_view s, float px) { return font_->measure(s, px_int(px)); }
-float Assets::line_height(float px) { return float(font_->line_height(px_int(px))); }
-float Assets::letter_height(float px) { return float(font_->letter_height(px_int(px))); }
+float Assets::measure(std::string_view s, float px) { return face().measure(s, px_int(px)); }
+float Assets::line_height(float px) { return float(face().line_height(px_int(px))); }
+float Assets::letter_height(float px) { return float(face().letter_height(px_int(px))); }
 
 ImgId Assets::text(std::string_view s, float px, Color color) {
   int ipx = px_int(px);
-  std::string key = "t:" + std::to_string(ipx) + ":" + color_key(color) + ":";
+  std::string key = std::string(alt_on_ ? "T:" : "t:") + std::to_string(ipx) + ":" + color_key(color) + ":";
   key.append(s);
   ImgId id;
   if (lookup(key, id)) return id;
-  return push(std::move(key), font_->render(s, ipx, color));
+  return push(std::move(key), face().render(s, ipx, color));
 }
 
 static std::string cut_ellipsis(Assets& a, std::string_view s, float px, float max_w) {
@@ -194,13 +361,24 @@ static std::string cut_ellipsis(Assets& a, std::string_view s, float px, float m
 
 ImgId Assets::text_ellipsis(std::string_view s, float px, Color color, float max_w) {
   if (measure(s, px) <= max_w) return text(s, px, color);
-  return text(cut_ellipsis(*this, s, px, max_w), px, color);
+  // cut_ellipsis measures a new string per dropped letter: the result is kept per (face, size, width, text), for the rows
+  // that are drawn again every frame
+  char kb[40];
+  std::snprintf(kb, sizeof kb, "%c%d:%.2f:", alt_on_ ? 'T' : 't', px_int(px), double(max_w));
+  std::string key = kb;
+  key.append(s);
+  auto it = ellipsis_cache_.find(key);
+  if (it == ellipsis_cache_.end()) {
+    if (ellipsis_cache_.size() >= 512) ellipsis_cache_.clear();
+    it = ellipsis_cache_.emplace(std::move(key), cut_ellipsis(*this, s, px, max_w)).first;
+  }
+  return text(it->second, px, color);
 }
 
 ImgId Assets::text_wrap(std::string_view s, float px, Color color, float max_w, size_t max_lines, float line_spacing) {
   char nb[96];
   std::snprintf(nb, sizeof nb, "w:%d:%.1f:%zu:%.2f:", px_int(px), double(max_w), max_lines, double(line_spacing));
-  std::string key = std::string(nb) + color_key(color) + ":";
+  std::string key = std::string(alt_on_ ? "A" : "") + nb + color_key(color) + ":";
   key.append(s);
   ImgId id;
   if (lookup(key, id)) return id;
@@ -266,7 +444,7 @@ ImgId Assets::text_wrap(std::string_view s, float px, Color color, float max_w, 
   // of a line that was uploaded to a texture has no CPU pixels to copy from.
   std::vector<Img> lines_img;
   lines_img.reserve(lines.size());
-  for (const auto& l : lines) lines_img.push_back(font_->render(l, px_int(px), color));
+  for (const auto& l : lines) lines_img.push_back(face().render(l, px_int(px), color));
   uint32_t w = 1;
   for (const Img& i : lines_img) w = std::max(w, i.w);
   uint32_t h = std::max<uint32_t>(step * uint32_t(std::max<size_t>(lines.size(), 1)), 1);

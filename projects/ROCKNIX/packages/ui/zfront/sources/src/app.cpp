@@ -1,15 +1,27 @@
 #include "app.hpp"
 
+#include "power.hpp"
+
 #include "sound.hpp"
 
 #include <cstdio>
 
 #include "collections.hpp"
+#include "colsys.hpp"
 #include "motion.hpp"
+#include "music.hpp"
+#include "oscontract.hpp"
 #include "registry.hpp"
+#include "remake.hpp"
 #include "screensaver.hpp"
+#include "ssmedia.hpp"
 #include "syslist.hpp"
+#include "playstats.hpp"
+#include "uimode.hpp"
+#include "util.hpp"
+#include "webtransfer.hpp"
 #include "ui_prefs.hpp"
+#include "vpreview.hpp"
 
 namespace zf {
 
@@ -41,6 +53,10 @@ long Ctx::item_of(size_t sys) const {
 void Ctx::open_system(size_t i) {
   if (i >= systems.size()) return;
   systems[i].open();
+  if (systems[i].gamelist_damaged && !systems[i].damaged_told) {  // the games before the damage are shown; the toast says which system
+    systems[i].damaged_told = true;
+    sv->toasts.push(std::string(tr("DAMAGED GAME LIST")) + ": " + systems[i].fullname, 4000);
+  }
   const long k = item_of(i);
   if (k >= 0) items[size_t(k)].games = uint32_t(systems[i].count);
 }
@@ -53,7 +69,21 @@ App::App(Ctx c, std::unique_ptr<Screen> root, std::unique_ptr<StatusSource> stat
 Outcome App::handle(Action a) {
   Transition t = stack_.back()->handle(a, cx);
   Outcome o = apply(std::move(t));
-  if (o.kind == Outcome::None) maybe_reload_systems();  // the menus just closed: apply what they changed
+  if (o.kind == Outcome::None) {
+    maybe_reload_systems();  // the menus just closed: apply what they changed
+    maybe_refresh_collections();
+    maybe_apply_collections();
+  }
+  return o;
+}
+
+void App::push_screen(std::unique_ptr<Screen> s) {
+  if (s) apply(Transition::push(std::move(s)));
+}
+
+std::optional<Outcome> App::take_pending_launch() {
+  std::optional<Outcome> o = std::move(pending_launch_);
+  pending_launch_.reset();
   return o;
 }
 
@@ -69,6 +99,7 @@ namespace {
 // leaving must feel immediate.
 constexpr float kEnterMenu = 0.18f, kEnterPlain = 0.14f, kLeaveMenu = 0.11f, kLeavePlain = 0.12f;
 constexpr float kRise = 0.017f, kSink = 0.008f;
+constexpr std::chrono::milliseconds kChargeStep{500};  // XMB: one more cell every half second while charging
 }  // namespace
 
 void App::begin_enter() {
@@ -117,6 +148,10 @@ Outcome App::apply(Transition t) {
       stack_.pop_back();
       stack_.push_back(std::move(t.screen));
       enter_.active = false;
+      if (stack_.size() >= 2) {  // a list that replaced the list of another system: the carousel below follows it
+        const long item = stack_.back()->shown_item(cx);
+        if (item >= 0) stack_[stack_.size() - 2]->reset_system_cursor(cx, item);
+      }
       break;
     case Transition::Open: {
       std::unique_ptr<Screen> s = Registry::instance().make(t.name, cx, t.arg);
@@ -124,6 +159,8 @@ Outcome App::apply(Transition t) {
         if (t.name == "menu.main" || t.name == "menu.game_options") sound::play(cx, sound::Cue::MenuOpen);  // ES: the menus of the list
         stack_.push_back(std::move(s));
         begin_enter();
+      } else if (!uimode::screen_allowed(uimode::of(cx.es), t.name)) {
+        // locked (Kiosk / Kid): ES does not offer it either, so there is nothing to explain
       } else {
         cx.sv->toasts.push(tr("Not available yet"));
       }
@@ -168,6 +205,7 @@ std::optional<TimePoint> App::screen_deadline() const {
 }
 
 bool App::tick(float dt) {
+  music::on_system(cx, stack_[0]->system_cursor(cx));  // audio.persystem: another track when the system changes
   bool moving = stack_.back()->tick(dt, cx);
   const float mdt = std::min(dt, 0.05f);  // the first tick after a long sleep must not swallow the whole entry
   if (enter_.active) {
@@ -178,23 +216,62 @@ bool App::tick(float dt) {
   if (cx.ui_motion && cx.sv->toasts.moving(std::chrono::steady_clock::now())) moving = true;
   if (!leave_.screens.empty()) {
     leave_.t += mdt;
-    if (leave_.t >= (leave_.menu ? kLeaveMenu : kLeavePlain)) leave_.screens.clear();
+    if (leave_.t >= (leave_.menu ? kLeaveMenu : kLeavePlain)) {
+      leave_.screens.clear();
+      maybe_reload_systems();  // what waited for the leaving screens
+      maybe_refresh_collections();
+      maybe_apply_collections();
+    }
     moving = true;
   }
   bool redraw = moving || animating_ || stack_.back()->take_redraw();
   animating_ = moving;
   Transition t = stack_.back()->take_transition(cx);
   if (t.kind != Transition::None) {
-    apply(std::move(t));  // Launch / Quit are not meant to come from here
+    Outcome o = apply(std::move(t));  // Quit is not meant to come from here; a Launch (a countdown that ended) goes to the loop
+    if (o.kind == Outcome::Launch) pending_launch_ = std::move(o);
     redraw = true;
   }
   if (maybe_reload_systems()) redraw = true;
   return redraw;
 }
 
+// The PSP filled its three cells one after another while charging. Only XMB, only with motion on, and not under the screensaver
+// (nothing of the screens shows then); a status pinned with its own frame (harness `--status frame=N`) keeps it. A full battery
+// still plugged in ("Full" counts as charging, as in ES) shows its three cells still, as the PSP did.
+bool App::charge_anim() const {
+  const Status& s = status_->status();
+  return remake::cross(cx.th) && cx.ui_motion && s.battery && s.battery->charging && s.battery->percent < 100 && s.charge_frame < 0 &&
+         !oscontract::idle().active();
+}
+
+std::optional<TimePoint> App::status_deadline() const {
+  std::optional<TimePoint> t = status_->next_deadline();
+  if (charge_anim() && (!t || charge_next_ < *t)) t = charge_next_;
+  return t;
+}
+
+bool App::snapshot_eligible() const {
+  return stack_.size() == 1 && !enter_.active && leave_.screens.empty() && !animating_ && cx.sv->toasts.items().empty() &&
+         stack_[0]->snapshot_ok(cx);
+}
+
 bool App::poll_status(TimePoint now) {
-  if (!status_->poll(now)) return false;
-  ui_prefs::on_status(cx, status_->status());
+  power::tick(cx);
+  if (oscontract::take_resumed()) status_->invalidate();  // back from a suspend: clock, battery, WiFi and Bluetooth are old
+  const bool ss = ssmedia::poll(cx, now);  // slideshow / random video screensaver: starts, swaps, fades (one comparison when off)
+  bool changed = status_->poll(now);
+  const int8_t was = charge_frame_;
+  if (!charge_anim()) {
+    charge_frame_ = -1;
+  } else if (charge_frame_ < 0 || now >= charge_next_) {
+    charge_frame_ = int8_t((charge_frame_ + 1) % 4);  // empty, one, two, three, empty...
+    charge_next_ = now + kChargeStep;
+  }
+  if (!changed && charge_frame_ == was) return ss;
+  Status s = status_->status();
+  if (s.charge_frame < 0) s.charge_frame = charge_frame_;
+  ui_prefs::on_status(cx, s);
   return true;
 }
 
@@ -248,36 +325,136 @@ bool App::drain_jobs(TimePoint now) {
   bool a = cx.sv->jobs.drain();
   bool b = cx.sv->toasts.expire(now);
   bool c = maybe_reload_systems();  // a reload that waited for the last job
-  return a || b || c;
+  maybe_refresh_collections();
+  const bool d = maybe_apply_collections();  // a rebuild that waited for the carousel
+  return a || b || c || d;
 }
 
 bool App::maybe_reload_systems() {
-  if (!cx.system_loader || stack_.size() != 1 || !collections::reload_needed() || !cx.sv->jobs.idle()) return false;
+  const bool rescan = collections::rescan_needed();
+  // a list that is still leaving the screen draws its system: nothing is replaced under it
+  if (!cx.system_loader || stack_.size() != 1 || !leave_.screens.empty() || !(collections::reload_needed() || rescan) || !cx.sv->jobs.idle()) return false;
   collections::set_reload_needed(false);
+  collections::set_rescan_needed(false);
+  colsys::request();  // enabled collections, custom files or deleted games may have changed even when the systems did not
   std::vector<System> fresh;
   std::string err;
   if (!cx.system_loader(cx.es.get_bool("LoadEmptySystems", false), fresh, err)) {
     std::fprintf(stderr, "zfront: system list not reloaded: %s\n", err.c_str());  // the carousel stays as it was
     return false;
   }
-  // nothing the carousel shows changed (a collection edit, a setting that only matters to collections): keep cursor and state
-  std::vector<SystemItem> items = make_items(fresh, cx.es);
-  if (same_systems(cx.systems, cx.items, fresh, items)) return false;
+  // nothing the carousel shows changed (a collection edit, a setting that only matters to collections): keep cursor and state.
+  // A rescan reads the folders again whatever the list says: a game copied into a system does not change the list.
+  std::vector<SystemItem> items = make_items(fresh, cx.es, cx.cols);
+  if (!rescan && same_systems(cx.systems, cx.items, fresh, items, cx.cols)) return false;
 
   const long old_cursor = stack_[0]->system_cursor(cx);
-  std::vector<std::string> old_names = item_names(cx.systems, cx.items);
+  std::vector<std::string> old_names = item_names(cx.systems, cx.items, cx.cols);
   // The count workers hold copies of the folders and only queue results, so joining them is all it takes before `systems` changes.
   counts_.reset();
   count_map_.clear();
-  carry_over(cx.systems, fresh);  // games already read and counts already known are kept
+  if (!rescan) carry_over(cx.systems, fresh);  // games already read and counts already known are kept (a rescan reads them again)
   cx.systems = std::move(fresh);
-  cx.items = make_items(cx.systems, cx.es);
+  ++cols_epoch_;  // a collection build that started on the old systems is out of date (its result is dropped)
+  cx.items = make_items(cx.systems, cx.es, cx.cols);
   long cursor = -1;
   if (old_cursor >= 0) {
-    cursor = nearest_item(old_names, old_cursor, item_names(cx.systems, cx.items));
+    cursor = nearest_item(old_names, old_cursor, item_names(cx.systems, cx.items, cx.cols));
     stack_[0]->reset_system_cursor(cx, cursor);
   }
   start_counts(2, cursor >= 0 && !cx.items.empty() ? cx.system_of(size_t(cursor)) : 0);
+  webtransfer::publish(cx.systems);
+  if (rescan) cx.sv->toasts.push(tr("Game lists updated"), 2500);
+  return true;
+}
+
+namespace {
+
+// the work of one collection build (job thread, or at once): reads the games of the systems that were not read, then colsys::build
+std::vector<System> build_collections(std::shared_ptr<std::vector<System>> snap, const EsSettings& es, const smartcol::Options& o, bool want_log) {
+  colsys::keep_game_systems(*snap);  // screenshots, tools, music: not games (and their lists are not read)
+  colsys::fill(*snap);
+  std::vector<playstats::LogEntry> log;
+  if (want_log) {
+    std::string text;
+    if (read_file(playstats::log_path(), text)) log = playstats::parse_log(text);
+  }
+  return colsys::build(*snap, es, log, o);
+}
+
+}  // namespace
+
+void App::refresh_collections(bool now) {
+  if (cols_busy_) {
+    cols_again_ = true;
+    return;
+  }
+  if (!colsys::any_enabled(cx.es)) {  // none wanted: the ones shown go away
+    if (cx.cols.empty() && !cols_have_) return;
+    cols_pending_.clear();
+    cols_have_ = true;
+    maybe_apply_collections();
+    return;
+  }
+  auto snap = std::make_shared<std::vector<System>>(cx.systems);  // the job reads its own copy: `cx.systems` belongs to this thread
+  smartcol::Options o;
+  o.now = std::time(nullptr);
+  o.mode = uimode::current();
+  o.show_hidden = cx.es.get_bool("ShowHiddenFiles", false);
+  const EsSettings es = cx.es;
+  const bool want_log = colsys::needs_log(es);
+  if (now) {
+    cols_pending_ = build_collections(snap, es, o, want_log);
+    cols_have_ = true;
+    maybe_apply_collections();
+    return;
+  }
+  cols_busy_ = true;
+  const unsigned epoch = cols_epoch_;
+  auto res = std::make_shared<std::vector<System>>();
+  cx.sv->jobs.post_slow([snap, es, o, want_log, res] { *res = build_collections(snap, es, o, want_log); },
+                        [this, res, epoch] {
+                          cols_busy_ = false;
+                          if (epoch == cols_epoch_) {
+                            cols_pending_ = std::move(*res);
+                            cols_have_ = true;
+                          } else {
+                            cols_again_ = true;  // built on systems that were replaced meanwhile
+                          }
+                          maybe_apply_collections();
+                          if (cols_again_) {
+                            cols_again_ = false;
+                            refresh_collections();
+                          }
+                        });
+}
+
+bool App::maybe_refresh_collections() {
+  if (!colsys::requested() || stack_.size() != 1) return false;
+  colsys::clear_request();
+  refresh_collections();
+  return true;
+}
+
+bool App::maybe_apply_collections() {
+  if (!cols_have_ || stack_.size() != 1 || !leave_.screens.empty()) return false;  // a leaving collection list still draws `cx.cols`
+  cols_have_ = false;
+  const long old_cursor = stack_[0]->system_cursor(cx);
+  const std::vector<std::string> old_names = item_names(cx.systems, cx.items, cx.cols);
+  cx.cols = std::move(cols_pending_);
+  cols_pending_.clear();
+  // the cards of the real systems stay as they are (their counts may still be arriving); the collection cards are made again
+  std::vector<SystemItem> items;
+  for (const SystemItem& it : cx.items)
+    if (it.sys == kItemIsSystem || it.sys < cx.systems.size()) items.push_back(it);
+  for (SystemItem& it : make_items(cx.systems, cx.es, cx.cols))
+    if (it.sys != kItemIsSystem && it.sys >= cx.systems.size()) items.push_back(std::move(it));
+  cx.items = std::move(items);
+  const std::vector<std::string> new_names = item_names(cx.systems, cx.items, cx.cols);
+  if (old_cursor >= 0 && (old_names.size() != new_names.size() || old_names != new_names)) {
+    // the number of cards changed: the cursor (unwrapped, taken modulo the count) would land elsewhere, so it is put on its card again
+    stack_[0]->reset_system_cursor(cx, nearest_item(old_names, old_cursor, new_names));
+  }
   return true;
 }
 
@@ -298,7 +475,14 @@ const std::vector<Op>& App::render() {
   }
   ops_.clear();
   if (screensaver::mode() == screensaver::Mode::Black) {  // nothing of the UI shows through: do not even build it
+    vpreview::end_frame(true);
     screensaver::draw(cx, ops_);
+    return ops_;
+  }
+  if (screensaver::mode() == screensaver::Mode::Media) {  // slideshow / random video: its own frame, nothing of the UI
+    vpreview::end_frame(true);
+    ssmedia::draw(cx, ops_);
+    cx.assets.end_frame(ops_, kAssetBudget);
     return ops_;
   }
   // an opaque screen that is entering shows what was under it through its own fading background
@@ -332,6 +516,7 @@ const std::vector<Op>& App::render() {
     screensaver::draw(cx, ops_);  // ES draws no toasts over the screensaver
   else
     draw_toasts(cx, ops_);
+  vpreview::end_frame(screensaver::mode() != screensaver::Mode::Off);  // a list preview nobody drew this frame stops
   cx.assets.end_frame(ops_, kAssetBudget);
   return ops_;
 }

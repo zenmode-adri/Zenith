@@ -1,6 +1,6 @@
 // Review pictures of the screensaver: runs only when $ZF_IDLE_PNG names an output directory (it does nothing under ctest).
 // Both themes at the four screen sizes: the carousel and an open menu, normal / dim / black, and the "screensaver type" row.
-//   ZF_IDLE_PNG=/home/epsil/zf-out/idle-firstrun ZF_THEME_DIR=/home/epsil/zenith-frontend ./test_idle_png
+//   ZF_IDLE_PNG=/tmp/zf-out/idle-firstrun ZF_THEME_DIR=/usr/share/zfront ./test_idle_png
 #include <unistd.h>
 
 #include <cstdio>
@@ -99,7 +99,7 @@ int main() {
   const char* out = std::getenv("ZF_IDLE_PNG");
   if (!out) return 0;
   const char* root = std::getenv("ZF_THEME_DIR");
-  std::string base = root ? root : "/home/epsil/zenith-frontend";
+  std::string base = root ? root : "/usr/share/zfront";
   fs::create_directories(out);
   char tpl[] = "/tmp/zf-idlepng-XXXXXX";
   std::string fx = ::mkdtemp(tpl);

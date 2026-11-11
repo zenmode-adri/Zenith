@@ -12,6 +12,7 @@
 #include "gamemeta.hpp"
 #include "i18n.hpp"
 #include "settings.hpp"
+#include "smartcol.hpp"
 #include "util.hpp"
 
 namespace zf::collections {
@@ -19,6 +20,7 @@ namespace zf::collections {
 namespace {
 
 bool g_reload = false;
+bool g_rescan = false;
 
 std::string getenv_or(const char* k, const char* def) {
   const char* v = std::getenv(k);
@@ -100,6 +102,7 @@ bool mkdir_p(const std::string& dir) {
 }
 
 // lines of the cfg file; a line is a game when it is not blank, not a comment and does not start with '0' (ES)
+bool is_game_line(std::string_view line) { return !(line.empty() || line[0] == '0' || line[0] == '#'); }
 void read_lines(const std::string& name, std::vector<std::string>& out) {
   std::string text;
   if (!read_file(cfg_path(name), text)) return;
@@ -109,18 +112,16 @@ void read_lines(const std::string& name, std::vector<std::string>& out) {
     if (e == std::string::npos) e = text.size();
     std::string_view line = trim(std::string_view(text).substr(i, e - i));
     i = e + 1;
-    if (line.empty() || line[0] == '0' || line[0] == '#') continue;
+    if (!is_game_line(line)) continue;
     out.emplace_back(line);
   }
 }
 
-bool write_lines(const std::string& name, const std::vector<std::string>& keys, std::string& err) {
+bool write_text(const std::string& name, const std::string& text, std::string& err) {
   if (!mkdir_p(paths().dir)) {
     err = paths().dir + ": cannot create";
     return false;
   }
-  std::string text;
-  for (const std::string& k : keys) text += k + "\n";
   return write_atomic(cfg_path(name), text, &err);
 }
 
@@ -228,8 +229,8 @@ std::vector<Custom> list_custom() {
     }
   }
   ::closedir(d);
-  std::sort(out.begin(), out.end(), [](const Custom& a, const Custom& b) { return a.name < b.name; });
-  // a name present as both: the .xcc wins (ES creates the dynamic data when the index file exists)
+  // a name present as both: the .xcc wins (ES creates the dynamic data when the index file exists), so it sorts first and `unique` keeps it
+  std::sort(out.begin(), out.end(), [](const Custom& a, const Custom& b) { return a.name != b.name ? a.name < b.name : a.dynamic && !b.dynamic; });
   out.erase(std::unique(out.begin(), out.end(), [](const Custom& a, const Custom& b) { return a.name == b.name; }), out.end());
   return out;
 }
@@ -237,6 +238,10 @@ std::vector<Custom> list_custom() {
 std::vector<std::string> reserved_names() {
   std::vector<std::string> v = {"collections", "custom-collections"};
   for (const AutoDecl& d : auto_decls()) {
+    v.push_back(d.name);
+    v.push_back(d.theme_folder);
+  }
+  for (const smartcol::Decl& d : smartcol::decls()) {
     v.push_back(d.name);
     v.push_back(d.theme_folder);
   }
@@ -258,7 +263,7 @@ std::string valid_new_name(std::string_view wanted, const std::vector<std::strin
   return base;
 }
 
-bool create_editable(const std::string& name, std::string& err) { return write_lines(name, {}, err); }
+bool create_editable(const std::string& name, std::string& err) { return write_text(name, std::string(), err); }
 
 std::string filter_xml(const std::string& name, const Filter& f) {
   std::string o = "<?xml version=\"1.0\"?>\n<filter name=\"" + xml_escape(name) + "\">\n";
@@ -375,20 +380,38 @@ bool add_game(const std::string& name, const std::string& abs_path, std::string&
   read_lines(name, keys);
   for (const std::string& k : keys)
     if (from_key(k) == abs_path) return true;  // already there
-  keys.push_back(to_key(abs_path));
-  if (!write_lines(name, keys, err)) return false;
+  // appended to the file as it is: the comments and the lines ES skips ('#', '0...') are the user's and stay
+  std::string text;
+  read_file(cfg_path(name), text);
+  if (!text.empty() && text.back() != '\n') text += '\n';
+  text += to_key(abs_path) + "\n";
+  if (!write_text(name, text, err)) return false;
   if (changed) *changed = true;
   return true;
 }
 
 bool remove_game(const std::string& name, const std::string& abs_path, std::string& err, bool* changed) {
   if (changed) *changed = false;
-  std::vector<std::string> keys;
-  read_lines(name, keys);
-  size_t before = keys.size();
-  keys.erase(std::remove_if(keys.begin(), keys.end(), [&](const std::string& k) { return from_key(k) == abs_path; }), keys.end());
-  if (keys.size() == before) return true;
-  if (!write_lines(name, keys, err)) return false;
+  // only the lines of that game go; everything else (comments, disabled lines, blank lines) is written back as it was
+  std::string text, out;
+  if (!read_file(cfg_path(name), text)) return true;
+  bool found = false;
+  size_t i = 0;
+  while (i < text.size()) {
+    size_t e = text.find('\n', i);
+    if (e == std::string::npos) e = text.size();
+    const std::string_view raw = std::string_view(text).substr(i, e - i);
+    i = e + 1;
+    const std::string_view line = trim(raw);
+    if (is_game_line(line) && from_key(std::string(line)) == abs_path) {
+      found = true;
+      continue;
+    }
+    out.append(raw);
+    out += '\n';
+  }
+  if (!found) return true;
+  if (!write_text(name, out, err)) return false;
   if (changed) *changed = true;
   return true;
 }
@@ -422,5 +445,11 @@ bool toggle_favorite(Ctx& cx, size_t sys, size_t game) {
 
 bool reload_needed() { return g_reload; }
 void set_reload_needed(bool v) { g_reload = v; }
+bool rescan_needed() { return g_rescan; }
+void set_rescan_needed(bool v) { g_rescan = v; }
+void request_rescan() {
+  g_rescan = true;
+  g_reload = true;
+}
 
 }  // namespace zf::collections

@@ -2,8 +2,14 @@
 
 #include "services.hpp"
 
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <atomic>
+#include <climits>
 #include <cstdio>
+#include <cstdlib>
 #include <pugixml.hpp>
 
 #include "util.hpp"
@@ -12,16 +18,32 @@ namespace zf {
 
 bool write_atomic(const std::string& path, const std::string& text, std::string* err) {
   if (writes_blocked()) return true;  // preview / dry-run: pretend (the in-memory state still follows)
-  std::string tmp = path + ".zfront-tmp";
-  FILE* f = std::fopen(tmp.c_str(), "wb");
-  if (!f) {
+  // a symlinked target (a config linked into /storage) is written through: the rename would replace the link itself
+  std::string real = path;
+  {
+    struct stat ls;
+    char rp[PATH_MAX];
+    if (::lstat(path.c_str(), &ls) == 0 && S_ISLNK(ls.st_mode) && ::realpath(path.c_str(), rp)) real = rp;
+  }
+  // one temp name per write (pid + counter): two threads writing the same file never share a temp file
+  static std::atomic<unsigned> counter{0};
+  std::string tmp = real + ".zfront-tmp." + std::to_string(::getpid()) + "." + std::to_string(counter.fetch_add(1));
+  int fd = ::open(tmp.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
+  if (fd < 0) {
     if (err) *err = tmp + ": cannot create";
     return false;
   }
-  bool ok = std::fwrite(text.data(), 1, text.size(), f) == text.size();
-  ok = (std::fflush(f) == 0) && ok;
-  ok = (std::fclose(f) == 0) && ok;
-  if (!ok || std::rename(tmp.c_str(), path.c_str()) != 0) {
+  bool ok = true;
+  struct stat st;
+  if (::stat(real.c_str(), &st) == 0) (void)!::fchmod(fd, st.st_mode & 07777);  // keep the mode of the file it replaces
+  for (size_t off = 0; ok && off < text.size();) {
+    ssize_t w = ::write(fd, text.data() + off, text.size() - off);
+    if (w <= 0) ok = false;
+    else off += size_t(w);
+  }
+  ok = ok && ::fsync(fd) == 0;  // data on disk before the rename: a power cut must not leave an empty file
+  ok = (::close(fd) == 0) && ok;
+  if (!ok || std::rename(tmp.c_str(), real.c_str()) != 0) {
     if (err) *err = path + ": cannot write";
     std::remove(tmp.c_str());
     return false;
@@ -61,8 +83,10 @@ SystemConf SystemConf::from_text(const std::string& text, const std::string& pat
 
 SystemConf SystemConf::load(const std::string& path) {
   std::string t;
-  read_file(path, t);
-  return from_text(t, path);
+  const bool ok = read_file(path, t);
+  SystemConf c = from_text(ok ? t : std::string(), path);
+  c.unreadable_ = !ok && ::access(path.c_str(), F_OK) == 0;  // there, but not readable: saving would wipe every setting
+  return c;
 }
 
 const std::string* SystemConf::get(const std::string& key) const {
@@ -135,6 +159,10 @@ std::atomic<unsigned> g_generation{0};
 unsigned settings_generation() { return g_generation.load(std::memory_order_relaxed); }
 
 bool SystemConf::save(std::string* err) const {
+  if (unreadable_) {
+    if (err) *err = "could not read system.cfg";
+    return false;
+  }
   bool ok = write_atomic(path_, text(), err);
   if (ok && !writes_blocked()) g_generation.fetch_add(1, std::memory_order_relaxed);
   return ok;
@@ -146,7 +174,11 @@ EsSettings EsSettings::from_text(const std::string& xml, const std::string& path
   EsSettings s;
   s.path_ = path;
   pugi::xml_document doc;
-  if (doc.load_buffer(xml.data(), xml.size())) {
+  const pugi::xml_parse_result parsed = doc.load_buffer(xml.data(), xml.size());
+  // a non-empty file that does not parse is NOT an empty settings file: `save` refuses to write over it. A file that holds only the
+  // declaration (ES writes that when every value is a default) has no element at all: that is empty, not corrupt.
+  s.unreadable_ = !parsed && parsed.status != pugi::status_no_document_element && xml.find_first_not_of(" \t\r\n") != std::string::npos;
+  if (parsed) {
     // ES writes the settings as top-level elements without a root; a wrapping element is accepted too.
     auto visit = [&](auto&& self, pugi::xml_node parent, int depth) -> void {
       for (pugi::xml_node n : parent.children()) {
@@ -172,6 +204,13 @@ const std::string* EsSettings::get(const std::string& name) const {
   return it == map_.end() ? nullptr : &it->second.second;
 }
 
+std::vector<std::string> EsSettings::names() const {
+  std::vector<std::string> v;
+  v.reserve(map_.size());
+  for (const auto& kv : map_) v.push_back(kv.first);
+  return v;
+}
+
 bool EsSettings::get_bool(const std::string& name, bool def) const {
   const std::string* v = get(name);
   return v ? *v == "true" : def;
@@ -183,9 +222,18 @@ long EsSettings::get_int(const std::string& name, long def) const {
   return v && parse_int(*v, r) ? r : def;
 }
 
-void EsSettings::set_bool(const std::string& name, bool v) { map_[name] = {"bool", v ? "true" : "false"}; }
-void EsSettings::set_string(const std::string& name, const std::string& v) { map_[name] = {"string", v}; }
-void EsSettings::set_int(const std::string& name, long v) { map_[name] = {"int", std::to_string(v)}; }
+void EsSettings::set_bool(const std::string& name, bool v) {
+  map_[name] = {"bool", v ? "true" : "false"};
+  touched_.insert(name);
+}
+void EsSettings::set_string(const std::string& name, const std::string& v) {
+  map_[name] = {"string", v};
+  touched_.insert(name);
+}
+void EsSettings::set_int(const std::string& name, long v) {
+  map_[name] = {"int", std::to_string(v)};
+  touched_.insert(name);
+}
 
 static std::string xml_esc(const std::string& s) {
   std::string o;
@@ -201,16 +249,42 @@ static std::string xml_esc(const std::string& s) {
   return o;
 }
 
-std::string EsSettings::text() const {
+static std::string es_text(const std::map<std::string, std::pair<std::string, std::string>>& m) {
   std::string s = "<?xml version=\"1.0\"?>\n<config>\n";  // same as the Rust skeleton; the reader accepts a root-less file too
-  for (const auto& [k, tv] : map_) s += "\t<" + tv.first + " name=\"" + xml_esc(k) + "\" value=\"" + xml_esc(tv.second) + "\" />\n";
+  for (const auto& [k, tv] : m) s += "\t<" + tv.first + " name=\"" + xml_esc(k) + "\" value=\"" + xml_esc(tv.second) + "\" />\n";
   s += "</config>\n";
   return s;
 }
 
+std::string EsSettings::text() const { return es_text(map_); }
+
+// ES and zfront take turns on this file: re-read it, keep what is on disk (unknown keys, values changed by ES or another tool
+// meanwhile) and apply only the keys this object set since it was loaded / last saved.
 bool EsSettings::save(std::string* err) const {
-  bool ok = write_atomic(path_, text(), err);
-  if (ok && !writes_blocked()) g_generation.fetch_add(1, std::memory_order_relaxed);
+  if (writes_blocked()) return true;  // preview / dry-run: nothing is written, the in-memory state still follows
+  std::string disk;
+  const bool have = !path_.empty() && read_file(path_, disk);
+  std::map<std::string, std::pair<std::string, std::string>> out;
+  if (have && disk.find_first_not_of(" \t\r\n") != std::string::npos) {
+    EsSettings fresh = EsSettings::from_text(disk, path_);
+    if (fresh.unreadable_) {
+      if (err) *err = path_ + ": unreadable, not overwritten";
+      return false;
+    }
+    out = fresh.map_;
+    for (const std::string& k : touched_) {
+      auto it = map_.find(k);
+      if (it != map_.end()) out[k] = it->second;
+    }
+  } else {
+    out = map_;  // missing or empty file: this object's own settings are all there is
+  }
+  bool ok = write_atomic(path_, es_text(out), err);
+  if (ok) {
+    map_ = out;
+    touched_.clear();
+    g_generation.fetch_add(1, std::memory_order_relaxed);
+  }
   return ok;
 }
 
@@ -234,6 +308,10 @@ bool SystemConf::persist(const std::string& key, const std::string& value, std::
     return false;
   }
   SystemConf fresh = SystemConf::load(path_);
+  if (fresh.unreadable_) {
+    if (err) *err = "could not read system.cfg";
+    return false;
+  }
   fresh.set(key, value);
   if (!fresh.save(err)) return false;
   *this = std::move(fresh);
@@ -255,6 +333,10 @@ bool SystemConf::persist_remove(const std::string& key, std::string* err) {
     return false;
   }
   SystemConf fresh = SystemConf::load(path_);
+  if (fresh.unreadable_) {
+    if (err) *err = "could not read system.cfg";
+    return false;
+  }
   fresh.remove(key);
   if (!fresh.save(err)) return false;
   *this = std::move(fresh);

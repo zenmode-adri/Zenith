@@ -17,7 +17,7 @@ std::vector<std::pair<sound::Cue, std::string>> g_played;
 
 std::string theme_dir() {
   const char* e = std::getenv("ZF_THEME_DIR");
-  return e ? e : "/home/epsil/zenith-frontend/theme-dark";
+  return e ? e : "/usr/share/zfront/theme-dark";
 }
 
 bool setup(Ctx& cx) {

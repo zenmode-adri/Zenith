@@ -1,5 +1,5 @@
 // Review images of the controller section (every screen/state at the four resolutions, dark and light). Runs only with
-//   ZF_CTL_PNG=/home/epsil/zf-out/menu-controllers [ZF_THEME_DIR=/home/epsil/zenith-frontend] ./test_menu_controllers_png
+//   ZF_CTL_PNG=/tmp/zf-out/menu-controllers [ZF_THEME_DIR=/usr/share/zfront] ./test_menu_controllers_png
 // Nothing is executed (dry-run) and all files live in a temp directory.
 #include <unistd.h>
 
@@ -238,7 +238,7 @@ int main() {
   const char* out = std::getenv("ZF_CTL_PNG");
   if (!out) return 0;
   const char* root = std::getenv("ZF_THEME_DIR");
-  std::string base = root ? root : "/home/epsil/zenith-frontend";
+  std::string base = root ? root : "/usr/share/zfront";
   fs::create_directories(out);
   const unsigned sizes[4][2] = {{480, 320}, {640, 480}, {720, 405}, {720, 720}};
   for (const char* theme : {"theme-dark", "theme-light"})

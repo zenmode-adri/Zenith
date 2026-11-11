@@ -177,6 +177,9 @@ struct MenuSpec {
   std::function<void(Ctx&, const Refresh&)> on_open;
   /// Optional: runs when the menu is left with B.
   std::function<void(Ctx&)> on_close;
+  /// Optional: a help bar that replaces the one chosen from the entry under the cursor (static storage, `help_n` prompts).
+  const ui::Prompt* help = nullptr;
+  size_t help_n = 0;
 };
 
 class Menu : public Screen {
@@ -185,6 +188,7 @@ class Menu : public Screen {
   ~Menu() override;
 
   Transition handle(Action a, Ctx& cx) override;
+  Profile repeat_profile() const override { return kMenu; }  // bounded: a held direction never reaches a row per frame
   bool tick(float dt, Ctx& cx) override;
   std::optional<float> wake_in() const override;
   void draw(Ctx& cx, std::vector<Op>& out) override;
@@ -199,6 +203,11 @@ class Menu : public Screen {
   const Entry& entry(size_t i) const { return e_[i]; }
   /// Index of the entry under the cursor, or -1 (no selectable entry).
   int cursor() const { return cur_; }
+  // tests: where the view is going and the rows' places (after a draw)
+  float scroll_target() const { return scroll_t_; }
+  float viewport_h() const { return m_.list_h; }
+  float row_top(size_t i) const { return i < top_.size() ? top_[i] : 0.0f; }
+  float row_h(size_t i) const { return i < hgt_.size() ? hgt_[i] : 0.0f; }
   /// Slide position of the knob of toggle entry `i` (0 off .. 1 on; -1 when it is not animated).
   float knob(size_t i) const { return e_[i].kn; }
   const std::string& title() const { return spec_.title; }
@@ -244,6 +253,7 @@ class Menu : public Screen {
   ui::Style st_;
   bool have_layout_ = false;
   float lay_w_ = 0, lay_h_ = 0;
+  unsigned lay_gen_ = 0;  // ui::access().gen at the last layout: a text size / contrast change lays out again
   std::vector<float> top_, hgt_;
   float content_h_ = 0;
   bool has_icons_ = false;
@@ -258,6 +268,7 @@ class Menu : public Screen {
   ui::HelpBar help_;
   ui::Txt t_title_, t_hint_;
   int hint_for_ = -2;
+  float scroll_room_ = 0;  // what the scrollbar takes from the right of the rows, on the grid of a remade theme
   std::string lang_;  // i18n::language() the entries and the title were made for
 };
 

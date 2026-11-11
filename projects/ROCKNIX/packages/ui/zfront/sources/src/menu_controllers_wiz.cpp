@@ -18,9 +18,20 @@ namespace zf::ctl {
 namespace {
 
 constexpr float kIdleCancelSeconds = 90.0f;  // a wizard nobody touches for this long closes without saving
+constexpr float kPresentPoll = 1.0f;         // how often the wizard checks that its pad is still there
 constexpr float kProgressTick = 0.05f;       // redraw pace of the hold-to-skip bar
+constexpr float kDetectIdleSeconds = 60.0f;  // the device picker nobody touches for this long closes
+constexpr float kCancelHoldSeconds = 3.0f;   // one input of the mapped pad kept down this long cancels the wizard
+constexpr float kCancelShowSeconds = 1.5f;   // ... and says so from this moment on
 
 const void* g_tap_owner = nullptr;  // the PadTap whose sink is installed (only one at a time)
+
+// A title never taller than the status bar (4 cells): the line of a tall font would stick out over the top margin
+void fit_title(Assets& a, ui::Txt& t, std::string_view s, const ui::Metrics& m, float max_w) {
+  int px = m.title_px;
+  t.set(a, s, px, max_w);
+  while (m.grid && t.h > float(4 * m.u) && px > 8) t.set(a, s, --px, max_w);
+}
 
 // Sentence case for labels the framework does not build itself: first letter upper case, the rest lower case, but single
 // letters (A, B, X, Y) and words with digits (L2, R3) keep their case.
@@ -73,6 +84,11 @@ std::vector<JoyInfo> connected_pads(Ctx& cx) {
   return v;
 }
 
+std::string pad_label(const std::string& name) {
+  if (name == "retrogame_joypad") return tr("BUILT-IN CONTROLLER");
+  return name;
+}
+
 bool pad_is_configured(const JoyInfo& j) {
   PadConfig c;
   c.load_file(paths().user_input);
@@ -110,6 +126,7 @@ const ui::Prompt kHelpDetect[] = {{"B", N_("CANCEL")}};
 DetectScreen::DetectScreen(Ctx&) {}
 
 bool DetectScreen::on_capture(const CaptureEvent& e) {
+  idle_s_ = 0;
   if (e.kind != InKind::Button) return false;
   if (e.value && !holding_ && !picked_) {
     holding_ = true;
@@ -132,6 +149,7 @@ Transition DetectScreen::handle(Action a, Ctx& cx) {
     installed_ = true;
     tap_.install(cx, [this](const CaptureEvent& e) { return on_capture(e); });
   }
+  idle_s_ = 0;
   if (a == Action::B || a == Action::Start || a == Action::Hotkey) return Transition::pop();
   return Transition::none();
 }
@@ -143,7 +161,12 @@ bool DetectScreen::tick(float dt, Ctx& cx) {
   }
   bool changed = dirty_;
   dirty_ = false;
+  if (!holding_ && !picked_) {
+    idle_s_ += dt;
+    if (idle_s_ >= kDetectIdleSeconds) cancel_ = true;  // nothing was pressed: leave instead of waiting for ever
+  }
   if (holding_) {
+    idle_s_ = 0;
     held_s_ += dt;
     changed = true;
     if (held_s_ >= kHoldSeconds) {
@@ -156,11 +179,15 @@ bool DetectScreen::tick(float dt, Ctx& cx) {
 
 std::optional<float> DetectScreen::wake_in() const {
   if (holding_) return kProgressTick;
-  if (picked_) return 0.0f;
-  return std::nullopt;
+  if (picked_ || cancel_) return 0.0f;
+  return std::max(kDetectIdleSeconds - idle_s_, 0.0f) + 0.01f;
 }
 
 Transition DetectScreen::take_transition(Ctx& cx) {
+  if (cancel_ && !picked_) {
+    cancel_ = false;
+    return Transition::pop();
+  }
   if (!picked_) return Transition::none();
   picked_ = false;
   int b = -1, h = -1, ax = -1;
@@ -188,14 +215,19 @@ void DetectScreen::draw(Ctx& cx, std::vector<Op>& out) {
   }
   const ui::Metrics& m = m_;
   const ui::Style& st = st_;
-  float inset = std::round(m.pill_h * ui::kPillInset);
+  float inset = m.inset;
   out.push_back(Op::rect(0, 0, m.W, m.H, st.bg));
-  if (!t_title_.alive(a)) t_title_.set(a, sentence(tr("CONFIGURE INPUT")), m.title_px, m.col_w * 0.72f);
-  ui::put_text(out, t_title_, m.col_x + inset, m.header_cy, st.txt);
+  const size_t stack_from = out.size();
   status_bar(cx.th, a, m.W, m.H, cx.status, out);
+  if (!t_title_.alive(a)) fit_title(a, t_title_, sentence(tr("CONFIGURE INPUT")), m, ui::title_max_w(st, m, out, stack_from, m.col_w * 0.72f));
+  ui::put_text(out, t_title_, ui::title_x(st, m, m.title_left, t_title_.w), m.header_cy, st.txt);
   float title_bottom = m.header_cy + t_title_.h / 2.0f;
   float first_pill_top = m.list_top + (m.row_h - m.pill_h) / 2.0f;
   out.push_back(Op::rect(m.col_x, std::round((title_bottom + first_pill_top) / 2.0f), m.col_w, 1, st.line));
+  if (st.header_center) {  // headerAlign: the OSD and toasts keep clear of the centred title
+    const float tx = ui::title_x(st, m, m.title_left, t_title_.w);
+    ui::header_box() = {true, tx, tx + t_title_.w, m.header_cy - t_title_.h / 2.0f, title_bottom, std::round((title_bottom + first_pill_top) / 2.0f)};
+  }
 
   // pad count (re-read on every layout, hot-plug while the screen is open shows after the next resize/redraw)
   size_t n = connected_pads(cx).size();
@@ -208,7 +240,7 @@ void DetectScreen::draw(Ctx& cx, std::vector<Op>& out) {
   if (!t_msg2_.alive(a)) t_msg2_.set(a, sentence(tr("PRESS B TO CANCEL.")), m.small_px, m.col_w - 2 * inset);
   if (shown_held_ != held_name_ || !t_held_.alive(a)) {
     shown_held_ = held_name_;
-    t_held_.set(a, held_name_, ui::px_floor(float(m.em) * 1.2f), m.col_w - 2 * inset);
+    t_held_.set(a, pad_label(held_name_), ui::px_floor(float(m.em) * 1.2f), m.col_w - 2 * inset);
   }
 
   float cxm = m.W / 2.0f;
@@ -255,6 +287,11 @@ bool ConfigScreen::on_capture(const CaptureEvent& e) {
     return true;
   }
   needs_redraw_ = true;
+  if (e.value != 0) {  // the pad-only way out: one input kept down cancels, whatever is (not) mapped yet
+    if (cancel_s_ < 0) cancel_s_ = 0, cancel_kind_ = e.kind, cancel_id_ = e.id;
+  } else if (cancel_s_ >= 0 && cancel_kind_ == e.kind && cancel_id_ == e.id) {
+    cancel_s_ = -1;
+  }
   if (wiz_.phase() == InputWizard::Phase::Rows) {
     wiz_.input(e.kind, e.id, e.value);
   } else if (e.value != 0) {
@@ -320,6 +357,28 @@ bool ConfigScreen::tick(float dt, Ctx& cx) {
     cx.sv->toasts.push(tr("Controller configuration cancelled"));
   }
   wiz_.tick(dt);
+  pad_watched_ = cx.pad != nullptr;
+  if (cx.pad && want_ == Want::None && !saved_) {  // the pad being mapped was unplugged / its Bluetooth dropped: nothing left to wait for
+    poll_s_ += dt;
+    if (poll_s_ >= kPresentPoll) {
+      poll_s_ = 0;
+      bool here = false;
+      for (const JoyInfo& j : connected_pads(cx)) here = here || (j.guid == guid_ && j.name == name_);
+      if (!here) {
+        want_ = Want::Cancel;
+        cx.sv->toasts.push(tr("Controller disconnected"));
+      }
+    }
+  }
+  if (cancel_s_ >= 0) {
+    const bool was_shown = cancel_s_ >= kCancelShowSeconds;
+    cancel_s_ += dt;
+    if (cancel_s_ >= kCancelHoldSeconds && want_ == Want::None) {
+      want_ = Want::Cancel;
+      cx.sv->toasts.push(tr("Controller configuration cancelled"));
+    }
+    if (was_shown || cancel_s_ >= kCancelShowSeconds) needs_redraw_ = true;
+  }
   bool changed = wiz_.take_changed() || needs_redraw_;
   needs_redraw_ = false;
   return changed;
@@ -328,7 +387,9 @@ bool ConfigScreen::tick(float dt, Ctx& cx) {
 std::optional<float> ConfigScreen::wake_in() const {
   if (want_ != Want::None) return 0.0f;
   float w = std::max(kIdleCancelSeconds - idle_s_, 0.0f) + 0.01f;
+  if (pad_watched_) w = std::min(w, std::max(kPresentPoll - poll_s_, 0.0f) + 0.01f);
   if (wiz_.holding() && wiz_.skippable(wiz_.row()) && wiz_.phase() == InputWizard::Phase::Rows) w = std::min(w, kProgressTick);
+  if (cancel_s_ >= 0) w = std::min(w, cancel_s_ >= kCancelShowSeconds ? kProgressTick : kCancelShowSeconds - cancel_s_ + 0.01f);
   return w;
 }
 
@@ -412,23 +473,29 @@ void ConfigScreen::draw(Ctx& cx, std::vector<Op>& out) {
     lay_w_ = cx.w, lay_h_ = cx.h;
     t_title_.reset(), t_dev_.reset(), t_label_.reset(), t_state_.reset(), t_note_.reset(), t_sum_.reset();
     shown_label_.clear(), shown_state_.clear(), shown_note_.clear(), shown_sum_.clear();
+    for (std::string& l : line_) l.clear();
   }
   const ui::Metrics& m = m_;
   const ui::Style& st = st_;
-  float inset = std::round(m.pill_h * ui::kPillInset);
+  float inset = m.inset;
   out.push_back(Op::rect(0, 0, m.W, m.H, st.bg));
-  if (!t_title_.alive(a)) t_title_.set(a, sentence(tr("CONFIGURING")), m.title_px, m.col_w * 0.72f);
-  ui::put_text(out, t_title_, m.col_x + inset, m.header_cy, st.txt);
+  const size_t stack_from = out.size();
   status_bar(cx.th, a, m.W, m.H, cx.status, out);
+  if (!t_title_.alive(a)) fit_title(a, t_title_, sentence(tr("CONFIGURING")), m, ui::title_max_w(st, m, out, stack_from, m.col_w * 0.72f));
+  ui::put_text(out, t_title_, ui::title_x(st, m, m.title_left, t_title_.w), m.header_cy, st.txt);
   float title_bottom = m.header_cy + t_title_.h / 2.0f;
   float first_pill_top = m.list_top + (m.row_h - m.pill_h) / 2.0f;
   out.push_back(Op::rect(m.col_x, std::round((title_bottom + first_pill_top) / 2.0f), m.col_w, 1, st.line));
+  if (st.header_center) {  // headerAlign: the OSD and toasts keep clear of the centred title
+    const float tx = ui::title_x(st, m, m.title_left, t_title_.w);
+    ui::header_box() = {true, tx, tx + t_title_.w, m.header_cy - t_title_.h / 2.0f, title_bottom, std::round((title_bottom + first_pill_top) / 2.0f)};
+  }
 
   const float y0 = m.list_top, L = m.list_h, cxm = m.W / 2.0f;
   const bool review = wiz_.phase() == InputWizard::Phase::Review;
 
   // device name
-  if (!t_dev_.alive(a)) t_dev_.set(a, name_, m.small_px, m.col_w - 2 * inset);
+  if (!t_dev_.alive(a)) t_dev_.set(a, pad_label(name_), m.small_px, m.col_w - 2 * inset);
   centred(out, t_dev_, cxm, y0 + 0.04f * L, st.dim);
 
   // the console
@@ -481,17 +548,25 @@ void ConfigScreen::draw(Ctx& cx, std::vector<Op>& out) {
 
   // prompt
   int big = ui::px_floor(float(m.em) * 1.2f);
-  std::string label, state, note;
+  std::string label, state;
+  const std::string* note = nullptr;
+  auto line = [&](size_t k, const char* txt) -> const std::string* {
+    if (line_[k].empty()) line_[k] = sentence(txt);
+    return &line_[k];
+  };
+  const std::string* cancel_line = cancel_s_ >= kCancelShowSeconds ? line(2, tr("KEEP HOLDING TO CANCEL")) : nullptr;
   Color state_col = st.dim;
   if (!review) {
     label = sentence(i18n::ctr("joystick", kSlots[wiz_.row()].label));
     if (wiz_.taken()) state = sentence(tr("ALREADY TAKEN")), state_col = st.danger;
     else if (!wiz_.holding() || !wiz_.skippable(wiz_.row())) state = sentence(tr("PRESS ANYTHING"));
-    if (wiz_.skippable(wiz_.row())) note = sentence(tr("HOLD ANY BUTTON TO SKIP"));
+    note = wiz_.skippable(wiz_.row()) ? line(0, tr("HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL.")) : line(1, tr("HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."));
+    if (cancel_line) state = *cancel_line, state_col = st.danger;
   } else {
     label = sentence(tr("ALL BUTTONS ARE DONE"));
     state = std::to_string(wiz_.count(RowState::Set)) + " " + tr("set") + ", " + std::to_string(wiz_.count(RowState::Skipped)) + " " + tr("skipped");
-    if (!wiz_.has_hotkey()) note = sentence(tr("NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."));
+    if (!wiz_.has_hotkey()) note = line(3, tr("NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."));
+    if (cancel_line) state = *cancel_line, state_col = st.danger;
   }
   set_text(a, t_label_, shown_label_, label, big, m.col_w - 2 * inset);
   centred(out, t_label_, cxm, y0 + 0.77f * L, st.cyan_dark);
@@ -505,10 +580,10 @@ void ConfigScreen::draw(Ctx& cx, std::vector<Op>& out) {
     float f = wiz_.hold_progress();
     if (f > 0) shapes_.pill(a, out, bx, by, std::max(std::round(bw * f), bh), bh, st.cyan);
   }
-  if (!note.empty()) {
-    if (shown_note_ != note || !t_note_.alive(a)) {
-      shown_note_ = note;
-      t_note_.set_wrap(a, note, m.small_px, m.col_w - 2 * inset, 3, 1.2f);
+  if (note) {
+    if (shown_note_ != *note || !t_note_.alive(a)) {
+      shown_note_ = *note;
+      t_note_.set_wrap(a, *note, m.small_px, m.col_w - 2 * inset, 3, 1.2f);
     }
     centred(out, t_note_, cxm, y0 + 0.855f * L + std::round(0.075f * L) + t_note_.h / 2.0f - float(m.small_px) * 0.5f, st.dim);
   }

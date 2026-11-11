@@ -33,6 +33,17 @@ bool read_file(const std::string& path, std::string& out) {
     out.resize(static_cast<size_t>(n));
     size_t got = std::fread(out.data(), 1, out.size(), f);
     out.resize(got);
+  } else {  // /proc and debugfs files say 0 bytes but have content: read to the end, with the same cap
+    char buf[4096];
+    size_t got;
+    while ((got = std::fread(buf, 1, sizeof buf, f)) > 0) {
+      if (out.size() + got > kMaxReadFile) {
+        std::fclose(f);
+        out.clear();
+        return false;
+      }
+      out.append(buf, got);
+    }
   }
   std::fclose(f);
   return true;
@@ -156,6 +167,25 @@ std::string utf8_upper(std::string_view s) {
     }
     utf8_append(o, upper_cp(c));
   }
+  return o;
+}
+
+static uint32_t lower_cp(uint32_t c) {
+  if (c < 0x80) return (c >= 'A' && c <= 'Z') ? c + 32 : c;
+  if (c == 0x178) return 0xFF;
+  if (c >= 0xC0 && c <= 0xDE && c != 0xD7) return c + 32;
+  if ((c >= 0x100 && c <= 0x137) || (c >= 0x14A && c <= 0x177)) return (c & 1) ? c : c + 1;
+  if ((c >= 0x139 && c <= 0x148) || (c >= 0x179 && c <= 0x17E)) return (c & 1) ? c + 1 : c;
+  if (c >= 0x391 && c <= 0x3A9 && c != 0x3A2) return c + 32;
+  if (c >= 0x410 && c <= 0x42F) return c + 32;
+  if (c >= 0x400 && c <= 0x40F) return c + 80;
+  return c;
+}
+
+std::string utf8_lower(std::string_view s) {
+  std::string o;
+  o.reserve(s.size());
+  for (size_t i = 0; i < s.size();) utf8_append(o, lower_cp(utf8_next(s, i)));
   return o;
 }
 

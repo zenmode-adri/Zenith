@@ -15,13 +15,17 @@ namespace zf {
 /// Cards for `systems` as ES shows them: HiddenSystems (`;` list of system names) left out, `SortSystems` = "alpha" sorts by full name
 /// (case-insensitive, stable), anything else keeps the es_systems.cfg order (the other ES orderings need data the console's
 /// es_systems.cfg does not have). `SystemItem::sys` is set.
-std::vector<SystemItem> make_items(const std::vector<System>& systems, const EsSettings& es);
+/// `cols` (colsys.hpp) are the collection systems: their cards come after all the others, in their order, whatever SortSystems says
+/// (HiddenSystems hides them by name like any other); their `SystemItem::sys` is `systems.size() + j`.
+std::vector<SystemItem> make_items(const std::vector<System>& systems, const EsSettings& es, const std::vector<System>& cols = {});
 
-/// Names of the systems the cards show, in card order.
-std::vector<std::string> item_names(const std::vector<System>& systems, const std::vector<SystemItem>& items);
+/// Names of the systems the cards show, in card order (`cols`: the collection systems the last cards point to).
+std::vector<std::string> item_names(const std::vector<System>& systems, const std::vector<SystemItem>& items, const std::vector<System>& cols = {});
 
-/// True when both lists hold the same systems (name and ROM folder, same order) and show the same cards in the same order.
-bool same_systems(const std::vector<System>& a, const std::vector<SystemItem>& items_a, const std::vector<System>& b, const std::vector<SystemItem>& items_b);
+/// True when both lists hold the same systems (name and ROM folder, same order) and show the same cards in the same order. `cols` is
+/// the same on both sides (the cards of the collections count in the comparison).
+bool same_systems(const std::vector<System>& a, const std::vector<SystemItem>& items_a, const std::vector<System>& b, const std::vector<SystemItem>& items_b,
+                  const std::vector<System>& cols = {});
 
 /// Moves what a freshly loaded `fresh` can reuse out of `old`: the games already read (and the `loaded` state) and the counts already
 /// known, for the systems that are the same (name, ROM folder and extensions).

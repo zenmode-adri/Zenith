@@ -115,6 +115,8 @@ int main() {
     CHECK(r->phase() == Phase::Cancelled);
     size_t done = r->stats().done;
     CHECK(done >= 3 && done < 10);
+    CHECK_EQ(r->stats().errors, 0u);  // B kills the request in flight: that game is not an error of the server (it is done next time)
+    CHECK(r->errors().empty());
     CHECK_EQ(count_of(t.gamelist(), "<scrap name=\"ScreenScraper\""), done);
     auto r2 = Run::create(t.cx, o);
     CHECK(t.run_to_end(*r2));

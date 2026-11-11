@@ -1,0 +1,26 @@
+#!/bin/bash
+# SPDX-License-Identifier: MIT
+# Clock limits chosen in R36 Tuner. autostart runs this early, before the GPU driver is up, and must not be slowed down:
+# nothing to do on most boots, otherwise it waits in the background.
+L=/storage/.config/r36-tuner/limits
+
+# Reset requested from a PC: an empty file named r36-tuner-reset on the FAT partition (Windows may add .txt)
+if ls /flash/r36-tuner-reset* >/dev/null 2>&1; then
+  . /etc/profile.d/001-functions
+  set_setting enable.turbo-mode 0
+  echo 0 >/sys/devices/system/cpu/cpufreq/boost 2>/dev/null
+  rm -f "$L" /storage/.config/r36-tuner/profile
+  # if the device tree cannot go back, the file stays and the next boot tries again
+  /usr/bin/r36-dtb revert 2>/dev/null && /usr/bin/r36-dtb reset-done 2>/dev/null
+  exit 0
+fi
+
+[ -f "$L" ] && [ -x /usr/bin/r36-tuner-limits ] || exit 0
+(
+  for i in $(seq 1 30); do
+    [ -e /sys/class/devfreq/ff400000.gpu/max_freq ] && [ -e /sys/class/devfreq/dmc/max_freq ] && break
+    sleep 1
+  done
+  /usr/bin/r36-tuner-limits "$L"
+) >/dev/null 2>&1 &
+exit 0

@@ -1,20 +1,26 @@
 // `menu.system` (ES: "SYSTEM SETTINGS"): language, keyboard, time zone, brightness and panel, LEDs, storage, performance
 // governors, overclock, GPU driver, suspend mode, root password and the entry to the reset menu. Keys and scripts are the ones
 // ES uses (GuiMenu::openSystemSettings, ROCKNIX/RK3326 build), so switching between ES and zfront loses no setting.
+// Shown because zfront honours them: ENABLE ROCKNIX SCREENSHOT (key read by /usr/bin/rocknix-screenshot) and USER INTERFACE MODE (opens
+// menu.uimode; the mode itself is honoured everywhere, see uimode.hpp).
 //
 // What is NOT shown (hidden, never dimmed):
 //  * what needs a tool the image does not have (set-audio, wlr-randr, dtb_overlay, batocera-*), checked on `/usr/bin/<exe>`;
 //  * what needs a feature the console does not have (`DEVICE_*` variables of the platform / device quirks);
-//  * what zfront cannot honour: POWER SAVING MODE, USER INTERFACE MODE, SCREEN READER, ROCKNIX SCREENSHOT, CLOCK 12-HOUR
-//    (read only by ES), MULTIMEDIA KEYS (no OS script reads the key).
+//  * what zfront cannot honour: POWER SAVING MODE (zfront reads only `PowerSaverMode=instant`, to turn its motion off), SCREEN READER,
+//    CLOCK 12-HOUR (read only by ES), MULTIMEDIA KEYS (no OS script reads the key);
+//  * what ES builds only for other platforms: SCREEN ROTATION and BOOT SPLASH (BATOCERA), the SUSPEND switches (ENABLE SUSPEND,
+//    TIMED SHUTDOWN, CORE PARKING, DPMS: ES's `#else` of the RK3326 branch, which only offers DEVICE SUSPEND MODE).
 #include <algorithm>
 #include <memory>
 
+#include "menu_ui.hpp"
 #include "i18n.hpp"
 #include "menu.hpp"
 #include "menu_groups.hpp"
 #include "menu_system.hpp"
 #include "registry.hpp"
+#include "uimode.hpp"
 #include "ui_dialogs.hpp"
 #include "util.hpp"
 
@@ -44,13 +50,14 @@ struct Caps {
   bool keyboard = false, timezone = false, mangohud = false, touch = false, paneladj = false;
   bool power_led = false, led = false, sticks = false, led_brightness = false, power_led_r36 = false;
   bool devswitch = false, storage = false, merged = false, fan = false, turbo = false, gpu_oc = false, gpudriver = false;
-  bool suspend = false, root_pass = false, gpu_govs = false;
+  bool suspend = false, root_pass = false, gpu_govs = false, screenshot = false;
 };
 
 struct Backlight {
   std::string path;  // brightness file (abs, without the probe root)
   int max = 0;
   int pct = 100;
+  long raw = -1;  // what the brightness file held when the menu last read it (a change from there came from elsewhere)
   std::string key;
 };
 
@@ -105,6 +112,7 @@ void read_caps(State& st) {
   c.gpu_oc = devflag("DEVICE_GPU_OVERCLOCK");
   c.gpudriver = have_bin("gpudriver");
   c.root_pass = have_bin("setrootpass");
+  c.screenshot = have_bin("rocknix-screenshot");  // reads rocknix.screenshot.enabled (input_sense hotkey)
 
   // brightness: every backlight with the two sysfs files (ES shows more than one only on dual-screen consoles)
   bool dual = devflag("DEVICE_HAS_DUAL_SCREEN");
@@ -117,6 +125,7 @@ void read_caps(State& st) {
     b.path = d + "/brightness";
     b.max = int(max);
     b.pct = std::min(100, std::max(5, int(float(cur) / float(max) * 100.0f + 0.5f)));
+    b.raw = cur;
     // keys of the OS script `brightness`: system.brightness, system.brightness2...
     b.key = st.bl.empty() ? "system.brightness" : "system.brightness" + std::to_string(st.bl.size() + 1);
     st.bl.push_back(b);
@@ -211,10 +220,17 @@ Caps masked(const Caps& in, unsigned secs) {
   if (!(secs & kPower)) c.fan = c.gpu_govs = false;
   if (!(secs & kSuspend)) c.suspend = false;
   if (!(secs & kTurbo)) c.turbo = c.gpu_oc = c.mangohud = false;
-  if (!(secs & kSysAdv)) c.touch = c.devswitch = c.gpudriver = c.root_pass = false;
+  if (!(secs & kSysAdv)) c.touch = c.devswitch = c.gpudriver = c.root_pass = c.screenshot = false;
   if (!(secs & kStorage)) c.storage = false;
   if (!(secs & kLang)) c.keyboard = c.timezone = false;
   return c;
+}
+
+// EJECT MICROSD CARD: flush, then every umount must work (ES ran them blind and always said "You may now remove the card.").
+std::string eject_cmd(bool merged) {
+  std::string c = "sync; rc=0; /usr/bin/umount -f /storage/roms || rc=1; ";
+  if (merged) c += "/usr/bin/umount -f /storage/games-external || rc=1; ";
+  return c + "exit $rc";
 }
 
 void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, unsigned secs) {
@@ -240,7 +256,11 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
       std::string code = l.code;
       bool have = code == "en_US" || code == cur;
       for (const std::string& a : i18n::candidates(code)) have = have || std::find(st.langs_avail.begin(), st.langs_avail.end(), a) != st.langs_avail.end();
-      if (have) o.push_back({code, l.name});
+      if (!have) continue;
+      std::string name = l.name;  // the language's own name in normal case, as the other language row shows it ("Español", not "ESPAÑOL")
+      for (const LanguageName& n : language_names())
+        if (code == n.code) name = n.name;
+      o.push_back({code, name});
     }
     m.choice(tr("LANGUAGE (REGION)"), o, [&cx] { return norm_lang(get(cx, "system.language")); }, [&cx](const std::string& v) {
       put(cx, "system.language", v, true);
@@ -252,12 +272,13 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
     std::string lay = st.kb_layout, var = st.kb_variant;
     auto apply = [&cx, sp, r = m.refresh](const std::string& layout, const std::string& variant) {
       auto sv = cx.sv;
+      const bool layout_changed = layout != sp->kb_layout;
       sp->kb_layout = layout;
       sp->kb_variant = variant;
       std::string cmd = "/usr/bin/rocknix-keyboard set " + shell_quote(layout) + " " + shell_quote(variant);
       auto rc = std::make_shared<int>(-1);
       post(cx, [sv, cmd, rc] { *rc = query(*sv, cmd, 15000).exit_code; },
-                       [&cx, sp, rc, layout, variant, r] {
+                       [&cx, sp, rc, layout, variant, r, layout_changed] {
                          if (*rc == 0) {
                            put(cx, "system.kblayout", layout, true);
                            put(cx, "system.kbvariant", variant, true);
@@ -269,6 +290,11 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
                            cx.sv->toasts.push(tr("AN ERROR OCCURRED"));
                          }
                          if (r) r();
+                         // the variants belong to the layout: read the list of the one that stands now (it also covers the failure,
+                         // which puts the old layout back)
+                         if (layout_changed)
+                           load_list(cx, r, "/usr/bin/rocknix-keyboard list-variants " + shell_quote(sp->kb_layout), parse_code_name,
+                                     [sp](std::vector<Option> o) { sp->kb_variants.opts = std::move(o), sp->kb_variants.loaded = true; });
                        });
     };
     m.choice(tr("KEYBOARD LAYOUT"), options_or_current(st.kb_layouts, st.kb_layout), [sp] { return sp->kb_layout; },
@@ -300,6 +326,13 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
     }).no_cycle();
   }
 
+  if (secs & kUiMode) {  // ES: USER INTERFACE MODE (Full / Kiosk / Kid), es_settings.cfg UIMode
+    const uimode::Mode um = uimode::of(cx.es);
+    m.submenu(tr("USER INTERFACE MODE"), "menu.uimode")
+        .value(um == uimode::Mode::Kid ? tr("Kid") : um == uimode::Mode::Kiosk ? tr("Kiosk") : tr("Full"))
+        .hint(tr("Lock down certain config menus for use with guest users/kids."));
+  }
+
   if (c.mangohud)
     m.toggle(tr("ENABLE MANGOHUD OVERLAY"), [&cx] { return get(cx, "rocknix.mangohud.enabled") == "1"; }, [&cx](bool b) {
       cx.sv->cmd.spawn(b ? "/usr/bin/mangohud_set enable" : "/usr/bin/mangohud_set disable");
@@ -311,12 +344,24 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
       put_bool(cx, "rocknix.touchscreen-keyboard.enabled", b);
     });
 
+  // ES (ROCKNIX build): ENABLE ROCKNIX SCREENSHOT, key rocknix.screenshot.enabled, written as 1/0, no command
+  if (c.screenshot)
+    m.toggle(tr("ENABLE ROCKNIX SCREENSHOT"), [&cx] { return get(cx, "rocknix.screenshot.enabled") == "1"; }, [&cx](bool b) { put_bool(cx, "rocknix.screenshot.enabled", b); });
+
   // ---- HARDWARE
   if (hdr && (secs & kBright) && !st.bl.empty()) m.header(secs == kAll ? tr("HARDWARE") : tr("SCREEN"));
   for (size_t i = 0; (secs & kBright) && i < st.bl.size(); ++i) {
     std::string label = tr("SCREEN BRIGHTNESS");
     if (i > 0) label += " " + std::to_string(i + 1);
-    m.slider(label, 5, 100, 1, [sp, i] { return sp->bl[i].pct; }, [&cx, sp, i](int v) {
+    m.slider(label, 5, 100, 1, [sp, i] {
+      Backlight& b = sp->bl[i];
+      long cur = 0;  // the brightness keys may have changed it behind the menu (read whenever the menu reads its values)
+      if (b.max > 0 && parse_int(read_line(b.path), cur) && cur != b.raw) {
+        b.raw = cur;
+        b.pct = std::min(100, std::max(5, int(float(cur) / float(b.max) * 100.0f + 0.5f)));
+      }
+      return b.pct;
+    }, [&cx, sp, i](int v) {
       Backlight& b = sp->bl[i];
       b.pct = v;
       // like the OS script `brightness set`: floor(pct / 100 * max)
@@ -366,7 +411,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
                cx.sv->cmd.spawn("/usr/bin/ledcontrol brightness " + shell_quote(v));
              });
   if (c.power_led_r36)
-    m.choice(tr("POWER LED COLOR"), {{"on", tr("on")}, {"off", tr("off")}}, [&cx] { return get(cx, "option_powerled", "on") == "off" ? std::string("off") : std::string("on"); },
+    m.choice(tr("POWER LED COLOR"), {{"on", tr("ON")}, {"off", tr("OFF")}}, [&cx] { return get(cx, "option_powerled", "on") == "off" ? std::string("off") : std::string("on"); },
              [&cx](const std::string& v) {
                // ES (setPowerLedR36): the LED itself, then the key
                sysfs_write(cx, "/sys/class/leds/blue:power/brightness", v == "off" ? "0" : "1");
@@ -377,10 +422,23 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
     if (hdr) m.header(tr("DEVICE"));
     m.choice(tr("THIS DEVICE IS"), to_options(st.switch_opts), [sp] { return sp->switch_cur; }, [&cx, sp, r = m.refresh](const std::string& v) {
       if (v == sp->switch_cur) return;
-      cx.sv->cmd.run("/usr/bin/device-switch " + shell_quote(v));
+      // the script runs on the slow worker (never on the draw thread); the exit code decides the reboot hint
+      auto sv = cx.sv;
+      auto rc = std::make_shared<int>(-1);
+      const std::string cmd = "/usr/bin/device-switch " + shell_quote(v);
+      const std::string prev = sp->switch_cur;
       sp->switch_cur = v;
-      sp->reboot_msg = tr("Device will be switched on next reboot");
-      if (r) r();
+      post(cx, [sv, cmd, rc] { *rc = query(*sv, cmd, 30000).exit_code; },
+           [&cx, sp, rc, prev, r] {
+             if (*rc == 0) {
+               sp->reboot_msg = tr("Device will be switched on next reboot");
+             } else {
+               sp->switch_cur = prev;
+               cx.sv->toasts.push(tr("AN ERROR OCCURRED"));
+             }
+             if (r) r();
+           },
+           true);
     }).no_cycle();
   }
 
@@ -419,8 +477,13 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
     }
     bool ms = c.merged;
     m.action(tr("EJECT MICROSD CARD"), [&cx, ms] {
-      cx.sv->cmd.run(ms ? "/usr/bin/umount -f /storage/roms; /usr/bin/umount -f /storage/games-external" : "/usr/bin/umount -f /storage/roms");
-      return ui::message(tr("You may now remove the card."));
+      // sync first, then unmount on the slow worker; the card is only declared free when every umount worked
+      auto sv = cx.sv;
+      auto rc = std::make_shared<int>(-1);
+      const std::string cmd = eject_cmd(ms);
+      post(cx, [sv, cmd, rc] { *rc = query(*sv, cmd, 60000).exit_code; },
+           [&cx, rc] { cx.sv->toasts.push(*rc == 0 ? tr("You may now remove the card.") : tr("AN ERROR OCCURRED"), *rc == 0 ? 3000 : 4000); }, true);
+      return Transition::none();
     });
   }
 
@@ -458,10 +521,23 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
   if (c.gpudriver)
     m.choice(tr("GPU DRIVER"), options_or_current(st.gpu_drivers, st.gpu_driver), [sp] { return sp->gpu_driver; }, [&cx, sp, r = m.refresh](const std::string& v) {
       if (v.empty() || v == sp->gpu_driver) return;
-      cx.sv->cmd.run("/usr/bin/gpudriver " + shell_quote(v), 30000);
+      // `gpudriver` takes up to 30 s: slow worker, and only a zero exit code promises the switch
+      auto sv = cx.sv;
+      auto rc = std::make_shared<int>(-1);
+      const std::string cmd = "/usr/bin/gpudriver " + shell_quote(v);
+      const std::string prev = sp->gpu_driver;
       sp->gpu_driver = v;
-      sp->reboot_msg = tr("GPU driver will be switched on next reboot");
-      if (r) r();
+      post(cx, [sv, cmd, rc] { *rc = query(*sv, cmd, 30000).exit_code; },
+           [&cx, sp, rc, prev, r] {
+             if (*rc == 0) {
+               sp->reboot_msg = tr("GPU driver will be switched on next reboot");
+             } else {
+               sp->gpu_driver = prev;
+               cx.sv->toasts.push(tr("AN ERROR OCCURRED"));
+             }
+             if (r) r();
+           },
+           true);
     }).no_cycle();
 
   if (c.suspend) {
@@ -572,7 +648,7 @@ bool system_has_section(unsigned section) {
   const Caps& c = st.caps;
   if (section & sys_sec::kPanel) return c.paneladj;
   if (section & sys_sec::kTurbo) return c.turbo || c.gpu_oc || c.mangohud;
-  if (section & sys_sec::kSysAdv) return c.touch || c.devswitch || c.gpudriver || c.root_pass;
+  if (section & sys_sec::kSysAdv) return c.touch || c.devswitch || c.gpudriver || c.root_pass || c.screenshot;
   return true;
 }
 

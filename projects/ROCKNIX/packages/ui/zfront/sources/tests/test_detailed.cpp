@@ -13,6 +13,27 @@
 
 using namespace zf;
 
+static void test_genre_scroll() {
+  const float w = 200, s = 50;
+  CHECK_EQ(genre_scroll_offset(0.0, w, s), 0);
+  CHECK_EQ(genre_scroll_offset(kGenreDelay + kGenreLoopDelay - 0.01, w, s), 0);  // waits, then 1 s more like ES
+  CHECK_EQ(genre_scroll_offset(kGenreDelay + kGenreLoopDelay + 1.01, w, s), 50);
+  double period = kGenreLoopDelay + double(w) / double(s) + kGenreGap;
+  CHECK_EQ(genre_scroll_offset(kGenreDelay + period + 0.5, w, s), 0);  // came round: still again for a second
+  CHECK_EQ(genre_scroll_offset(1000.0, 0, s), 0);                      // fits: never moves
+  CHECK(std::isinf(genre_scroll_next(3.0, 0, s)));                     // and never wakes the loop
+  double stop = kGenreDelay + period * kGenreLoops;
+  for (double t = 0; t < stop - 0.1; t += 0.3713) {
+    int o = genre_scroll_offset(t, w, s);
+    double n = genre_scroll_next(t, w, s);
+    CHECK(n > 0);
+    CHECK_EQ(genre_scroll_offset(t + n * 0.5, w, s), o);  // nothing changes before the wake-up
+    CHECK(genre_scroll_offset(t + n + 0.002, w, s) != o);  // and something does right after it
+  }
+  CHECK_EQ(genre_scroll_offset(stop + 2.0, w, s), 0);  // after its rounds it rests at the start
+  CHECK(std::isinf(genre_scroll_next(stop + 2.0, w, s)));  // and stops waking the loop
+}
+
 static void test_scroll_timing() {
   const int max_off = 100;
   CHECK_EQ(desc_scroll_offset(0.0, max_off), 0);
@@ -43,9 +64,21 @@ static void test_scroll_timing() {
   CHECK_EQ(desc_scroll_offset(12.0, 1), 0);  // period = 12 s
 }
 
+static void test_show_rating() {
+  DetailedData d;
+  System s;
+  s.theme = "psp";
+  s.games.resize(1);
+  CHECK(detailed_for(s, 0, false, d));
+  CHECK(d.show_rating);
+  s.theme = "imageviewer";  // a screenshot has no rating: no row of empty stars
+  CHECK(detailed_for(s, 0, false, d));
+  CHECK(!d.show_rating);
+}
+
 static std::string theme_dir() {
   const char* e = std::getenv("ZF_THEME_DIR");
-  return e ? e : "/home/epsil/zenith-frontend/theme-dark";
+  return e ? e : "/usr/share/zfront/theme-dark";
 }
 
 static size_t count_images(const std::vector<Op>& ops) {
@@ -104,6 +137,22 @@ static void test_column(Theme& th, Assets& a, float w, float h) {
   bool any_clip = false;
   for (const Op& o : o5) any_clip |= o.kind == Op::Clip;
   CHECK(!any_clip);
+
+  // a genre that fits sets no timer; one too long is clipped and moves after the delay
+  CHECK_EQ(d.genre_w, 0.0f);
+  d.genre = "Role playing games / Massive Multiplayer Online RPG";
+  d.desc_time = 0;
+  std::vector<Op> g1;
+  detailed_column(th, a, w, h, d, g1);
+  CHECK(d.genre_w > 0);
+  size_t gc = 0;
+  while (gc < g1.size() && g1[gc].kind != Op::Clip) ++gc;
+  CHECK(gc + 2 < g1.size() && g1[gc + 1].kind == Op::Image);
+  d.desc_time = kGenreDelay + kGenreLoopDelay + 1.0;
+  std::vector<Op> g2;
+  detailed_column(th, a, w, h, d, g2);
+  CHECK(g2[gc + 1].x < g1[gc + 1].x);
+  d.genre = "Adventure";
 
   // no rating: still five stars (empty ones), same number of operations as a rated game; and the rows go away when empty
   d.desc = "x";
@@ -210,7 +259,9 @@ static void test_screen(Theme& th, Assets& a, float w, float h) {
 
 int main() {
   test_scroll_timing();
+  test_genre_scroll();
   test_for();
+  test_show_rating();
   std::string dir = theme_dir();
   Theme th;
   Assets a;

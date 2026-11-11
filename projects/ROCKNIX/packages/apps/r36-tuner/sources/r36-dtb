@@ -1,0 +1,392 @@
+#!/bin/bash
+# r36-dtb: soporte de la FASE 2 de R36 Tuner Next en Zenith (undervolt / OC por device tree).
+#
+# En Zenith el DTB lo lee U-Boot de la FAT (/flash) segun la linea FDT de extlinux/extlinux.conf, y /flash esta en
+# solo lectura. El tuner NUNCA toca el DTB de fabrica: trabaja sobre una copia (/flash/tuned.dtb) y este ayudante
+# solo cambia la linea FDT para que la consola arranque con ella. Volver atras = poner otra vez el DTB de fabrica.
+#
+#   r36-dtb source     ruta del DTB desde el que empezar a editar; no escribe nada
+#   r36-dtb install F  instala F (copia editada en /tmp) como DTB de trabajo y arma la red de seguridad. /flash solo en rw aqui dentro
+#   r36-dtb test-start empieza la prueba de estabilidad: si la consola cae, el siguiente arranque vuelve al DTB de fabrica
+#   r36-dtb test-end   termina la prueba sin confirmar
+#   r36-dtb confirm    la prueba paso: el ajuste queda bueno
+#   r36-dtb ack        el usuario ya vio el aviso de ajuste deshecho
+#   r36-dtb path       prepara (si hace falta) y escribe la ruta del DTB de trabajo (/flash/tuned.dtb)
+#   r36-dtb pending    arma la red de seguridad: FDT -> tuned.dtb, estado "pending" (el tuner lo llama tras cada parche)
+#   r36-dtb boot-start (unidad r36-dtb-boot.service, MUY temprano, antes de sysinit.target) pending -> booting; si ya estaba
+#                      "booting" en OTRO arranque, aquel no llego a confirmarse: se vuelve al DTB de fabrica y se reinicia.
+#                      Idempotente por arranque (boot_id). Tambien detecta que una actualizacion cambio el DTB de fabrica.
+#   r36-dtb boot-ok    (autostart, con la UI en marcha) booting -> trial (arranca, falta la prueba de estabilidad)
+#   r36-dtb revert     FDT -> DTB de fabrica y borra la copia de trabajo
+#   r36-dtb status     estado en claves clave=valor
+#
+# Red de seguridad: SOLO actua si el arranque llega a r36-dtb-boot.service (ya en el sistema, antes de sysinit). Desde ahi deshace
+# un cuelgue antes de que la UI este en marcha y una caida DURANTE la prueba de estabilidad. NO cubre un cuelgue anterior (el kernel
+# ya usa tus voltajes a 1296 MHz antes de llegar a ese punto) ni una inestabilidad que aparece despues jugando.
+# Por eso cada instalacion deja en la FAT, comprobado y ANTES de cambiar FDT, lo necesario para restaurar desde un PC:
+#   R36-TUNER-RECOVERY.txt         los pasos
+#   tuner/extlinux.conf.factory    extlinux.conf actual con el FDT de fabrica: basta copiarlo encima
+#   <DTB de fabrica>               nunca se modifica; tuned.dtb.bak es una segunda copia Un DTB que cuelga el kernel o u-boot ANTES de init tampoco se deshace solo: hay que sacar la SD y poner en la
+# linea FDT de extlinux.conf el DTB de fabrica (nombre en /flash/tuner/factory), o elegir la consola otra vez en Zenith DTB Selector.
+#
+# Solo toca la linea FDT de extlinux.conf (atomico: temporal + mv, verificado); /flash en rw solo alrededor de escrituras.
+# El estado va antes que lo que protege: lo que arrancara la proxima vez no cambia sin "pending" ya escrito en la tarjeta. Un rename en
+# FAT no es atomico del todo: si tras un corte hay tuned.dtb puesto y el estado falta o no se entiende, boot-start vuelve al de fabrica.
+# Variables SOLO para pruebas: R36DTB_FLASH, R36DTB_REBOOT, R36DTB_REMOUNT=0, R36DTB_BOOTID, R36DTB_IMAGE.
+
+FLASH="${R36DTB_FLASH:-/flash}"
+EXTLINUX="${FLASH}/extlinux/extlinux.conf"
+TDIR="${FLASH}/tuner"
+TUNED="${FLASH}/tuned.dtb"
+BAK="${FLASH}/tuned.dtb.bak"
+REBOOT="${R36DTB_REBOOT:-reboot}"
+REMOUNT="${R36DTB_REMOUNT:-1}"
+# Copia intacta de los DTB de esta imagen (en SYSTEM, no se puede modificar)
+IMAGE="${R36DTB_IMAGE:-/usr/share/bootloader/device_trees}"
+
+rw() {
+  [ "${REMOUNT}" = "1" ] || return 0
+  mount -o remount,rw "${FLASH}" 2>/dev/null && return 0
+  echo "r36-dtb: no se pudo montar ${FLASH} en escritura" >&2
+  return 1
+}
+log() { [ -d "${TDIR}" ] && echo "$(date +%T) $*" >>"${TDIR}/log" 2>/dev/null; echo "r36-dtb: $*" >&2; }
+# No cambia el resultado de la orden: lo escrito ya esta en la tarjeta. Si algo lo tiene abierto, se reintenta y queda en el registro.
+ro() {
+  local i
+  sync
+  [ "${REMOUNT}" = "1" ] || return 0
+  for i in 1 2 3; do
+    mount -o remount,ro "${FLASH}" 2>/dev/null && return 0
+    sleep 1
+  done
+  log "${FLASH} sigue en escritura"
+  return 1
+}
+valid_name() { case "$1" in ""|*[!A-Za-z0-9._-]*|-*|.*) return 1 ;; *.dtb) return 0 ;; *) return 1 ;; esac; }
+sha_of() { sha256sum "$1" 2>/dev/null | awk '{print $1}'; }
+this_boot() { if [ -n "${R36DTB_BOOTID}" ]; then echo "${R36DTB_BOOTID}"; else cat /proc/sys/kernel/random/boot_id 2>/dev/null; fi; }
+
+current_fdt() {   # $1 = fichero (por defecto extlinux.conf); nombre sin la barra inicial
+  awk '/^[ \t]*FDT[ \t]+/ { sub(/^[ \t]*FDT[ \t]+/, ""); sub(/[ \t\r]+$/, ""); sub(/^\//, ""); print; exit }' "${1:-${EXTLINUX}}" 2>/dev/null
+}
+
+# Cambia SOLO la primera linea FDT conservando la sangria. 0 si queda verificado. (Requiere /flash en rw.)
+set_fdt() {
+  local name="$1" tmp="${EXTLINUX}.tmp-zenith"
+  valid_name "${name}" || return 1
+  awk -v n="/${name}" '!d && /^[ \t]*FDT[ \t]+/ { match($0, /^[ \t]*/); print substr($0, 1, RLENGTH) "FDT " n; d=1; next } { sub(/\r$/, ""); print }' \
+      "${EXTLINUX}" >"${tmp}" 2>/dev/null || { rm -f "${tmp}"; return 1; }
+  [ "$(current_fdt "${tmp}")" = "${name}" ] || { rm -f "${tmp}"; return 1; }
+  sync
+  mv -f "${tmp}" "${EXTLINUX}" 2>/dev/null || { rm -f "${tmp}"; return 1; }
+  sync
+  [ "$(current_fdt)" = "${name}" ]
+}
+
+# Copia de extlinux.conf con el DTB de fabrica y los pasos para el PC. Se rehace en cada instalacion: asi lleva el APPEND de hoy.
+RESTORE="${TDIR}/extlinux.conf.factory"
+NOTE="${FLASH}/R36-TUNER-RECOVERY.txt"
+write_recovery() {
+  local fac="$(factory)" tmp="${RESTORE}.tmp"
+  valid_name "${fac}" && [ -s "${FLASH}/${fac}" ] || return 1
+  awk -v n="/${fac}" '!d && /^[ \t]*FDT[ \t]+/ { match($0, /^[ \t]*/); print substr($0, 1, RLENGTH) "FDT " n; d=1; next } { sub(/\r$/, ""); print }' \
+      "${EXTLINUX}" >"${tmp}" 2>/dev/null || { rm -f "${tmp}"; return 1; }
+  [ "$(current_fdt "${tmp}")" = "${fac}" ] || { rm -f "${tmp}"; return 1; }
+  mv -f "${tmp}" "${RESTORE}" || return 1
+  cat >"${NOTE}.tmp" <<EOF || return 1
+R36 Tuner: recovery from a PC / recuperacion desde un PC
+
+English
+If the console does not boot after changing voltages or frequencies:
+1. Power off the console and remove the SD card.
+2. Insert it in a PC and open this partition.
+3. Copy tuner/extlinux.conf.factory over extlinux/extlinux.conf (replace the file).
+4. Optional, to also turn off Turbo and frequency limits: create an empty file named r36-tuner-reset here.
+5. Reinsert the SD card and power on the console.
+Your original device tree is ${fac} and it is never modified. Your changes are in tuned.dtb.
+
+Espanol
+Si la consola no arranca tras cambiar voltajes o frecuencias:
+1. Apaga la consola y extrae la tarjeta SD.
+2. Insertala en un PC y abre esta particion.
+3. Copia tuner/extlinux.conf.factory encima de extlinux/extlinux.conf (sustituye el fichero).
+4. Opcional, para desactivar tambien el Turbo y los limites de frecuencia: crea aqui un fichero vacio llamado r36-tuner-reset.
+5. Vuelve a insertar la tarjeta SD y enciende la consola.
+Tu device tree original es ${fac} y nunca se modifica. Tus cambios estan en tuned.dtb.
+EOF
+  mv -f "${NOTE}.tmp" "${NOTE}"
+}
+
+# Las copias existen y coinciden con el DTB de fabrica. Sin esto no se cambia FDT.
+check_backups() {
+  local fac="$(factory)" s
+  s="$(sha_of "${FLASH}/${fac}")"
+  [ -n "${s}" ] && [ "${s}" = "$(sha_of "${BAK}")" ] || { log "la copia ${BAK} no coincide con ${fac}"; return 1; }
+  [ "$(current_fdt "${RESTORE}")" = "${fac}" ] && [ -s "${NOTE}" ] || { log "faltan los ficheros de recuperacion"; return 1; }
+}
+
+readfirst() { local v=""; [ -f "$1" ] && read -r v <"$1"; echo "${v}"; }
+state()   { readfirst "${TDIR}/state"; }
+# Si un corte se llevo el fichero, el de recuperacion tambien sabe cual es
+factory() { local v; v="$(readfirst "${TDIR}/factory")"; [ -n "${v}" ] || v="$(current_fdt "${RESTORE}")"; echo "${v}"; }
+
+# Fichero de una linea, en la tarjeta antes de ocupar el sitio del anterior. Requiere /flash en rw.
+put_line() { echo "$2" >"$1.tmp" && sync && mv -f "$1.tmp" "$1" && sync; }
+set_state() { put_line "${TDIR}/state" "$1" || { log "no se pudo guardar el estado $1"; return 1; }; }
+# Vuelve al estado de antes si no se pudo instalar y lo que arranca no ha cambiado
+back_to() { if [ -n "$1" ]; then set_state "$1"; else rm -f "${TDIR}/state"; sync; fi; }
+
+# Descarta la copia de trabajo SIN dejar extlinux.conf apuntando a un fichero que ya no existe. Requiere /flash en rw.
+drop_working() {   # $1 = motivo (estado a guardar)
+  local fac; fac="$(factory)"
+  if [ "$(current_fdt)" = "tuned.dtb" ]; then
+    [ -n "${fac}" ] && [ -f "${FLASH}/${fac}" ] && set_fdt "${fac}" || { log "no se pudo volver a ${fac}: no se borra tuned.dtb"; return 1; }
+  fi
+  rm -f "${TUNED}" "${BAK}" "${TDIR}/factory.sha"
+  set_state "$1"
+  return 0
+}
+
+# El arranque anterior con tuned.dtb no se confirmo, o el estado no se entiende: vuelve al de fabrica y reinicia. Si no puede, el estado
+# se queda como esta para reintentarlo en el siguiente arranque: no dice que lo ha deshecho.
+undo_tuned() {
+  local fac; fac="$(factory)"
+  rw || exit 1
+  put_line "${TDIR}/bootid" "${bid}"
+  if [ -n "${fac}" ] && [ -f "${FLASH}/${fac}" ] && set_fdt "${fac}"; then
+    set_state failed
+    log "el arranque anterior con tuned.dtb NO se confirmo: restaurado ${fac}; se reinicia"
+    ro
+    sleep 1; ${REBOOT}; sleep 60
+  else
+    log "no se pudo volver a '${fac}': se reintenta en el proximo arranque"
+    ro
+  fi
+}
+
+# Prepara el DTB de trabajo. Requiere /flash en rw. Devuelve 0 si TUNED y BAK existen y son coherentes con el DTB de fabrica.
+ensure_working() {
+  local cur fac stored cur_sha
+  cur="$(current_fdt)"
+  fac="$(factory)"
+  # si alguien cambio el modelo (p. ej. con el selector del PC) y ya no es ni el de fabrica ni el tuneado: se empieza de cero
+  if [ -n "${fac}" ] && [ "${cur}" != "tuned.dtb" ] && [ "${cur}" != "${fac}" ]; then
+    log "el DTB de extlinux.conf (${cur}) ya no es el de fabrica registrado (${fac}): se descarta la copia de trabajo"
+    rm -f "${TUNED}" "${BAK}" "${TDIR}/factory" "${TDIR}/state" "${TDIR}/factory.sha" "${TDIR}/extlinux.conf.factory"
+    fac=""
+  fi
+  mkdir -p "${TDIR}" 2>/dev/null || return 1
+  if [ -z "${fac}" ]; then
+    if ! valid_name "${cur}" || [ "${cur}" = "tuned.dtb" ] || [ ! -f "${FLASH}/${cur}" ]; then
+      log "no hay un DTB de fabrica valido (extlinux.conf apunta a '${cur}')"; return 1
+    fi
+    # lo que restaura tiene que ser de verdad el de la imagen, no uno modificado que este puesto
+    if [ -z "$(sha_of "${IMAGE}/${cur}")" ] || [ "$(sha_of "${IMAGE}/${cur}")" != "$(sha_of "${FLASH}/${cur}")" ]; then
+      log "${cur} no es un DTB de esta imagen: pon el de tu consola con Zenith DTB Selector"; return 3
+    fi
+    put_line "${TDIR}/factory" "${cur}" || return 1
+    fac="${cur}"
+  fi
+  [ -f "${FLASH}/${fac}" ] || { log "falta el DTB de fabrica ${fac}"; return 1; }
+  # una actualizacion del sistema (update.sh) vuelve a copiar los DTB de fabrica a /flash: la copia de trabajo quedaria vieja
+  cur_sha="$(sha_of "${FLASH}/${fac}")"; stored="$(readfirst "${TDIR}/factory.sha")"
+  if [ -n "${stored}" ] && [ "${stored}" != "${cur_sha}" ]; then
+    log "el DTB de fabrica ${fac} cambio (actualizacion del sistema): se rehace la copia de trabajo (los ajustes anteriores se pierden)"
+    drop_working stale || return 1
+  fi
+  [ -f "${BAK}" ]   || cp "${FLASH}/${fac}" "${BAK}"   2>/dev/null || return 1
+  [ -f "${TUNED}" ] || cp "${FLASH}/${fac}" "${TUNED}" 2>/dev/null || return 1
+  put_line "${TDIR}/factory.sha" "${cur_sha}" || return 1
+  [ -s "${TUNED}" ] && [ -s "${BAK}" ]
+}
+
+cmd="$1"
+case "${cmd}" in
+  source)
+    cur="$(current_fdt)"; fac="$(factory)"
+    if [ -f "${TUNED}" ] && { [ "${cur}" = "tuned.dtb" ] || { [ "${cur}" = "${fac}" ] && [ "$(state)" = "pending" ]; }; }; then
+      echo "${TUNED}"
+    elif [ -n "${cur}" ] && [ "${cur}" != "tuned.dtb" ] && [ -f "${FLASH}/${cur}" ]; then
+      echo "${FLASH}/${cur}"
+    else
+      exit 1
+    fi
+    ;;
+
+  install)
+    edited="$2"
+    [ -s "${edited}" ] || { echo "r36-dtb: falta el fichero" >&2; exit 1; }
+    # el modo de prueba de DTB del selector tambien reescribe FDT: no se mezclan
+    [ -f "${FLASH}/dtbprobe/state" ] && { echo "r36-dtb: modo de prueba de DTB activo" >&2; exit 1; }
+    rw || exit 1
+    ensure_working; rc=$?
+    [ "${rc}" -eq 0 ] || { ro; exit "${rc}"; }   # 3: el DTB puesto no es de esta imagen; el tuner lo explica
+    write_recovery && check_backups || { log "copias de seguridad sin comprobar: no se instala"; ro; exit 1; }
+    cp "${edited}" "${TUNED}.tmp" && [ "$(sha_of "${edited}")" = "$(sha_of "${TUNED}.tmp")" ] && sync \
+      || { rm -f "${TUNED}.tmp"; log "no se pudo copiar el DTB editado"; ro; exit 1; }
+    prev="$(state)"
+    set_state pending || { rm -f "${TUNED}.tmp"; ro; exit 1; }
+    mv -f "${TUNED}.tmp" "${TUNED}" || { rm -f "${TUNED}.tmp"; back_to "${prev}"; log "no se pudo copiar el DTB editado"; ro; exit 1; }
+    sync
+    if ! set_fdt "tuned.dtb"; then
+      # si tuned.dtb ya estaba puesto, el contenido nuevo arrancara: se queda pending
+      [ "$(current_fdt)" = "tuned.dtb" ] || back_to "${prev}"
+      log "no se pudo poner tuned.dtb en extlinux.conf"; ro; exit 1
+    fi
+    log "instalado: FDT = tuned.dtb (fabrica: $(factory)), estado pending"
+    ro
+    ;;
+
+  test-start)
+    case "$(state)" in
+      trial|ok)
+        rw || exit 1
+        put_line "${TDIR}/pretest" "$(state)" || { ro; exit 1; }
+        set_state testing || { ro; exit 1; }
+        put_line "${TDIR}/bootid" "$(this_boot)"; log "prueba de estabilidad: empieza"; ro
+        ;;
+      *) echo "r36-dtb: estado '$(state)': la red de seguridad no puede cubrir la prueba" >&2; exit 1 ;;
+    esac
+    ;;
+
+  test-end)
+    # "test-end failed": the test found errors, the change is not validated any more. Otherwise (stopped, too hot, not every
+    # step reached) a change that was already validated stays so.
+    if [ "$(state)" = "testing" ]; then
+      rw || exit 1
+      prev="$(readfirst "${TDIR}/pretest")"
+      if [ "$2" != "failed" ] && [ "${prev}" = "ok" ]; then
+        set_state ok; log "prueba de estabilidad: termina sin resultado, sigue validado"
+      else
+        set_state trial; log "prueba de estabilidad: termina sin confirmar"
+      fi
+      rm -f "${TDIR}/pretest"; ro
+    fi
+    exit 0
+    ;;
+
+  confirm)
+    case "$(state)" in
+      trial|testing)
+        rw || exit 1
+        set_state ok || { ro; exit 1; }
+        rm -f "${TDIR}/pretest"
+        log "prueba de estabilidad superada"; ro
+        ;;
+      ok) exit 0 ;;   # ya validado: la prueba que acaba de pasar no cambia nada
+      *) echo "r36-dtb: estado '$(state)': no hay nada que confirmar" >&2; exit 1 ;;
+    esac
+    ;;
+
+  reset-done)
+    rw || exit 1
+    rm -f "${FLASH}"/r36-tuner-reset*; ro
+    ;;
+
+  ack)
+    case "$(state)" in
+      failed|stale) rw || exit 1; rm -f "${TDIR}/state"; ro ;;
+    esac
+    ;;
+
+  path)
+    rw || exit 1
+    ensure_working; rc=$?; ro
+    [ "${rc}" -eq 0 ] || { echo "r36-dtb: no se pudo preparar el DTB de trabajo" >&2; exit 1; }
+    echo "${TUNED}"
+    ;;
+
+  pending)
+    rw || exit 1
+    ensure_working || { ro; exit 1; }
+    write_recovery && check_backups || { log "copias de seguridad sin comprobar: no se arma"; ro; exit 1; }
+    prev="$(state)"
+    set_state pending || { ro; exit 1; }
+    if ! set_fdt "tuned.dtb"; then
+      [ "$(current_fdt)" = "tuned.dtb" ] || back_to "${prev}"
+      log "no se pudo poner tuned.dtb en extlinux.conf"; ro; exit 1
+    fi
+    log "armado: FDT = tuned.dtb (fabrica: $(factory)), estado pending"
+    ro
+    ;;
+
+  boot-start)
+    [ -f "${TDIR}/state" ] || [ "$(current_fdt)" = "tuned.dtb" ] || exit 0
+    bid="$(this_boot)"
+    # idempotente por arranque: si ya se proceso en ESTE arranque (otra llamada), no se vuelve a tocar nada
+    if [ -n "${bid}" ] && [ "${bid}" = "$(readfirst "${TDIR}/bootid")" ]; then exit 0; fi
+    fac="$(factory)"
+    # una actualizacion cambio el DTB de fabrica: la copia de trabajo es vieja. Este arranque ya usa tuned.dtb (no se reinicia);
+    # el siguiente usara el de fabrica nuevo.
+    if [ -n "${fac}" ] && [ -f "${FLASH}/${fac}" ] && [ -f "${TDIR}/factory.sha" ] \
+       && [ "$(readfirst "${TDIR}/factory.sha")" != "$(sha_of "${FLASH}/${fac}")" ]; then
+      rw || exit 1
+      if drop_working stale; then log "el DTB de fabrica ${fac} cambio con una actualizacion: copia de trabajo descartada (vuelve el de fabrica en el proximo arranque)"; fi
+      put_line "${TDIR}/bootid" "${bid}"; ro
+      exit 0
+    fi
+    # restaurado desde un PC: FDT ya no apunta a la copia de trabajo aunque el estado siga activo
+    case "$(state)" in
+      pending|booting|testing)
+        if [ "$(current_fdt)" != "tuned.dtb" ]; then
+          rw || exit 1
+          set_state failed; put_line "${TDIR}/bootid" "${bid}"; log "FDT ya es $(current_fdt): el cambio se deshizo fuera del tuner"; ro
+          exit 0
+        fi
+        ;;
+    esac
+    case "$(state)" in
+      pending)
+        rw || exit 1
+        set_state booting; put_line "${TDIR}/bootid" "${bid}"; log "arranque con tuned.dtb: pending -> booting"; ro
+        ;;
+      booting|testing)
+        undo_tuned
+        ;;
+      trial|ok) ;;
+      *)
+        # vacio o desconocido: con tuned.dtb puesto no se sabe si este ajuste llego a arrancar
+        [ "$(current_fdt)" = "tuned.dtb" ] && undo_tuned
+        ;;
+    esac
+    ;;
+
+  boot-ok)
+    [ -f "${TDIR}/state" ] || exit 0
+    if [ "$(state)" = "booting" ]; then
+      rw || exit 1
+      set_state trial; log "arranque con tuned.dtb confirmado: booting -> trial"; ro
+    fi
+    ;;
+
+  revert)
+    fac="$(factory)"
+    if [ -z "${fac}" ]; then
+      echo "r36-dtb: nada que restaurar" >&2
+      [ "$(current_fdt)" = "tuned.dtb" ] && exit 1
+      exit 0
+    fi
+    rw || exit 1
+    if [ "$(current_fdt)" = "tuned.dtb" ]; then
+      [ -f "${FLASH}/${fac}" ] && set_fdt "${fac}" || { log "no se pudo volver a ${fac}"; ro; exit 1; }
+    fi
+    rm -f "${TUNED}" "${BAK}" "${TDIR}/factory.sha" "${RESTORE}" "${NOTE}"
+    set_state reverted
+    log "restaurado el DTB de fabrica ${fac}"
+    ro
+    ;;
+
+  status)
+    echo "state=$(state)"
+    echo "factory=$(factory)"
+    echo "fdt=$(current_fdt)"
+    [ -f "${TUNED}" ] && echo "tuned=yes" || echo "tuned=no"
+    ;;
+
+  *)
+    echo "uso: r36-dtb source|install|path|pending|boot-start|boot-ok|test-start|test-end|confirm|ack|reset-done|revert|status" >&2
+    exit 2
+    ;;
+esac
+exit 0

@@ -71,7 +71,7 @@ void make_console(Ctx& cx, bool full = true) {
   cx.conf = SystemConf::load(g_dir + "/system.cfg");
   if (!full) return;
   for (const char* b : {"rocknix-info", "timeinfo", "suspendmode", "paneladj", "turbomode", "gpudriver", "ledcontrol", "analog_sticks_ledcontrol_single",
-                        "rocknix-keyboard", "setrootpass", "factoryreset", "backuptool", "run", "rocknix-update", "mangohud_set"})
+                        "rocknix-keyboard", "setrootpass", "factoryreset", "backuptool", "run", "rocknix-update", "mangohud_set", "rocknix-screenshot"})
     put_file(std::string("/root/usr/bin/") + b);
   put_file("/root/sys/class/backlight/backlight/brightness", "128\n");
   put_file("/root/sys/class/backlight/backlight/max_brightness", "255\n");
@@ -175,6 +175,7 @@ int main() {
     CHECK(Registry::instance().has("menu.system.info"));
     CHECK(Registry::instance().has("menu.system.reset"));
     CHECK(has(*m, "INFORMATION"));
+    CHECK(has(*m, "USER INTERFACE MODE"));  // ES: Full / Kiosk / Kid; honoured by zfront (uimode.hpp)
     CHECK(has(*m, "SYSTEM MANAGEMENT AND RESET"));
     CHECK(!has(*m, "ENABLE CPU OVERCLOCK"));
     CHECK(!has(*m, "GPU DRIVER"));
@@ -186,9 +187,10 @@ int main() {
     CHECK(!has(*m, "ROOT PASSWORD"));
     CHECK(!has(*m, "PANEL ADJUSTMENT"));
     // hidden for good (ES-only / no effect in zfront)
-    for (const char* l : {"POWER SAVING MODE", "USER INTERFACE MODE", "SHOW CLOCK IN 12-HOUR FORMAT", "SCREEN READER (TEXT TO SPEECH)", "MULTIMEDIA KEYS",
-                          "ENABLE ROCKNIX SCREENSHOT", "AUDIO OUTPUT", "DISPLAY MODE"})
+    for (const char* l : {"POWER SAVING MODE", "SHOW CLOCK IN 12-HOUR FORMAT", "SCREEN READER (TEXT TO SPEECH)", "MULTIMEDIA KEYS", "AUDIO OUTPUT",
+                          "DISPLAY MODE"})
       CHECK(!has(*m, l));
+    CHECK(!has(*m, "ENABLE ROCKNIX SCREENSHOT"));  // shown only where /usr/bin/rocknix-screenshot exists (the Ultra-like console below has it)
   }
 
   // ---- the Ultra-like console shows its rows
@@ -201,6 +203,7 @@ int main() {
                           "GAMMA", "CONTRAST", "SATURATION", "HUE", "LED COLOR", "JOYSTICK LED", "AUTODETECT GAMES CARD", "EJECT MICROSD CARD",
                           "DEFAULT SCALING GOVERNOR", "DEFAULT GPU SCALING GOVERNOR", "ENABLE CPU OVERCLOCK", "DEVICE SUSPEND MODE", "SYSTEM MANAGEMENT AND RESET"})
       CHECK(has(*m, l));
+    CHECK(has(*m, "ENABLE ROCKNIX SCREENSHOT"));
     CHECK(!has(*m, "ENABLE TOUCHSCREEN KEYBOARD"));  // DEVICE_HAS_TOUCHSCREEN not set
     CHECK(!has(*m, "COOLING PROFILE"));              // no fan
     CHECK(!has(*m, "THIS DEVICE IS"));
@@ -212,7 +215,7 @@ int main() {
     CHECK_EQ(m->entry(size_t(find(*m, "TIMEZONE"))).value_text, std::string("Europe/Paris"));  // current_timezone, nothing configured
     CHECK_EQ(m->entry(size_t(find(*m, "DEFAULT SCALING GOVERNOR"))).value_text, std::string("default"));
     CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("libmali"));
-    CHECK_EQ(m->entry(size_t(find(*m, "LANGUAGE (REGION)"))).value_text, std::string("ENGLISH (US)"));
+    CHECK_EQ(m->entry(size_t(find(*m, "LANGUAGE (REGION)"))).value_text, std::string("English (US)"));  // normal case, like the other language row
     // group titles exist only with something below them
     int last_header = -1;
     for (size_t i = 0; i < m->size(); ++i) {
@@ -244,6 +247,13 @@ int main() {
     m->handle(Action::A, cx);
     CHECK(logged(cx, "/usr/bin/mangohud_set enable"));
     CHECK_EQ(cx.conf.get_or("rocknix.mangohud.enabled", ""), std::string("1"));
+    // ES (ROCKNIX build): ENABLE ROCKNIX SCREENSHOT, key rocknix.screenshot.enabled (default 0), read by /usr/bin/rocknix-screenshot
+    CHECK(go(*m, cx, "ENABLE ROCKNIX SCREENSHOT"));
+    CHECK_EQ(cx.conf.get_or("rocknix.screenshot.enabled", ""), std::string(""));
+    m->handle(Action::A, cx);
+    CHECK_EQ(cx.conf.get_or("rocknix.screenshot.enabled", ""), std::string("1"));
+    m->handle(Action::A, cx);
+    CHECK_EQ(cx.conf.get_or("rocknix.screenshot.enabled", ""), std::string("0"));
     CHECK(go(*m, cx, "AUTODETECT GAMES CARD"));
     m->handle(Action::A, cx);
     CHECK_EQ(cx.conf.get_or("system.automount", ""), std::string("1"));
@@ -269,6 +279,37 @@ int main() {
     CHECK(logged(cx, "sysfs: /sys/class/backlight/backlight/brightness <- 12"));
     // the real file was never touched in dry-run
     CHECK_EQ(slurp(g_dir + "/root/sys/class/backlight/backlight/brightness"), std::string("128\n"));
+  }
+  // ---- brightness changed by the keys with the menu open: the slider follows within half a second
+  {
+    Ctx cx;
+    make_console(cx);
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.system");
+    CHECK(go(*m, cx, "SCREEN BRIGHTNESS"));
+    CHECK_EQ(m->entry(size_t(find(*m, "SCREEN BRIGHTNESS"))).value_text, std::string("50%"));
+    put_file("/root/sys/class/backlight/backlight/brightness", "230\n");  // the brightness keys: 90 %
+    std::unique_ptr<Screen> h2;  // the menu opened again shows what the screen has, not what the menu last wrote
+    Menu* m2 = open(h2, cx, "menu.system");
+    CHECK_EQ(m2->entry(size_t(find(*m2, "SCREEN BRIGHTNESS"))).value_text, std::string("90%"));
+    put_file("/root/sys/class/backlight/backlight/brightness", "128\n");
+  }
+
+  // ---- POWER LED COLOR: its two options are written like the rest (they came out as "on" / "off" in lower case)
+  {
+    Ctx cx;
+    make_console(cx);
+    put_file("/root/sys/class/leds/blue:power/brightness", "1\n");
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.system");
+    int p = find(*m, "POWER LED COLOR");
+    CHECK(p >= 0);
+    if (p >= 0 && m->entry(size_t(p)).options.size() == 2) {
+      CHECK_EQ(m->entry(size_t(p)).options[0].label, std::string(tr("ON")));
+      CHECK_EQ(m->entry(size_t(p)).options[1].label, std::string(tr("OFF")));
+    } else {
+      CHECK(!"POWER LED COLOR needs two options");
+    }
   }
 
   // ---- panel adjustment: paneladj in the background, then the key display.*
@@ -333,6 +374,8 @@ int main() {
     Ctx cx;
     make_console(cx);
     std::unique_ptr<Screen> h;
+    probe().canned["/usr/bin/rocknix-keyboard list-variants 'es'"] = {0, "dvorak Spanish (Dvorak)\n"};
+    probe().canned["/usr/bin/rocknix-keyboard list-variants 'fr'"] = {0, "oss French (alt.)\n"};
     Menu* m = open(h, cx, "menu.system");
     CHECK_EQ(m->entry(size_t(find(*m, "KEYBOARD LAYOUT"))).value_text, std::string("English (US)"));
     pick(*m, cx, "KEYBOARD LAYOUT", 1);  // popup on "us" (idx 2 of es, fr, us) -> Down wraps or stays; accept either neighbour
@@ -343,6 +386,9 @@ int main() {
     CHECK(logged(cx, "/usr/bin/rocknix-keyboard set '" + lay + "' 'none'"));
     CHECK_EQ(cx.conf.get_or("system.kbvariant", ""), std::string("none"));
     CHECK(has(*m, "Reboot now"));  // reboot hint row appears
+    // the variants belong to the layout: the list of the NEW one is read (none + one), not left empty until the page is reopened
+    CHECK(logged(cx, "/usr/bin/rocknix-keyboard list-variants '" + lay + "'"));
+    CHECK_EQ(m->entry(size_t(find(*m, "KEYBOARD VARIANT"))).options.size(), size_t(2));
   }
   {
     Ctx cx;
@@ -405,6 +451,8 @@ int main() {
     CHECK_EQ(cx.conf.get_or("system.suspendmode", ""), std::string("mem"));
     CHECK(logged(cx, "/usr/bin/suspendmode 'mem'"));
     pick(*m, cx, "THIS DEVICE IS", 1);
+    settle(cx);  // runs on the slow worker, the exit code decides the hint
+    m->tick(0.0f, cx);
     CHECK(logged(cx, "/usr/bin/device-switch 'R36Ultra'"));
     CHECK(has(*m, "Reboot now"));
     int hits = 0;
@@ -418,7 +466,7 @@ int main() {
     CHECK_EQ(hits, 1);
   }
 
-  // ---- eject: unmounts, then says so
+  // ---- eject: sync, unmount on the worker (not on the draw thread), and only then say the card can go
   {
     Ctx cx;
     make_console(cx);
@@ -426,8 +474,56 @@ int main() {
     Menu* m = open(h, cx, "menu.system");
     CHECK(go(*m, cx, "EJECT MICROSD CARD"));
     Transition t = m->handle(Action::A, cx);
-    CHECK(logged(cx, "/usr/bin/umount -f /storage/roms"));
-    CHECK(t.kind == Transition::Push && t.screen);
+    CHECK(t.kind == Transition::None);  // nothing ran inline: no dialog yet
+    settle(cx);
+    CHECK(logged(cx, "sync; rc=0; /usr/bin/umount -f /storage/roms || rc=1; exit $rc"));
+    bool said = false;
+    for (const Toast& ts : cx.sv->toasts.items()) said = said || ts.text == tr("You may now remove the card.");
+    CHECK(said);
+  }
+  {  // a failed umount must not tell the user to pull the card
+    Ctx cx;
+    make_console(cx);
+    probe().canned["sync; rc=0; /usr/bin/umount -f /storage/roms || rc=1; exit $rc"] = {1, "busy"};
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.system");
+    CHECK(go(*m, cx, "EJECT MICROSD CARD"));
+    m->handle(Action::A, cx);
+    settle(cx);
+    bool said = false, err = false;
+    for (const Toast& ts : cx.sv->toasts.items()) {
+      said = said || ts.text == tr("You may now remove the card.");
+      err = err || ts.text == tr("AN ERROR OCCURRED");
+    }
+    CHECK(!said && err);
+  }
+
+  // ---- GPU DRIVER: `gpudriver` takes up to 30 s, so it runs on the slow worker; only exit code 0 promises the switch
+  {
+    Ctx cx;
+    make_console(cx);
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.system");
+    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("libmali"));
+    pick(*m, cx, "GPU DRIVER", 1);
+    settle(cx);
+    m->tick(0.0f, cx);
+    CHECK(logged(cx, "/usr/bin/gpudriver 'panfrost'"));
+    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("panfrost"));
+    CHECK(has(*m, "Reboot now"));
+  }
+  {
+    Ctx cx;
+    make_console(cx);
+    probe().canned["/usr/bin/gpudriver 'panfrost'"] = {1, "no"};
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.system");
+    pick(*m, cx, "GPU DRIVER", 1);
+    settle(cx);
+    m->tick(0.0f, cx);
+    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("libmali"));  // not switched: back to the real one
+    CHECK(!has(*m, "Reboot now"));                                                         // and no promise of a switch
+    CHECK(!cx.sv->toasts.items().empty());
   }
 
   // ---- LED: joystick mode goes through ES's coalescing snippet, with the mode sanitised
@@ -521,7 +617,18 @@ int main() {
       // YES
       Transition t2 = m->handle(Action::A, cx);
       t2.screen->handle(Action::Left, cx);
-      t2.screen->handle(Action::A, cx);
+      Transition t3 = t2.screen->handle(Action::A, cx);
+      if (std::string(c.label) == "FACTORY RESET") {  // a second question: nothing runs until it is answered YES too
+        CHECK(t3.kind == Transition::Replace && t3.screen);
+        CHECK(cx.sv->cmd.log.empty());
+        if (t3.screen) {
+          Transition no2 = t3.screen->handle(Action::A, cx);  // NO is focused first again
+          CHECK(no2.kind == Transition::Pop);
+          CHECK(cx.sv->cmd.log.empty());
+          t3.screen->handle(Action::Left, cx);
+          t3.screen->handle(Action::A, cx);
+        }
+      }
       CHECK_EQ(cx.sv->cmd.log.size(), size_t(1));
       CHECK(logged(cx, c.cmd));
     }
@@ -542,19 +649,25 @@ int main() {
     Ctx cx;
     make_console(cx);
     zf::sound::env().fake = true;  // volume + audio tools "installed"
-    for (const char* n : {"menu.g.screen", "menu.g.panel", "menu.g.power", "menu.g.power.adv", "menu.g.library", "menu.g.system", "menu.g.lang", "menu.g.system.adv"})
+    for (const char* n : {"menu.g.screen", "menu.g.look", "menu.g.panel", "menu.g.power", "menu.g.power.adv", "menu.g.library", "menu.g.system", "menu.g.lang", "menu.g.system.adv"})
       CHECK(Registry::instance().has(n));
     CHECK(!Registry::instance().has("menu.g.interface"));  // clock and battery went to SCREEN & SOUND, the buttons to CONTROLLER
     std::unique_ptr<Screen> h;
     Menu* m = open(h, cx, "menu.g.screen");
-    for (const char* l : {"SCREEN BRIGHTNESS", "PANEL ADJUSTMENT", "SHOW OVERLAY WHEN VOLUME CHANGES", "LED COLOR", "JOYSTICK LED", "SHOW CLOCK"}) CHECK(has(*m, l));
+    for (const char* l : {"SCREEN BRIGHTNESS", "PANEL ADJUSTMENT", "SHOW OVERLAY WHEN VOLUME CHANGES", "LED COLOR", "JOYSTICK LED"}) CHECK(has(*m, l));
+    CHECK(!has(*m, "SHOW CLOCK"));  // how zfront looks is APPEARANCE
     // the volume is the hardware buttons' job; the panel sliders are one level down
     for (const char* l : {"SYSTEM VOLUME", "GAMMA", "HUE", "DEFAULT SCALING GOVERNOR", "ENABLE CPU OVERCLOCK", "TIMEZONE", "ENABLE AUDIBLE BATTERY WARNING", "START SCREENSAVER AFTER",
                           "SWITCH CONFIRM & CANCEL BUTTONS"})
       CHECK(!has(*m, l));
     CHECK(find(*m, "SCREEN BRIGHTNESS") < find(*m, "SHOW OVERLAY WHEN VOLUME CHANGES"));  // (the audio output lists need the real scripts)
     CHECK(find(*m, "SHOW OVERLAY WHEN VOLUME CHANGES") < find(*m, "LED COLOR"));
-    CHECK(find(*m, "LED COLOR") < find(*m, "SHOW CLOCK"));
+    {  // APPEARANCE: the top bar and the look of zfront
+      std::unique_ptr<Screen> hl;
+      Menu* lm = open(hl, cx, "menu.g.look");
+      for (const char* l : {"SHOW CLOCK", "TEXT SIZE"}) CHECK(has(*lm, l));  // (the battery row needs a battery)
+      CHECK(!has(*lm, "SCREEN BRIGHTNESS"));
+    }
     std::unique_ptr<Screen> hp;
     m = open(hp, cx, "menu.g.panel");
     for (const char* l : {"GAMMA", "CONTRAST", "SATURATION", "HUE"}) CHECK(has(*m, l));
@@ -563,7 +676,7 @@ int main() {
     std::unique_ptr<Screen> h2;
     m = open(h2, cx, "menu.g.power");
     for (const char* l : {"ENABLE AUDIBLE BATTERY WARNING", "BATTERY WARNING THRESHOLD", "DEFAULT SCALING GOVERNOR", "DEFAULT GPU SCALING GOVERNOR", "DEVICE SUSPEND MODE",
-                          "START SCREENSAVER AFTER", "SCREENSAVER TYPE", "ADVANCED"})
+                          "START SCREENSAVER AFTER", "SCREENSAVER TYPE", "OVERCLOCK & MONITORING"})
       CHECK(has(*m, l));
     for (const char* l : {"ENABLE CPU OVERCLOCK", "SYSTEM VOLUME", "SCREEN BRIGHTNESS"}) CHECK(!has(*m, l));
     // what the console does with its power: governors, then idle (suspend, screensaver), then the warning

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<gameList>
+    <game>
+        <path>./Start Music Player.sh</path>
+        <name>Music Player</name>
+        <desc>Plays the music in your music folder (roms/music) with the Gmu player: file browser and playlists.</desc>
+        <developer>Johannes Heimansberg</developer>
+        <publisher>ROCKNIX</publisher>
+        <rating>5.0</rating>
+        <releasedate>2023</releasedate>
+        <genre>Music</genre>
+        <players>1</players>
+        <image>./images/music-player.svg</image>
+    </game>
+    <game>
+        <path>./Start KPlayer.sh</path>
+        <name>KPlayer</name>
+        <desc>Lightweight music player with a library view. Plays MP3, FLAC, OGG, Opus, M4A and WAV files from your music folder (roms/music).</desc>
+        <developer>AveyondFly</developer>
+        <publisher>AURKNIX</publisher>
+        <rating>5.0</rating>
+        <releasedate>2023</releasedate>
+        <genre>Music</genre>
+        <players>1</players>
+        <image>./images/kplayer.svg</image>
+    </game>
+</gameList>

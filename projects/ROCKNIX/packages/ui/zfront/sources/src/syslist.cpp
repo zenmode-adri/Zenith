@@ -7,7 +7,7 @@
 
 namespace zf {
 
-std::vector<SystemItem> make_items(const std::vector<System>& systems, const EsSettings& es) {
+std::vector<SystemItem> make_items(const std::vector<System>& systems, const EsSettings& es, const std::vector<System>& cols) {
   const std::vector<std::string> hidden = collections::hidden_systems(es);
   std::vector<size_t> order;
   for (size_t i = 0; i < systems.size(); ++i)
@@ -22,24 +22,31 @@ std::vector<SystemItem> make_items(const std::vector<System>& systems, const EsS
   std::vector<SystemItem> items;
   items.reserve(order.size());
   for (size_t i : order) items.push_back(SystemItem{systems[i].theme, systems[i].fullname, uint32_t(systems[i].count), i});
+  for (size_t j = 0; j < cols.size(); ++j) {
+    if (std::find(hidden.begin(), hidden.end(), cols[j].name) != hidden.end()) continue;
+    items.push_back(SystemItem{cols[j].theme, cols[j].fullname, uint32_t(cols[j].count), systems.size() + j});
+  }
   return items;
 }
 
-std::vector<std::string> item_names(const std::vector<System>& systems, const std::vector<SystemItem>& items) {
+std::vector<std::string> item_names(const std::vector<System>& systems, const std::vector<SystemItem>& items, const std::vector<System>& cols) {
   std::vector<std::string> v;
   v.reserve(items.size());
   for (size_t k = 0; k < items.size(); ++k) {
     const size_t s = items[k].sys == kItemIsSystem ? k : items[k].sys;
-    v.push_back(s < systems.size() ? systems[s].name : std::string());
+    if (s < systems.size()) v.push_back(systems[s].name);
+    else if (s - systems.size() < cols.size()) v.push_back(cols[s - systems.size()].name);
+    else v.push_back(std::string());
   }
   return v;
 }
 
-bool same_systems(const std::vector<System>& a, const std::vector<SystemItem>& items_a, const std::vector<System>& b, const std::vector<SystemItem>& items_b) {
+bool same_systems(const std::vector<System>& a, const std::vector<SystemItem>& items_a, const std::vector<System>& b, const std::vector<SystemItem>& items_b,
+                  const std::vector<System>& cols) {
   if (a.size() != b.size()) return false;
   for (size_t i = 0; i < a.size(); ++i)
     if (a[i].name != b[i].name || a[i].rom_dir != b[i].rom_dir) return false;
-  return item_names(a, items_a) == item_names(b, items_b);
+  return item_names(a, items_a, cols) == item_names(b, items_b, cols);
 }
 
 void carry_over(std::vector<System>& old, std::vector<System>& fresh) {

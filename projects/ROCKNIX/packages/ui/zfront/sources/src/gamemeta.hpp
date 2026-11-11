@@ -19,6 +19,7 @@
 #include <cstdint>
 #include <ctime>
 #include <string>
+#include <vector>
 
 #include "gamelist.hpp"
 
@@ -36,5 +37,41 @@ uint64_t pack_lastplayed(const std::string& iso);
 void game_played(Ctx& cx, size_t sys, size_t game, uint64_t secs, time_t now = 0);
 /// Sets or clears the favourite flag of a game.
 void game_set_favorite(Ctx& cx, size_t sys, size_t game, bool fav);
+
+/// Counter that changes whenever the games of any system were edited, scraped or removed. A list on screen (`ListScreen`) compares it
+/// with the value it saw and rebuilds its names, so a rename, a hidden game or a deleted one shows at once. Main thread only.
+unsigned games_generation();
+void games_changed();
+
+/// What ES's metadata editor (GuiMetaDataEd) shows of a game. `rating` is in tenths (0..10: five stars in half steps), `releasedate` is
+/// `YYYY-MM-DD` or empty.
+struct GameForm {
+  std::string name, desc, genre, players, developer, publisher, releasedate;
+  std::string sortname;  // ES "Sort name" (`<sortname>`)
+  int rating = 0;
+  bool favorite = false, hidden = false;
+  bool kidgame = false;  // ES "Kidgame" (`<kidgame>`)
+  bool operator==(const GameForm& o) const {
+    return name == o.name && desc == o.desc && genre == o.genre && players == o.players && developer == o.developer && publisher == o.publisher &&
+           releasedate == o.releasedate && rating == o.rating && favorite == o.favorite && hidden == o.hidden && sortname == o.sortname && kidgame == o.kidgame;
+  }
+  bool operator!=(const GameForm& o) const { return !(*this == o); }
+};
+/// `YYYY-MM-DD` with a real month and day (or empty: no date).
+bool valid_release_date(const std::string& d);
+/// The form of the game `path` of system `sys`, read from its gamelist element (what is in memory for the light fields). False when
+/// the game is not in the system.
+bool game_form_load(const Ctx& cx, size_t sys, const std::string& path, GameForm& out);
+/// Saves what differs between `before` and `after` for the game `path`: memory at once (the list shows it), the gamelist on the job
+/// thread. Only the changed fields are written. A hidden game leaves the list (`games_changed`).
+void game_edit(Ctx& cx, size_t sys, const std::string& path, const GameForm& before, const GameForm& after);
+
+enum class DeleteResult { Ok, Refused };
+/// ES's DELETE GAME: removes the ROM file and the media files the gamelist names (only files inside the ROM folder), the game from the
+/// custom collections and its `<game>` element. The game leaves `System::games` at once, the files and the gamelist go on the job
+/// thread. Nothing at all happens (`Refused`, `why` says what) when the ROM path does not look right: empty or root ROM folder, ROM not
+/// inside the ROM folder (also through `..` or a symlinked folder), or a directory (ES deletes those recursively; zfront does not).
+/// A ROM file that is already gone is not an error: the entry is cleaned up.
+DeleteResult game_delete(Ctx& cx, size_t sys, const std::string& path, std::string& why);
 
 }  // namespace zf

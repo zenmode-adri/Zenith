@@ -5,6 +5,10 @@
 // change. zfront links no libpulse; system.cfg is a regular file, so inotify works on it (it would not on sysfs) and costs
 // nothing while it is not written. `set_setting` is "delete the line, then append it": a read in between sees no value, which
 // is never taken for a change (`VolumeTracker`). Changes caused by our own `volume N` runs are ignored (`quiet()`).
+//
+// A key pressed at the end of the range (down at 0, up at 100) leaves audio.volume as it was, so system.cfg cannot tell it
+// apart from any other write; input_sense then writes kLimitFile and the bar is shown with the current value, so the press
+// still answers ("it is at 0").
 #include <poll.h>
 #include <sys/eventfd.h>
 #include <sys/inotify.h>
@@ -103,6 +107,15 @@ FileWatch& watch() {
   return w;
 }
 
+FileWatch& limit_watch() {
+  static FileWatch w;
+  return w;
+}
+
+// Written by input_sense (system-utils) when a volume key is pressed at 0 or 100. Keep both names in step.
+constexpr const char* kLimitDir = "/run";
+constexpr const char* kLimitFile = "zfront.volume-limit";
+
 std::string read_text(const std::string& path) {
   std::ifstream f(path, std::ios::binary);
   std::ostringstream ss;
@@ -135,7 +148,17 @@ ZF_REGISTER_SERVICE("sound-watch", [](App& app) {
     std::fprintf(stderr, "zfront: sound-watch not started: %s\n", err.c_str());
     return;
   }
-  oscontract::on_finish([] { sound::watch().stop(); });
+  std::string lerr;
+  bool lok = sound::limit_watch().start(sound::kLimitDir, sound::kLimitFile, [path, cx, sv] {
+    int v = sound::parse_volume(sound::read_text(path));
+    if (v < 0 || sound::quiet() || oscontract::game_running()) return;
+    sv->jobs.post(nullptr, [cx, v] { sound::external_volume(*cx, v, true); });
+  }, lerr);
+  if (!lok) std::fprintf(stderr, "zfront: volume limit watch not started: %s\n", lerr.c_str());
+  oscontract::on_finish([] {
+    sound::watch().stop();
+    sound::limit_watch().stop();
+  });
 });
 
 }  // namespace zf

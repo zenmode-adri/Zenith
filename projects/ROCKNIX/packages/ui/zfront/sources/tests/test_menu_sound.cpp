@@ -1,5 +1,6 @@
 // menu.sound: entries, the commands and files it produces (dry-run, temporary system.cfg / es_settings.cfg, no audio),
 // the volume OSD, the inotify watcher and the pure parsers.
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <atomic>
@@ -183,7 +184,7 @@ int main() {
     std::unique_ptr<Screen> hold;
     Menu* m = open_menu(r, hold);
     CHECK_EQ(m->title(), std::string("SOUND SETTINGS"));
-    CHECK_EQ(m->size(), size_t(7));
+    CHECK_EQ(m->size(), size_t(7));  // ENABLE VIDEO PREVIEW AUDIO went to GAMELIST OPTIONS, next to SHOW VIDEO PREVIEWS
     CHECK(m->entry(0).kind == EntryKind::Header);
     CHECK_EQ(m->entry(0).label, std::string("VOLUME"));
     CHECK(m->entry(1).kind == EntryKind::Slider);
@@ -201,6 +202,7 @@ int main() {
     CHECK_EQ(m->entry(6).label, std::string("BATTERY WARNING THRESHOLD"));
     CHECK_EQ(m->entry(6).i, 30);
     CHECK_EQ(m->entry(6).max, 50);
+    CHECK_EQ(find(*m, "ENABLE VIDEO PREVIEW AUDIO"), -1);  // not under the battery warning any more
     CHECK_EQ(find(*m, "AUDIO OUTPUT"), -1);    // no set-audio: hidden, as in ES
     CHECK_EQ(find(*m, "MUSIC VOLUME"), -1);    // no music player
     CHECK_EQ(m->cursor(), 1);
@@ -471,7 +473,7 @@ int main() {
 
   // ---- drawing at the four sizes (needs the real theme and font)
   {
-    const std::string dir = "/home/epsil/zenith-frontend/theme-dark";
+    const std::string dir = "/usr/share/zfront/theme-dark";
     if (is_dir(dir)) {
       const unsigned sizes[4][2] = {{480, 320}, {640, 480}, {720, 405}, {720, 720}};
       for (const auto& wh : sizes) {
@@ -494,6 +496,62 @@ int main() {
         CHECK(ops.size() > 30);
       }
     }
+  }
+
+  // ---- the script refuses the output: the menu goes back to what is really selected AND says so
+  {
+    Rig r("outfail", "audio.volume=50\naudio.device=headphone\n", true, true);
+    write_file(r.bin + "set-audio", "#!/bin/sh\nexit 1\n");
+    CHECK(::chmod((r.bin + "set-audio").c_str(), 0755) == 0);
+    const std::string old_path = std::getenv("PATH") ? std::getenv("PATH") : "";
+    ::setenv("PATH", (r.bin.substr(0, r.bin.size() - 1) + ":" + old_path).c_str(), 1);
+    sound::env().lister = [](const std::string& c) -> std::string {
+      if (c == "set-audio list") return "speaker\tInternal speaker\nheadphone\tHeadphones\nhdmi\tHDMI\n";
+      if (c == "set-audio list-profiles") return "auto\tAutomatic\n";
+      return {};
+    };
+    std::unique_ptr<Screen> hold;
+    Menu* m = open_menu(r, hold);
+    r.cx.sv->cmd.dry_run = false;  // the fake script really runs
+    int out = find(*m, "AUDIO OUTPUT");
+    CHECK(out >= 0);
+    if (out >= 0) {
+      m->entry(out).set_s("hdmi");
+      r.settle();
+      CHECK_EQ(m->entry(out).get_s(), std::string("headphone"));
+      CHECK(read_all(r.cfg).find("audio.device=hdmi") == std::string::npos);
+      bool told = false;
+      for (const Toast& x : r.cx.sv->toasts.items())
+        if (x.text == tr("Could not change the audio output")) told = true;
+      CHECK(told);
+    }
+    ::setenv("PATH", old_path.c_str(), 1);
+    sound::env().lister = nullptr;
+  }
+
+  // ---- QUIT CURRENT GAME of the Moonlight menu: the server does not answer, the person is told
+  {
+    Rig r("moon", "moonlight.host=10.0.0.5\n", false, false);
+    write_file(r.bin + "moonlight", "#!/bin/sh\nexit 3\n");
+    CHECK(::chmod((r.bin + "moonlight").c_str(), 0755) == 0);
+    const std::string old_path = std::getenv("PATH") ? std::getenv("PATH") : "";
+    ::setenv("PATH", (r.bin.substr(0, r.bin.size() - 1) + ":" + old_path).c_str(), 1);
+    std::unique_ptr<Screen> hold = Registry::instance().make("menu.moonlight", r.cx, "");
+    CHECK(hold != nullptr);
+    if (hold) {
+      Menu* m = static_cast<Menu*>(hold.get());
+      m->handle(Action::X, r.cx);  // builds
+      r.cx.sv->cmd.dry_run = false;
+      int q = find(*m, "QUIT CURRENT GAME");
+      CHECK(q >= 0);
+      if (q >= 0) m->entry(q).on_a(r.cx);
+      r.settle();
+      bool told = false;
+      for (const Toast& x : r.cx.sv->toasts.items())
+        if (x.text == tr("Unable to connect to server")) told = true;
+      CHECK(told);
+    }
+    ::setenv("PATH", old_path.c_str(), 1);
   }
 
   std::string rm = "rm -rf " + g_dir;

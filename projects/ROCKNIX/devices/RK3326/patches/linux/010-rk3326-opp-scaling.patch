@@ -1,6 +1,6 @@
 --- a/arch/arm64/boot/dts/rockchip/px30.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/px30.dtsi
-@@ -114,19 +114,75 @@
+@@ -114,19 +114,78 @@
  		compatible = "operating-points-v2";
  		opp-shared;
  
@@ -18,6 +18,9 @@
 +		rockchip,pvtm-sample-time = <1000>;
 +		rockchip,pvtm-number = <10>;
 +		rockchip,pvtm-error = <1000>;
++		rockchip,pvtm-ref-temp = <40>;
++		rockchip,pvtm-temp-prop = <(-56) (-56)>;
++		rockchip,thermal-zone = "soc-thermal";
 +
  		opp-1008000000 {
  			opp-hz = /bits/ 64 <1008000000>;
@@ -76,7 +79,7 @@
  			clock-latency-ns = <40000>;
  			turbo-mode;
  		};
-@@ -1179,9 +1235,45 @@
+@@ -1179,9 +1238,45 @@
  	gpu_opp_table: opp-table-1 {
  		compatible = "operating-points-v2";
  

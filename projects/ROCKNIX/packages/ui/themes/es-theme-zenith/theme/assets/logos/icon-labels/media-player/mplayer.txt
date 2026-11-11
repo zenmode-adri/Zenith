@@ -1,0 +1,1 @@
+Etiqueta "Media player" de la tarjeta mplayer (comprobada con exists() en theme.xml)

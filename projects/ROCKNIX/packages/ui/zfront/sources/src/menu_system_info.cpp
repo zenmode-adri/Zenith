@@ -122,11 +122,18 @@ std::unique_ptr<Screen> make_reset() {
   s.title = tr("SYSTEM MANAGEMENT AND RESET");
   s.title_key = N_("SYSTEM MANAGEMENT AND RESET");
   s.build = [](MenuBuilder& m, Ctx&) {
-    auto ask = [&m](const char* label, const char* msg, const std::string& script, bool danger) {
-      Entry& e = m.action(tr(label), [msg, script, danger]() {
+    // `twice`: a second "are you sure" follows the first YES (only for what wipes everything and cannot be undone)
+    auto ask = [&m](const char* label, const char* msg, const std::string& script, bool danger, bool twice = false) {
+      Entry& e = m.action(tr(label), [msg, script, danger, twice]() {
         ui::ConfirmOpts o;
         o.danger = danger;
-        return ui::confirm(fit_message(tr(msg)), run_script(script), o);
+        Act go = run_script(script);
+        if (twice) {
+          go = [script, o](Ctx&) {
+            return ui::confirm(fit_message(tr("ARE YOU SURE?\n\nTHIS CANNOT BE UNDONE.")), run_script(script), o);
+          };
+        }
+        return ui::confirm(fit_message(tr(msg)), std::move(go), o);
       });
       if (danger) e.danger();
     };
@@ -157,7 +164,7 @@ std::unique_ptr<Screen> make_reset() {
     ask(N_("RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"),
         N_("WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n\nNO BACKUP WILL BE CREATED!\n\nRESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"),
         "/usr/bin/factoryreset standalone", true);
-    ask(N_("FULLY RESET PORTMASTER"), N_("WARNING: PORTMASTER WILL RESET TO DEFAULT\n\nNO BACKUP WILL BE CREATED!\n\nRESET RESET PORTMASTER TO DEFAULT?"),
+    ask(N_("FULLY RESET PORTMASTER"), N_("WARNING: PORTMASTER WILL RESET TO DEFAULT\n\nNO BACKUP WILL BE CREATED!\n\nRESET PORTMASTER TO DEFAULT?"),
         "/usr/bin/factoryreset portmaster", true);
 
     m.header(tr("SYSTEM MANAGEMENT"));
@@ -171,7 +178,7 @@ std::unique_ptr<Screen> make_reset() {
     ask(N_("FACTORY RESET"),
         N_("WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n\nIF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL "
         "DRIVE BEFORE RUNING THIS OPTION!\n\nEJECT YOUR GAME CARD BEFORE PROCEEDING!\n\nRESET SYSTEM AND RESTART?"),
-        "/usr/bin/factoryreset ALL", true);
+        "/usr/bin/factoryreset ALL", true, true);
   };
   return make_menu(std::move(s));
 }

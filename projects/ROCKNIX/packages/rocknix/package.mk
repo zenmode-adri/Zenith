@@ -114,9 +114,9 @@ EOF
 
   sed -i "s#@DEVICENAME@#${DEVICE}#g" ${INSTALL}/usr/config/system/configs/system.cfg
 
-  ### Defaults for non-main builds.
-  BUILD_BRANCH="$(git branch --show-current)"
-  if [ ! "${BUILD_BRANCH}" = "main" ]
+  ### Defaults for the Zenith debug build only (the marker above). They used to apply to every build made from a branch other
+  ### than main: a release image built from any other branch shipped with SSH and Samba on and the default root password.
+  if [ -e "${INSTALL}/usr/config/zenith-debug-build" ]
   then
     sed -i "s#samba.enabled=0#samba.enabled=1#g" ${INSTALL}/usr/config/system/configs/system.cfg
     sed -i "s#ssh.enabled=0#ssh.enabled=1#g" ${INSTALL}/usr/config/system/configs/system.cfg

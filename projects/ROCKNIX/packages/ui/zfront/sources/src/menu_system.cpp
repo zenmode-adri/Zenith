@@ -230,13 +230,14 @@ std::string fit_message(const std::string& text) {
   return out;
 }
 
-void post(Ctx& cx, std::function<void()> work, std::function<void()> done) {
+void post(Ctx& cx, std::function<void()> work, std::function<void()> done, bool slow) {
   if (probe().fixture_loaded) {
     if (work) work();
     if (done) done();
     return;
   }
-  cx.sv->jobs.post(std::move(work), std::move(done));
+  if (slow) cx.sv->jobs.post_slow(std::move(work), std::move(done));
+  else cx.sv->jobs.post(std::move(work), std::move(done));
 }
 
 std::vector<Option> options_or_current(const LazyList& l, const std::string& current) {

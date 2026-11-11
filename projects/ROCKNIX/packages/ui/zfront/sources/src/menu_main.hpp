@@ -9,6 +9,7 @@
 // `menu.demo` (every widget of the framework) is reachable from here only in the harness / dry-run (`--preview`, `--dry-run`,
 // tests), never on the device.
 #pragma once
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -22,6 +23,7 @@ struct MainRow {
   std::string label;   // already translated
   std::string screen;  // registered screen name
   std::string icon;    // theme `assets/menu/menu-icon-<icon>.svg`
+  std::function<bool(const Ctx&)> shown;  // optional: the row is offered only while this says so (empty: always)
 };
 
 /// The nine rows of the main menu, grouped by what the person wants to do (see menu_groups.hpp), with their screen names.

@@ -12,8 +12,10 @@
 
 #include "app.hpp"
 #include "check.hpp"
+#include "launch.hpp"
 #include "savestates.hpp"
 #include "screens.hpp"
+#include "uimode.hpp"
 #include "util.hpp"
 
 using namespace zf;
@@ -57,7 +59,7 @@ System make_system(const std::string& name, const std::string& emulator, const s
 
 std::string theme_dir() {
   const char* e = std::getenv("ZF_THEME_DIR");
-  return e ? e : "/home/epsil/zenith-frontend/theme-dark";
+  return e ? e : "/usr/share/zfront/theme-dark";
 }
 
 // Savestates of "gb": Alpha (autosave, newest), Bravo (slot 1), Charlie (a screenshot whose state file is gone), Delta (state of a ROM
@@ -244,6 +246,37 @@ int main() {
     CHECK(!ss::plan_active());
   }
 
+  {  // the order of a real game: the emulator leaves its own autosave picture on exit, the screen ticks before the first frame, the
+     // bookkeeping comes after it. The row must not pick the picture the undo is about to remove: its tile would fail to decode and go.
+    Ctx cx;
+    if (!setup(cx, 720, 720)) return 0;
+    CarouselScreen c(0);
+    settle(c, cx);
+    c.handle(Action::Down, cx);
+    c.handle(Action::Right, cx);
+    CHECK_EQ(c.row_focus(), 1);
+    ss::invalidate();
+    Transition t = c.handle(Action::A, cx);  // Bravo: slot 1, loaded through the autosave
+    CHECK(t.kind == Transition::Launch);
+    CHECK(ss::plan_active());
+    const std::string auto_png = g_tmp + "/roms/savestates/gb/Bravo.state.auto.png";
+    launch::Env env;
+    env.script_dirs = {"/nonexistent-zf"};
+    env.release = [&] { put(auto_png, time(nullptr)); };  // written by the game while it ran
+    launch::Request rq;
+    rq.cmd = "/bin/sh -c exit\ 0";
+    const launch::Outcome o = launch::execute(rq, env);
+    settle(c, cx);  // what the player sees first
+    CHECK_EQ(c.row_focus(), 1);
+    launch::apply_after(cx, 0, 1, o);
+    settle(c, cx);
+    CHECK(!ss::plan_active());
+    CHECK(!file_exists(auto_png));
+    CHECK_EQ(c.row_focus(), 1);
+    for (const RecentItem& it : c.recent_items()) CHECK(file_exists(it.shot));
+    CHECK(c.recent_items().size() >= 2 && c.recent_items()[1].name == "Bravo" && c.recent_items()[1].shot.find(".auto") == std::string::npos);
+  }
+
   {  // a state whose ROM is gone (not in the game list, not on disk): its tile is not shown, the next game takes the place
     Ctx cx;
     if (!setup(cx, 720, 720)) return 0;
@@ -314,6 +347,191 @@ int main() {
     c.handle(Action::B, cx);
     c.draw(cx, back);
     CHECK_EQ(back.size(), plain.size());
+  }
+
+  {  // Zenith Next: one row with the last games of every system, newest first; it stays while the carousel moves, and a tile starts its
+     // own system's game (diseno: the card never moves)
+    const std::string nx = g_tmp + "/next";
+    const std::string cp = "cp -rL '" + theme_dir() + "' '" + nx + "'";  // -L: the theme folder may be a link; copy what it points to
+    CHECK(std::system(cp.c_str()) == 0);
+    std::string xml;
+    CHECK(read_file(nx + "/theme.xml", xml));
+    const size_t at = xml.find("<variables>");
+    CHECK(at != std::string::npos);
+    xml.insert(at + 11, "<zenStyle>next</zenStyle>");
+    std::ofstream(nx + "/theme.xml", std::ios::trunc) << xml;
+    const time_t now = time(nullptr);
+    const std::string d = g_tmp + "/roms/savestates/gba";
+    ::mkdir((g_tmp + "/roms/gba").c_str(), 0755);
+    ::mkdir(d.c_str(), 0755);
+    put(d + "/Zelda.state.auto", now - 30);  // newer than every state of "gb"
+    put(d + "/Zelda.state.auto.png", now - 30);
+    Ctx cx;
+    std::string err;
+    Theme th;
+    CHECK(Theme::load(nx, ratio_name(720u, 720u), th, err));
+    CHECK(cx.assets.load_font(th.path(th.str("font")), err));
+    cx.th = th;
+    cx.w = cx.h = 720.0f;
+    cx.sv->cmd.dry_run = true;
+    cx.conf = SystemConf::from_text("", g_tmp + "/system.cfg");
+    CHECK(load_common(cx.th, cx.assets, cx.common, err));
+    cx.systems.push_back(make_system("gb", "retroarch", {"Alpha", "Bravo", "Charlie"}));
+    cx.systems.push_back(make_system("pc", "dosbox", {"Doom"}));
+    System gba = make_system("gba", "retroarch", {"Zelda"});
+    gba.exts = {".gba"};
+    gba.games[0].path = gba.rom_dir + "/Zelda.gba";
+    cx.systems.push_back(std::move(gba));
+    cx.items.push_back(SystemItem{"gb", "Game Boy", 3});
+    cx.items.push_back(SystemItem{"pc", "PC", 1});
+    cx.items.push_back(SystemItem{"gba", "Game Boy Advance", 1});
+    CarouselScreen c(1);  // on "pc", which has nothing to resume
+    settle(c, cx);
+    CHECK_EQ(c.recent_items().size(), size_t(3));
+    CHECK(c.recent_items().size() == 3 && c.recent_items()[0].name == "Zelda" && c.recent_items()[0].sys == 2);  // newest, of another system
+    CHECK(c.recent_items().size() == 3 && c.recent_items()[1].name == "Alpha" && c.recent_items()[1].sys == 0);
+    CHECK(c.recent_items().size() == 3 && c.recent_items()[0].ago.find("GBA") != std::string::npos);  // which console it is
+    // the row is there on a system without states, and moving the carousel does not change it
+    CHECK(c.handle(Action::Down, cx).kind == Transition::None);
+    CHECK_EQ(c.row_focus(), 0);
+    c.handle(Action::B, cx);
+    c.handle(Action::Right, cx);
+    for (int i = 0; i < 40; ++i) c.tick(1.0f / 60.0f, cx);
+    CHECK(c.recent_items().size() == 3 && c.recent_items()[0].name == "Zelda");
+    // A on the tile of "gb" while the carousel is on "gba": the game of "gb"
+    c.handle(Action::Down, cx);
+    c.handle(Action::Right, cx);
+    CHECK_EQ(c.row_focus(), 1);
+    Transition t = c.handle(Action::A, cx);
+    CHECK(t.kind == Transition::Launch);
+    CHECK(has(t.cmd, "Alpha.gb"));
+    CHECK_EQ(t.sys, 0);
+    ss::after_game();
+  }
+
+  // ---- audit of the row (Zenith Next): hidden systems, Kid mode, the same game in two systems, a tile that cannot start ----------------
+  {
+    const std::string nx = g_tmp + "/next";
+    const time_t now = time(nullptr);
+    auto next_ctx = [&](Ctx& cx) {
+      std::string err;
+      Theme th;
+      CHECK(Theme::load(nx, ratio_name(720u, 720u), th, err));
+      CHECK(cx.assets.load_font(th.path(th.str("font")), err));
+      cx.th = th;
+      cx.w = cx.h = 720.0f;
+      cx.sv->cmd.dry_run = true;
+      cx.conf = SystemConf::from_text("", g_tmp + "/system.cfg");
+      CHECK(load_common(cx.th, cx.assets, cx.common, err));
+    };
+    auto add = [&](Ctx& cx, const std::string& name, const std::vector<std::string>& games, bool shown) {
+      System s = make_system(name, "retroarch", games);
+      ::mkdir((g_tmp + "/roms/" + name).c_str(), 0755);
+      ::mkdir((g_tmp + "/roms/savestates/" + name).c_str(), 0755);
+      cx.systems.push_back(std::move(s));
+      if (shown) cx.items.push_back(SystemItem{name, name, uint32_t(games.size()), cx.systems.size() - 1});
+    };
+    auto state = [&](const std::string& sys, const std::string& game, time_t t) {
+      put(g_tmp + "/roms/savestates/" + sys + "/" + game + ".state.auto", t);
+      put(g_tmp + "/roms/savestates/" + sys + "/" + game + ".state.auto.png", t);
+    };
+    ::mkdir((g_tmp + "/roms").c_str(), 0755);
+    ::mkdir((g_tmp + "/roms/savestates").c_str(), 0755);
+
+    {  // a system the user hid (HiddenSystems) has no card: its games are not on the row either
+      Ctx cx;
+      next_ctx(cx);
+      add(cx, "ha", {"Shown"}, true);
+      add(cx, "hb", {"Secret"}, false);  // no item: hidden
+      state("ha", "Shown", now - 600);
+      state("hb", "Secret", now - 10);  // the newest of all
+      CarouselScreen c(0);
+      settle(c, cx);
+      CHECK_EQ(c.recent_items().size(), size_t(1));
+      CHECK(c.recent_items().size() == 1 && c.recent_items()[0].name == "Shown");
+    }
+
+    {  // Kid / Kiosk: the game list is what the mode shows; a ROM that is on the card but not in the list (not a kid game, hidden) has no tile
+      Ctx cx;
+      next_ctx(cx);
+      add(cx, "ka", {"Kid1"}, true);  // "Adult1" is on the card only
+      put(g_tmp + "/roms/ka/Adult1.gb", now);
+      put(g_tmp + "/roms/ka/Kid1.gb", now);
+      state("ka", "Adult1", now - 10);
+      state("ka", "Kid1", now - 600);
+      {
+        CarouselScreen c(0);
+        settle(c, cx);
+        CHECK_EQ(c.recent_items().size(), size_t(2));  // Full mode: the card decides
+      }
+      uimode::apply(EsSettings::from_text("<?xml version=\"1.0\"?>\n<config>\n<string name=\"UIMode\" value=\"Kid\" />\n</config>\n"));
+      CarouselScreen k(0);
+      settle(k, cx);
+      CHECK_EQ(k.recent_items().size(), size_t(1));
+      CHECK(k.recent_items().size() == 1 && k.recent_items()[0].name == "Kid1");
+      uimode::apply(EsSettings::from_text("<?xml version=\"1.0\"?>\n<config>\n</config>\n"));
+    }
+
+    {  // the same game name in two systems: the keys come back to the tile of the one that was started
+      Ctx cx;
+      next_ctx(cx);
+      add(cx, "ta", {"Tetris"}, true);
+      add(cx, "tb", {"Tetris", "Other"}, true);
+      state("ta", "Tetris", now - 100);
+      state("tb", "Tetris", now - 5);  // newest: tile 0
+      state("tb", "Other", now - 900);
+      CarouselScreen c(0);
+      settle(c, cx);
+      CHECK_EQ(c.recent_items().size(), size_t(3));
+      CHECK(c.recent_items().size() == 3 && c.recent_items()[0].sys == 1 && c.recent_items()[1].sys == 0);
+      c.handle(Action::Down, cx);
+      CHECK_EQ(c.row_focus(), 0);
+      Transition t = c.handle(Action::A, cx);  // Tetris of "tb"
+      CHECK(t.kind == Transition::Launch);
+      CHECK_EQ(t.sys, 1);
+      ss::after_game();
+      settle(c, cx);
+      CHECK_EQ(c.row_focus(), 0);  // not on the Tetris of "ta" (tile 1)
+    }
+
+    {  // the words under a tile follow the clock: "1 min ago" is not "1 min ago" an hour later (and the console stays named)
+      Ctx cx;
+      next_ctx(cx);
+      add(cx, "ra", {"Clock"}, true);
+      state("ra", "Clock", now - 30);
+      CarouselScreen c(0);
+      settle(c, cx);
+      CHECK_EQ(c.recent_items().size(), size_t(1));
+      if (c.recent_items().size() == 1) {
+        const std::string first = c.recent_items()[0].ago;
+        CHECK(first.find("RA") != std::string::npos && first.find("1 min") != std::string::npos);
+        CHECK(!c.refresh_ago(cx, time(nullptr)));  // the same minute: nothing to say again
+        CHECK(c.refresh_ago(cx, now + 3 * 3600 + 30));
+        CHECK(c.recent_items()[0].ago.find("3 h") != std::string::npos && c.recent_items()[0].ago.find("RA") != std::string::npos);
+        CHECK(c.refresh_ago(cx, now + 40LL * 86400));  // older than 30 days: only the console
+        CHECK_EQ(c.recent_items()[0].ago, std::string("RA"));
+      }
+    }
+
+    {  // a tile whose game the list does not have (a hidden game): A says so instead of doing nothing, the tile goes, the keys leave the row
+      Ctx cx;
+      next_ctx(cx);
+      add(cx, "na", {"Here"}, true);
+      put(g_tmp + "/roms/na/Ghost.gb", now);  // on the card, not in the list
+      state("na", "Ghost", now - 5);
+      state("na", "Here", now - 50);
+      CarouselScreen c(0);
+      settle(c, cx);
+      CHECK_EQ(c.recent_items().size(), size_t(2));
+      c.handle(Action::Down, cx);
+      CHECK_EQ(c.row_focus(), 0);
+      CHECK(c.handle(Action::A, cx).kind == Transition::None);
+      CHECK_EQ(cx.sv->toasts.items().size(), size_t(1));
+      ::unlink((g_tmp + "/roms/na/Ghost.gb").c_str());
+      settle(c, cx);
+      CHECK_EQ(c.recent_items().size(), size_t(1));
+      CHECK_EQ(c.row_focus(), -1);
+    }
   }
 
   std::string cmd = "rm -rf " + g_tmp;

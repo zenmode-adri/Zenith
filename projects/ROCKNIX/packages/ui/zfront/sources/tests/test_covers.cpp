@@ -116,7 +116,7 @@ void test_failure() {
 
 std::string theme_dir() {
   const char* e = std::getenv("ZF_THEME_DIR");
-  return e ? e : "/home/epsil/zenith-frontend/theme-dark";
+  return e ? e : "/usr/share/zfront/theme-dark";
 }
 
 size_t count_images(const std::vector<Op>& ops) {
@@ -165,7 +165,9 @@ void test_list_screen() {
     cx.async_covers = true;
     ListScreen s2(0, cx);
     ImgId probe = 0;
-    uint32_t bw = uint32_t(cx.th.f("coverW") * 720 + 0.5f), bh = uint32_t(cx.th.f("coverH") * 720 + 0.5f);
+    // the size the detail column asks for: the theme's, on whole cells of the grid (8 px at 720x720; detailed.cpp)
+    const float u = 8.0f;
+    uint32_t bw = uint32_t(std::max(1.0f, std::round(cx.th.f("coverW") * 720 / u)) * u), bh = uint32_t(std::max(1.0f, std::round(cx.th.f("coverH") * 720 / u)) * u);
     std::string cover = path_dir(path_dir(__FILE__)) + "/tests/data/cover-box.png";
     // drop the inline-decoded copy so the async path really has to load it
     cx.assets.end_frame({}, 0);

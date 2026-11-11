@@ -17,7 +17,7 @@
 // N = -99 (its loop never finds a slot); here N is 0.
 //
 // `begin` does the file preparation (a few MB of copying) and remembers what `after_game` must undo once the game ended
-// (called from `launch::apply_after`, one line there): restore the previous autosave, drop the extra copy if the game did not
+// (called from `launch::execute`, one line there): restore the previous autosave, drop the extra copy if the game did not
 // change it, and renumber the slots without holes.
 //
 // Directory listings are cached by (inode, mtime) of the folder: `plain_args` runs for every cursor move (the launch
@@ -72,6 +72,8 @@ struct Plan {
   bool auto_saved = false, png_saved = false;  // a ".bak" was made
   std::string new_slot_file;                   // extra copy of the loaded state
   uint64_t new_slot_hash = 0;
+  uint64_t auto_hash = 0;  // of the loaded state as copied over the autosave
+  bool auto_hashed = false;
 };
 
 /// Arguments to append to the launch command (leading space, or empty) for `pick` (`slot` for Pick::Slot). Does the file
@@ -86,10 +88,18 @@ bool plan_active();
 /// Deletes the state and its screenshot, then renumbers. `copy_to_free_slot` copies it to the next free slot.
 bool remove_state(const System& sys, const Game& g, const State& s);
 bool copy_to_free_slot(const System& sys, const Game& g, const State& s);
+/// `copy_to_free_slot` in two halves, so the file work can run on a worker: `copy_target` (main thread) is the state path the copy
+/// goes to ("" = no free slot); `copy_files` (thread-safe, touches no cache) copies the state and its screenshot; the caller then
+/// calls `invalidate()` on the main thread.
+std::string copy_target(const System& sys, const Game& g, const State& s);
+bool copy_files(const State& s, const std::string& to);
 /// Moves slots down to 0..n-1 without holes (ES `renumberSlots`).
 void renumber(const std::string& dir, const std::string& stem);
 /// A ".bak" left by a game that never reported back (crash, power cut) is put back.
 void recover(const System& sys, const Game& g);
+/// The same on a folder and stem (what `begin` runs first). The autosave that is there is never deleted: a copy of a numbered
+/// state is dropped, anything else is moved to the next free slot. False when nothing was put back.
+bool recover_files(const std::string& dir, const std::string& stem);
 
 /// Bumped every time files changed behind a screen's back (after_game, delete, copy): the manager reloads when it differs.
 unsigned generation();

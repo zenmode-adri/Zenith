@@ -54,3 +54,8 @@
 	"I seq=11 wait=200",
 	"I seq=29 wait=50";
 };
+
+/* Not an original R36S board: no 786 MHz memory step (dArkOSen keeps it off outside those). */
+&dmc_opp_table {
+	/delete-node/ opp-786000000;
+};

@@ -8,7 +8,7 @@
 //     APPLY UPDATE       the update is downloaded: ES quits ("RESTART" = restart the frontend, which does not apply anything);
 //                        here it offers the reboot that really applies it
 // Hidden: CHECK FOR UPDATES (`updates.enabled`) and UPDATE BRANCH (`updates.branch`): no script of this OS reads them, so they
-// would do nothing; CONTENT DOWNLOADER / THE BEZEL PROJECT / torrent / local media (Batocera tools, absent); THEMES (ES's own
+// would do nothing; CONTENT DOWNLOADER / torrent / local media (Batocera tools, absent); THEMES (ES's own
 // theme downloader; zfront has one theme).
 //
 // The download runs outside the process (`cmd.spawn`, status in files under /tmp): the single job worker must not be blocked for
@@ -17,13 +17,17 @@
 #include <sys/stat.h>
 
 #include <algorithm>
+#include <cctype>
 #include <cstdio>
+#include <cstdlib>
 #include <memory>
 
+#include "bezelproject.hpp"
 #include "menu.hpp"
 #include "menu_system.hpp"
 #include "registry.hpp"
 #include "ui_dialogs.hpp"
+#include "ui_prefs.hpp"
 #include "util.hpp"
 
 namespace zf {
@@ -57,6 +61,17 @@ std::string log_tail(size_t max = 64) {
 
 bool is_running() { return file_exists(tmpf(kRun)); }
 
+// curl's `--progress-bar` line ends in "NN.N%": the percentage, or -1 when the log has none yet (checking, verifying, ...).
+int percent_of(const std::string& line) {
+  size_t p = line.rfind('%');
+  if (p == std::string::npos || p == 0) return -1;
+  size_t b = p;
+  while (b > 0 && (std::isdigit(static_cast<unsigned char>(line[b - 1])) || line[b - 1] == '.')) --b;
+  if (b == p) return -1;
+  int v = int(std::atof(line.substr(b, p - b).c_str()));
+  return std::max(0, std::min(100, v));
+}
+
 // A downloaded and verified OTA waits in /storage/.update (rocknix-update removes both files when the checksum fails).
 bool update_waiting() {
   std::vector<std::string> names = list_dir("/storage/.update");
@@ -69,6 +84,8 @@ struct Upd {
   enum Phase { Idle, Checking, Available } phase = Idle;
   std::string version;  // of the update found ("" = unknown / forced)
   bool was_running = false;
+  bool cancelled = false;  // the user stopped the download: the end of the job is not an error
+  float cancel_wait = 0;  // seconds the kill has to work: a download still running after that was not stopped
   float starting = 0;  // seconds left to wait for the status files of a download that was just started
 };
 
@@ -95,6 +112,19 @@ void start_download(Ctx& cx) {
   cx.sv->cmd.spawn("rm -f " + rc + " " + log + "; touch " + run + "; ( rocknix-update > " + log + " 2>&1; echo $? > " + rc + "; rm -f " + run + " )");
 }
 
+// Stops the download without leaving anything half done. The script has no cancel: it is killed (the script, then curl, which would
+// outlive it), and what it leaves is removed the way its own failure path does (`rm` of the partial file, `clear_redirect_part`).
+// A .tar WITH its .sha256 is a complete, verified update: it stays (init only applies those, and the menu offers the reboot).
+void cancel_download(Ctx& cx) {
+  std::string clean;
+  for (const char* d : {"/storage/.update", "/storage/roms/.update"}) {
+    std::string dir = d;
+    clean += "for f in " + dir + "/*.tar; do [ -e \"$f\" ] && [ ! -e \"$f.sha256\" ] && rm -f \"$f\"; done; ";
+  }
+  clean += "rm -f /storage/.update/redirect_part; ";
+  cx.sv->cmd.spawn("pkill -f '^/bin/sh /usr/bin/[r]ocknix-update'; pkill -f '[c]url --progress-bar'; sleep 1; " + clean);
+}
+
 class UpdatesMenu : public Menu {
  public:
   UpdatesMenu(MenuSpec s, std::shared_ptr<Upd> u) : Menu(std::move(s)), u_(std::move(u)) {}
@@ -102,6 +132,10 @@ class UpdatesMenu : public Menu {
   bool tick(float dt, Ctx& cx) override {
     if (u_->starting > 0) u_->starting -= dt;
     bool run = is_running();
+    if (run && u_->cancelled && (u_->cancel_wait -= dt) <= 0) {  // pkill did not kill it: it is not a cancelled download any more
+      u_->cancelled = false;
+      cx.sv->toasts.push(tr("COULD NOT CANCEL THE DOWNLOAD"), 4000);
+    }
     if (run) {
       std::string t = log_tail();
       if (t != last_tail_) {
@@ -112,12 +146,17 @@ class UpdatesMenu : public Menu {
     if (run != u_->was_running) {
       u_->was_running = run;
       if (!run) {  // finished: the exit status tells how
+        // rocknix-update resets `updates.force` in system.cfg itself: read the file again so FORCE NEXT UPDATE does not stay ON
+        if (!cx.conf.path().empty()) cx.conf = SystemConf::load(cx.conf.path());
         std::string rc = read_line_plain(tmpf(kRc));
-        if (rc == "0") {
+        if (u_->cancelled) {
+          u_->cancelled = false;
+          cx.sv->toasts.push(tr("DOWNLOAD CANCELLED"), 3000);
+        } else if (rc == "0") {
           cx.sv->toasts.push(tr("UPDATE IS READY"), 3000);
         } else {
           std::string tail = log_tail(80);
-          cx.sv->toasts.push(std::string(tr("AN ERROR OCCURRED")) + (tail.empty() ? "" : ": " + tail), 6000);
+          cx.sv->toasts.push(std::string(tr("THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN.")) + (tail.empty() ? "" : " (" + tail + ")"), 7000);
         }
       }
       refresher()();
@@ -150,6 +189,7 @@ std::unique_ptr<Screen> make_updates() {
   s.title = tr("UPDATES & DOWNLOADS");
   s.title_key = N_("UPDATES & DOWNLOADS");
   s.build = [u](MenuBuilder& m, Ctx& cx) {
+    if (bezel::available()) m.submenu(tr("THE BEZEL PROJECT"), "menu.bezelproject");
     if (!have_bin("rocknix-update")) {
       m.info(tr("No update source available"));
       return;
@@ -159,7 +199,26 @@ std::unique_ptr<Screen> make_updates() {
 
     if (is_running()) {
       std::string t = log_tail();
-      m.info(tr("UPDATING"), t.empty() ? std::string("...") : t);
+      int pct = percent_of(t);
+      if (pct >= 0) {
+        // the real slider bar, read only: its value is the download, not the user's (left/right change nothing)
+        m.slider(tr("UPDATING"), 0, 100, 1, [] { return std::max(0, percent_of(log_tail())); }, [](int) {})
+            .format([](int v) { return std::to_string(v) + "%"; });
+      } else {
+        m.info(tr("UPDATING"), t.empty() ? std::string("...") : t);
+      }
+      m.action(tr("CANCEL DOWNLOAD"), [u]() {
+        ui::ConfirmOpts o;
+        o.danger = true;
+        return ui::confirm(tr("CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."), [u](Ctx& c) {
+          if (is_running()) {
+            u->cancelled = true;
+            u->cancel_wait = 8.0f;
+            cancel_download(c);
+          }
+          return Transition::none();
+        }, o);
+      }).danger().with_id("cancel");
     } else if (update_waiting()) {
       m.action(tr("APPLY UPDATE"), []() {
         ui::ConfirmOpts o;
@@ -187,7 +246,8 @@ std::unique_ptr<Screen> make_updates() {
             return Transition::none();
           }, o);
         }
-        if (!cx.status.wifi) return ui::message(tr("YOU ARE NOT CONNECTED TO A NETWORK"));
+        // the raw status: hiding the network indicator (ES: ShowNetworkIndicator) must not mean "not connected"
+        if (!ui_prefs::raw_wifi(cx.status.wifi)) return ui::message(tr("YOU ARE NOT CONNECTED TO A NETWORK"));
         u->phase = Upd::Checking;
         auto sv = cx.sv;
         struct Res {

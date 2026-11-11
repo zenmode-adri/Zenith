@@ -1,0 +1,29 @@
+#!/bin/bash
+# SPDX-License-Identifier: GPL-2.0
+# Samba asks for a user and a password, the ones of SSH: "root" and the root password (System settings > ROOT PASSWORD).
+# Runs before smbd starts (smbd.service ExecStartPre):
+#  * /storage/.config/smb.conf is copied from /usr/config at the first boot and never again, so an OTA alone would keep the old
+#    default that let anyone on the network in as root without a password. A copy identical to that old default is replaced by
+#    the new one; a copy the user edited is left alone.
+#  * root needs a Samba password: setrootpass writes it when the root password changes, but a console where it never ran has
+#    none (seen on an R36 Ultra), and without guests nobody could log in.
+# The paths can be moved for the tests (samba-secure-test.sh).
+. "${SMB_PROFILE:-/etc/profile.d/001-functions}"
+
+CONF="${SMB_USER_CONF:-/storage/.config/smb.conf}"
+DEFAULT="${SMB_DEFAULT_CONF:-/usr/config/smb.conf}"
+PASSDB="${SMB_PASSDB:-/storage/.cache/samba/smbpasswd}"
+OLD_DEFAULT_MD5="322b4e7deab3924ee71fd5c796791001"  # the guest-as-root smb.conf of every image before this change
+
+if [ -f "${CONF}" ] && [ -f "${DEFAULT}" ] && [ "$(md5sum <"${CONF}" | cut -d' ' -f1)" = "${OLD_DEFAULT_MD5}" ]; then
+  cp "${DEFAULT}" "${CONF}"
+fi
+
+if ! grep -q '^root:' "${PASSDB}" 2>/dev/null; then
+  PW="$(get_setting root.password)"
+  if [ -n "${PW}" ]; then
+    mkdir -p "$(dirname "${PASSDB}")"
+    printf '%s\n%s\n' "${PW}" "${PW}" | smbpasswd -s -a root >/dev/null 2>&1
+  fi
+fi
+exit 0

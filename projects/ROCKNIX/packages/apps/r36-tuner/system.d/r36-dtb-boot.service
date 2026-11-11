@@ -1,0 +1,17 @@
+[Unit]
+Description=R36 Tuner: DTB boot safety (confirms or undoes a tuned DTB)
+# MUY temprano: si el arranque anterior con tuned.dtb no llego a confirmarse, vuelve al DTB de fabrica y reinicia.
+# Solo actua si el tuner dejo /flash/tuner/state o /flash/tuned.dtb (sin ellos, no se arranca ni un proceso).
+DefaultDependencies=no
+RequiresMountsFor=/flash
+ConditionPathExists=|/flash/tuner/state
+ConditionPathExists=|/flash/tuned.dtb
+Before=sysinit.target
+Conflicts=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/r36-dtb boot-start
+
+[Install]
+WantedBy=sysinit.target

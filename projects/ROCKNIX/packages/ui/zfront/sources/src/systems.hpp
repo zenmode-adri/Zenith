@@ -5,7 +5,9 @@
 // `System::open()` when the user enters it. A `Game` carries only light metadata; description and images are asked
 // with `gamelist_details` when the game is selected.
 #pragma once
+#include <cstdint>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -19,7 +21,23 @@ struct Game {
   std::string path;
   /// Light metadata (flags, rating, year, playcount...). desc/images: `gamelist_details` on demand.
   GameMeta meta;
+  /// Only in the games of a collection system (colsys.hpp): the name of the system the game really belongs to (interned, process
+  /// lifetime; empty in every ordinary game) and its index in that system's `games` when the collection was built (a hint: the path
+  /// decides). Launching, favourites, metadata and play counts always go to that system.
+  std::string_view src_system;
+  uint32_t src_idx = 0;
 };
+
+/// How the games are read (ES ShowHiddenFiles, IgnoreLeadingArticles). Process wide: `listopts::prepare` sets it from es_settings.cfg
+/// before a system is opened; the default is ES's own.
+struct LoadOptions {
+  bool show_hidden = false;
+  bool ignore_articles = true;
+};
+void set_load_options(const LoadOptions& o);
+LoadOptions load_options();
+/// The options as one number: 0 = the defaults. `System::load_opts` keeps the tag the games were read with.
+uint8_t load_tag();
 
 struct System {
   std::string name, fullname, theme, command;
@@ -39,6 +57,14 @@ struct System {
   size_t count = 0;
   /// True once `open()` (or an eager load) ran, even if every game turned out hidden.
   bool loaded = false;
+  /// `load_tag()` at the time the games were read: a different one means they must be read again (`listopts::prepare`).
+  uint8_t load_opts = 0;
+  /// The gamelist was read up to a point where it stops (truncated or malformed): the games before it are there, the rest is not.
+  /// `damaged_told`: the toast that names the system was already shown.
+  bool gamelist_damaged = false, damaged_told = false;
+  /// An automatic or custom collection shown as a carousel card (colsys.hpp). Such systems live in `Ctx::cols`, never in `Ctx::systems`;
+  /// their `games` are copies that point to the real system (`Game::src_system`).
+  bool collection = false;
 
   /// After `gamelist_update_after_play`/`set_favorite` rewrote the gamelist: shifts the byte spans of the loaded
   /// games so `gamelist_details` keeps seeking to the right place (the meta of the edited game itself is stale).
@@ -67,7 +93,8 @@ bool load_systems_text(const std::string& xml, const std::string& roms_root, boo
 
 /// Games of a ROM folder in ES order (sortname/name, case-insensitive, ignoring a leading "A", "AN" or "THE"); hidden
 /// ones removed.
-std::vector<Game> load_games(const std::string& dir, const std::vector<std::string>& exts, const std::string& gamelist);
+/// `damaged` (optional) tells whether the gamelist file is cut short or malformed (it does not open, or is blank: not damaged).
+std::vector<Game> load_games(const std::string& dir, const std::vector<std::string>& exts, const std::string& gamelist, bool* damaged = nullptr);
 
 /// Emulator and core as ES picks them: per-game key, then per-system key (each validated against the system's
 /// emulators), then the `default="true"` ones (`FileData::getlaunchCommand`, `SystemData::getEmulator/getCore`).
@@ -75,5 +102,7 @@ std::pair<std::string, std::string> resolve_emu(const System& sys, const Game& g
 
 /// Sort key ES uses for a game name.
 std::string sort_key(const std::string& sort);
+/// Same, with the leading article kept when `strip_articles` is false.
+std::string sort_key_opt(const std::string& sort, bool strip_articles);
 
 }  // namespace zf

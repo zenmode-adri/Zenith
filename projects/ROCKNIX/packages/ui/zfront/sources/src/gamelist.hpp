@@ -28,6 +28,7 @@ struct GameMeta {
   uint8_t rating_pct = 0;     // 0..100, 0 = not rated
   bool favorite = false;
   bool hidden = false;
+  bool kid = false;  // `<kidgame>` (ES Kid mode shows only these; absent = false)
   uint32_t gametime = 0;  // seconds played (`<gametime>`)
 
   float rating() const { return float(rating_pct) / 100.0f; }
@@ -42,6 +43,8 @@ struct GameDetails {
   std::string desc;
   std::string image;      // absolute path or empty
   std::string thumbnail;  // absolute path or empty
+  std::string video;      // absolute path or empty (list preview, video screensaver)
+  std::string marquee;    // absolute path or empty (screensaver game info)
 };
 
 /// Equal strings share one copy for the whole process (genre/players have a handful of distinct values).
@@ -94,6 +97,9 @@ GameDetails gamelist_details(const std::string& xml_path, const std::string& rom
 /// shift the spans of the games already loaded (`System::apply_edit`).
 struct GamelistEdit {
   uint64_t begin = 0, old_len = 0, new_len = 0;
+  /// Byte range (after the edit) of a `<game>` element this edit CREATED (elem_begin == elem_end: none): lets the caller give a game that had no
+  /// entry its span, so its details can be read without reloading.
+  uint64_t elem_begin = 0, elem_end = 0;
 };
 
 /// After a successful run: playcount + 1, lastplayed = `now_iso` (`YYYYMMDDTHHMMSS`, local time) and, when `add_secs`

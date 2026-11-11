@@ -1,4 +1,5 @@
 #include "gamelist.hpp"
+#include "gamelist_game.hpp"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -327,7 +328,7 @@ uint64_t pack_iso(std::string_view s) {
 
 // Raw (undecoded) values of one game while its children are visited. Last occurrence of a tag wins.
 struct RawGame {
-  std::string_view path, name, sortname, genre, players, rating, date, fav, hid, pc, lp, gt, desc, image, thumb;
+  std::string_view path, name, sortname, genre, players, rating, date, fav, hid, kid, pc, lp, gt, desc, image, thumb, video, marquee;
   bool has_path = false;
 };
 
@@ -347,6 +348,7 @@ inline void take_field(RawGame& g, std::string_view tag, std::string_view raw, b
     case 5:
       if (tag == "genre") g.genre = raw;
       else if (want_heavy && tag == "image") g.image = raw;
+      else if (want_heavy && tag == "video") g.video = raw;
       break;
     case 6:
       if (tag == "rating") g.rating = raw;
@@ -354,6 +356,8 @@ inline void take_field(RawGame& g, std::string_view tag, std::string_view raw, b
       break;
     case 7:
       if (tag == "players") g.players = raw;
+      else if (tag == "kidgame") g.kid = raw;
+      else if (want_heavy && tag == "marquee") g.marquee = raw;
       break;
     case 8:
       if (tag == "sortname") g.sortname = raw;
@@ -553,6 +557,7 @@ class Scanner {
     if (parse_float(g.rating, r) && std::isfinite(r)) m.rating_pct = uint8_t(r <= 0 ? 0 : (r >= 1 ? 100 : int(r * 100.0f + 0.5f)));
     m.favorite = ieq_true(g.fav);
     m.hidden = ieq_true(g.hid);
+    m.kid = ieq_true(g.kid);
     long pc = 0;
     if (parse_int(g.pc, pc) && pc > 0) m.playcount = pc > 0x7fffffffL ? 0x7fffffffu : uint32_t(pc);
     m.lastplayed = pack_iso(g.lp);
@@ -627,6 +632,10 @@ GameDetails details_from(std::string_view el, const std::string& rom_dir, const 
   std::string_view img = text_of(g.image, sp), th = text_of(g.thumb, sd);
   if (!img.empty()) d.image = resolve_rel_path(img, rom_dir);
   if (!th.empty()) d.thumbnail = resolve_rel_path(th, rom_dir);
+  std::string sv, sm;
+  std::string_view vid = text_of(g.video, sv), mq = text_of(g.marquee, sm);
+  if (!vid.empty()) d.video = resolve_rel_path(vid, rom_dir);
+  if (!mq.empty()) d.marquee = resolve_rel_path(mq, rom_dir);
   return d;
 }
 
@@ -806,6 +815,14 @@ bool apply(const std::string& xml_path, const std::string& rom_dir, const std::s
     if (add_secs) f.push_back({"gametime", std::to_string(add_capped(0, add_secs))});
     return "<?xml version=\"1.0\"?>\n<gameList>\n" + new_block(rel, f) + "</gameList>\n";
   };
+  // the `<game>` element a text holds, as a range of the file once the text sits at `base`
+  auto mark = [&](const std::string& txt, uint64_t base) {
+    size_t a = txt.find("<game>"), z = txt.rfind("</game>");
+    if (edit && a != std::string::npos && z != std::string::npos) {
+      edit->elem_begin = base + a;
+      edit->elem_end = base + z + 7;
+    }
+  };
   Fd f(::open(xml_path.c_str(), O_RDONLY | O_CLOEXEC));
   if (f.fd < 0) {
     if (errno != ENOENT) {
@@ -814,6 +831,7 @@ bool apply(const std::string& xml_path, const std::string& rom_dir, const std::s
     }
     std::string doc = new_doc();
     if (edit) *edit = {0, 0, doc.size()};
+    mark(doc, 0);
     return splice_file(xml_path, -1, 0, 0, doc, err);
   }
   bool found = false;
@@ -837,6 +855,7 @@ bool apply(const std::string& xml_path, const std::string& rom_dir, const std::s
     if (read_file_range(xml_path, 0, size_t(st.st_size), t) && trim(t).empty()) {  // empty / blank file: start a document
       std::string doc = new_doc();
       if (edit) *edit = {0, uint64_t(st.st_size), doc.size()};
+      mark(doc, 0);
       return splice_file(xml_path, -1, 0, 0, doc, err);
     }
   }
@@ -884,6 +903,7 @@ bool apply(const std::string& xml_path, const std::string& rom_dir, const std::s
   }
   if (!splice_file(xml_path, f.fd, begin, old_len, repl, err)) return false;
   if (edit) *edit = {begin, old_len, repl.size()};
+  if (!found) mark(repl, begin);
   return true;
 }
 
@@ -910,6 +930,7 @@ struct Rep {
 
 // Like `splice_file` for several non-overlapping replacements sorted by `begin`.
 bool splice_multi(const std::string& path, int in, const std::vector<Rep>& reps, std::string& err) {
+  if (writes_blocked()) return true;  // preview / dry-run: the file is never touched
   std::string tmp = path + ".zfront-tmp";
   int out = ::open(tmp.c_str(), O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC, 0644);
   if (out < 0) {
@@ -1069,6 +1090,118 @@ bool gamelist_edit_fields(const std::string& xml_path, const std::string& rom_di
   if (reps.empty()) return true;
   std::sort(reps.begin(), reps.end(), [](const Rep& a, const Rep& b) { return a.begin < b.begin; });
   return splice_multi(xml_path, f.fd, reps, err);
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// one game: set fields, remove, read (gamelist_game.hpp)
+
+bool gamelist_set_fields(const std::string& xml_path, const std::string& rom_dir, const std::string& rom, const std::vector<std::pair<std::string, std::string>>& fields,
+                         std::string& err, GamelistEdit* edit) {
+  if (fields.empty()) return true;
+  return apply(xml_path, rom_dir, rom, fields, false, 0, err, edit);
+}
+
+bool gamelist_remove_game(const std::string& xml_path, const std::string& rom_dir, const std::string& rom, std::string& err, GamelistEdit* edit) {
+  if (edit) *edit = GamelistEdit();
+  Fd f(::open(xml_path.c_str(), O_RDONLY | O_CLOEXEC));
+  if (f.fd < 0) {
+    if (errno == ENOENT) return true;
+    err = xml_path + ": cannot open";
+    return false;
+  }
+  bool found = false;
+  uint64_t fb = 0, fe = 0;
+  auto cb = [&](const GameEntry& en) {
+    if (resolve_rel_path(en.path, rom_dir) == rom) {
+      found = true;
+      fb = en.begin;
+      fe = en.end;
+    }
+  };
+  Window w(f.fd);
+  Scanner sc;
+  GamelistInfo info = sc.run(w, EntryFn::of(cb));
+  if (!info.ok || info.skipped) {
+    err = xml_path + (info.ok ? ": has an oversized <game> element, not modified" : ": malformed gamelist.xml, not modified");
+    return false;
+  }
+  if (!found) return true;
+  if (fe <= fb) {
+    err = xml_path + ": unsupported <game> element";
+    return false;
+  }
+  // take the indentation before the element and the line break after it, so no blank line stays
+  uint64_t b = fb, e = fe;
+  std::string before, after;
+  size_t back = size_t(std::min<uint64_t>(fb, 32));
+  if (back && read_file_range(xml_path, fb - back, back, before)) {
+    size_t n = 0;
+    while (n < before.size() && (before[before.size() - 1 - n] == '\t' || before[before.size() - 1 - n] == ' ')) ++n;
+    bool at_line_start = n == before.size() ? fb - back == 0 : before[before.size() - 1 - n] == '\n';
+    if (at_line_start) b = fb - n;
+  }
+  if (read_file_range(xml_path, fe, 2, after)) {
+    if (after.compare(0, 2, "\r\n") == 0) e += 2;
+    else if (!after.empty() && after[0] == '\n') e += 1;
+  }
+  if (!splice_file(xml_path, f.fd, b, e - b, std::string(), err)) return false;
+  if (edit) *edit = {b, e - b, 0};
+  return true;
+}
+
+namespace {
+
+bool fields_from(std::string_view el, const std::string& rom_dir, const std::string& rom, const std::vector<std::string>& tags, std::map<std::string, std::string>& out) {
+  const char* p = el.data();
+  const char* end = p + el.size();
+  if (el.size() < 6 || el[0] != '<') return false;
+  std::string_view name;
+  bool self = false;
+  if (open_tag(p, end, name, self) != St::Ok || name != "game" || self) return false;
+  std::string path;
+  std::map<std::string, std::string> got;
+  St r = game_body(p, end, [&](std::string_view tag, std::string_view raw, bool nested, const char*, const char*) {
+    if (nested) return;
+    std::string scratch;
+    std::string v(text_of(raw, scratch));
+    if (tag == "path") {
+      path = v;
+      return;
+    }
+    for (const std::string& t : tags)
+      if (tag == t) got[t] = v;
+  });
+  if (r != St::Ok || path.empty() || resolve_rel_path(path, rom_dir) != rom) return false;
+  out = std::move(got);
+  return true;
+}
+
+}  // namespace
+
+std::map<std::string, std::string> gamelist_read_fields(const std::string& xml_path, const std::string& rom_dir, const std::string& rom, const GameMeta& meta,
+                                                        const std::vector<std::string>& tags) {
+  std::map<std::string, std::string> out;
+  uint32_t s = meta.span_begin, e = meta.span_end;
+  if (e > s && e - s <= (1u << 20)) {
+    std::string buf;
+    if (read_file_range(xml_path, s, e - s, buf) && fields_from(buf, rom_dir, rom, tags, out)) return out;
+  }
+  uint64_t fb = 0, fe = 0;
+  bool found = false;
+  auto cb = [&](const GameEntry& en) {
+    if (resolve_rel_path(en.path, rom_dir) == rom) {
+      found = true;
+      fb = en.begin;
+      fe = en.end;
+    }
+  };
+  gamelist_scan_file(xml_path, EntryFn::of(cb));
+  if (!found || fe <= fb || fe - fb > (1u << 20)) return out;
+  std::string buf;
+  if (!read_file_range(xml_path, fb, size_t(fe - fb), buf)) return out;
+  out.clear();
+  fields_from(buf, rom_dir, rom, tags, out);
+  return out;
 }
 
 }  // namespace zf

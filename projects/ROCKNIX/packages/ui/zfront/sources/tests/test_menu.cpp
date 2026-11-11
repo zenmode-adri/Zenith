@@ -274,6 +274,7 @@ int main() {
       m.submenu("ALSO MISSING", "test.menu.missing2");
     };
     Menu m(s);
+    CHECK(m.repeat_profile().stages == kMenu.stages);  // a held direction in a menu never accelerates without end
     press(m, cx, Action::Left);
     CHECK_EQ(m.size(), size_t(1));
     CHECK_EQ(m.entry(0).label, std::string("PRESENT"));
@@ -323,6 +324,19 @@ int main() {
     // message: a single OK button, A and B close it
     Transition t5 = ui::message("hello");
     CHECK(t5.screen->handle(Action::A, cx).kind == Transition::Pop);
+    // Start leaves any dialog like B and confirms nothing
+    {
+      int ran = 0;
+      Transition ts = ui::confirm("Q", [&ran](Ctx&) { ++ran; return Transition::none(); });
+      ts.screen->handle(Action::Left, cx);  // focus on YES
+      CHECK(ts.screen->handle(Action::Start, cx).kind == Transition::Pop);
+      CHECK_EQ(ran, 0);
+      CHECK(t5.screen->handle(Action::Start, cx).kind == Transition::Pop);
+      int picked = 0;
+      Transition tc = ui::choose("T", {{"a", "A"}, {"b", "B"}}, "a", [&picked](Ctx&, const std::string&) { ++picked; });
+      CHECK(tc.screen->handle(Action::Start, cx).kind == Transition::Pop);
+      CHECK_EQ(picked, 0);
+    }
   }
 
   // ---- on-screen keyboard
@@ -361,10 +375,33 @@ int main() {
     CHECK_EQ(k->layer(), 2);
     k->handle(Action::A, cx);  // back to letters
     CHECK_EQ(k->layer(), 0);
+    // R: the accents layer; the cursor stays on row 1, column 0 (upper case A-acute), row 2 starts with a-grave
+    k->handle(Action::R, cx);
+    CHECK_EQ(k->layer(), 3);
+    k->handle(Action::Y, cx);  // SHIFT leaves the accents for the upper case letters
+    CHECK_EQ(k->layer(), 1);
+    k->handle(Action::R, cx);
+    k->handle(Action::R, cx);
+    CHECK_EQ(k->layer(), 0);
     CHECK_EQ(done, 0);
     CHECK(k->handle(Action::Start, cx).kind == Transition::Pop);
     CHECK_EQ(done, 1);
     CHECK_EQ(got, std::string("abq W"));
+    {  // typing an accent: R, A on the first key of row 1 (A-acute), Down, A (a-grave)
+      int done2 = 0;
+      std::string got2;
+      ui::KeyboardOpts o2;
+      o2.title = "NAME";
+      Transition t2 = ui::keyboard(o2, "", [&](Ctx&, const std::string& s) { got2 = s, ++done2; });
+      auto* k2 = static_cast<ui::KeyboardScreen*>(t2.screen.get());
+      k2->handle(Action::R, cx);
+      k2->handle(Action::A, cx);
+      k2->handle(Action::Down, cx);
+      k2->handle(Action::A, cx);
+      CHECK_EQ(k2->text(), std::string("\xC3\x81\xC3\xA0"));
+      k2->handle(Action::Start, cx);
+      CHECK_EQ(done2, 1);
+    }
     // B deletes one letter at a time and, with the text empty, cancels and closes without calling `on_done`
     {
       int d2 = 0;
@@ -579,6 +616,34 @@ int main() {
     CHECK(press(m, cx, Action::B).kind == Transition::Pop);
   }
 
+  // ---- info rows above the first selectable one stay reachable: the view shows as much of them as the cursor allows (a report such
+  // as CHECK LIBRARY put its totals there and they could not be seen, 9-nov)
+  {
+    const std::string dir = "/usr/share/zfront/theme-dark";
+    if (is_dir(dir)) {
+      Ctx cx;
+      std::string err;
+      cx.w = 720.0f;
+      cx.h = 720.0f;
+      CHECK(Theme::load(dir, ratio_name(720, 720), cx.th, err));
+      CHECK(cx.assets.load_font(cx.th.path(cx.th.str("font")), err));
+      MenuSpec s;
+      s.title = "REPORT";
+      s.build = [](MenuBuilder& mb, Ctx&) {
+        for (int i = 0; i < 30; ++i) mb.info("ROW " + std::to_string(i), "v");
+        mb.action("FIX IT", [] {});
+        for (int i = 0; i < 10; ++i) mb.action("MORE " + std::to_string(i), [] {});
+      };
+      Menu lm(s);
+      std::vector<Op> tmp;
+      lm.draw(cx, tmp);
+      CHECK_EQ(lm.cursor(), 30);
+      const float bottom = lm.row_top(30) + lm.row_h(30);
+      CHECK(lm.scroll_target() + lm.viewport_h() + 0.5f >= bottom);                   // the cursor is on screen
+      CHECK(lm.scroll_target() <= bottom - lm.viewport_h() + lm.row_h(30) + 0.5f);  // and as low as it can be: the rows above show
+    }
+  }
+
   // ---- an action may return any transition
   {
     Ctx cx;
@@ -613,7 +678,7 @@ int main() {
 
   // ---- drawing (needs the real theme and font): every state at the four sizes, stable op counts
   {
-    const std::string dir = "/home/epsil/zenith-frontend/theme-dark";
+    const std::string dir = "/usr/share/zfront/theme-dark";
     if (is_dir(dir)) {
       const unsigned sizes[4][2] = {{480, 320}, {640, 480}, {720, 405}, {720, 720}};
       for (const auto& wh : sizes) {
@@ -623,6 +688,19 @@ int main() {
         cx.h = float(wh[1]);
         CHECK(Theme::load(dir, ratio_name(wh[0], wh[1]), cx.th, err));
         CHECK(cx.assets.load_font(cx.th.path(cx.th.str("font")), err));
+        {  // a password field shows L in the help, and every prompt it lists fits the bar
+          ui::KeyboardOpts po;
+          po.title = "PASSWORD";
+          po.password = true;
+          Transition tp = ui::keyboard(po, "", [](Ctx&, const std::string&) {});
+          ui::KeyboardOpts no;
+          no.title = "PASSWORD";
+          Transition tn = ui::keyboard(no, "", [](Ctx&, const std::string&) {});
+          std::vector<Op> op, on;
+          tp.screen->draw(cx, op);
+          tn.screen->draw(cx, on);
+          CHECK_EQ(op.size(), on.size());  // seven prompts each: none of them dropped for lack of width (eight were)
+        }
         auto f = std::make_shared<Fixture>();
         auto m = make(f);
         std::vector<Op> a1, a2;
@@ -669,9 +747,10 @@ int main() {
             if (hits_title || straddles) std::printf("[menu overlay] %ux%u '%s': pill (%g,%g,%g,%g) title (%g..%g, %g..%g) line %g\n", wh[0], wh[1], title, ob.x, ob.y, ob.w, ob.h, hb.title_x0, hb.title_x1, hb.title_y0, hb.title_y1, hb.line_y);
             CHECK(!hits_title);
             CHECK(!straddles);
-            // a short title leaves room in the header band: there the pill sits (the 3:2 theme slot would cut the hairline)
-            if (title == titles[0] && wh[0] == 480 && wh[1] == 320) CHECK(ob.y + ob.h <= hb.line_y);
-            // a toast sits centred in the free band above the help pill: never over the header, never into the help bar
+            // (on the grid the header band is four cells: at 480x320 the volume pill is taller than that, so it sits under the hairline,
+            // clear of the title, as with a long title)
+            // a toast sits centred at the top, in the slot below the OSD pill and the header hairline: never over the title or the
+            // volume bar, never into the help bar
             cx.sv->toasts.push("Restart the front-end to apply the changes.", 60000);
             tmp.clear();
             draw_toasts(cx, tmp);  // reads and clears the header box
@@ -684,10 +763,12 @@ int main() {
               x0 = std::min(x0, op.x), x1 = std::max(x1, op.x + op.w);
               y0 = std::min(y0, op.y), y1 = std::max(y1, op.y + op.h);
             }
-            if (!(y1 <= help_top && y0 >= tm.list_top && std::fabs((x0 + x1) - float(cx.w)) <= 2.0f))
-              std::printf("[menu toast] %ux%u: toast x %g..%g y %g..%g, help pill top %g, list top %g\n", wh[0], wh[1], x0, x1, y0, y1, help_top, tm.list_top);
-            CHECK(y1 <= help_top);               // above the help pill
-            CHECK(y0 >= tm.list_top);            // below the header
+            if (!(y1 <= help_top && y0 >= ob.y + ob.h && y0 >= hb.line_y && std::fabs((x0 + x1) - float(cx.w)) <= 2.0f))
+              std::printf("[menu toast] %ux%u: toast x %g..%g y %g..%g, help pill top %g, OSD bottom %g, hairline %g\n", wh[0], wh[1], x0, x1, y0, y1, help_top, ob.y + ob.h, hb.line_y);
+            CHECK(y1 <= help_top);               // never into the help bar
+            CHECK(y0 >= ob.y + ob.h);            // below the OSD pill
+            CHECK(y0 >= hb.line_y);              // below the header hairline
+            CHECK(y0 < float(cx.h) * 0.5f);      // starts in the TOP half: it used to sit above the help bar and ran into the last row
             CHECK(std::fabs((x0 + x1) - float(cx.w)) <= 2.0f);  // centred
           }
         }
@@ -712,6 +793,8 @@ int main() {
         d.clear();
         kb.screen->draw(cx, d);
         CHECK(d.size() > 100);
+        for (const Op& o : d)  // with SELECT = cancel in its help (six prompts) nothing leaves the screen, 480x320 included
+          if (o.kind == Op::Image) CHECK(o.x >= -0.5f && o.x + o.w <= cx.w + 0.5f);
         Transition ch = ui::choose("T", {{"a", "A"}, {"b", "B"}}, "a", nullptr);
         d.clear();
         ch.screen->draw(cx, d);

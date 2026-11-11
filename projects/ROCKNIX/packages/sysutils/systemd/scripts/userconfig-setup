@@ -47,13 +47,7 @@ then
   if [ -e "/usr/bin/emulationstation" ]
   then
     tocon "Installing themes..."
-    mkdir -p /storage/.config/emulationstation/themes  >/dev/null
-    ### Zenith bundles several themes (the Zenith light theme is the default); link each so it shows up in the ES theme menu.
     rm -f /storage/.config/emulationstation/themes/system-theme  >/dev/null 2>&1
-    for es_theme in es-theme-zenith es-theme-zenith-dark es-theme-art-book-next es-theme-iconic es-theme-xmb-fcamod es-theme-techdweeb
-    do
-      ln -sfn /usr/share/themes/${es_theme} /storage/.config/emulationstation/themes/${es_theme}  >/dev/null 2>&1
-    done
 
     ### Link the game controller database so it is managed with OS updates.
     tocon "Configuring controller database..."
@@ -79,6 +73,21 @@ else
     echo "${QUIRK_DEVICE}" > /storage/.configured
     sync
   fi
+fi
+
+### Zenith bundles several themes (the Zenith light theme is the default); link each so it shows up in the ES theme menu.
+### On every boot: an update can bring a new theme, and the first configuration only runs once. A folder of the user with that name stays.
+if [ -e "/usr/bin/emulationstation" ]
+then
+  mkdir -p /storage/.config/emulationstation/themes  >/dev/null 2>&1
+  for es_theme in es-theme-zenith es-theme-zenith-dark es-theme-zenith-next es-theme-zenith-next-dark es-theme-art-book-next es-theme-iconic es-theme-xmb-fcamod es-theme-techdweeb
+  do
+    es_link="/storage/.config/emulationstation/themes/${es_theme}"
+    if [ -L "${es_link}" ] || [ ! -e "${es_link}" ]
+    then
+      [ "$(readlink "${es_link}")" = "/usr/share/themes/${es_theme}" ] || ln -sfn "/usr/share/themes/${es_theme}" "${es_link}"  >/dev/null 2>&1
+    fi
+  done
 fi
 
 if [ ! -e "/storage/.cache/ld.so.cache" ]

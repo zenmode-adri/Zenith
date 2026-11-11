@@ -150,6 +150,7 @@ void load_shader_list() {
   walk(env().rooted(env().shaders_dir), "", shader_exts(), v, 0);
   std::sort(v.begin(), v.end());
   std::lock_guard<std::mutex> lk(c.m);
+  if (c.loaded) return;  // a second job that ended late: the menu may be reading `c.v` (a reference) right now, never reassign it
   c.v = std::move(v);
   c.loaded = true;
 }
@@ -168,6 +169,7 @@ void load_filter_list() {
   walk(env().rooted(env().filters_dir), "", {".filt"}, v, 0);
   std::sort(v.begin(), v.end());
   std::lock_guard<std::mutex> lk(c.m);
+  if (c.loaded) return;  // a second job that ended late: the menu may be reading `c.v` (a reference) right now, never reassign it
   c.v = std::move(v);
   c.loaded = true;
 }

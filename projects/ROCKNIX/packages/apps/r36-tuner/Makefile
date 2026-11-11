@@ -1,18 +1,22 @@
 # SPDX-License-Identifier: MIT
-
 CC ?= gcc
-CFLAGS += -O2 -Wall -Wno-unused-function -std=gnu11
+CFLAGS += -O2 -Wall -Wextra -Wno-unused-parameter -std=gnu11
+LDLIBS += -lSDL2 -lSDL2_ttf -lm -pthread
+OBJ = main.o sys.o plat.o state.o i18n.o ui.o dtb.o bench.o tab_home.o tab_tune.o tab_advanced.o tab_tests.o
 
-all: r36-tuner r36_cpubench r36_rambench
+all: r36-tuner r36_cpubench r36_rambench r36_stress
 
-r36-tuner: main.c
-	$(CC) $(CFLAGS) main.c -o $@ -lSDL2 -lSDL2_ttf -lm -pthread
+r36-tuner: $(OBJ)
+	$(CC) $(LDFLAGS) $(OBJ) -o $@ $(LDLIBS)
+
+$(OBJ): tuner.h
 
 r36_cpubench: r36_cpubench.c
-	$(CC) $(CFLAGS) r36_cpubench.c -o $@
-
+	$(CC) -O2 $< -o $@
 r36_rambench: r36_rambench.c
-	$(CC) $(CFLAGS) r36_rambench.c -o $@
+	$(CC) -O2 $< -o $@
+r36_stress: r36_stress.c
+	$(CC) -O2 $< -o $@ -lm -pthread
 
 clean:
-	rm -f r36-tuner r36_cpubench r36_rambench
+	rm -f *.o r36-tuner r36_cpubench r36_rambench r36_stress

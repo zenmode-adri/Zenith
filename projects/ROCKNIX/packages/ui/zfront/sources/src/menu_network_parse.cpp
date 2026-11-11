@@ -226,5 +226,17 @@ std::string first_line(std::string_view s) {
   return std::string(trim(s.substr(0, e)));
 }
 
+std::vector<std::string> rank_addresses(const std::vector<std::pair<std::string, std::string>>& by_interface) {
+  auto lan = [](const std::string& n) {
+    return n.compare(0, 4, "wlan") == 0 || n.compare(0, 2, "wl") == 0 || n.compare(0, 3, "eth") == 0 || n.compare(0, 2, "en") == 0;
+  };
+  std::vector<std::string> out;
+  for (const auto& e : by_interface)
+    if (lan(e.first)) out.push_back(e.second);
+  for (const auto& e : by_interface)
+    if (!lan(e.first)) out.push_back(e.second);
+  return out;
+}
+
 }  // namespace netmenu
 }  // namespace zf

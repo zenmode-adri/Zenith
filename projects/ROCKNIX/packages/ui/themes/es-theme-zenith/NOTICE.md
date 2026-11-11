@@ -6,9 +6,11 @@ The EmulationStation menu icons (`assets/menu/*.svg`) are original line icons dr
 
 ## Third-party parts bundled inside
 - **Console logos** (`assets/logos/*.webp`, except the Tools, Music, Books, Favorites, All games, Last played,
-  Never played and Collections icons, which are original): taken from the *Iconic* EmulationStation theme by
-  Delgan (https://github.com/Delgan/iconic-es), based on *iconic-es-de* by Siddy212, released under **CC0 1.0**.
-  The console names and logos shown in them are trademarks of their respective owners.
+  Never played, Collections, Screenshots and Media player icons, which are original): taken from the *Iconic*
+  EmulationStation theme by Delgan (https://github.com/Delgan/iconic-es), based on *iconic-es-de* by Siddy212,
+  released under **CC0 1.0**. The console names and logos shown in them are trademarks of their respective owners.
+  Variant systems (hacks, minis, DSiWare, homebrew, vertical, video) use the plain logo of their base console; their
+  word is written by the theme as text (`assets/logos/tags`, `tools/zenith-theme/mk_variant_logos.py`).
 - **Star and battery/Wi-Fi icons** (`assets/icons/*.svg`): from the same Iconic theme (CC0 1.0).
 - **Font**: *Rubik* (`assets/fonts/Rubik-Regular.ttf`), Copyright 2015 The Rubik Project Authors
   (https://github.com/googlefonts/rubik), licensed under the **SIL Open Font License 1.1**.

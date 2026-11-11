@@ -41,6 +41,20 @@ int main() {
 
   CHECK(!a.file(base + "_missing.png", again));
 
+  // an SVG cover (the Tools icons are .svg in their gamelist) is rasterized to fit the box, keeping its aspect ratio
+  std::string ps = base + "_d.svg";
+  if (FILE* f = std::fopen(ps.c_str(), "w")) {
+    std::fputs("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"200\" height=\"100\"><rect width=\"200\" height=\"100\" fill=\"#ff0000\"/></svg>", f);
+    std::fclose(f);
+  }
+  ImgId isvg = 0;
+  CHECK(a.file_fit(ps, 40, 40, isvg));
+  CHECK_EQ(a.img(isvg).w, 40u);
+  CHECK_EQ(a.img(isvg).h, 20u);
+  CHECK_EQ(a.img(isvg).rgba[(10 * 40 + 20) * 4 + 0], uint8_t(255));
+  CHECK_EQ(a.img(isvg).rgba[(10 * 40 + 20) * 4 + 3], uint8_t(255));
+  std::remove(ps.c_str());
+
   // LRU: budget smaller than all images; pinned and in-frame images survive, the other is evicted
   a.pin(ia);
   std::vector<Op> frame = {Op::image(ic, 0, 0, 10, 10)};

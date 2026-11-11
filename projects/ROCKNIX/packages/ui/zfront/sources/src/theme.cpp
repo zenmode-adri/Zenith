@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <pugixml.hpp>
 
+#include "theme_warn.hpp"
 #include "util.hpp"
 
 namespace zf {
@@ -101,14 +102,33 @@ std::string_view Theme::str(std::string_view name) const {
 }
 
 bool Theme::has(std::string_view name) const { return vars_.count(std::string(name)) != 0; }
+void Theme::set_var(std::string_view name, std::string_view value) { vars_[std::string(name)] = std::string(value); }
 
 float Theme::f(std::string_view name) const {
   float v = 0;
   if (!parse_float(str(name), v)) {
-    std::fprintf(stderr, "theme: variable '%.*s' missing or not a number\n", int(name.size()), name.data());
+    theme_warn::once(name);
     return 0.0f;
   }
   return v;
+}
+
+std::string Theme::missing() const {
+  static const char* const kEssential[] = {"bg",   "txt",   "dim",      "cyan",  "cyanDark", "cyanSoft", "font",  "carW",  "carY",
+                                           "cellW", "fSys", "listLines", "selH", "fList",    "helpY",    "fHelp", "stackH"};
+  for (const char* n : kEssential)
+    if (!has(n) || str(n).empty()) return n;
+  return {};
+}
+
+float Theme::f(std::string_view name, float def) const {
+  float v = 0;
+  return parse_float(str(name), v) ? v : def;
+}
+
+std::string_view Theme::str(std::string_view name, std::string_view def) const {
+  std::string_view v = str(name);
+  return v.empty() ? def : v;
 }
 
 Color Theme::color(std::string_view name) const { return parse_color(str(name)); }
@@ -116,6 +136,19 @@ Color Theme::color(std::string_view name) const { return parse_color(str(name));
 std::string Theme::path(std::string_view rel) const {
   while (starts_with(rel, "./")) rel.remove_prefix(2);
   return path_join(dir_, rel);
+}
+
+std::vector<std::string> Theme::font_fallbacks() const {
+  std::vector<std::string> out;
+  std::string_view v = str("fontFallback");
+  while (!v.empty()) {
+    size_t c = v.find(',');
+    std::string_view one = trim(v.substr(0, c));
+    if (!one.empty()) out.push_back(path(one));
+    if (c == std::string_view::npos) break;
+    v.remove_prefix(c + 1);
+  }
+  return out;
 }
 
 Color parse_color(std::string_view s) {

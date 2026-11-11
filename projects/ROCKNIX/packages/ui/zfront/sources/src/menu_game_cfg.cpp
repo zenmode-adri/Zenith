@@ -7,11 +7,22 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <memory>
+#include <optional>
 #include <set>
 
+#include "batest.hpp"
+#include "autoperf.hpp"
+#include "collections.hpp"
+#include "scraper_run.hpp"
 #include "i18n.hpp"
+#include "menu_game_edit.hpp"
+#include "manual.hpp"
 #include "menu_game_int.hpp"
+#include "menu_startup.hpp"
+#include "netplay.hpp"
 #include "registry.hpp"
+#include "screens.hpp"
 #include "util.hpp"
 
 namespace zf::mg {
@@ -107,11 +118,21 @@ bool filters_available() {
   return loaded ? !l.empty() : is_dir(env().rooted(env().filters_dir));
 }
 
+// es_features.cfg comes from the OS and its texts from ES's catalogs; the shared feature "perfmode" is Zenith's own, so its
+// Spanish lives in zfront.po and these markers keep that entry in use.
+[[maybe_unused]] constexpr const char* kOwnFeatureTexts[] = {
+    NC_("game_options", "performance mode"),
+    NC_("game_options", "GPU and memory at full speed while playing"),
+};
+
 }  // namespace
 
 std::string feature_label(const std::string& name) {
   const char* t = i18n::ctr("game_options", name.c_str());
-  return utf8_upper(t ? t : name.c_str());  // like the rest of the menu: ES shows the labels in capitals
+  // in capitals like the keys of the rest of the menu, then through tr() as they are: sentence case on the device ("Performance mode"),
+  // it came out as "PERFORMANCE MODE" among sentence-case rows
+  const std::string up = utf8_upper(t ? t : name.c_str());
+  return std::string(tr(up.c_str()));
 }
 
 // ---- es_features.cfg items -------------------------------------------------------------------------------------------
@@ -223,16 +244,22 @@ bool add_item(Sec& s, Ctx& cx, const Feature& f, const std::string& cfg) {
     std::string suffix = autov ? (t.size() > 3 ? t[3] : std::string()) : (t.size() > 4 ? t[4] : std::string());
     int lo = autov ? from - step : from;  // the value below the first step means AUTO
     int hi = std::max(to, from);
+    // The steps only move the knob; the file is written once, when the user stops (`commit`, 0.5 s) or leaves the menu. system.cfg was
+    // rewritten (lock, read, temp file, rename) at every step of a slider held down.
+    auto picked = std::make_shared<std::optional<int>>();
     Entry& e = s.b().slider(label, lo, hi, step,
-                            [c, storage, autov, lo, def] {
+                            [c, storage, autov, lo, def, picked] {
+                              if (*picked) return **picked;
                               std::string v = conf_get(*c, storage);
                               if (v.empty()) return autov ? lo : def;
                               return to_int(v, autov ? lo : def);
                             },
-                            [c, storage, autov, lo](int v) {
-                              if (autov && v <= lo) conf_put(*c, storage, "");
-                              else conf_put(*c, storage, std::to_string(v));
-                            });
+                            [picked](int v) { *picked = v; });
+    e.commit([c, storage, autov, lo, picked](int v) {
+      picked->reset();
+      if (autov && v <= lo) conf_put(*c, storage, "");
+      else conf_put(*c, storage, std::to_string(v));
+    });
     e.unit(suffix);
     if (autov) {
       std::string au = tr("AUTO");
@@ -412,6 +439,18 @@ std::string game_title(const Ctx& cx, const System& sys, const Target& t) {
   return path_stem(t.rom_file);
 }
 
+bool find_game_index(const Ctx& cx, const std::string& system, const std::string& path, size_t& si, size_t& gi) {
+  for (size_t i = 0; i < cx.systems.size(); ++i) {
+    if (cx.systems[i].name != system) continue;
+    for (size_t j = 0; j < cx.systems[i].games.size(); ++j)
+      if (cx.systems[i].games[j].path == path) {
+        si = i, gi = j;
+        return true;
+      }
+  }
+  return false;
+}
+
 /// The body of the system / game options screen.
 void build_config(MenuBuilder& m, Ctx& cx, const Target& t) {
   const System* sys = system_or_toast(cx, t.system);
@@ -426,6 +465,22 @@ void build_config(MenuBuilder& m, Ctx& cx, const Target& t) {
   Ctx* c = &cx;
   const std::string cfg = t.cfg;
 
+  // FAVOURITE and SCRAPE first (the two things done most from the list); then what this game says about performance
+  if (t.game) {
+    size_t si = 0, gi = 0;
+    if (find_game_index(cx, t.system, t.rom_path, si, gi)) {
+      bool fav = cx.systems[si].games[gi].meta.favorite;
+      m.action(collections::fmt(fav ? tr("REMOVE FROM %s") : tr("ADD TO %s"), tr("FAVORITES")), [si, gi](Ctx& c2) {
+        collections::toggle_favorite(c2, si, gi);
+        return Transition::pop();
+      });
+      if (scraper::system_supported(cx, si)) {
+        std::string system = t.system, rom = t.rom_path;
+        m.action(tr("SCRAPE"), [system, rom] { return Transition::open("menu.scraper.game", game_arg(system, rom)); });
+      }
+    }
+    autoperf::game_entries(m, cx, t.system, t.rom_path);  // PERFORMANCE SUGGESTIONS: only while one is waiting for this game (autoperf.hpp)
+  }
   // emulator and core
   if (has_emulator_selection(*sys)) {
     std::vector<Option> opts = emulator_options(*sys);
@@ -490,6 +545,28 @@ void build_config(MenuBuilder& m, Ctx& cx, const Target& t) {
   if (fe.has(F_latency_reduction)) s.b().submenu(tr("LATENCY REDUCTION"), "menu.game.latency", cfg);
   // what es_features.cfg adds for this emulator / core
   add_features(s, cx, fe.custom, cfg, tr("SETTINGS"), true, feat_arg(t.game ? 'r' : 's', t.system, t.rom_path, std::string()));
+
+  // the loose actions of the game, last; DELETE GAME is always the final row
+  if (t.game) {
+    s.header(tr("ACTIONS"));
+    // the custom collections of this game (menu.collections.game takes "<system>|<game path>")
+    s.b().submenu(tr("COLLECTIONS"), "menu.collections.game", t.system + "|" + t.rom_path);
+    // ES's gamelist options (sort, filters and the list switches): Select is this screen here, so they are one row away
+    s.b().submenu(tr("GAMELIST OPTIONS"), "menu.list_options", t.system);
+    // RANDOM GAME: ES does it with a long press of Y; here it is an entry of the options, which closes and moves the list
+    size_t rsi = 0, rgi = 0;
+    if (find_game_index(cx, t.system, t.rom_path, rsi, rgi) && cx.systems[rsi].games.size() > 1) {  // with one game there is no other to pick
+      s.b().action(tr("RANDOM GAME"), [] {
+        request_random_game();
+        return Transition::pop();
+      });
+    }
+    netplay::game_entry(m, cx, t.system, t.rom_path);  // ES: START A NETPLAY GAME (netplay.cpp)
+    startup_game_entry(m, cx, t.system, t.rom_path);   // ES: LAUNCH THIS GAME AT STARTUP (menu_startup.cpp)
+    batest::game_entry(m, cx, t.system, t.rom_path);   // BATTERY: how long the charge lasts with this game (batest.cpp)
+    manual::media_entries(m, cx, t.system, t.rom_path);  // ES: GAME MEDIA > VIEW GAME MANUAL / VIEW GAME MAGAZINE (manual.cpp)
+    edit_game_entries(m, cx, t.system, t.rom_path);      // ES: EDIT THIS GAME'S METADATA and DELETE GAME (menu_game_edit.cpp)
+  }
 
   if (!s.any && !has_emulator_selection(*sys)) m.info(tr("NO OPTIONS"), std::string());
 }

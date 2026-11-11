@@ -21,6 +21,9 @@
 #include "ui_dialogs.hpp"
 #include "ui_prefs.hpp"
 #include "util.hpp"
+#include "webcore.hpp"
+#include "webpair.hpp"
+#include "webtransfer.hpp"
 
 namespace zf {
 namespace netmenu {
@@ -67,21 +70,23 @@ std::vector<std::string> local_ips() {
   ifaddrs* all = nullptr;
   if (getifaddrs(&all) != 0) return v;
   char buf[INET6_ADDRSTRLEN];
+  std::vector<std::pair<std::string, std::string>> found;  // (interface, address)
   for (ifaddrs* p = all; p; p = p->ifa_next) {
     if (!p->ifa_addr || p->ifa_addr->sa_family != AF_INET || (p->ifa_flags & IFF_LOOPBACK)) continue;
     inet_ntop(AF_INET, &reinterpret_cast<sockaddr_in*>(p->ifa_addr)->sin_addr, buf, sizeof buf);
-    v.emplace_back(buf);
+    found.emplace_back(p->ifa_name ? p->ifa_name : "", buf);
   }
-  if (v.empty()) {
+  if (found.empty()) {
     for (ifaddrs* p = all; p; p = p->ifa_next) {
       if (!p->ifa_addr || p->ifa_addr->sa_family != AF_INET6 || (p->ifa_flags & IFF_LOOPBACK)) continue;
       inet_ntop(AF_INET6, &reinterpret_cast<sockaddr_in6*>(p->ifa_addr)->sin6_addr, buf, sizeof buf);
       if (std::strncmp(buf, "fe80:", 5) == 0) continue;
-      v.emplace_back(buf);
+      found.emplace_back(p->ifa_name ? p->ifa_name : "", buf);
     }
   }
   freeifaddrs(all);
-  return v;
+  // the USB gadget or a VPN may come first in the kernel's list: the address to give out is the one the phone's network reaches
+  return rank_addresses(found);
 }
 
 /// Networks iwd has a profile for (it saves one after every successful connection): the files of its state folder. This is
@@ -129,6 +134,7 @@ void apply_fixture(const std::string& cmd, CmdResult& r) {
   else if (starts_with(cmd, "wifictl scanlist") || cmd == "wifictl list") r.out = file("scanlist.txt");
   else if (starts_with(cmd, "wifictl has_ap_mode")) r.exit_code = flag("ap_mode") ? 0 : 1;
   else if (starts_with(cmd, "wifictl connect")) r.exit_code = flag("connect_fail") ? 1 : 0;
+  else if (starts_with(cmd, "systemctl ") || starts_with(cmd, "wg-quick ")) r.exit_code = flag("service_fail") ? 1 : 0;
   else if (starts_with(cmd, "/usr/bin/usbgadget address")) r.out = file("usb_address.txt");
   else if (starts_with(cmd, "tailscale status")) r.out = file("tailscale.txt");
   else if (starts_with(cmd, "zerotier-cli")) r.out = file("zerotier.txt");
@@ -156,7 +162,7 @@ void query_ap_mode(Ctx& cx, const Refresh& refresh) {
   if (g_ap_supported >= 0) return;
   Services* sv = cx.sv.get();
   auto rc = std::make_shared<int>(1);
-  sv->jobs.post([sv, rc] { *rc = run_cmd(*sv, "wifictl has_ap_mode", 15000).exit_code; },
+  sv->jobs.post_slow([sv, rc] { *rc = run_cmd(*sv, "wifictl has_ap_mode", 15000).exit_code; },
                 [rc, refresh] {
                   g_ap_supported = *rc == 0 ? 1 : 0;
                   refresh();
@@ -172,13 +178,13 @@ void set_wifi_enabled(Ctx& cx, bool on, const Refresh& refresh) {
   auto ok = std::make_shared<bool>(true);
   if (on) {
     sv->toasts.push(tr("Turning Wi-Fi on..."));
-    sv->jobs.post([=] { *ok = enable_wifi(*sv, ssid, key, country); },
+    sv->jobs.post_slow([=] { *ok = enable_wifi(*sv, ssid, key, country); },
                   [sv, ok, refresh] {
                     sv->toasts.push(*ok ? tr("Wi-Fi is on") : tr("Wi-Fi configuration error"));
                     refresh();
                   });
   } else {
-    sv->jobs.post([sv, ok] { *ok = run_cmd(*sv, "wifictl disable", 20000).exit_code == 0; },
+    sv->jobs.post_slow([sv, ok] { *ok = run_cmd(*sv, "wifictl disable", 20000).exit_code == 0; },
                   [sv, ok, refresh] {
                     sv->toasts.push(*ok ? tr("Wi-Fi is off") : tr("Wi-Fi configuration error"));
                     refresh();
@@ -194,7 +200,7 @@ void set_country(Ctx& cx, const std::string& code, const Refresh& refresh) {
   Services* sv = cx.sv.get();
   std::string ssid = cx.conf.get_or("wifi.ssid", ""), key = cx.conf.get_or("wifi.key", "");
   auto ok = std::make_shared<bool>(true);
-  sv->jobs.post([=] { *ok = enable_wifi(*sv, ssid, key, code); },
+  sv->jobs.post_slow([=] { *ok = enable_wifi(*sv, ssid, key, code); },
                 [sv, ok, refresh] {
                   sv->toasts.push(*ok ? tr("Wi-Fi region updated") : tr("Wi-Fi configuration error"));
                   refresh();
@@ -214,7 +220,7 @@ void set_local_play(Ctx& cx, bool on, const Refresh& refresh) {
     std::string ssid = cx.conf.get_or("wifi.ssid", ""), key = cx.conf.get_or("wifi.key", ""), country = cx.conf.get_or("wifi.country", "");
     auto ok = std::make_shared<bool>(true);
     sv->toasts.push(tr("Please wait..."));
-    sv->jobs.post([=] {
+    sv->jobs.post_slow([=] {
       run_cmd(*sv, "wifictl disable", 20000);
       *ok = enable_wifi(*sv, ssid, key, country);
     },
@@ -229,23 +235,86 @@ void set_local_play(Ctx& cx, bool on, const Refresh& refresh) {
 // ---- services (SSH, Samba, ...) -----------------------------------------------------------------------------------------
 
 /// Runs ES's command sequence on a job. The setting is stored first (the boot daemons read it); a failing `systemctl`
-/// is reported. `rm` of a file that is not there is not an error.
+/// is reported. `rm` of a file that is not there is not an error. When TURNING ON fails, the switch goes back to off (the setting
+/// is put back, `undo` runs the commands of turning it off so the next boot does not start it either) and `refresh` redraws the menu:
+/// a switch that says on while the service is not running is a lie. A failing turn-off leaves the switch off (the user's wish).
 const char* fail_msg() { return tr("The service did not answer"); }
 
-void apply_service(Ctx& cx, const char* key, bool on, std::vector<std::string> cmds, const char* toast_ok) {
+void apply_service(Ctx& cx, const char* key, bool on, std::vector<std::string> cmds, const char* toast_ok, const Refresh& refresh,
+                   std::vector<std::string> undo = {}) {
   cx.conf.persist(key, on ? "1" : "0");
   Services* sv = cx.sv.get();
+  Ctx* cxp = &cx;
   auto list = std::make_shared<std::vector<std::string>>(std::move(cmds));
+  auto back = std::make_shared<std::vector<std::string>>(std::move(undo));
   auto ok = std::make_shared<bool>(true);
-  sv->jobs.post([sv, list, ok] {
+  sv->jobs.post_slow([sv, list, back, ok, on] {
     for (const std::string& c : *list) {
       int rc = run_cmd(*sv, c, 30000).exit_code;
       if (rc != 0 && !starts_with(c, "rm ")) *ok = false;
     }
+    if (!*ok && on)
+      for (const std::string& c : *back) run_cmd(*sv, c, 30000);
   },
-                [sv, ok, toast_ok] { sv->toasts.push(*ok ? toast_ok : fail_msg()); });
+                [sv, cxp, ok, on, key, toast_ok, refresh] {
+                  if (!*ok && on && cxp->conf.get_or(key, "") == "1") cxp->conf.persist(key, "0");  // unless the user already turned it off again
+                  sv->toasts.push(*ok ? toast_ok : fail_msg());
+                  if (!*ok && on && refresh) refresh();
+                });
 }
 
+
+// ---- the live menu ------------------------------------------------------------------------------------------------------
+
+/// What the NETWORK menus show that changes by itself: the addresses of the console (the Wi-Fi joins, the lease changes, the USB cable goes in),
+/// whether the web listener runs, how many phones are paired (a phone that pairs while the menu is open) and the switches that other screens
+/// of this family change (the row TRANSFER FILES of the main screen follows Samba and the web transfer). Read without a process.
+std::string live_signature(Ctx& cx) {
+  std::string s;
+  for (const std::string& ip : local_ips()) s += ip + ";";
+  s += webtransfer::listening() ? "|L" : "|-";
+  s += "|" + std::to_string(webpair::devices().size());
+  for (const char* k : {"wifi.enabled", "wifi.adhoc.enabled", "zfront.webtransfer", "samba.enabled", "ssh.enabled"}) s += "|" + cx.conf.get_or(k, "");
+  return s;
+}
+
+/// A menu that looks at `live_signature` every two seconds and rebuilds when it changed (the loop sleeps in between: `wake_in`).
+class LiveMenu : public Menu {
+ public:
+  LiveMenu(MenuSpec s, std::function<void(Ctx&, const Refresh&)> on_change) : Menu(std::move(s)), on_change_(std::move(on_change)) {}
+  bool tick(float dt, Ctx& cx) override {
+    bool moving = Menu::tick(dt, cx);
+    if (!seen_) {  // the first tick built the menu
+      seen_ = true;
+      sig_ = live_signature(cx);
+      left_ = kLivePoll;
+      return moving;
+    }
+    left_ -= dt;
+    if (left_ <= 0) {
+      left_ = kLivePoll;
+      const std::string now = live_signature(cx);
+      if (now != sig_) {
+        sig_ = now;
+        if (on_change_) on_change_(cx, refresher());
+        rebuild(cx);
+        moving = true;
+      }
+    }
+    return moving;
+  }
+  std::optional<float> wake_in() const override {
+    std::optional<float> w = Menu::wake_in();
+    return w ? std::min(*w, left_ + 0.002f) : left_ + 0.002f;
+  }
+
+ private:
+  static constexpr float kLivePoll = 2.0f;
+  std::function<void(Ctx&, const Refresh&)> on_change_;
+  bool seen_ = false;
+  float left_ = kLivePoll;
+  std::string sig_;
+};
 
 // ---- the main screen ----------------------------------------------------------------------------------------------------
 
@@ -276,13 +345,44 @@ std::string country_name(const std::string& code) {
   return code;
 }
 
-void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st) {
+/// What an image may carry as a service: `build_services` shows the ones that are installed; the SERVICES row of the main
+/// screen only exists when there is at least one.
+bool has_services() {
+  std::string udc_function;
+  return exists("/usr/sbin/sshd") || exists("/usr/lib/systemd/system/simple-http-server.service") ||
+         (exists("/usr/bin/usbgadget") && usb_function(udc_function)) || exists("/usr/bin/syncthing") || exists("/usr/bin/rclonectl") ||
+         exists("/storage/.config/wireguard/wg0.conf") || exists("/usr/sbin/tailscale") || exists("/usr/sbin/zerotier-cli");
+}
+
+void build_network(MenuBuilder& m, Ctx& cx) {
   const Refresh refresh = m.refresh;
   const bool wifi = has_wifi();
   const bool wifi_on = cx.conf.get_bool("wifi.enabled", false);
   const bool adhoc = cx.conf.get_bool("wifi.adhoc.enabled", false);
 
-  // ---- information
+  // ---- Wi-Fi first (what is used most outside a game), then file transfer, then the state, local play and the services
+  if (wifi) {
+    m.header(tr("WI-FI"));
+    m.toggle(tr("ENABLE WI-FI"), [&cx] { return cx.conf.get_bool("wifi.enabled", false); }, [&cx, refresh](bool b) { set_wifi_enabled(cx, b, refresh); });
+    if (wifi_on && !adhoc) {
+      m.submenu(tr("WI-FI NETWORKS"), "menu.network.wifi");
+      const std::string code = cx.conf.get_or("wifi.country", "");
+      Entry& c = m.action(tr("WI-FI COUNTRY"), [&cx, refresh, code]() -> Transition {
+        return ui::choose(tr("WI-FI COUNTRY"), country_options(), code, [refresh](Ctx& c2, const std::string& v) { set_country(c2, v, refresh); });
+      });
+      c.value(country_name(code));
+      c.show_arrow = true;
+      c.hint(tr("Sets the radio regulations: the channels you may use."));
+    }
+  }
+
+  // File transfer lives in its own menu: one row here; the web page (address, PIN, QR code, paired phones) and Samba inside.
+  if (wifi) m.separator();
+  m.submenu(tr("TRANSFER FILES"), "menu.network.transfer")
+      .value(cx.conf.get_bool("zfront.webtransfer", false) || (exists("/usr/sbin/smbd") && cx.conf.get_bool("samba.enabled", false)) ? tr("ON") : tr("OFF"))
+      .hint(tr("Send games to the console from a phone or computer on this network."));
+
+  // ---- state
   m.header(tr("INFORMATION"));
   std::vector<std::string> ips = local_ips();
   if (ips.size() > 1) {
@@ -301,32 +401,9 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
              ui_prefs::reapply(cx);  // the status bar follows at once
            });
 
-  // ---- settings
-  m.header(tr("SETTINGS"));
-  m.text(tr("HOSTNAME"), [&cx] { return cx.conf.get_or("system.hostname", ""); },
-         [&cx](const std::string& v) {
-           std::string h(trim(v));
-           if (!valid_hostname(h)) {
-             cx.sv->toasts.push(tr("Use letters, digits and dashes only"));
-             return;
-           }
-           cx.conf.persist("system.hostname", h);
-           cx.sv->toasts.push(tr("Hostname saved. It applies at the next boot"), 3000);
-         })
-      .hint(tr("The new name is used at the next boot."));
-
+  // ---- local play (netplay over an access point)
+  if ((wifi && wifi_on && g_ap_supported == 1) || adhoc) m.header(tr("LOCAL PLAY"));
   if (wifi) {
-    m.toggle(tr("ENABLE WI-FI"), [&cx] { return cx.conf.get_bool("wifi.enabled", false); }, [&cx, refresh](bool b) { set_wifi_enabled(cx, b, refresh); });
-    if (wifi_on && !adhoc) {
-      m.submenu(tr("WI-FI NETWORKS"), "menu.network.wifi");
-      const std::string code = cx.conf.get_or("wifi.country", "");
-      Entry& c = m.action(tr("WI-FI COUNTRY"), [&cx, refresh, code]() -> Transition {
-        return ui::choose(tr("WI-FI COUNTRY"), country_options(), code, [refresh](Ctx& c2, const std::string& v) { set_country(c2, v, refresh); });
-      });
-      c.value(country_name(code));
-      c.show_arrow = true;
-      c.hint(tr("Sets the radio regulations: the channels you may use."));
-    }
     if (wifi_on && g_ap_supported == 1)
       m.toggle(tr("LOCAL PLAY MODE"), [&cx] { return cx.conf.get_bool("wifi.adhoc.enabled", false); }, [&cx, refresh](bool b) { set_local_play(cx, b, refresh); })
           .hint(tr("Hosts an access point for netplay with other consoles."));
@@ -340,9 +417,15 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
              [&cx](const std::string& v) { cx.conf.persist("wifi.adhoc.id", v); });
   }
 
+  // ---- services (SSH, HTTP, USB, cloud, VPN, host name): one row, always (the console's name is there even without a service)
+  m.submenu(tr("SERVICES"), "menu.network.services").hint(tr("SSH, USB, cloud, VPN and the console's name."));
+}
+
+// The services screen: everything that is set once and forgotten. Same rows, commands and keys as before; only the place changed.
+void build_services(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st) {
+  const Refresh refresh = m.refresh;
   // ---- what is installed on this image (an entry that does not apply is not shown)
   const bool ssh = exists("/usr/sbin/sshd");
-  const bool smb = exists("/usr/sbin/smbd");
   const bool http = exists("/usr/lib/systemd/system/simple-http-server.service");
   std::string udc_function;
   const bool gadget = exists("/usr/bin/usbgadget") && usb_function(udc_function);
@@ -352,31 +435,23 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
   const bool tailscale = exists("/usr/sbin/tailscale");
   const bool zerotier = exists("/usr/sbin/zerotier-cli");
 
-  if (ssh || smb || http || gadget) m.header(tr("NETWORK SERVICES"));
+  if (ssh || http || gadget) m.header(tr("NETWORK SERVICES"));
   if (ssh)
     m.toggle(tr("ENABLE SSH"), [&cx, st] { return shown(*st, cx, "ssh.enabled"); },
-             [&cx](bool b) {
+             [&cx, refresh](bool b) {
+               const std::vector<std::string> off = {"systemctl stop sshd", "systemctl disable sshd", "rm /storage/.cache/services/sshd.conf"};
                apply_service(cx, "ssh.enabled", b,
                              b ? std::vector<std::string>{"mkdir -p /storage/.cache/services/", "touch /storage/.cache/services/sshd.conf", "systemctl enable sshd", "systemctl start sshd"}
-                               : std::vector<std::string>{"systemctl stop sshd", "systemctl disable sshd", "rm /storage/.cache/services/sshd.conf"},
-                             b ? tr("SSH is on") : tr("SSH is off"));
+                               : off,
+                             b ? tr("SSH is on") : tr("SSH is off"), refresh, off);
              })
         .hint(tr("Remote access to the console over the network."));
-  if (smb)
-    m.toggle(tr("ENABLE SAMBA"), [&cx, st] { return shown(*st, cx, "samba.enabled"); },
-             [&cx](bool b) {
-               apply_service(cx, "samba.enabled", b,
-                             b ? std::vector<std::string>{"mkdir -p /storage/.cache/services/", "touch /storage/.cache/services/smb.conf", "systemctl start nmbd", "systemctl start smbd"}
-                               : std::vector<std::string>{"systemctl stop nmbd", "systemctl stop smbd", "rm /storage/.cache/services/smb.conf"},
-                             b ? tr("Samba is on") : tr("Samba is off"));
-             })
-        .hint(tr("Shares the games folder with other computers."));
   if (http)
     m.toggle(tr("ENABLE SIMPLE HTTP SERVER"), [&cx, st] { return shown(*st, cx, "simplehttp.enabled"); },
-             [&cx](bool b) {
+             [&cx, refresh](bool b) {
                apply_service(cx, "simplehttp.enabled", b,
                              {b ? "systemctl enable --now simple-http-server" : "systemctl disable --now simple-http-server"},
-                             b ? tr("HTTP server is on") : tr("HTTP server is off"));
+                             b ? tr("HTTP server is on") : tr("HTTP server is off"), refresh, {"systemctl disable --now simple-http-server"});
              });
   if (gadget) {
     const std::string mode = st->gadget_pending.empty() ? usb_mode_from_function(udc_function) : st->gadget_pending;
@@ -387,7 +462,7 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
                Services* sv = cx.sv.get();
                auto ip = std::make_shared<std::string>();
                auto ok = std::make_shared<bool>(true);
-               sv->jobs.post([sv, v, ip, ok] {
+               sv->jobs.post_slow([sv, v, ip, ok] {
                  *ok = run_cmd(*sv, "/usr/bin/usbgadget " + v, 30000).exit_code == 0;
                  if (v == "network") *ip = first_line(run_cmd(*sv, "/usr/bin/usbgadget address", 10000).out);
                },
@@ -405,9 +480,9 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
   if (syncthing || cloud) m.header(tr("CLOUD SERVICES"));
   if (syncthing)
     m.toggle(tr("ENABLE SYNCTHING"), [&cx, st] { return shown(*st, cx, "syncthing.enabled"); },
-             [&cx](bool b) {
+             [&cx, refresh](bool b) {
                apply_service(cx, "syncthing.enabled", b, {b ? "systemctl start syncthing" : "systemctl stop syncthing"},
-                             b ? tr("Syncthing is on") : tr("Syncthing is off"));
+                             b ? tr("Syncthing is on") : tr("Syncthing is off"), refresh, {"systemctl stop syncthing"});
              });
   if (cloud)
     m.toggle(tr("MOUNT CLOUD DRIVE"), [&cx, st] { return shown(*st, cx, "clouddrive.mounted"); },
@@ -416,7 +491,7 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
                Services* sv = cx.sv.get();
                Ctx* cxp = &cx;
                auto ok = std::make_shared<bool>(true);
-               sv->jobs.post([sv, b, ok] { *ok = run_cmd(*sv, b ? "rclonectl mount" : "rclonectl unmount", 60000).exit_code == 0; },
+               sv->jobs.post_slow([sv, b, ok] { *ok = run_cmd(*sv, b ? "rclonectl mount" : "rclonectl unmount", 60000).exit_code == 0; },
                              [sv, cxp, st, refresh, b, ok] {
                                st->pending.erase("clouddrive.mounted");
                                cxp->conf.persist("clouddrive.mounted", (b && *ok) ? "1" : "0");
@@ -429,12 +504,12 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
   if (wireguard || tailscale || zerotier) m.header(tr("VPN SERVICES"));
   if (wireguard)
     m.toggle(tr("WIREGUARD VPN"), [&cx, st] { return shown(*st, cx, "wireguard.up"); },
-             [&cx](bool b) {
+             [&cx, refresh](bool b) {
                const std::string conf = "/storage/.config/wireguard/wg0.conf";
+               const std::vector<std::string> off = {"wg-quick down " + conf, "systemctl stop connman-vpn"};
                apply_service(cx, "wireguard.up", b,
-                             b ? std::vector<std::string>{"systemctl start connman-vpn", "wg-quick up " + conf}
-                               : std::vector<std::string>{"wg-quick down " + conf, "systemctl stop connman-vpn"},
-                             b ? tr("WireGuard is on") : tr("WireGuard is off"));
+                             b ? std::vector<std::string>{"systemctl start connman-vpn", "wg-quick up " + conf} : off,
+                             b ? tr("WireGuard is on") : tr("WireGuard is off"), refresh, off);
              });
   if (tailscale) {
     m.toggle(tr("TAILSCALE VPN"), [&cx, st] { return shown(*st, cx, "tailscale.up"); },
@@ -443,7 +518,7 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
                Services* sv = cx.sv.get();
                Ctx* cxp = &cx;
                auto status = std::make_shared<TsStatus>();
-               sv->jobs.post([sv, b, status] {
+               sv->jobs.post_slow([sv, b, status] {
                  if (b) {
                    run_cmd(*sv, "systemctl start tailscaled", 30000);
                    run_cmd(*sv, "tailscale up --timeout=7s", 30000);
@@ -477,7 +552,7 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
                Services* sv = cx.sv.get();
                Ctx* cxp = &cx;
                auto up = std::make_shared<bool>(false);
-               sv->jobs.post([sv, b, up] {
+               sv->jobs.post_slow([sv, b, up] {
                  if (b) {
                    run_cmd(*sv, "systemctl start zerotier-one", 30000);
                    *up = zerotier_running(run_cmd(*sv, "zerotier-cli -D/storage/.config/zerotier/ info", 15000).out);
@@ -494,21 +569,99 @@ void build_network(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st)
                              });
                refresh();
              });
+
+  m.header(tr("SETTINGS"));
+  m.text(tr("HOSTNAME"), [&cx] { return cx.conf.get_or("system.hostname", ""); },
+         [&cx](const std::string& v) {
+           std::string h(trim(v));
+           if (!valid_hostname(h)) {
+             cx.sv->toasts.push(tr("Use letters, digits and dashes only"));
+             return;
+           }
+           cx.conf.persist("system.hostname", h);
+           cx.sv->toasts.push(tr("Hostname saved. It applies at the next boot"), 3000);
+         })
+      .hint(tr("The new name is used at the next boot."));
+}
+
+// TRANSFER FILES: upload games from a browser on the same network. Off by default; the PIN is new at every start.
+void build_transfer(MenuBuilder& m, Ctx& cx) {
+  const Refresh refresh = m.refresh;
+  m.toggle(tr("WEB FILE TRANSFER"), [&cx] { return cx.conf.get_bool("zfront.webtransfer", false); },
+           [&cx, refresh](bool b) {
+             cx.conf.persist("zfront.webtransfer", b ? "1" : "0");
+             if (!webtransfer::apply(b) && b) {  // starts / stops the listener on its own port; the port may be taken
+               webtransfer::set_enabled(false);
+               cx.conf.persist("zfront.webtransfer", "0");  // the switch goes back: it must not say on while nothing listens
+               cx.sv->toasts.push(tr("Could not start the web transfer"), 3500);
+             }
+             refresh();
+           })
+      .hint(tr("Lets a phone or computer on this network send games to the console."));
+  if (cx.conf.get_bool("zfront.webtransfer", false)) {
+    if (!webtransfer::listening()) {
+      m.info(tr("WEB ADDRESS"), tr("COULD NOT START (PORT BUSY?)"));
+    } else {
+      for (const webtransfer::WebModule& w : webtransfer::modules())
+        if (w.network_rows) w.network_rows(m, cx);  // QR code, paired phones, WebDAV... (webcore.hpp)
+      const std::vector<std::string> ips = local_ips();
+      m.info(tr("WEB ADDRESS"), ips.empty() ? std::string(tr("NOT CONNECTED")) : web_address(ips[0]));
+      m.info(tr("WEB PIN"), webtransfer::pin());
+    }
+  }
+
+  // Samba: the games folder as a network drive, for a computer. Off unless asked for; how to log in shows only while it is on.
+  if (exists("/usr/sbin/smbd")) {
+    m.header(tr("NETWORK DRIVE (SAMBA)"));
+    m.toggle(tr("ENABLE SAMBA"), [&cx] { return cx.conf.get_bool("samba.enabled", false); },
+             [&cx, refresh](bool b) {
+               const std::vector<std::string> off = {"systemctl stop nmbd", "systemctl stop smbd", "rm /storage/.cache/services/smb.conf"};
+               apply_service(cx, "samba.enabled", b,
+                             b ? std::vector<std::string>{"mkdir -p /storage/.cache/services/", "touch /storage/.cache/services/smb.conf", "systemctl start nmbd", "systemctl start smbd"}
+                               : off,
+                             b ? tr("Samba is on") : tr("Samba is off"), refresh, off);
+               refresh();  // the login rows below follow
+             })
+        .hint(tr("Shares the games folder with other computers."));
+    // The image's Samba lets no guest in: log in as root with the root password (samba-secure, ROCKNIX samba package).
+    if (cx.conf.get_bool("samba.enabled", false)) {
+      const std::vector<std::string> ips = local_ips();
+      m.info(tr("SAMBA ADDRESS"), ips.empty() ? std::string(tr("NOT CONNECTED")) : "\\\\" + ips[0]);
+      m.info(tr("SAMBA USER"), "root");
+      m.info(tr("SAMBA PASSWORD"), cx.conf.get_or("root.password", ""));
+    }
+  }
+}
+
+std::unique_ptr<Screen> make_transfer() {
+  MenuSpec s;
+  s.title = tr("TRANSFER FILES");
+  s.title_key = N_("TRANSFER FILES");
+  s.build = build_transfer;
+  return make_live_menu(std::move(s));
+}
+
+std::unique_ptr<Screen> make_services() {
+  auto st = std::make_shared<NetState>();
+  MenuSpec s;
+  s.title = tr("SERVICES");
+  s.title_key = N_("SERVICES");
+  s.build = [st](MenuBuilder& m, Ctx& cx) { build_services(m, cx, st); };
+  return make_live_menu(std::move(s));
 }
 
 std::unique_ptr<Screen> make_network() {
-  auto st = std::make_shared<NetState>();
   MenuSpec s;
   s.title = tr("NETWORK");
   s.title_key = N_("NETWORK");
-  s.build = [st](MenuBuilder& m, Ctx& cx) { build_network(m, cx, st); };
+  s.build = [](MenuBuilder& m, Ctx& cx) { build_network(m, cx); };
   s.on_open = [](Ctx& cx, const Refresh& refresh) {
     // GuiMenu patch 0016: scan in the background while the user is still on this menu, so WI-FI NETWORKS opens already filled.
     if (!has_wifi() || !cx.conf.get_bool("wifi.enabled", false)) return;
     if (!cx.conf.get_bool("wifi.adhoc.enabled", false)) cx.sv->cmd.spawn("wifictl prescan");
     query_ap_mode(cx, refresh);
   };
-  return make_menu(std::move(s));
+  return make_live_menu(std::move(s));
 }
 
 // ---- WI-FI NETWORKS -----------------------------------------------------------------------------------------------------
@@ -531,7 +684,7 @@ void start_scan(Ctx& cx, const std::shared_ptr<ListState>& st, const Refresh& re
   const unsigned gen = ++st->gen;
   const std::string current = cx.conf.get_or("wifi.ssid", "");
   if (scan) st->scanning = true;
-  sv->jobs.post([sv, scan, out] {
+  sv->jobs.post_slow([sv, scan, out] {
     out->names = parse_ssid_lines(run_cmd(*sv, scan ? "wifictl scanlist" : "wifictl list", 30000).out);
     out->detail = parse_iwd_details(run_cmd(*sv, kDetailCommand, 8000).out);
     out->saved = saved_networks();
@@ -564,6 +717,9 @@ bool join_saved(Services& sv, const std::string& ssid) {
 void connect_async(Ctx& cx, const std::string& ssid, const std::string& key, bool saved, std::function<void(bool)> finished) {
   Services* sv = cx.sv.get();
   Ctx* cxp = &cx;
+  // `wifictl enable` reads wifi.ssid / wifi.key, so they are written first (as ES does); the old pair is kept to put it back
+  // when the join fails, so a typo in a new network does not replace the one that worked
+  const std::string old_ssid = cx.conf.get_or("wifi.ssid", ""), old_key = cx.conf.get_or("wifi.key", "");
   if (!saved) {
     cx.conf.persist("wifi.ssid", ssid);
     cx.conf.persist("wifi.key", key);
@@ -571,10 +727,14 @@ void connect_async(Ctx& cx, const std::string& ssid, const std::string& key, boo
   const std::string country = cx.conf.get_or("wifi.country", "");
   sv->toasts.push(std::string(tr("Connecting to")) + " " + ssid + "...", 4000);  // never the key
   auto ok = std::make_shared<bool>(false);
-  sv->jobs.post([sv, ssid, key, saved, country, ok] {
+  sv->jobs.post_slow([sv, ssid, key, saved, country, ok] {
     *ok = saved ? join_saved(*sv, ssid) : enable_wifi(*sv, ssid, key, country);
   },
-                [sv, cxp, ssid, saved, ok, finished] {
+                [sv, cxp, ssid, saved, ok, finished, old_ssid, old_key] {
+                  if (!*ok && !saved) {
+                    cxp->conf.persist("wifi.ssid", old_ssid);
+                    cxp->conf.persist("wifi.key", old_key);
+                  }
                   if (*ok && saved) {
                     cxp->conf.persist("wifi.ssid", ssid);
                     cxp->conf.persist("wifi.key", "");
@@ -624,7 +784,7 @@ Transition pick_network(Ctx& cx, const std::shared_ptr<ListState>& st, const Ref
                         Ctx* cxp = &c2;
                         auto ok = std::make_shared<bool>(false);
                         // `iwctl known-networks <ssid> forget` deletes iwd's profile; the folder is read again to be sure it is gone
-                        sv->jobs.post(
+                        sv->jobs.post_slow(
                             [sv, ssid, ok] {
                               CmdResult r = run_cmd(*sv, "iwctl known-networks " + shell_quote(ssid) + " forget", 15000);
                               std::vector<std::string> left = saved_networks();
@@ -674,7 +834,11 @@ std::unique_ptr<Screen> make_wifi_list() {
   s.title_key = N_("WI-FI NETWORKS");
   s.build = [st](MenuBuilder& m, Ctx& cx) { build_list(m, cx, st); };
   s.on_open = [st](Ctx& cx, const Refresh& refresh) { start_scan(cx, st, refresh, true, false); };
-  return make_menu(std::move(s));
+  // the Wi-Fi drops or joins while the list is open: CONNECTED / SAVED follow (no new scan, iwd's list is read again)
+  return make_live_menu(std::move(s), [st](Ctx& cx, const Refresh& refresh) {
+    if (st->scanning || !st->connecting.empty()) return;
+    start_scan(cx, st, refresh, false, false);
+  });
 }
 
 // ---- INPUT MANUALLY (hidden network) ----------------------------------------------------------------------------------------
@@ -714,10 +878,23 @@ std::unique_ptr<Screen> make_manual() {
 
 void reset_session_cache() { g_ap_supported = -1; }
 
+std::unique_ptr<Screen> make_live_menu(MenuSpec spec, std::function<void(Ctx&, const Refresh&)> on_change) {
+  return std::make_unique<LiveMenu>(std::move(spec), std::move(on_change));
+}
+
+std::vector<std::string> local_ip_list() { return local_ips(); }
+
+std::string web_address(const std::string& ip) {
+  const std::string host = ip.find(':') != std::string::npos ? "[" + ip + "]" : ip;
+  return "http://" + host + ":" + std::to_string(webtransfer::listen_port());  // "/" sends the browser on to /files
+}
+
 }  // namespace netmenu
 
 ZF_REGISTER_SCREEN("menu.network", [](Ctx&, const std::string&) { return netmenu::make_network(); });
+ZF_REGISTER_SCREEN("menu.network.services", [](Ctx&, const std::string&) { return netmenu::make_services(); });
 ZF_REGISTER_SCREEN("menu.network.wifi", [](Ctx&, const std::string&) { return netmenu::make_wifi_list(); });
+ZF_REGISTER_SCREEN("menu.network.transfer", [](Ctx&, const std::string&) { return netmenu::make_transfer(); });
 ZF_REGISTER_SCREEN("menu.network.manual", [](Ctx&, const std::string&) { return netmenu::make_manual(); });
 
 }  // namespace zf

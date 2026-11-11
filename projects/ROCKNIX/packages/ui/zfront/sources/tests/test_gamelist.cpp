@@ -384,6 +384,27 @@ void test_apply_edit_spans() {
   }
 }
 
+void test_damaged_flag() {
+  // fix4 z4 #9: a gamelist cut short is reported (the games before the cut still load); a blank or missing one is not damaged
+  std::string d = tmpdir("damaged");
+  spit(d + "/a.gb", "x");
+  spit(d + "/b.gb", "x");
+  bool damaged = false;
+  spit(d + "/gamelist.xml", "<gameList><game><path>./a.gb</path><name>Alpha</name></game><game><path>./b.gb</path><na");
+  auto g = load_games(d, {".gb"}, d + "/gamelist.xml", &damaged);
+  CHECK(damaged);
+  CHECK_EQ(g.size(), size_t(2));
+  CHECK_EQ(g[0].name, std::string("Alpha"));
+  spit(d + "/gamelist.xml", "<gameList><game><path>./a.gb</path></game></gameList>");
+  load_games(d, {".gb"}, d + "/gamelist.xml", &damaged);
+  CHECK(!damaged);
+  spit(d + "/gamelist.xml", "  \n");
+  load_games(d, {".gb"}, d + "/gamelist.xml", &damaged);
+  CHECK(!damaged);
+  load_games(d, {".gb"}, d + "/nope.xml", &damaged);
+  CHECK(!damaged);
+}
+
 void test_load_games_order() {
   // ES order: sortname or name, upper case, leading article dropped; hidden out; names from the file or the stem
   std::string d = tmpdir("order");
@@ -582,6 +603,7 @@ int main() {
   test_broken_untouched();
   test_apply_edit_spans();
   test_load_games_order();
+  test_damaged_flag();
   if (std::getenv("ZF_BENCH")) bench();
   if (const char* fl = std::getenv("ZF_FAKELIB")) bench_fakelib(fl);
   std::string c = "rm -rf /tmp/zf_gl_" + std::to_string(getpid()) + "_*";

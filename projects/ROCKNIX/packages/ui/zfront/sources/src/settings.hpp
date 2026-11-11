@@ -3,6 +3,7 @@
 // file + rename) because other programs (tuner, OTA scripts, runemu.sh) read them while we run.
 #pragma once
 #include <map>
+#include <set>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -44,8 +45,12 @@ class SystemConf {
   /// File this conf was loaded from (empty for from_text without a path): lets a menu re-read it fresh.
   const std::string& path() const { return path_; }
 
+  /// The file is there but could not be read: nothing is saved over it.
+  bool unreadable() const { return unreadable_; }
+
  private:
   std::string path_;
+  bool unreadable_ = false;
   std::vector<std::string> lines_;
   std::unordered_map<std::string, std::string> map_;
 };
@@ -58,17 +63,25 @@ class EsSettings {
   static EsSettings from_text(const std::string& xml, const std::string& path = std::string());
 
   const std::string* get(const std::string& name) const;
+  /// Every name in the file, sorted (theme settings are found by prefix).
+  std::vector<std::string> names() const;
   bool get_bool(const std::string& name, bool def) const;
   long get_int(const std::string& name, long def) const;
   void set_bool(const std::string& name, bool v);
   void set_string(const std::string& name, const std::string& v);
   void set_int(const std::string& name, long v);
+  /// Re-reads the file and merges: keys this object did not set keep the value on disk (ES or another tool may have changed
+  /// them), unknown keys stay. Refuses (false) to write over a non-empty file that does not parse.
   bool save(std::string* err = nullptr) const;
   std::string text() const;
+  /// The file this was loaded from was not empty but did not parse (a corrupt file, not an empty one).
+  bool unreadable() const { return unreadable_; }
 
  private:
   std::string path_;
-  std::map<std::string, std::pair<std::string, std::string>> map_;  // name -> (type tag, value)
+  mutable std::map<std::string, std::pair<std::string, std::string>> map_;  // name -> (type tag, value); `save` refreshes it
+  mutable std::set<std::string> touched_;                                    // keys set since then
+  bool unreadable_ = false;
 };
 
 }  // namespace zf

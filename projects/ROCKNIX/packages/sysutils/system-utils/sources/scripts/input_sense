@@ -114,11 +114,21 @@ FN_A_PRESSED=false
 FN_B_PRESSED=false
 
 ### Volume repeat variables
-VOLUME_REPEAT_DELAY=0.3  # Initial delay before repeating starts (seconds)
-VOLUME_REPEAT_INTERVAL=0.1  # Interval between repeats (seconds)
+### Zenith: the volume keys change the sound at once. Each step used to run /usr/bin/volume (a new shell that loads all
+### system.cfg, then pactl, then set_setting) and waited for it: 0.3-0.5 s per step on RK3326 depending on the CPU
+### governor. Now a background worker per press does pactl first (the sound changes) and then writes audio.volume (zfront
+### shows its volume bar from that), without starting any other script. Releasing the key only removes the worker's flag
+### file: the main loop never waits, and a worker is never killed half way through writing system.cfg.
+VOLUME_REPEAT_SLICE=0.05  # Repeat interval (seconds), on top of the ~0.08 s that pactl takes
+VOLUME_REPEAT_DELAY_SLICES=6  # Hold this many slices (0.3 s) before repeating starts
+VOLUME_STEP=5
 VOLUME_UP_PRESSED=false
 VOLUME_DOWN_PRESSED=false
 VOLUME_REPEAT_PID=""
+VOLUME_HOLD_FLAG=""
+VOLUME_PRESS_COUNT=0
+### pipewire-pulse listens on TCP; without this pactl waits 30 s for dbus (same default as /usr/bin/volume)
+export PULSE_SERVER="${PULSE_SERVER:-127.0.0.1:4713}"
 
 ### Allow actions to be overridden in system.cfg
 FN_A_ACTION_UP="$(get_setting key.function.a.up)"
@@ -137,40 +147,71 @@ FN_AB_ACTION_DOWN="$(get_setting key.function.ab.down)"
 [ -z "${FN_AB_ACTION_DOWN}" ] && FN_AB_ACTION_DOWN="wifictl disable"
 
 ### Volume repeat function
+### One worker per press: it steps the volume while its flag file exists, then shows the final value.
+volume_worker() {
+    local direction=$1 flag=$2 v=0 n first=true c="" writer="" slp i
+    # no new processes in the loop but pactl: at 1 GHz every process costs 20-80 ms (even `sleep`)
+    read -r -d '' c < "${J_CONF}"
+    [[ $'\n'"${c}" =~ $'\n'audio\.volume=([0-9]+) ]] && v=${BASH_REMATCH[1]}
+    exec {slp}<> <(:)  # a pipe nobody writes to: `read -t` on it is a pause without starting `sleep`
+    while true; do
+        if [ "${direction}" = "up" ]; then n=$(( v + VOLUME_STEP )); else n=$(( v - VOLUME_STEP )); fi
+        (( n < 0 )) && n=0
+        (( n > 100 )) && n=100
+        if [ ${n} -ne ${v} ]; then
+            # the sound first; audio.volume (what zfront shows and what is restored at boot) is written meanwhile
+            pactl -- set-sink-volume @DEFAULT_SINK@ "${n}%" >/dev/null 2>&1
+            [ -n "${writer}" ] && wait ${writer}
+            set_setting "audio.volume" "${n}" &
+            writer=$!
+        elif ${first}; then
+            # pressed at 0 or 100: audio.volume stays as it is, so zfront would show nothing. Tell it first (it shows its bar
+            # with the value in system.cfg; the name is kLimitFile in zfront's menu_sound_watch.cpp), then apply the value
+            # again in case the sink drifted from the setting
+            : > /run/zfront.volume-limit
+            pactl -- set-sink-volume @DEFAULT_SINK@ "${n}%" >/dev/null 2>&1
+        fi
+        # at 0 or 100 there is nothing more to do while the key stays down
+        ${first} || [ ${n} -ne ${v} ] || break
+        v=${n}
+        if ${first}; then
+            first=false
+            for (( i = 0; i < VOLUME_REPEAT_DELAY_SLICES; i++ )); do
+                read -r -t ${VOLUME_REPEAT_SLICE} -u ${slp}
+                [ -e "${flag}" ] || break 2
+            done
+        else
+            read -r -t ${VOLUME_REPEAT_SLICE} -u ${slp}
+            [ -e "${flag}" ] || break
+        fi
+    done
+    [ -n "${writer}" ] && wait ${writer}
+    exec {slp}>&-
+    rm -f "${flag}"
+    /usr/bin/mako-notify "Volume: ${v}%" -no-es >/dev/null 2>&1
+}
+
 start_volume_repeat() {
     local direction=$1
 
     # Stop any existing volume repeat
     stop_volume_repeat
 
-    # Initial volume adjustment
-    volume ${direction}
-
-    # Start background process for repeating volume adjustments
-    (
-        sleep ${VOLUME_REPEAT_DELAY}
-        while true; do
-            # Check if button is still pressed before adjusting
-            if { [ "${direction}" = "up" ] && [ "${VOLUME_UP_PRESSED}" = true ]; } || \
-               { [ "${direction}" = "down" ] && [ "${VOLUME_DOWN_PRESSED}" = true ]; }; then
-                volume ${direction}
-                sleep ${VOLUME_REPEAT_INTERVAL}
-            else
-                break
-            fi
-        done
-    ) &
-
+    VOLUME_PRESS_COUNT=$(( VOLUME_PRESS_COUNT + 1 ))
+    VOLUME_HOLD_FLAG="/run/input_sense.volume.$$.${VOLUME_PRESS_COUNT}"
+    : > "${VOLUME_HOLD_FLAG}"
+    volume_worker "${direction}" "${VOLUME_HOLD_FLAG}" &
     VOLUME_REPEAT_PID=$!
     ${DEBUG} && log $0 "Started volume repeat (${direction}) with PID: ${VOLUME_REPEAT_PID}"
 }
 
 stop_volume_repeat() {
-    if [ -n "${VOLUME_REPEAT_PID}" ]; then
-        kill ${VOLUME_REPEAT_PID} 2>/dev/null
-        wait ${VOLUME_REPEAT_PID} 2>/dev/null
+    # never kill the worker: it may be in the middle of rewriting system.cfg; it ends on its own when the flag is gone
+    if [ -n "${VOLUME_HOLD_FLAG}" ]; then
+        rm -f "${VOLUME_HOLD_FLAG}"
         ${DEBUG} && log $0 "Stopped volume repeat with PID: ${VOLUME_REPEAT_PID}"
     fi
+    VOLUME_HOLD_FLAG=""
     VOLUME_REPEAT_PID=""
 }
 
@@ -355,11 +396,7 @@ set +e
         elif [[ "${line}" =~ ${RELEASE} ]]; then
           ${DEBUG} && log $0 "Volume Up: Released"
           VOLUME_UP_PRESSED=false
-          stop_volume_repeat
-          if [ "${FN_A_PRESSED}" = false ] && [ "${FN_B_PRESSED}" = false ]; then
-            CUR_VOLUME=$(get_setting "audio.volume")
-            /usr/bin/mako-notify "Volume: ${CUR_VOLUME}%" -no-es
-          fi
+          stop_volume_repeat  # the worker shows the final value itself
         fi
       ;;
       (${FUNCTION_VOLUME_DOWN_EVENT})
@@ -376,11 +413,7 @@ set +e
         elif [[ "${line}" =~ ${RELEASE} ]]; then
           ${DEBUG} && log $0 "Volume Down: Released"
           VOLUME_DOWN_PRESSED=false
-          stop_volume_repeat
-          if [ "${FN_A_PRESSED}" = false ] && [ "${FN_B_PRESSED}" = false ]; then
-            CUR_VOLUME=$(get_setting "audio.volume")
-            /usr/bin/mako-notify "Volume: ${CUR_VOLUME}%" -no-es
-          fi
+          stop_volume_repeat  # the worker shows the final value itself
         fi
       ;;
       (${FUNCTION_POWER_PRESSED_EVENT})

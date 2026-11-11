@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <memory>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -313,6 +314,42 @@ void test_boot_args() {
   CHECK_EQ(boot::resolve_theme("es-theme-zenith-dark", r), r + "/usr/share/themes/es-theme-zenith-dark");
   touch_layout(r + "/storage/.config/emulationstation/themes/es-theme-zenith");
   CHECK_EQ(boot::resolve_theme("es-theme-zenith", r), r + "/storage/.config/emulationstation/themes/es-theme-zenith");
+
+  // colour variants shipped by zfront (/usr/share/zfront/theme-<name>) and the THEME SET list
+  touch_layout(r + "/usr/share/zfront/theme-ember");
+  CHECK_EQ(boot::resolve_theme("es-theme-zenith-ember", r), r + "/usr/share/zfront/theme-ember");
+  CHECK_EQ(boot::resolve_theme("es-theme-zenith-gone", r), r + "/usr/share/zfront/theme-light");  // variant not installed: Zenith light
+  const std::vector<boot::ThemeChoice> sets = boot::list_theme_sets(r);
+  CHECK(sets.size() == 3 && sets[0].value == "es-theme-zenith");  // zenith, zenith-dark, zenith-ember (no duplicates across folders)
+  bool saw_ember = false;
+  for (const boot::ThemeChoice& s : sets) saw_ember = saw_ember || (s.value == "es-theme-zenith-ember" && s.label == "Zenith ember");
+  CHECK(saw_ember);
+
+  // the two Zeniths have their names in the list, and each folder resolves to itself
+  touch_layout(r + "/usr/share/themes/es-theme-zenith-next");
+  touch_layout(r + "/usr/share/themes/es-theme-zenith-next-dark");
+  CHECK_EQ(boot::resolve_theme("es-theme-zenith-next", r), r + "/usr/share/themes/es-theme-zenith-next");
+  CHECK_EQ(boot::resolve_theme("es-theme-zenith-next-dark", r), r + "/usr/share/themes/es-theme-zenith-next-dark");
+  std::map<std::string, std::string> labels;
+  for (const boot::ThemeChoice& s : boot::list_theme_sets(r)) labels[s.value] = s.label;
+  CHECK_EQ(labels["es-theme-zenith"], std::string("Zenith Minimal"));
+  CHECK_EQ(labels["es-theme-zenith-dark"], std::string("Zenith Minimal Dark"));
+  CHECK_EQ(labels["es-theme-zenith-next"], std::string("Zenith Next"));
+  CHECK_EQ(labels["es-theme-zenith-next-dark"], std::string("Zenith Next Dark"));
+
+  // a theme that cannot be drawn falls back to Zenith, and when nothing works the caller is told why
+  auto bad = [](const std::string& d, std::string& why) {
+    if (d.find("broken") == std::string::npos) return false;
+    why = "falta la variable 'bg'";
+    return true;
+  };
+  std::string used, why;
+  bool fell = true;
+  CHECK(boot::pick_theme("/t/ok", "/t/zenith", bad, used, fell, why) && used == "/t/ok" && !fell);
+  CHECK(boot::pick_theme("/t/broken", "/t/zenith", bad, used, fell, why) && used == "/t/zenith" && fell && why == "falta la variable 'bg'");
+  CHECK(!boot::pick_theme("/t/broken", "", bad, used, fell, why) && why == "falta la variable 'bg'");  // --theme: strict
+  CHECK(!boot::pick_theme("/t/broken", "/t/broken2", bad, used, fell, why));                          // Zenith broken too
+  CHECK(!boot::pick_theme("/t/broken", "/t/broken", bad, used, fell, why));
 
   // --log-path: stderr of a child goes to <dir>/zfront.log, appended
   const std::string ld = g_tmp + "/logs";

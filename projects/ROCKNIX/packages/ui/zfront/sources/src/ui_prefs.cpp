@@ -1,6 +1,7 @@
 #include "ui_prefs.hpp"
 
 #include "app.hpp"
+#include "ui_style.hpp"
 
 namespace zf {
 namespace ui_prefs {
@@ -17,6 +18,7 @@ Prefs read(const EsSettings& es) {
   p.clock = es.get_bool("DrawClock", true);
   p.clock12 = es.get_bool("ClockMode12", false);
   p.network = es.get_bool("ShowNetworkIndicator", true);
+  p.help = es.get_bool("ShowHelpPrompts", true);
   if (const std::string* b = es.get("ShowBattery")) {
     if (b->empty()) p.battery = BatteryMode::Off;
     else if (*b == "text") p.battery = BatteryMode::Text;
@@ -50,7 +52,13 @@ Status filter(const Status& raw, const Prefs& p) {
   return s;
 }
 
+void apply_access(const EsSettings& es) {
+  const std::string* t = es.get("TextSize");
+  ui::set_access(ui::parse_text_size(t ? std::string_view(*t) : std::string_view()), es.get_bool("HighContrast", false));
+}
+
 void on_status(Ctx& cx, const Status& raw) {
+  apply_access(cx.es);
   g_raw = raw;
   g_have_raw = true;
   g_prefs = read(cx.es);
@@ -58,14 +66,21 @@ void on_status(Ctx& cx, const Status& raw) {
 }
 
 void reapply(Ctx& cx) {
-  if (!g_have_raw) return;
+  apply_access(cx.es);
   g_prefs = read(cx.es);
+  if (!g_have_raw) return;
   cx.status = filter(g_raw, g_prefs);
 }
 
+std::optional<Battery> raw_battery() { return g_have_raw ? g_raw.battery : std::nullopt; }
+
 bool has_battery() { return g_have_raw && g_raw.battery.has_value(); }
 
+bool raw_wifi(bool fallback) { return g_have_raw ? g_raw.wifi : fallback; }
+
 bool battery_text() { return g_prefs.battery != BatteryMode::Icon; }
+
+bool help_prompts() { return g_prefs.help; }
 
 }  // namespace ui_prefs
 }  // namespace zf

@@ -479,6 +479,19 @@ CPU_GOVERNOR=${ get_setting "cpugovernor" "${PLATFORM}" "${ROMNAME##*/}"; }
 ${VERBOSE} && log $0 "Set emulation performance mode to (${CPU_GOVERNOR})"
 ${CPU_GOVERNOR}
 
+### Performance mode: GPU and memory at their top frequency while the game runs. Their on-demand governors only see busy
+### time and bandwidth, so the short GPU bursts and latency-bound memory traffic of an emulator keep them low (N64 on the
+### R36S: GPU 200 MHz, memory 328 MHz; Mario Tennis 19 -> 25-27 fps pinned). Goes after the CPU governor, whose function
+### also sets the memory one. Overrides gpuperf; the GPU is restored below, the memory too.
+PERFMODE=${ get_setting "perfmode" "${PLATFORM}" "${ROMNAME##*/}"; }
+if [ "${PERFMODE}" = "1" ]
+then
+  ${VERBOSE} && log $0 "Performance mode: GPU and memory at top frequency"
+  set_gpu_gov performance
+  set_dmc_gov performance
+  echo performance >/tmp/.gpu_performance_level
+fi
+
 ### Check whether MangoHud is supported and enabled
 if [ "${DEVICE_MANGOHUD_SUPPORT}" == "true" ]; then
   MANGOHUD_ENABLED=${ get_setting "rocknix.mangohud.enabled"  "${PLATFORM}" "${ROMNAME##*/}"; }
@@ -549,6 +562,9 @@ else
   gpu_performance_level auto &
 fi
 [ -e /tmp/.gpu_performance_level ] && rm -f /tmp/.gpu_performance_level 2>/dev/null
+
+### Memory back to on demand after the performance mode (quit() then applies system.cpugovernor, which may change it again)
+[ "${PERFMODE}" = "1" ] && set_dmc_gov ondemand
 
 ### Reset the number of cores to use.
 NUMTHREADS=${ get_setting "system.threads"; }

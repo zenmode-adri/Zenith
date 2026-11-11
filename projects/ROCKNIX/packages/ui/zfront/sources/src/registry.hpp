@@ -10,6 +10,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <vector>
 #include <string_view>
 
 namespace zf {
@@ -29,6 +30,8 @@ class Registry {
   static Registry& instance();
   void add(std::string name, ScreenFactory f);
   bool has(std::string_view name) const;
+  /// Every registered screen name, sorted (tests walk them).
+  std::vector<std::string> names() const;
   /// nullptr when `name` is unknown.
   std::unique_ptr<Screen> make(std::string_view name, Ctx& cx, const std::string& arg) const;
   void add_service(std::string name, ServiceStart f);

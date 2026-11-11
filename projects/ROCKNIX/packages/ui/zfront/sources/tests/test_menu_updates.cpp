@@ -14,6 +14,7 @@
 #include "menu_system.hpp"
 #include "registry.hpp"
 #include "ui_dialogs.hpp"
+#include "ui_prefs.hpp"
 #include "util.hpp"
 
 using namespace zf;
@@ -243,8 +244,36 @@ int main() {
     Menu* m = open(h, cx);
     int u = find(*m, "UPDATING");
     CHECK(u >= 0);
-    CHECK_EQ(m->entry(size_t(u)).value_text, std::string("######################     84.0%"));
+    CHECK(m->entry(size_t(u)).kind == EntryKind::Slider);  // the percentage as a bar
+    CHECK_EQ(m->entry(size_t(u)).i, 84);
     CHECK(find(*m, "START UPDATE") < 0);  // cannot be started twice
+    // cancelling asks first, and only then stops the script and curl and removes the partial file
+    {
+      cx.sv->cmd.log.clear();
+      CHECK(go(*m, cx, "CANCEL DOWNLOAD"));
+      Transition q = m->handle(Action::A, cx);
+      CHECK(q.kind == Transition::Push && q.screen);
+      CHECK(cx.sv->cmd.log.empty());
+      if (q.screen) {
+        CHECK(q.screen->handle(Action::A, cx).kind == Transition::Pop);  // NO is focused first
+        CHECK(cx.sv->cmd.log.empty());
+      }
+      Transition q2 = m->handle(Action::A, cx);
+      q2.screen->handle(Action::Left, cx);
+      q2.screen->handle(Action::A, cx);
+      CHECK_EQ(cx.sv->cmd.log.size(), size_t(1));
+      CHECK(logged(cx, "pkill -f '^/bin/sh /usr/bin/[r]ocknix-update'"));
+      CHECK(logged(cx, "pkill -f '[c]url --progress-bar'"));
+      CHECK(logged(cx, "! -e \"$f.sha256\""));  // only a tar WITHOUT its checksum is removed
+      ::unlink((g_dir + "/tmp/zf-update.run").c_str());
+      put_file("/tmp/zf-update.rc", "143\n");
+      m->tick(1.0f, cx);
+      CHECK(toasted(cx, "DOWNLOAD CANCELLED"));
+      CHECK(!toasted(cx, "AN ERROR OCCURRED"));
+      put_file("/tmp/zf-update.run");  // back to the download of the rest of the test
+      ::unlink((g_dir + "/tmp/zf-update.rc").c_str());
+      m->tick(1.0f, cx);
+    }
     CHECK(m->wake_in().has_value());
     CHECK(*m->wake_in() <= 1.0f);
     // it ends well: the tar and its checksum are in /storage/.update
@@ -274,6 +303,29 @@ int main() {
     CHECK_EQ(hits, 1);
   }
 
+  // ---- cancelled but pkill did not kill it: after a few seconds it says so, and the real end is not shown as a cancellation
+  {
+    Ctx cx;
+    make_console(cx);
+    put_file("/tmp/zf-update.run");
+    put_file("/tmp/zf-update.log", "######   23.1%");
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx);
+    CHECK(go(*m, cx, "CANCEL DOWNLOAD"));
+    Transition q = m->handle(Action::A, cx);
+    q.screen->handle(Action::Left, cx);
+    q.screen->handle(Action::A, cx);
+    for (int i = 0; i < 5; ++i) m->tick(1.0f, cx);
+    CHECK(!toasted(cx, "COULD NOT CANCEL THE DOWNLOAD"));  // the kill still has time
+    for (int i = 0; i < 5; ++i) m->tick(1.0f, cx);
+    CHECK(toasted(cx, "COULD NOT CANCEL THE DOWNLOAD"));
+    ::unlink((g_dir + "/tmp/zf-update.run").c_str());
+    put_file("/tmp/zf-update.rc", "0");
+    m->tick(1.0f, cx);
+    CHECK(!toasted(cx, "DOWNLOAD CANCELLED"));
+    CHECK(toasted(cx, "UPDATE IS READY"));
+  }
+
   // ---- it fails: the last log line explains
   {
     Ctx cx;
@@ -286,7 +338,7 @@ int main() {
     put_file("/tmp/zf-update.rc", "1\n");
     m->tick(1.0f, cx);
     m->tick(0.0f, cx);
-    CHECK(toasted(cx, "AN ERROR OCCURRED: Failed to download update file."));
+    CHECK(toasted(cx, "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN. (Failed to download update file.)"));
     CHECK(find(*m, "START UPDATE") >= 0);
     CHECK(find(*m, "APPLY UPDATE") < 0);
   }
@@ -304,6 +356,46 @@ int main() {
     std::unique_ptr<Screen> h2;
     Menu* m2 = open(h2, cx);
     CHECK(find(*m2, "APPLY UPDATE") >= 0);
+  }
+
+  // ---- rocknix-update resets updates.force in system.cfg itself: the toggle must not stay ON after an update
+  {
+    Ctx cx;
+    make_console(cx);
+    put_file("/system.cfg", "updates.force=1\n");
+    cx.conf = SystemConf::load(g_dir + "/system.cfg");
+    put_file("/tmp/zf-update.run");
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx);
+    CHECK(cx.conf.get_bool("updates.force", false));
+    ::unlink((g_dir + "/tmp/zf-update.run").c_str());
+    put_file("/tmp/zf-update.rc", "0\n");
+    put_file("/system.cfg", "updates.force=0\n");  // what the script did
+    m->tick(1.0f, cx);
+    m->tick(0.0f, cx);
+    CHECK(!cx.conf.get_bool("updates.force", false));
+    CHECK(!m->entry(size_t(find(*m, "FORCE NEXT UPDATE"))).get_b());
+  }
+
+  // ---- hiding the network indicator (ES: ShowNetworkIndicator) does not mean "not connected": the check still runs
+  {
+    Ctx cx;
+    make_console(cx);
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx);
+    cx.es = EsSettings::from_text("<?xml version=\"1.0\"?><config><bool name=\"ShowNetworkIndicator\" value=\"false\"/></config>");
+    Status raw = Status::demo("12:00");
+    raw.wifi = true;
+    ui_prefs::on_status(cx, raw);
+    CHECK(!cx.status.wifi);  // hidden in the bar
+    CHECK(go(*m, cx, "START UPDATE"));
+    cx.sv->cmd.log.clear();
+    Transition t = m->handle(Action::A, cx);
+    CHECK(t.kind == Transition::None);  // no "not connected" message
+    settle(cx);
+    CHECK(logged(cx, "ping -c 1 -W 2 -t 255 8.8.8.8"));
+    raw.wifi = false;  // the raw status is process-wide: leave it as it was
+    ui_prefs::on_status(cx, raw);
   }
 
   return zt::done();

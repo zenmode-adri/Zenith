@@ -485,6 +485,11 @@
 		opp-hz = /bits/ 64 <666000000>;
 		opp-microvolt = <1050000>;
 	};
+	/* 786 MHz as a runtime step (boot stays at 666), as dArkOSen enables it on the original R36S boards. 1.1 V = its safest bin. */
+	opp-786000000 {
+		opp-hz = /bits/ 64 <786000000>;
+		opp-microvolt = <1100000>;
+	};
 };
 
 &dmc {

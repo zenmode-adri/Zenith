@@ -336,7 +336,7 @@ static void test_language_selection() {
 static std::string find_real_locale() {
   std::vector<std::string> c;
   if (const char* e = std::getenv("ZF_TEST_REAL_LOCALE")) c.push_back(e);
-  c.push_back("/home/epsil/verify31/root/usr/config/locale");
+  c.push_back("/usr/config/locale");
   c.push_back("/usr/share/locale");
   for (const auto& d : c)
     if (file_exists(d + "/es/LC_MESSAGES/emulationstation2.mo") && file_exists(d + "/zh_CN/LC_MESSAGES/emulationstation2.mo")) return d;
@@ -426,7 +426,7 @@ static void test_real_catalogs() {
 }
 
 static void test_fonts() {
-  const char* base = "/home/epsil/verify31/root/usr/config/emulationstation/resources";
+  const char* base = "/usr/config/emulationstation/resources";
   std::string rubik = std::string(base) + "/Rubik-Regular.ttf";
   if (const char* e = std::getenv("ZF_TEST_FONT")) rubik = e;
   if (!file_exists(rubik) || !file_exists(path_join(path_dir(rubik), "DroidSansFallbackFull.ttf"))) {

@@ -23,6 +23,7 @@ struct Prefs {
   bool clock12 = false;
   BatteryMode battery = BatteryMode::Text;
   bool network = true;  // ShowNetworkIndicator: the WiFi icon
+  bool help = true;     // ShowHelpPrompts: the help bars (ES default: on)
 };
 
 /// The keys of `es` (defaults: clock on, 24 h, icon and text, network indicator on).
@@ -36,10 +37,19 @@ Status filter(const Status& raw, const Prefs& p);
 void on_status(Ctx& cx, const Status& raw);
 /// Re-reads the keys from `cx.es` and republishes the last raw status. Menus call it after changing one of them.
 void reapply(Ctx& cx);
+/// Sets `ui::access()` (text size, high contrast) from the keys `TextSize` (small | normal | large | xlarge) and `HighContrast` of `es`.
+/// Done by `on_status` and `reapply`; the menus lay out again by themselves when it changed.
+void apply_access(const EsSettings& es);
 /// The last raw status has a battery (the "SHOW BATTERY STATUS" entry only makes sense then).
 bool has_battery();
+/// The battery as the status bar read it (before the preferences hid it): what a screen about the battery must agree with.
+std::optional<Battery> raw_battery();
+/// WiFi as the source reports it, whatever "SHOW NETWORK INDICATOR" hides in `cx.status`; `fallback` before the first status.
+bool raw_wifi(bool fallback);
 /// The battery percentage is drawn next to the icon (`ShowBattery` = text). Read by `status_bar`.
 bool battery_text();
+/// The help bars are drawn (`ShowHelpPrompts`, ES's ON-SCREEN HELP). Read by `help_bar` and the menus' help.
+bool help_prompts();
 
 }  // namespace ui_prefs
 }  // namespace zf

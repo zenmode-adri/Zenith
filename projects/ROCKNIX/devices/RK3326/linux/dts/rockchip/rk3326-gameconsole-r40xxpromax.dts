@@ -67,11 +67,11 @@
 	constant-charge-current-max-microamp = <2000000>;
 	constant-charge-voltage-max-microvolt = <4200000>;
 	factory-internal-resistance-micro-ohms = <100000>;
-	voltage-max-design-microvolt = <4000000>;
-	voltage-min-design-microvolt = <3000000>;
+	voltage-max-design-microvolt = <4200000>;
+	voltage-min-design-microvolt = <3300000>;
 
 	ocv-capacity-celsius = <20>;
-	ocv-capacity-table-0 = <4000000 100>, <3995000 95>, <3990000 90>, <3950000 85>,
+	ocv-capacity-table-0 = <4045000 100>, <4020000 95>, <3990000 90>, <3950000 85>,
 		<3910000 80>, <3870000 75>, <3830000 70>, <3790000 65>,
 		<3750000 60>, <3710000 55>, <3670000 50>, <3630000 45>,
 		<3580000 40>, <3530000 35>, <3480000 30>, <3430000 25>,
@@ -295,4 +295,9 @@
 	"I seq=eb00",
 	"I seq=11 wait=200",
 	"I seq=29 wait=20";
+};
+
+/* Not an original R36S board: no 786 MHz memory step (dArkOSen keeps it off outside those). */
+&dmc_opp_table {
+	/delete-node/ opp-786000000;
 };

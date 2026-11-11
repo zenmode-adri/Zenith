@@ -14,6 +14,7 @@
 
 #include "app.hpp"
 #include "check.hpp"
+#include "launch.hpp"
 #include "oscontract.hpp"
 #include "screensaver.hpp"
 
@@ -430,9 +431,49 @@ int main() {
     CHECK(!emukill());
     set_kill("");
     CHECK(!emukill());
+    CHECK(!take_quit_request());  // refused kills ask for nothing
     set_kill("retroarch");
     CHECK(emukill());
     CHECK(log_has(*sv, "killall") && log_has(*sv, "retroarch"));
+    CHECK(take_quit_request());
+    CHECK(!take_quit_request());  // once
+    // a game stopped by us while the launcher waits ends as a normal quit; one that fails on its own keeps its code
+    {
+      bool asked = false;
+      launch::RunResult rr = launch::run("sh -c 'sleep 0.3; exit 3'", [&asked](int) {
+        if (!asked) asked = emukill();
+      });
+      CHECK(asked);
+      CHECK_EQ(rr.exit_code, 0);
+      CHECK_EQ(launch::run("sh -c 'exit 3'").exit_code, 3);
+      CHECK(emukill());  // a request made with no wait running does not leak into the next game
+      CHECK_EQ(launch::run("sh -c 'exit 3'").exit_code, 3);
+    }
+    // start_ppsspp.sh writes a signal before the name: killall gets both (it was refused before, so /emukill left PPSSPP running)
+    set_kill("-9 PPSSPPSDL");
+    CHECK(emukill());
+    CHECK(log_has(*sv, "killall -9 ") && log_has(*sv, "PPSSPPSDL"));
+    set_kill("-9");
+    CHECK(!emukill());
+    set_kill("-9 a;b");
+    CHECK(!emukill());
+    set_kill("-9 emulationstation");
+    CHECK(!emukill());
+    set_kill("-9; reboot");
+    CHECK(!emukill());
+    // runemu.sh names two processes for RetroArch: killall gets both (it was refused, so /emukill left RetroArch running, seen 9-nov)
+    set_kill("retroarch retroarch32");
+    CHECK(emukill());
+    CHECK(log_has(*sv, "'retroarch' 'retroarch32'"));
+    set_kill("-HUP gmu.bin");
+    CHECK(emukill());
+    CHECK(log_has(*sv, "killall -HUP 'gmu.bin'"));
+    set_kill("retroarch emulationstation");
+    CHECK(!emukill());
+    set_kill("retroarch -9");
+    CHECK(!emukill());
+    set_kill("retroarch a;b");
+    CHECK(!emukill());
     {
       Busy b1;
       Busy b2;

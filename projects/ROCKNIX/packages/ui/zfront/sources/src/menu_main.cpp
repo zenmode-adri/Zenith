@@ -2,21 +2,38 @@
 
 #include "menu_groups.hpp"
 #include "menu_lang.hpp"
+#include "ra.hpp"
 #include "registry.hpp"
+#include "uimode.hpp"
 
 namespace zf {
 
 std::vector<MainRow> main_rows() {
   // tr() with literals, so tools/extract-strings.sh finds every key; evaluated at every build, so a language change reaches it
   return {
-      {tr("GAMES"), "menu.game", "games"},
-      {tr("SCREEN & SOUND"), "menu.g.screen", "screen"},
-      {tr("BATTERY & PERFORMANCE"), "menu.g.power", "battery"},
-      {tr("CONTROLLER & BLUETOOTH"), "menu.controllers", "controller"},
-      {tr("NETWORK"), "menu.network", "network"},
-      {tr("LIBRARY"), "menu.g.library", "library"},
-      {tr("SYSTEM"), "menu.g.system", "system"},
-      {tr("QUIT"), "menu.quit", "quit"},
+      // what is touched often outside a game first, what is set once last (diseno-menus/PROPUESTA-REORDEN-10nov.md). NETWORK before
+      // LIBRARY: the games come in (Wi-Fi, transfer files) before they are sorted. RETROACHIEVEMENTS: ES's row (shown with an account and
+      // its own switch on), next to the games rather than first
+      {tr("GAMES"), "menu.game", "games", nullptr},
+      {tr("RETROACHIEVEMENTS"), "menu.retroachievements", "achievements", [](const Ctx& cx) { return ra::in_main_menu(cx); }},
+      {tr("BATTERY & PERFORMANCE"), "menu.battery", "battery", nullptr},
+      {tr("SCREEN & SOUND"), "menu.g.screen", "screen", nullptr},
+      {tr("NETWORK"), "menu.network", "network", nullptr},
+      {tr("LIBRARY"), "menu.g.library", "library", nullptr},
+      {tr("CONTROLLER & BLUETOOTH"), "menu.controllers", "controller", nullptr},
+      {tr("APPEARANCE"), "menu.g.look", "ui", nullptr},
+      {tr("SYSTEM"), "menu.g.system", "system", nullptr},
+      {tr("QUIT"), "menu.quit", "quit", nullptr},
+  };
+}
+
+// ES's main menu outside Full mode: INFORMATION, UNLOCK USER INTERFACE MODE and QUIT (the RetroAchievements row of ES opens the stats
+// viewer; zfront's opens the account settings, so it stays out)
+static std::vector<MainRow> restricted_rows() {
+  return {
+      {tr("INFORMATION"), "menu.system.info", "system", nullptr},
+      {tr("UNLOCK USER INTERFACE MODE"), "menu.uimode.unlock", "system", nullptr},
+      {tr("QUIT"), "menu.quit", "quit", nullptr},
   };
 }
 
@@ -39,10 +56,10 @@ std::unique_ptr<Screen> make_main_menu(std::vector<MainRow> rows, bool with_demo
       if (p.build) p.build(m, cx);
     if (m.count() > 0) m.separator();
     std::vector<MainRow> own;
-    if (rows.empty()) own = main_rows();
+    if (rows.empty()) own = uimode::of(cx.es) == uimode::Mode::Full ? main_rows() : restricted_rows();
     const Registry& reg = Registry::instance();
     for (const MainRow& r : rows.empty() ? own : rows)
-      if (reg.has(r.screen)) m.submenu(r.label, r.screen).icon(r.icon);  // a screen nobody registered is not shown
+      if (reg.has(r.screen) && (!r.shown || r.shown(cx))) m.submenu(r.label, r.screen).icon(r.icon);  // a screen nobody registered is not shown
     if (with_demo && reg.has("menu.demo")) m.submenu(tr("WIDGET DEMO"), "menu.demo").icon("manual").hint(tr("Development only: every widget of the menu framework."));
   };
   return std::make_unique<LangMenu>(std::move(s));

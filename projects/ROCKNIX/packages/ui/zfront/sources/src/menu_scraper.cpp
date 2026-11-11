@@ -7,8 +7,10 @@
 #include <string>
 #include <vector>
 
+#include "autocover.hpp"
 #include "i18n.hpp"
 #include "menu.hpp"
+#include "menu_game.hpp"
 #include "menu_lang.hpp"
 #include "registry.hpp"
 #include "scene.hpp"
@@ -19,6 +21,13 @@ namespace zf {
 namespace {
 
 using namespace scraper;
+
+// A title never taller than the status bar (4 cells): the line of a tall font would stick out over the top margin
+void fit_title(Assets& a, ui::Txt& t, std::string_view s, const ui::Metrics& m, float max_w) {
+  int px = m.title_px;
+  t.set(a, s, px, max_w);
+  while (m.grid && t.h > float(4 * m.u) && px > 8) t.set(a, s, --px, max_w);
+}
 
 // zfront's own settings (ES ignores them): the filter of the games and the systems left out
 constexpr const char* kKeyFilter = "ZfScraperFilter";  // all | missing | none
@@ -43,11 +52,16 @@ std::vector<std::string> skipped(const Ctx& cx) {
   return v ? split_csv(*v) : std::vector<std::string>();
 }
 
+void save_es(Ctx& cx) {
+  std::string err;
+  if (!cx.es.save(&err)) cx.sv->toasts.push(tr("Could not save the settings"));
+}
+
 void save_skipped(Ctx& cx, const std::vector<std::string>& v) {
   std::string s;
   for (const std::string& n : v) s += (s.empty() ? "" : ",") + n;
   cx.es.set_string(kKeySkip, s);
-  cx.es.save();
+  save_es(cx);
 }
 
 bool is_skipped(const std::vector<std::string>& sk, const std::string& name) { return std::find(sk.begin(), sk.end(), name) != sk.end(); }
@@ -66,11 +80,11 @@ std::string get_str(const Ctx& cx, const char* k, const char* def) {
 }
 void set_str(Ctx& cx, const char* k, const std::string& v) {
   cx.es.set_string(k, v);
-  cx.es.save();
+  save_es(cx);
 }
 void set_flag(Ctx& cx, const char* k, bool v) {
   cx.es.set_bool(k, v);
-  cx.es.save();
+  save_es(cx);
 }
 
 Options::Filter filter_of(const Ctx& cx) {
@@ -87,9 +101,19 @@ Transition start_scrape(Ctx& cx) {
 }
 
 void build_main(MenuBuilder& m, Ctx& cx) {
-  bool ok = available();
+  Source src = source_of(cx.es);
+  bool ok = available(src);
   std::vector<size_t> sel = selected_systems(cx);
   size_t all = supported_systems(cx).size();
+  Refresh rf = m.refresh;
+  // ES GuiScraperStart.cpp:70 "SCRAPE FROM": the databases of ES's list (Scraper.cpp:23-40), names shown as they are
+  std::vector<Option> from;
+  for (Source s : sources()) from.push_back({source_name(s), source_name(s)});
+  m.choice(tr("SCRAPE FROM"), std::move(from), [&cx] { return std::string(source_name(source_of(cx.es))); },
+           [&cx, rf](const std::string& v) {
+             set_str(cx, kKeySource, source_name(source_from_name(v)));
+             rf();
+           });
   if (!ok) m.info(tr("THIS BUILD CANNOT REACH SCREENSCRAPER")).danger();
   m.choice(tr("GAMES TO SCRAPE"), {{"all", tr("ALL GAMES")}, {"missing", tr("WITH MISSING MEDIA")}, {"none", tr("WITHOUT ANY MEDIA")}},
            [&cx] { return get_str(cx, kKeyFilter, "missing"); }, [&cx](const std::string& v) { set_str(cx, kKeyFilter, v); })
@@ -98,17 +122,22 @@ void build_main(MenuBuilder& m, Ctx& cx) {
            {{"0", tr("NO")}, {"1", tr("1 DAY")}, {"2", tr("1 WEEK")}, {"3", tr("15 DAYS")}, {"4", tr("1 MONTH")}, {"5", tr("3 MONTHS")}, {"6", tr("1 YEAR")}},
            [&cx] { return std::to_string(cx.es.get_int(kKeyRecent, 3)); }, [&cx](const std::string& v) { set_str(cx, kKeyRecent, v); })
       .hint(tr("Games scraped inside this time are skipped, saving requests."));
+  m.toggle(tr("FETCH MISSING MEDIA AUTOMATICALLY"), [&cx] { return cx.es.get_bool(autocover::kKeyEnabled, false); },
+           [&cx](bool on) { set_flag(cx, autocover::kKeyEnabled, on); })
+      .hint(tr("Downloads missing covers in the background when idle."));
   m.submenu(tr("SYSTEMS"), "menu.scraper.systems").value(std::to_string(sel.size()) + " / " + std::to_string(all));
   m.submenu(tr("SCRAPER SETTINGS"), "menu.scraper.options");
   m.submenu(tr("ACCOUNT"), "menu.scraper.account");
-  m.action(tr("START"), start_scrape).disabled(!ok || sel.empty()).hint(sel.empty() && ok ? tr("Choose at least one system.") : tr("Looks the games up on ScreenScraper."));
+  m.action(tr("START"), start_scrape).disabled(!ok || sel.empty()).hint(sel.empty() && ok ? tr("Choose at least one system.") : (src == Source::ScreenScraper ? tr("Looks the games up on ScreenScraper.") : ""));
 }
 
 // ---- systems ---------------------------------------------------------------------------------------------------------
 void build_systems(MenuBuilder& m, Ctx& cx) {
   std::vector<size_t> sup = supported_systems(cx);
   if (sup.empty()) {
-    m.info(tr("NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"));
+    Source src = source_of(cx.es);
+    if (src == Source::ScreenScraper) m.info(tr("NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"));
+    else m.info(source_name(src), tr("NONE"));
     return;
   }
   Refresh rf = m.refresh;
@@ -140,6 +169,8 @@ void build_systems(MenuBuilder& m, Ctx& cx) {
 
 // ---- settings --------------------------------------------------------------------------------------------------------
 void build_options(MenuBuilder& m, Ctx& cx) {
+  Source from = source_of(cx.es);
+  bool ss_only = from == Source::ScreenScraper;
   auto src = [&](const char* label, const char* key, const char* def, std::vector<Option> opts, const char* hint) {
     m.choice(label, std::move(opts), [&cx, key, def] { return get_str(cx, key, def); }, [&cx, key](const std::string& v) { set_str(cx, key, v); }).hint(hint);
   };
@@ -153,25 +184,28 @@ void build_options(MenuBuilder& m, Ctx& cx) {
   src(tr("THUMBNAIL"), key::kThumb, "box-2D", {{"box-2D", tr("BOX FRONT")}, {"box-3D", tr("BOX 3D")}, {"ss", tr("SCREENSHOT")}, {"", tr("NONE")}},
       tr("The small picture of each game."));
   src(tr("LOGO"), key::kLogo, "wheel", {{"wheel", tr("WHEEL")}, {"wheel-hd", tr("WHEEL HD")}, {"marquee", tr("MARQUEE")}, {"", tr("NONE")}}, tr("The logo of each game."));
+  if (ss_only)
   m.choice(tr("IMAGE SIZE"), {{"0", tr("FULL SIZE")}, {"320", "320"}, {"480", "480"}, {"640", "640"}, {"1024", "1024"}},
            [&cx] { return std::to_string(cx.es.get_int(key::kResizeW, 640)); }, [&cx](const std::string& v) {
              cx.es.set_int(key::kResizeW, std::atoi(v.c_str()));
-             cx.es.save();
+             save_es(cx);
            })
       .hint(tr("ScreenScraper shrinks pictures before sending them: faster and lighter."));
+  if (ss_only)
   src(tr("REGION"), key::kRegion, "",
       {{"", tr("AUTOMATIC")}, {"eu", tr("EUROPE")}, {"us", tr("USA")}, {"jp", tr("JAPAN")}, {"wor", tr("WORLD")}, {"sp", tr("SPAIN")}, {"fr", tr("FRANCE")}, {"de", tr("GERMANY")}, {"it", tr("ITALY")}, {"br", tr("BRAZIL")}},
       tr("Preferred region of names, dates and pictures."));
   m.header(tr("INFORMATION"));
   flag(tr("NAMES"), key::kNames, true, tr("Replace the names of the games."));
   flag(tr("DESCRIPTIONS"), key::kDesc, true, tr("Replace the descriptions."));
-  flag(tr("RATINGS"), key::kRatings, true, tr("Download the rating of each game."));
+  if (from == Source::ArcadeDB) flag(tr("SHORT NAME"), key::kShortTitle, false, "");  // ES GuiScraperStart.cpp:280
+  if (ss_only) flag(tr("RATINGS"), key::kRatings, true, tr("Download the rating of each game."));
   m.header(tr("EXTRA MEDIA"));
-  flag(tr("VIDEOS"), key::kVideos, true, tr("Videos are big and take longer to download."));
-  flag(tr("MANUALS"), key::kManual, true, tr("PDF manuals."));
-  flag(tr("MAPS"), key::kMap, true, tr("Maps of the game."));
-  flag(tr("FANART"), key::kFanart, false, tr("Background pictures."));
-  flag(tr("BOX BACK"), key::kBoxBack, false, tr("The back of the box."));
+  if (from != Source::IGDB) flag(tr("VIDEOS"), key::kVideos, true, tr("Videos are big and take longer to download."));
+  if (ss_only) flag(tr("MANUALS"), key::kManual, true, tr("PDF manuals."));
+  if (ss_only) flag(tr("MAPS"), key::kMap, true, tr("Maps of the game."));
+  if (from != Source::ArcadeDB) flag(tr("FANART"), key::kFanart, false, tr("Background pictures."));
+  if (ss_only) flag(tr("BOX BACK"), key::kBoxBack, false, tr("The back of the box."));
   m.header(tr("FILES"));
   flag(tr("REPLACE EXISTING MEDIA"), key::kOverwrite, true, tr("Only for \"All games\": pictures already there are downloaded again."));
 }
@@ -184,11 +218,17 @@ struct AcctState {
 
 void build_account(MenuBuilder& m, Ctx& cx, const std::shared_ptr<AcctState>& st) {
   Refresh rf = m.refresh;
+  Source src = source_of(cx.es);
+  m.header(tr("SCREENSCRAPER"));
   m.text(tr("USERNAME"), [&cx] { return get_str(cx, key::kUser, ""); }, [&cx](const std::string& v) { set_str(cx, key::kUser, v); })
       .hint(tr("Optional. Without an account ScreenScraper allows very few requests."));
   m.text(tr("PASSWORD"), [&cx] { return get_str(cx, key::kPass, ""); }, [&cx](const std::string& v) { set_str(cx, key::kPass, v); }).secret();
-  m.action(tr("TEST ACCOUNT"), [&cx, st, rf] {
-    if (st->testing || !available()) return;
+  // ES GuiScraperStart.cpp:344-346: IGDB's own client id and secret (Twitch developer app), never built in
+  m.header(tr("IGDB"));
+  m.text(tr("CLIENT ID"), [&cx] { return get_str(cx, key::kIgdbId, ""); }, [&cx](const std::string& v) { set_str(cx, key::kIgdbId, v); });
+  m.text(tr("CLIENT SECRET"), [&cx] { return get_str(cx, key::kIgdbSecret, ""); }, [&cx](const std::string& v) { set_str(cx, key::kIgdbSecret, v); }).secret();
+  m.action(tr("TEST ACCOUNT"), [&cx, st, rf, src] {
+    if (st->testing || !available(src) || src == Source::ArcadeDB) return;
     st->testing = true;
     st->have = false;
     rf();
@@ -198,8 +238,8 @@ void build_account(MenuBuilder& m, Ctx& cx, const std::shared_ptr<AcctState>& st
       st->info = ai;
       rf();
     });
-  }).disabled(!available() || st->testing).hint(tr("Asks ScreenScraper for your limits."));
-  if (st->testing) m.info(tr("CONNECTING TO SCREENSCRAPER"));
+  }).disabled(!available(src) || src == Source::ArcadeDB || st->testing).hint(src == Source::ScreenScraper ? tr("Asks ScreenScraper for your limits.") : src == Source::IGDB ? tr("Asks IGDB for an access token.") : tr("ArcadeDB needs no account."));
+  if (st->testing) m.info(src == Source::ScreenScraper ? std::string(tr("CONNECTING TO SCREENSCRAPER")) : std::string(source_name(src)));
   if (st->have) {
     const AccountInfo& a = st->info;
     if (a.fail != Abort::None) {
@@ -255,6 +295,8 @@ class RunScreen : public Screen {
         if (run_->finished()) return Transition::pop();
         if (a == Action::B && run_->phase() != Phase::Stopping) run_->cancel();
         return Transition::none();
+      case Action::Start:
+        return Transition::close_menus();  // on_dismiss stops the run
       case Action::Up:
         if (top_ > 0) --top_, redraw_ = true;
         return Transition::none();
@@ -305,19 +347,21 @@ class RunScreen : public Screen {
     if (run_->version() != built_ver_ || shown_wait_ != built_wait_) rebuild();
 
     out.push_back(Op::rect(0, 0, m.W, m.H, st.bg));
-    float inset = std::round(m.pill_h * ui::kPillInset);
+    float inset = m.inset;
     std::string title = title_text();
+    const size_t stack_from = out.size();
+    status_bar(cx.th, a, m.W, m.H, cx.status, out);
     if (title != title_key_ || !t_title_.alive(a)) {
-      t_title_.set(a, title, m.title_px, m.col_w * 0.72f);
+      fit_title(a, t_title_, title, m, ui::title_max_w(st, m, out, stack_from, m.col_w * 0.72f));
       title_key_ = title;
     }
-    ui::put_text(out, t_title_, m.col_x + inset, m.header_cy, st.txt);
-    status_bar(cx.th, a, m.W, m.H, cx.status, out);
+    const float title_x = ui::title_x(st, m, m.title_left, t_title_.w);
+    ui::put_text(out, t_title_, title_x, m.header_cy, st.txt);
     float title_bottom = m.header_cy + t_title_.h / 2.0f;
     float first_pill_top = m.list_top + (m.row_h - m.pill_h) / 2.0f;
     float line_y = std::round((title_bottom + first_pill_top) / 2.0f);
     out.push_back(Op::rect(m.col_x, line_y, m.col_w, 1, st.line));
-    ui::header_box() = {true, m.col_x + inset, m.col_x + inset + t_title_.w, m.header_cy - t_title_.h / 2.0f, title_bottom, line_y};
+    ui::header_box() = {true, title_x, title_x + t_title_.w, m.header_cy - t_title_.h / 2.0f, title_bottom, line_y};
 
     // rows
     int total = int(rows_.size());
@@ -429,13 +473,13 @@ class RunScreen : public Screen {
       std::string status;
       switch (run_->phase()) {
         case Phase::Preparing: status = tr("READING GAME LISTS"); break;
-        case Phase::Connecting: status = tr("CONNECTING TO SCREENSCRAPER"); break;
+        case Phase::Connecting: status = run_->source() == Source::ScreenScraper ? tr("CONNECTING TO SCREENSCRAPER") : source_name(run_->source()); break;
         case Phase::Stopping: status = tr("STOPPING"); break;
         default:
           if (run_->wait_seconds() > 0) status = std::string(tr("WAITING")) + " " + std::to_string(run_->wait_seconds()) + " " + tr("SECONDS");
           break;
       }
-      v.push_back(pair(sysline.empty() ? std::string(tr("SCREENSCRAPER")) : sysline, run_->phase() == Phase::Running ? std::string() : right, Tone::Dim));
+      v.push_back(pair(sysline.empty() ? (run_->source() == Source::ScreenScraper ? std::string(tr("SCREENSCRAPER")) : std::string(source_name(run_->source()))) : sysline, run_->phase() == Phase::Running ? std::string() : right, Tone::Dim));
       v.push_back(text(run_->phase() == Phase::Running || run_->phase() == Phase::Stopping ? run_->game_name() : std::string()));
       Row bar;
       bar.kind = Row::Bar;
@@ -532,6 +576,41 @@ ZF_REGISTER_SCREEN("menu.scraper.account", [](Ctx&, const std::string&) {
 });
 
 ZF_REGISTER_SCREEN("menu.scraper.run", [](Ctx& cx, const std::string&) { return make_scraper_run_screen(cx, scraper_run_options(cx)); });
+
+// One game (ES: the SCRAPE button of the metadata editor): the same engine, the queue cut to that ROM, no filter and no "recently scraped"
+// skip, and what the server knows replaces what is there (ES's editor takes the whole result).
+ZF_REGISTER_SCREEN("menu.scraper.game", [](Ctx& cx, const std::string& arg) {
+  std::string system;
+  std::string rom;
+  Options o = Options::load(cx);
+  o.filter = Options::Filter::All;
+  o.skip_days = 0;
+  o.overwrite_names = o.overwrite_desc = o.overwrite_media = true;
+  if (mg::split_game_arg(arg, system, rom)) {
+    for (size_t i = 0; i < cx.systems.size(); ++i)
+      if (cx.systems[i].name == system) o.systems = {i};
+    o.only_game = rom;
+  }
+  return make_scraper_run_screen(cx, std::move(o));
+});
+
+// One game, pictures only (FIND PICTURE of the phone page, webmanage.cpp): like menu.scraper.game, but the name and the description the
+// user may have edited stay; the media found replace the old ones.
+ZF_REGISTER_SCREEN("menu.scraper.game.media", [](Ctx& cx, const std::string& arg) {
+  std::string system;
+  std::string rom;
+  Options o = Options::load(cx);
+  o.filter = Options::Filter::All;
+  o.skip_days = 0;
+  o.overwrite_names = o.overwrite_desc = false;
+  o.overwrite_media = true;
+  if (mg::split_game_arg(arg, system, rom)) {
+    for (size_t i = 0; i < cx.systems.size(); ++i)
+      if (cx.systems[i].name == system) o.systems = {i};
+    o.only_game = rom;
+  }
+  return make_scraper_run_screen(cx, std::move(o));
+});
 
 }  // namespace
 }  // namespace zf

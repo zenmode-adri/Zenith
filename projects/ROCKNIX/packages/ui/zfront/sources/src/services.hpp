@@ -83,13 +83,16 @@ class Toasts {
 };
 
 // ---- background jobs ------------------------------------------------------------------------------------------------
-/// One low-priority worker thread (started on the first `post`). `work` runs there and must not touch `Ctx`; `done`
+/// Two low-priority worker threads (each started on its first post). `work` runs there and must not touch `Ctx`; `done`
 /// runs later on the MAIN thread (inside `App::drain_jobs`) with whatever `work` produced captured by a shared_ptr.
-/// Use it for cover decoding, wifictl, scans, network. Order is FIFO.
+/// `post`: cover decoding, gamelist edits, short reads. `post_slow`: slow external commands (wifictl 65 s, rocknix-systems
+/// 120 s, bluetooth 75 s, rclone, updates) so they never hold up the covers. Order is FIFO inside each lane; the `done`
+/// callbacks of both lanes come out of the same `drain`.
 class Jobs {
  public:
   ~Jobs();
   void post(std::function<void()> work, std::function<void()> done = nullptr);
+  void post_slow(std::function<void()> work, std::function<void()> done = nullptr);
   /// Main thread: run the `done` callbacks of finished jobs; true if any ran.
   bool drain();
   /// Called from the worker when a job finished (the event loop's wake-up). Thread-safe to set before the first post.
@@ -100,14 +103,19 @@ class Jobs {
   struct Item {
     std::function<void()> work, done;
   };
-  void loop();
+  struct Lane {
+    std::deque<Item> todo;
+    std::thread th;
+    bool started = false, busy = false;
+  };
+  void put(int lane, std::function<void()> work, std::function<void()> done);
+  void loop(int lane);
   mutable std::mutex m_;
   std::condition_variable cv_;
-  std::deque<Item> todo_;
+  Lane lane_[2];
   std::deque<std::function<void()>> finished_;
   std::function<void()> wake_;
-  std::thread th_;
-  bool stop_ = false, started_ = false, busy_ = false;
+  bool stop_ = false;
 };
 
 // ---- text -----------------------------------------------------------------------------------------------------------

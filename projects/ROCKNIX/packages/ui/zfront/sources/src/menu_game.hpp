@@ -1,7 +1,7 @@
 // MODULE `menu-game`: the game settings menus.
 //
 //   menu.game            GAME SETTINGS (global.* keys of system.cfg, ES `GuiMenu::openGamesSettings`)
-//   menu.game.systems    PER SYSTEM ADVANCED CONFIGURATION (list of systems, each opens `menu.system_options`)
+//   menu.game.systems    PER SYSTEM OPTIONS (list of systems, each opens `menu.system_options`)
 //   menu.system_options  arg = system name           ADVANCED SYSTEM OPTIONS (`<system>.<key>`)
 //   menu.game_options    arg = `game_arg(system, rom)` ADVANCED GAME OPTIONS (`<system>["<rom file>"].<key>`)
 //   menu.game.sysopt     arg = config name           SYSTEM OPTIONS (governors, cooling...)
@@ -19,6 +19,7 @@
 #include <functional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "app.hpp"
@@ -138,6 +139,8 @@ class FeatureDb {
   bool system_has_features(const System& sys) const;
 
  private:
+  /// Some flag or custom feature applies to (`se`, `core`): `resolve` without copying or sorting anything.
+  bool resolves_any(const System& sys, const std::pair<std::string, std::vector<std::string>>& se, const std::string& core) const;
   uint32_t parse_flags(const std::string& list) const;
   std::vector<Feature> parse_features(const pugi::xml_node& node) const;
   bool loaded_ = false;
@@ -178,5 +181,8 @@ struct Pick {
 Pick explicit_pick(const System& sys, const ConfMap& conf, const std::string& cfg);
 /// The pair a launch would use for this config (system, or game when `rom_file` is not empty).
 Pick resolved_pick(const System& sys, const ConfMap& conf, std::string_view rom_file);
+
+/// Systems with files listed by `rocknix-systems` (the rows of `menu.game.bios`) and how many files each lists. Read-only; used by LIBRARY > CHECK LIBRARY.
+std::vector<std::pair<std::string, size_t>> bios_problem_counts(const std::string& raw_output);
 
 }  // namespace zf::mg
