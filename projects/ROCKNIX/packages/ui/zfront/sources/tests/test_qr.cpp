@@ -130,7 +130,7 @@ bool finder_at(const qr::Code& c, int x0, int y0) {
 }
 
 void test_structure() {
-  for (const char* text : {"x", "http://192.168.1.118:8080/files#pin=1365", "http://[fe80::1234:5678:9abc:def0]:8080/files#pin=0042"}) {
+  for (const char* text : {"x", "http://192.168.1.42:8080/files#pin=1365", "http://[fe80::1234:5678:9abc:def0]:8080/files#pin=0042"}) {
     for (int e = 0; e < 4; ++e) {
       qr::Code c;
       if (!qr::encode(text, qr::Ecc(e), c)) continue;
@@ -206,7 +206,7 @@ int main() {
       const char* name;
       const char* text;
       qr::Ecc e;
-    } ts[] = {{"url-m", "http://192.168.1.118:8080/files#pin=1365", qr::Ecc::M},
+    } ts[] = {{"url-m", "http://192.168.1.42:8080/files#pin=1365", qr::Ecc::M},
               {"short-l", "zfront", qr::Ecc::L},
               {"v7-q", "http://192.168.100.200:8080/files#pin=9999 and a longer text so that the symbol needs version seven or more....", qr::Ecc::Q},
               {"utf8-h", "Pok\xC3\xA9mon \xE2\x98\x85 consola", qr::Ecc::H}};
