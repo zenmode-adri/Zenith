@@ -26,8 +26,8 @@ developed and measured on the **R36 Ultra**.
 
 ## Features
 
-- **Fast boot**: about **15 s** from power-on to the menu (33 s before). GPU, display, Sway and EmulationStation start in
-  parallel as soon as storage is ready.
+- **Fast boot**: about **15 s** from power-on to the menu (33 s before, measured with EmulationStation). GPU, display,
+  Sway and the front-end start in parallel as soon as storage is ready.
 - **Fast suspend**: the console sleeps in **2.3 s** and wakes in **4.3 s**.
 - **Games open in 3.85 s** (6.29 s before), and the menus answer on the first button press (**11 ms**).
 - **zfront, Zenith's own front-end, is the default** (v0.2.0): first screen in 1.0 s instead of 4.1 s and about a quarter
@@ -51,16 +51,41 @@ developed and measured on the **R36 Ultra**.
 
 ## Screenshots
 
+Taken on an R36 Ultra (720x720) running v0.2.0, with the small test library of that console.
+
+**zfront, the default front-end: Zenith Minimal and Zenith Next**
+
+<table>
+<tr>
+<td align="center"><img src="docs/images/zfront-minimal-light.png" width="280"/><br/><sub>Zenith Minimal (default)</sub></td>
+<td align="center"><img src="docs/images/zfront-minimal-dark.png" width="280"/><br/><sub>Zenith Minimal, dark</sub></td>
+<td align="center"><img src="docs/images/zfront-next-dark.png" width="280"/><br/><sub>Zenith Next, with the continue-playing row</sub></td>
+</tr>
+<tr>
+<td align="center"><img src="docs/images/zfront-menu.png" width="280"/><br/><sub>Main menu (Zenith Next)</sub></td>
+<td align="center"><img src="docs/images/zfront-battery.png" width="280"/><br/><sub>Battery and power</sub></td>
+<td align="center"><img src="docs/images/zfront-next-light.png" width="280"/><br/><sub>Zenith Next, light</sub></td>
+</tr>
+</table>
+
+**The other themes, remade for zfront**
+
+<table>
+<tr>
+<td align="center"><img src="docs/images/zfront-xmb.png" width="200"/><br/><sub>XMB</sub></td>
+<td align="center"><img src="docs/images/zfront-artbook.png" width="200"/><br/><sub>Art Book</sub></td>
+<td align="center"><img src="docs/images/zfront-iconic.png" width="200"/><br/><sub>Iconic</sub></td>
+<td align="center"><img src="docs/images/zfront-techdweeb.png" width="200"/><br/><sub>TechDweeb</sub></td>
+</tr>
+</table>
+
+**EmulationStation, still installed** (`Tools > Switch frontend`), with the Zenith theme (from v0.1.0)
+
 <table>
 <tr>
 <td align="center"><img src="docs/images/splash.png" width="280"/><br/><sub>Start-up</sub></td>
-<td align="center"><img src="docs/images/main-dark.png" width="280"/><br/><sub>Main menu, dark</sub></td>
-<td align="center"><img src="docs/images/main-light.png" width="280"/><br/><sub>Main menu, light</sub></td>
-</tr>
-<tr>
-<td align="center"><img src="docs/images/grid-dark.png" width="280"/><br/><sub>Game grid with box art, dark</sub></td>
-<td align="center"><img src="docs/images/grid-light.png" width="280"/><br/><sub>Game grid with box art, light</sub></td>
-<td align="center"><img src="docs/images/menu-dark.png" width="280"/><br/><sub>Settings menu</sub></td>
+<td align="center"><img src="docs/images/es-main-dark.png" width="280"/><br/><sub>System carousel, dark</sub></td>
+<td align="center"><img src="docs/images/es-grid-dark.png" width="280"/><br/><sub>Game grid with box art</sub></td>
 </tr>
 </table>
 
@@ -112,7 +137,7 @@ netplay, Kiosk and Kid modes) and adds a continue-playing row, save backups, a l
 screen and the phone file transfer. Details in [`docs/ZFRONT.md`](docs/ZFRONT.md) and the [CHANGELOG](CHANGELOG.md).
 
 ### Boot and power
-- GPU, display, Sway and EmulationStation start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD
+- GPU, display, Sway and the front-end start in parallel as soon as storage is ready; u-boot `BOOTDELAY=0`; faster SD
   probing in the initramfs.
 - Suspend runs Wi-Fi shutdown, panel and the rest in parallel; governors are restored first on wake-up.
 - Silent shutdown (no red message) and quiet boot.
@@ -365,8 +390,8 @@ zram and MGLRU enabled), and the Cortex-A35 reports "not affected" for almost ev
 there is no security tax to remove.
 
 **Boot.** A small initramfs probes the SD card every 50 ms and hands over to systemd with `exec`; GPU, display, Sway and
-EmulationStation then start in parallel as soon as storage is ready, and the early start disables itself if EmulationStation
-is not ready in time. u-boot runs with `BOOTDELAY=0`.
+the front-end (zfront or EmulationStation) then start in parallel as soon as storage is ready, and the early start disables
+itself if the front-end is not ready in time. u-boot runs with `BOOTDELAY=0`.
 
 **Front-ends.** zfront is the default; the notes below describe the EmulationStation that stays installed next to it. 54 patches on top of `ROCKNIX/emulationstation-next` (`projects/ROCKNIX/packages/ui/emulationstation/patches/RK3326/`)
 cover the interface, the carousel, audio wake-up, the quit menu and the Wi-Fi and settings menus.
