@@ -189,8 +189,9 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 
 ### System: boot, suspend, battery, updates, volume, controllers
 
-- **Boot and suspend** (carried over from v0.1.0): about 15 s from power-on to the menu, suspend in 2.3 s, resume in 4.3 s
-  (R36 Ultra, measured with EmulationStation as the front-end).
+- **Boot:** with zfront the console is ready 12.8-13.4 s after power-on; with EmulationStation, on the same image and
+  console, 15.6-18.2 s (R36 Ultra, three boots each: first frame of the front-end on the kernel clock plus 2.1 s of
+  bootloader). Suspend in 2.3 s and resume in 4.3 s (carried over from v0.1.0).
 - **Updater:** it asks `zenmode-adri/Zenith`, never the original AURKNIX (whose package has the same file name as ours and
   could have replaced Zenith). A release whose tag is not a build date, like `v0.1.0`, is not offered as an update. Help,
   home and bug-report links point at Zenith. Updates show a progress bar and can be cancelled (cancelling was not tried on

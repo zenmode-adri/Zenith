@@ -8,8 +8,8 @@ Everything that changed, with the measurements: [CHANGELOG.md](https://github.co
 > treat them as beta.
 
 ## Highlights
-- **zfront, Zenith's own front-end, is now the default**. Measured on the R36 Ultra against EmulationStation: first
-  screen in 1.0 s (4.1 s), a RetroArch game starts 0.27 s sooner (0.91 s vs 1.18 s), and a running game can use
+- **zfront, Zenith's own front-end, is now the default**. Measured on the R36 Ultra against EmulationStation: ready
+  about 13 s after power-on (15.6-18.2 s on the same image), first screen in 1.0 s (4.1 s), a RetroArch game starts 0.27 s sooner (0.91 s vs 1.18 s), and a running game can use
   32-48 MB more RAM (two games, two runs each). Two new themes, **Zenith Minimal** and **Zenith Next**; XMB, Art Book, Iconic and TechDweeb
   remade on the same grid. EmulationStation stays installed and themed, one menu away (`Tools > Switch frontend`).
 - **Patched Panfrost** (open GPU driver) in the image: +38.9 % over stock Panfrost and +4.4 % / +6.5 % over libmali
