@@ -67,7 +67,7 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 <tr>
 <td align="center"><img src="docs/images/zfront-minimal-light.png" width="200"/><br/><sub>Zenith Minimal (default)</sub></td>
 <td align="center"><img src="docs/images/zfront-minimal-dark.png" width="200"/><br/><sub>Zenith Minimal, dark</sub></td>
-<td align="center"><img src="docs/images/zfront-next-light.png" width="200"/><br/><sub>Zenith Next, with the continue-playing row</sub></td>
+<td align="center"><img src="docs/images/zfront-next-light.png" width="200"/><br/><sub>Zenith Next, light</sub></td>
 <td align="center"><img src="docs/images/zfront-next-dark.png" width="200"/><br/><sub>Zenith Next, dark</sub></td>
 </tr>
 </table>
