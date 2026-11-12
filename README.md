@@ -32,8 +32,8 @@ which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured
   TechDweeb.
 - **Fast suspend:** the console sleeps in **2.3 s** and wakes in **4.3 s**.
 - **Battery screen:** charge, current use, history and what used the most.
-- **R36 Tuner Next** built in: CPU, GPU and RAM clocks, voltage curves, profiles, benchmarks and a stability test, with
-  live graphs. See [R36 Tuner Next](#r36-tuner-next).
+- **R36 Tuner Next** built in, in a **new version that is not released yet**: CPU, GPU and RAM clocks, voltage curves,
+  profiles, benchmarks and a stability test, with live graphs. See [R36 Tuner Next](#r36-tuner-next).
 - **Patched Panfrost (open GPU driver):** 39 % faster than stock Panfrost and close to Arm's libmali when you play.
   libmali stays the default. See [Panfrost vs libmali](#panfrost-vs-libmali).
 - **Performance mode** (off by default): GPU and RAM at full speed while a game runs; Mario Tennis goes from 19.3 to
@@ -46,7 +46,7 @@ which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured
 
 ## Screenshots
 
-Taken on an R36 Ultra (720x720) running v0.2.0.
+Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 
 **zfront: Zenith Minimal and Zenith Next**
 
@@ -59,7 +59,7 @@ Taken on an R36 Ultra (720x720) running v0.2.0.
 <tr>
 <td align="center"><img src="docs/images/zfront-menu.png" width="280"/><br/><sub>Main menu</sub></td>
 <td align="center"><img src="docs/images/zfront-battery.png" width="280"/><br/><sub>Battery and power</sub></td>
-<td align="center"><img src="docs/images/zfront-battery-performance.png" width="280"/><br/><sub>Battery &amp; performance settings</sub></td>
+<td align="center"><img src="docs/images/zfront-battery-performance.png" width="280"/><br/><sub>Battery &amp; performance settings, with R36 Tuner Next</sub></td>
 </tr>
 <tr>
 <td align="center"><img src="docs/images/zfront-next-light.png" width="280"/><br/><sub>Zenith Next, light</sub></td>
@@ -148,7 +148,14 @@ Measured on an **R36 Ultra**, one to three runs per point:
 
 ### R36 Tuner Next
 
-R36 Tuner Next opens from the Tools menu. Its home page shows live graphs of
+The Tuner in this image is **a new version of R36 Tuner Next that has not been released yet**: the public repository
+([zenmode-adri/r36-tuner-next](https://github.com/zenmode-adri/r36-tuner-next)) is still at v2.0. Since v2.0 the interface
+was rewritten as one program (33 files changed, about 6,300 lines added and 3,650 removed): a grid layout checked at every
+supported resolution, live graphs with a scale and the minimum, average and maximum, one voltage-curve editor per
+component, recovery steps for a PC with the SD card, and a safety net so that a power cut, a failed write or a modified
+device tree no longer leave the console unprotected after a voltage change.
+
+R36 Tuner Next opens from the Tools menu (and from `Battery & performance`). Its home page shows live graphs of
 temperature and of the CPU, GPU and RAM clocks, with three profiles (Power saver, Balanced, Performance). Settings sets
 the governors, the maximum clocks, turbo and the performance mode for games. Advanced edits the CPU and GPU voltage
 curves and the memory steps, restores the factory values and explains how to recover from a PC. Tests runs a stability

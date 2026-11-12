@@ -8,6 +8,10 @@ Everything that changed, with the measurements: [CHANGELOG.md](https://github.co
 > **Beta.** Tested on the **R36 Ultra** and the **R36S**, the two consoles we have. Other RK3326 models use the same
 > image but have not been tried: treat them as beta too.
 
+**R36 Tuner Next:** the image includes a new version that is not released yet (the public repository is still at v2.0):
+a rewritten interface with live graphs, one voltage-curve editor per component, a stability test and a boot safety net for
+voltage changes. Screenshots in the [README](https://github.com/zenmode-adri/Zenith#r36-tuner-next).
+
 ## What's new since v0.2.0
 - **Appearance options** (selector style, title alignment, list text case) apply as soon as you pick one, without
   restarting the front-end.

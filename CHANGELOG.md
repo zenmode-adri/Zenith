@@ -15,6 +15,8 @@ Small update on v0.2.0. Its release tag is the build date, `20261112`, which is 
 
 ### Changes
 
+- The image includes a **new version of R36 Tuner Next that is not released yet** (the public repository is still at
+  v2.0; the interface was rewritten since). The Tuner screenshots in the README are from this build.
 - **Appearance options** (selector style, title alignment, list text case) apply as soon as you pick one, without
   restarting the front-end.
 - **R36 Tuner Next** is listed with the performance rows in `Battery & performance` (when the Tuner is installed), and
@@ -47,7 +49,8 @@ what the built-in updater looks for.
   by itself.
 - **Performance mode** (GPU and RAM at full speed while a game runs) is in the image, **off by default**.
 - **RAM at 786 MHz** on the models that have that step (R36 Ultra and the boards listed below).
-- **R36 Tuner Next** built in, with undervolt and a fix for the hard freezes around a 480 MHz GPU clock.
+- **R36 Tuner Next** built in, in a **new version that is not released yet** (the public repository is at v2.0), with
+  undervolt and a fix for the hard freezes around a 480 MHz GPU clock.
 - **Send files from your phone** through a web page (off by default, 4-digit PIN, QR code to scan).
 - **Zenith DTB Selector** to pick the right screen/device tree for your console from Windows, Linux or macOS.
 
