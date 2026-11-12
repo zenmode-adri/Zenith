@@ -273,7 +273,7 @@ R36S Plus, R36H, R45H, R46H, the R36S Sauce) and on the R36 Ultra; clones and ot
 - **Fixing the clocks is the big step on the Ultra too:** Mario Tennis +74 %, GoldenEye +16 %, Wave Race 64 +15 %.
 - **RAM at 786 MHz adds little on top** (Mario Tennis +6 %, GoldenEye +2 %, Wave Race 64 +1 %, one run).
 - **Stable in our tests:** `memtester` (300 MB) ran 6 full passes in 57 minutes at 786 MHz with no errors (65 °C at
-  most), on one R36 Ultra. The other boards get the step because dArkOSen ships it on them; we have not tested those.
+  most), on one R36 Ultra. The other boards get the step because dArkOSen ships it on them.
 
 ### Free-running test (20 games)
 
