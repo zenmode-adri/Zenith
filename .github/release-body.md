@@ -9,11 +9,10 @@ Everything that changed, with the measurements: [CHANGELOG.md](https://github.co
 > image but have not been tried: treat them as beta too.
 
 ## What's new since v0.2.0
-- **Appearance options apply at once:** selector style, title alignment and list text case change the screen when you
-  pick a value and you stay in the menu (before, the front-end restarted).
-- **R36 Tuner Next** sits with the performance rows in `Battery & performance`, starts directly (no terminal window in
-  between) and, with Turbo on, its CPU limit can reach the Turbo steps (1416 and 1512 MHz on the R36 Ultra).
-- Text fixes: letters that hang below the line are no longer cut (a "g" in the Iconic theme); "microSD" keeps its spelling.
+- **Appearance options** (selector style, title alignment, list text case) apply as soon as you pick one, without
+  restarting the front-end.
+- **R36 Tuner Next** sits with the performance rows in `Battery & performance` and, with Turbo on, its CPU limit can
+  reach the Turbo steps (1416 and 1512 MHz on the R36 Ultra).
 - Checked on screen only for the Appearance change (R36 Ultra, test build). The R36S ran the previous build, not this
   exact image. The Tuner changes have automated tests only.
 

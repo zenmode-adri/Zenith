@@ -15,21 +15,16 @@ Small update on v0.2.0. Its release tag is the build date, `20261112`, which is 
 
 ### Changes
 
-- **Appearance options apply at once.** Selector style, title alignment and list text case change the screen as soon as
-  you pick a value, and you stay in the menu (before, the front-end restarted and you were sent back to the main menu).
-  "Theme default" gives the theme's own look back.
+- **Appearance options** (selector style, title alignment, list text case) apply as soon as you pick one, without
+  restarting the front-end.
 - **R36 Tuner Next** is listed with the performance rows in `Battery & performance` (when the Tuner is installed), and
   its "Overclock & monitoring" duplicate is hidden then, because both switched the same turbo.
-- **R36 Tuner Next** is started directly instead of through a terminal window.
 - **R36 Tuner Next:** with Turbo on, the CPU limit can now be set to the Turbo steps (1416 and 1512 MHz on the R36 Ultra);
   they were missing from the list because the kernel lists them apart.
-- Text: the baseline moves just enough for letters that hang below the line (a "g" was cut in the Iconic theme).
-  "microSD" keeps its spelling in menus.
-- Repository: personal helper scripts, build symlinks and local network addresses removed.
 
 Checked on screen, on an R36 Ultra with a test build: the Appearance change. The R36S ran the build before this one
-(with the Tuner changes), not this exact image. The new Tuner row order, the direct Tuner start and the Turbo CPU range
-are covered by automated tests only.
+(with the Tuner changes), not this exact image. The new Tuner row order and the Turbo CPU range are covered by
+automated tests only.
 
 ## v0.2.0 — 2026-11-11
 
@@ -94,8 +89,7 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   zoom), netplay, Moonlight, The Bezel Project installer, theme configuration for themes that have it.
 - User interface modes **Full / Kiosk / Kid** (a console locked in EmulationStation stays locked), with the unlock code
   typed with the pad.
-- Suspend from the menu and as a screensaver type; clock in 12 or 24 hours; text size and high contrast.
-- Navigation sounds with the Zenith theme sounds (only when sounds are on).
+- Suspend from the menu and as a screensaver type; text size and high contrast.
 - RetroAchievements in the main menu when it is on and an account is set.
 
 **New things only zfront has**
@@ -109,17 +103,13 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   anything by themselves).
 - An in-game HOME menu (experimental, off by default).
 - **Status bar** in every theme with icons and the battery percent as tall as the clock digits; charging shown as a bolt
-  inside the battery; changes of charger, Wi-Fi and Bluetooth show at once; the clock, battery and network are read again
-  after a suspend.
+  inside the battery.
 - A fresh grid for every screen: square cells scaled with the screen, equal margins on all four sides, twelve columns.
   Layout checks cover all six themes at nine screen sizes, in English and Spanish, at normal and large text.
 - **Menus reordered by use.** Main menu: Games, RetroAchievements (when on), Battery & performance, Screen & sound,
   Network, Library, Controller & Bluetooth, Appearance, System, Quit. Network has Wi-Fi first, then Transfer files and a
   Services screen (SSH, HTTP, USB gadget, cloud, VPN, host name). A game's own menu starts with Favourite and Scrape.
-  Quit starts with Suspend. Restoring factory settings asks twice. Settings keys and scripts are unchanged.
-- **Held Up/Down in menus** no longer runs away: the repeat does not get faster than one step every 66 ms (lists keep
-  their acceleration).
-- **On-screen keyboard:** R opens a layer of accented letters.
+  Quit starts with Suspend. Settings keys and scripts are unchanged.
 - **Spanish:** every text translated (597 keys); the web page is also in Spanish.
 
 ### Themes
@@ -130,8 +120,6 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   chosen game's cover. `menuCards=on` brings the cards back.
 - **XMB, Art Book, Iconic and TechDweeb** were remade on the same grid for every resolution, each with its own status bar
   icons. XMB is drawn as a cross with slowly drifting waves, and its battery is the three-cell one of the PSP era.
-- Icons for Screenshots and Media player, logos for seven variant systems, new menu icons, and long genres that scroll
-  inside their box instead of ending in dots.
 - **Smoother:** logos, covers and illustrations are decoded off the drawing thread, and game lists slide instead of
   jumping. Measured on an R36 Ultra, first time a list opens, key to first new frame: TechDweeb 400 to 111 ms, Iconic 329
   to 74, XMB 229 to 130, Zenith Next 121 to about 85. Moving through 30 systems in Zenith Next: 59 fps (the classic
@@ -174,7 +162,6 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   40.5 -> 44.7. On the R36 Ultra with Panfrost: Mario Tennis 15.7 -> 27.2 fps (RAM up to 666 on auto, vs GPU 600 + RAM 666
   pinned), GoldenEye 34.8 -> 40.2, Wave Race 64 41.9 -> 48.4. God of War, Mario Kart 64 and Zelda: Ocarina of Time barely
   move (limited by the CPU or something else).
-- Plugging or unplugging the charger during a game keeps that game's GPU level.
 - **Not measured: heat and battery use in long sessions.** The R36 Ultra shut down with the GPU pinned at 600 MHz in long
   God of War sessions: that is why it is off by default.
 
@@ -192,7 +179,6 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   not come back (2 of 2). With the patch (kernel alone, both consoles): more than 25,000 steps per console with libmali,
   three runs with Panfrost, full load, suspend and reboots at 480 MHz, no freeze. Not tested: other models, a real game
   crossing 480 MHz.
-- Battery status switching between `Discharging` and `Not charging` no longer puts a fixed GPU governor back on automatic.
 
 **R36 Tuner Next (built in) and undervolt**
 - CPU governor and frequencies, turbo steps (1416 MHz at 1350 mV was stable on four cores; 1512 MHz on four cores
@@ -219,20 +205,12 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   bootloader). Suspend in 2.3 s and resume in 4.3 s (carried over from v0.1.0).
 - **Updater:** it asks `zenmode-adri/Zenith`, never the original AURKNIX (whose package has the same file name as ours and
   could have replaced Zenith). A release whose tag is not a build date, like `v0.1.0`, is not offered as an update. Help,
-  home and bug-report links point at Zenith. Updates show a progress bar and can be cancelled (cancelling was not tried on
-  a console).
-- **Volume keys** repeat faster when held: one step every about 0.19 s instead of about 0.34 s (R36 Ultra, CPU at 1 GHz),
-  and a press at 0 % or 100 % now shows the volume bar.
-- **Controller mapping can always be cancelled:** hold any input of the pad being mapped for 3 s and it leaves without
-  saving (it was impossible to leave when the built-in pad was the only one). The wait for a pad ends after 60 s, and an
-  unplugged pad ends it cleanly. The built-in pad shows as "Built-in controller".
+  home and bug-report links point at Zenith.
 - **Low battery:** the running game is closed with SIGTERM and the system waits up to 15 s and syncs before powering off, so
   RetroArch can write its autosave and SRAM. The 3.2 V threshold is the same. Tested with stubs only.
 - **Battery gauge** for the R36S panel 4, R36XX Pro Max, R40XX, R40XX Pro Max, R45H and R46H: the voltage-to-charge table now
   matches the maker's (4.020 V is 95 %, 4.045 V is 100 %), and empty is 3.3 V instead of 3.0 V, so the gauge can reach 0 %.
   Checked only by building the device trees; **not booted on those consoles**.
-- Saves backup/restore (also from the phone) asks for confirmation on the console; a restore only runs after someone
-  answers Yes there (No is selected).
 - Samba, SSH and the stored Wi-Fi are **off by default** in the release image.
 
 ### Network and file transfer
@@ -251,10 +229,8 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   - **Manage games:** launch, rename (saves, save states and pictures follow), change the picture, find a picture online
     (needs a scraper account, see Known issues), move to the trash, restore or empty it after a confirmation.
   - **Phone remote:** browse, launch and close games.
-  - The page follows the Zenith look (light and dark follow the phone), is served entirely by the console (it fetches
-    nothing from the internet), and is also in Spanish.
-- **`Network > Transfer files`** groups the web page and Samba. A service that fails to start turns its switch back off and
-  says so; the IP, web address and QR code follow a network change without leaving the menu.
+  - The page is served entirely by the console (it fetches nothing from the internet) and is also in Spanish.
+- **`Network > Transfer files`** groups the web page and Samba.
 - **Samba asks for a password:** the shares no longer let anyone in as root without one. Log in as `root` with the root
   password (the one of SSH). Windows 11 already refused the old guest login, so Samba did not work from it at all. Samba
   stays off by default.
@@ -266,27 +242,9 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 
 ### Fixes
 
-- The frontend no longer crashes once a minute: with the new status bars it crashed 521 times in a day on an R36 Ultra
-  (systemd restarted it 2 s later, so it showed as a blink).
-- "Continue playing" no longer disappears after a game started from it.
-- Scrapers on the console: curl's write-out format made every transfer fail with "Network error"; fixed (ArcadeDB found a
-  test game and wrote its picture, marquee, thumbnail and video).
-- `/emukill` (the API on port 1234) now closes the game in every emulator, including PPSSPP and RetroArch.
 - A game gets more free RAM: before launching, zfront drops every picture it can rebuild and returns the memory.
-- Savestates: the real autosave can no longer be lost after a power cut while a slot was loaded.
-- Settings: `es_settings.cfg` is merged with what other tools wrote and never saved over a damaged file; a `system.cfg`
-  that cannot be read is not rewritten empty; writes are synced before the rename.
-- GPU DRIVER, EJECT MICROSD and other long commands no longer freeze the screen, and report failures.
-- Theme links are made on every boot, so after an update EmulationStation also sees new themes such as Zenith Next.
-- A saves archive from the phone could, through a pax header, extract a file outside the save folders; such records are now
-  refused.
 - Release safety: SSH, Samba, a stored Wi-Fi and verbose logging used to be applied to any image built from a
   work branch; they now exist only in the debug build.
-- Menus: options no longer show raw lower-case values; settings that cannot be saved say so; Start leaves dialogs, the
-  scraper run and the manual viewer; the brightness slider shows the screen's real level.
-- `powerstate`: a GPU governor set by hand is no longer undone, and the GPU is left alone
-  on a battery change when there is nothing to keep.
-- Names keep their spelling in menus (IGDB, ScreenScraper, LEDs, Samba, QR, ZIP, MD5).
 
 ### Known issues
 
@@ -299,8 +257,8 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 - Performance mode: heat and battery use are not measured, and long sessions with the GPU pinned shut down one R36 Ultra.
 - Panfrost can add up to two frames of input delay (not measured). GoldenEye is slower with libmali when the clocks are
   fixed than on automatic; not explained.
-- The battery tables for the six models above, the DTB Selector test mode, cancelling an update and the low-battery
-  shutdown have not been tried on real consoles in every case (see the entries above).
+- The battery tables for the six models above, the DTB Selector test mode and the low-battery shutdown have not been
+  tried on real consoles in every case (see the entries above).
 - Zenith adds no new emulators and does not update cores (those come from AURKNIX), apart from PPSSPP 1.20.2.
 
 ### Upgrading
@@ -317,7 +275,7 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 
 Image `AURKNIX-RK3326.aarch64-20261023.img.gz`. Tag `v0.1.0`. No update package yet: nobody has Zenith installed, so
 the first release is the full image only.
-Same sources as the development image `44d6084` below, built as a **clean release image**:
+Built as a **clean release image**:
 
 - No Wi-Fi network, SSH, Samba or verbose logging is enabled by default: turn them on from the menu when you need them.
   The development builds enabled all of them.
@@ -327,42 +285,17 @@ Same sources as the development image `44d6084` below, built as a **clean releas
 - **Not yet checked:** the first boot of this exact image from a freshly written SD card. The same sources run on an
   R36 Ultra as a development image.
 
-## 2026-10-23 - image `44d6084` (first public candidate)
-
-- **Carousel cards with an icon** (Music, Tools, Favorites, All games, Last played, Never played, Collections, Books):
-  the name is now real EmulationStation text (about 19 px) instead of a word baked into a 360x300 bitmap that was
-  scaled down 4x (about 11 px). `zenith-77-etiquetas-contraste`
-- **More contrast on secondary text** in both themes (dark: 4.5:1 -> about 8:1, light: 4.5-5.3:1 -> about 7:1).
-
 ## 2026-10-22 - images `4868372` and `8fef418`
 
 ### Suspend and resume
-- "Suspending..." notice stays on screen at least 1 s, then the panel turns off; it no longer reappears on wake-up
-  (ES patch 0047). `fast-10-aviso-suspension`
 - Suspend takes 3.5 s -> 2.3 s and resume 8 s -> 4.3 s: Wi-Fi shutdown, panel and the rest run in parallel, panel
   colour settings are restored all at once. `fast-11-suspension-paralela`
 - CPU/GPU/DMC governors are restored first on wake-up (they were left in powersave for 3.5 s, which made the first
   button press stutter). `fast-12-gobernadores-primero`
-- The panel backlight is always switched on when EmulationStation starts and on wake-up: if ES was restarted while
-  the screensaver was active the screen could stay black with full brightness. `fast-17-luz-siempre`
 
 ### EmulationStation
 - First button press after idle: 225-245 ms -> 11 ms. The audio device that ES closes after 5 s of silence is now
   reopened on a worker thread (ES patch 0049; the one click that wakes it up is silent). `fast-13-primer-boton`
-- System carousel: the selected card no longer touches its neighbours (all four gaps are 22 px), the neighbours no
-  longer jump when moving, and holding a direction keeps a steady speed (1.96-10.62 -> 4.74-6.59 positions/s).
-  ES patches 0052 and 0054, theme `scaledLogoSpacing`. `zenith-76-huecos-iguales`, `fast-18-carrusel-suave`,
-  `fast-20-clamp-carrusel`, `fast-21-carrusel-mantener`
-- Side drawer (GO TO MANUFACTURER / LETTER...): opens above the Z logo and its help bar is centred on it, also on small
-  screens (ES patches 0050, 0051). `fast-14-cajon-sobre-z`, `fast-15-ayuda-en-cajon`, `fast-16-ayuda-cajon-pequenas`
-- Quit menu: restart, suspend and shutdown no longer ask for confirmation (fast shutdown, which skips saving
-  metadata, still does; ES patch 0053). `fast-19-salir-sin-confirmar`
-
-### Tools menu
-- R36 Tuner and EKA2L1 entries now have a description and an icon; the `MOD_TOOLS` folder has a description.
-- 15 dead entries of apps that this build does not ship are gone (ES logged 15 warnings per boot, now 0).
-- Every tool has its own icon, and the icons are visible on the dark theme (lighter background).
-- Baidu Sync is hidden, and the Duckstation and PortMaster scripts are fixed. `tools-1-limpieza`, `tools-2-imagenes`
 
 ## 2026-10-21 - fast boot (`bareboot-4s` branch)
 
@@ -380,19 +313,16 @@ Same sources as the development image `44d6084` below, built as a **clean releas
   clock freezes the console, cause unknown). simple_ondemand up-threshold set to 60. `zenith-87-gpu-tabla-600`,
   `zenith-91-gpu-umbral-60`
 
-## 2026-10-19 - EmulationStation interface (patches 0017-0043)
-- Switches, sliders, on-screen keyboard, search field, dialogs, tabs, scrollbar, header alignment, battery text,
-  theme downloader, game options, scraper fixes, window sizes relative to the status bar. `zenith-54-contraste` .. `zenith-86-led-sin-irq-off`
+## 2026-10-19 - R36 Ultra joystick LEDs
 - New LED driver for the R36 Ultra joysticks. `zenith-74-led-joysticks`
 
-## 2026-10-15 - Wi-Fi and PPSSPP
-- Faster Wi-Fi menu (busctl, prescan; ES patch 0016). `zenith-53-wifi-fast`
+## 2026-10-15 - PPSSPP
 - PPSSPP `RenderDuplicateFrames = False`.
 
 ## 2026-10-08..10-11 - Zenith first release work
 - Own first-boot screens, boot banner, language question and credits. `zenith-1-firstboot`..`zenith-13-debug`
-- Own light and dark EmulationStation theme ("Zenith"), volume OSD, bundled themes, brightness notice, R36 Tuner Next
-  (CPU governor and frequencies, turbo steps, benchmarks, monitor). `zenith-14-tema-es` .. `zenith-52-bigger-logos`
+- Own light and dark EmulationStation theme ("Zenith"), bundled themes, R36 Tuner Next (CPU governor and frequencies,
+  turbo steps, benchmarks, monitor). `zenith-14-tema-es` .. `zenith-52-bigger-logos`
 - Opening a game from the menu: 6.29 s -> 3.85 s (average of 8 games). `launch-iter1`..`launch-iter4`
 
 ## Boot time summary (R36 Ultra)

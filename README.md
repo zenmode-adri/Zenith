@@ -160,10 +160,7 @@ tested on an R36 Ultra only in part.
 - **PSP:** PPSSPP 1.20.2 is the default (the 2021 build stays selectable).
 - **GPU freezes fixed:** changing the GPU speed limit across 480 MHz used to freeze the console within about a minute;
   after the fix, more than 25,000 changes per console without a freeze.
-- **Low battery** closes the game and lets it save before powering off. **Volume keys** repeat faster when held and show the
-  volume bar at 0 % and 100 %. **Samba** asks for the root password.
-- **Battery gauge** tables for the R36S panel 4, R36XX Pro Max, R40XX and R45H/R46H follow the maker's (not tried on those
-  consoles).
+- **Samba** asks for the root password (it is off by default).
 - **Zenith DTB Selector** (Windows, Linux, macOS; English, Spanish and Chinese) lists 86 models, shows what will change
   before writing and keeps backups. Its test mode, which tries the candidates one boot at a time for consoles whose model
   is unknown, is **not yet tested on hardware**.
