@@ -282,8 +282,16 @@ pixel.
    and check the `.sha256`.
 2. Decompress it and write it to an SD card with an imaging tool (Balena Etcher, Raspberry Pi Imager, `dd`).
    Double-check the target disk: writing an image erases everything on it.
-3. For a console other than the R36 Ultra, pick its device tree with **Zenith DTB Selector** (`ZenithDtbSelector.exe` on
-   the boot partition, also for Linux and macOS): see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
+3. Pick your RK3326 console's device tree with **Zenith DTB Selector** (`ZenithDtbSelector.exe` on the boot partition,
+   also for Linux and macOS): see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
+
+<table>
+<tr>
+<td align="center"><img src="docs/dtb-selector/01-main-en-light.jpg" width="280"/><br/><sub>Pick your console from 86 models</sub></td>
+<td align="center"><img src="docs/dtb-selector/03-search-and-import-en-light.jpg" width="280"/><br/><sub>Search, or import your own .dtb</sub></td>
+<td align="center"><img src="docs/dtb-selector/04-review-changes-en-light.jpg" width="280"/><br/><sub>The exact change, before anything is written</sub></td>
+</tr>
+</table>
 
 **Updating:** from v0.2.0 on, the built-in updater offers new releases. Coming from v0.1.0, write the image again (back up
 your saves first): v0.1.0's updater looked at the original AURKNIX repository.

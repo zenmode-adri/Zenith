@@ -265,7 +265,7 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 
 - **From v0.1.0 or a development image:** write the new image to an SD card (back up your saves first; writing the image
   erases the card). The update menu of v0.1.0 looked at the original AURKNIX repository, so it does not see this release.
-- Check the `.sha256` after downloading. For a console other than the R36 Ultra, pick its device tree with Zenith DTB
+- Check the `.sha256` after downloading. Pick your RK3326 console's device tree with Zenith DTB
   Selector (see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md)).
 - A fresh install starts zfront; `Tools > Switch frontend` changes between zfront and EmulationStation at any time.
 - If you tuned the device tree with R36 Tuner on an earlier development image and kept your settings, an earlier

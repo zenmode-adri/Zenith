@@ -31,7 +31,7 @@ For everything in v0.2.0 (zfront, patched Panfrost, performance mode, R36 Tuner 
 * Download the image and check its `.sha256`.
 * Decompress it and write it to an SD card (Balena Etcher, Raspberry Pi Imager, `dd`).
   Check the target disk first: everything on it is erased.
-* Other RK3326 devices: choose the device tree with **Zenith DTB Selector** on the boot partition
+* RK3326 consoles: choose your device tree with **Zenith DTB Selector** on the boot partition
   (see [docs/DTB-SELECTOR.md](https://github.com/zenmode-adri/Zenith/blob/main/docs/DTB-SELECTOR.md)).
 * **Coming from v0.2.0:** the built-in updater is meant to offer this release (not tested end to end from a v0.2.0 SD).
   Coming from v0.1.0, write the image (back up your saves first): v0.1.0's update menu does not see releases of this repository.
