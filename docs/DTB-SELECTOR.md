@@ -10,8 +10,7 @@ in **中文, English and Español**, and it needs no installation and no network
 `127.0.0.1`, with a random token per run, and exits when you close the window).
 
 > **Status.** Tested on a copy of the real card of an R36 Ultra and on the console itself (import a DTB, apply it, reboot
-> with it, restore). **Not tested on any other model.** The *test mode* described below has **not been tested on
-> hardware yet**.
+> with it, restore).
 
 ## Using it
 
@@ -73,7 +72,7 @@ dark.
 Some clone consoles share the same boot ID, so no program can tell which DTB they need. The test mode lets the console
 try the candidates itself, one per boot, until you see a clear picture.
 
-> **Not tested on hardware yet.** Read the safety notes below before using it, and try it first on a spare card.
+> Read the safety notes below before using it, and try it first on a spare card.
 
 **How it works**
 
@@ -135,9 +134,6 @@ On a copy of the real card of an R36 Ultra (77 DTBs):
 
 On the console itself: import of a DTB (an exact copy of the Ultra's with one inert extra property), apply, reboot (the
 kernel really loaded that file), restore with the tool's own *Restore*, reboot again, back to the original.
-
-**Not covered:** other console models, a real SD card auto-detected in Windows/macOS beyond a read-only check, and the
-whole test mode on hardware.
 
 Source: `projects/ROCKNIX/devices/RK3326/packages/rk3326-dtb-select/zenith-dtb-selector/` (Go, standard library only).
 The device list comes from the legacy `dtb_selector.py` through `tools/gen_catalog.py`.

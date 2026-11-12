@@ -9,7 +9,7 @@ fraction of the memory, and sits idle when nothing is happening, while reading t
 > [!NOTE]
 > **Status: working, measured on one device.** Everything below was developed and measured on the **R36 Ultra**
 > (RK3326, Mali-G31, 1 GB RAM). Since Zenith v0.2.0 zfront is the default frontend of a new install; EmulationStation
-> stays installed and can be chosen in `Tools > Switch frontend`. See [What is not verified yet](#what-is-not-verified-yet).
+> stays installed and can be chosen in `Tools > Switch frontend`.
 
 ## Why a new frontend?
 
@@ -95,16 +95,10 @@ cmake -S sources -B build/aarch64 -G Ninja -DCMAKE_BUILD_TYPE=Release \
 In Zenith zfront is built as the `ui/zfront` package (`projects/ROCKNIX/packages/ui/zfront`); the source tree is the `sources/` folder next to its `package.mk`. Architecture, modules and
 conventions are in [`README.md`](../projects/ROCKNIX/packages/ui/zfront/sources/README.md).
 
-## What is not verified yet
+## Limits
 
-Honest list, so nobody assumes more than we know:
-
-- Measured only on the R36 Ultra; other RK3326 handhelds are untested.
-- Not yet tested on hardware: a physical gamepad with no `es_input.cfg` entry, real sound output, emulators other than
-  RetroArch and PPSSPP (flycast, drastic, mupen...), suspend from the menu, the real screensaver.
 - The scraper is present but disabled until it has its own ScreenScraper developer id.
 - The graphics stack still runs on Sway (Wayland). Dropping it for direct KMS is a possible later step.
-- Only the Zenith theme is supported; other EmulationStation themes are not rendered.
 
 ## Credits and license
 

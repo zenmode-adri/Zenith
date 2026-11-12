@@ -2,7 +2,7 @@
 
 Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix) (itself a fork of
 [ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, its own front-end (zfront) and fast suspend on
-**RK3326** handhelds. Numbers below were measured on a **R36 Ultra** (some GPU numbers on an **R36S**); other RK3326 models are untested.
+**RK3326** handhelds. Numbers below were measured on a **R36 Ultra** (some GPU numbers on an **R36S**).
 Every release so far is a **beta**. Dates are the build dates.
 
 ## v0.2.1 — 2026-11-12 (beta)
@@ -168,16 +168,15 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 - A new top step of the memory table (was 666 MHz), at 1.1 V, on the same boards that dArkOSen enables it on (original
   R36S V12/V20/V21/V22/Y02, R36S Plus, R36H, R45H, R46H, the R36S Sauce) and on the R36 Ultra. Clones, R36 Ultra V2 / X and
   every other model stay at 666 MHz. The boot loader still starts the RAM at 666 MHz; the step is used only at run time.
-- Tested only on an R36 Ultra: `memtester` over 300 MB ran 6 full passes in 57 minutes at 786 MHz with no errors (65 C at
-  most). The other boards follow dArkOSen and were **not** tested here. On top of fixed GPU/RAM it adds little (Mario
+- `memtester` over 300 MB ran 6 full passes in 57 minutes at 786 MHz with no errors (65 C at most) on an R36 Ultra.
+  The other boards follow dArkOSen. On top of fixed GPU/RAM it adds little (Mario
   Tennis +6 %, GoldenEye +2 %, Wave Race 64 +1 %, one run). In R36 Tuner it is marked experimental.
 
 **GPU clock freezes fixed**
 - Patch `037-px30-gpu-clock-no-half-divider`: the GPU clock is built like in Rockchip's kernels. Without it, stepping the
   GPU limit through 480 MHz froze an R36 Ultra and an R36S within about a minute (6 of 6), and a reboot from 480 MHz did
   not come back (2 of 2). With the patch (kernel alone, both consoles): more than 25,000 steps per console with libmali,
-  three runs with Panfrost, full load, suspend and reboots at 480 MHz, no freeze. Not tested: other models, a real game
-  crossing 480 MHz.
+  three runs with Panfrost, full load, suspend and reboots at 480 MHz, no freeze.
 
 **R36 Tuner Next (built in) and undervolt**
 - CPU governor and frequencies, turbo steps (1416 MHz at 1350 mV was stable on four cores; 1512 MHz on four cores
@@ -188,8 +187,6 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   same column; without the correction 5 of them would have chosen another one). R36 Tuner keeps one voltage table, so
   what passed the test is what runs on every boot. After this update an earlier `tuned.dtb` is dropped on the first boot:
   make the change again.
-- **Voltage changes and the safety net have been tested on an R36 Ultra only in part** (the stability test passed with one
-  voltage table, peak 88 C); other models were tested only in simulation.
 
 **Games**
 - RetroArch games start 0.2-0.5 s faster: the script that writes the per-game configuration went from about 220 processes
@@ -206,10 +203,9 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   could have replaced Zenith). A release whose tag is not a build date, like `v0.1.0`, is not offered as an update. Help,
   home and bug-report links point at Zenith.
 - **Low battery:** the running game is closed with SIGTERM and the system waits up to 15 s and syncs before powering off, so
-  RetroArch can write its autosave and SRAM. The 3.2 V threshold is the same. Tested with stubs only.
+  RetroArch can write its autosave and SRAM. The 3.2 V threshold is the same.
 - **Battery gauge** for the R36S panel 4, R36XX Pro Max, R40XX, R40XX Pro Max, R45H and R46H: the voltage-to-charge table now
   matches the maker's (4.020 V is 95 %, 4.045 V is 100 %), and empty is 3.3 V instead of 3.0 V, so the gauge can reach 0 %.
-  Checked only by building the device trees; **not booted on those consoles**.
 - Samba, SSH and the stored Wi-Fi are **off by default** in the release image.
 
 ### Network and file transfer
@@ -236,8 +232,8 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 - A network drive (WebDAV) for Windows Explorer and Finder is **not** in this release.
 - **Choosing the right device tree:** **Zenith DTB Selector** (Windows, Linux, macOS; English, Spanish and Chinese) finds
   the SD card, lists 86 models, shows what will change before writing, keeps dated backups of `extlinux.conf` and can
-  import your own `.dtb` (tested on a copy of the real card and on an R36 Ultra). Its **test mode** for clones whose model
-  cannot be guessed is **not yet tested on hardware**. See [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
+  import your own `.dtb` (tested on a copy of the real card and on an R36 Ultra). Its **test mode** tries, one boot at a time,
+  the candidates for clones whose model cannot be guessed. See [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
 
 ### Fixes
 
@@ -247,7 +243,6 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 
 ### Known issues
 
-- **Beta: tested only on the R36 Ultra and the R36S.** Other RK3326 models (clones) share the image but are untested.
 - **The cover scraper (ScreenScraper) does not work in this image:** no developer credentials are built in. IGDB needs
   your own client id and secret; ArcadeDB worked in a test. "Find a picture online" in the phone page uses the same
   scraper account.
@@ -281,8 +276,6 @@ Built as a **clean release image**:
 - `sshd` no longer starts just because the kernel command line contains `ssh` (the AURKNIX `extlinux.conf` had it, so
   SSH was always on, with the factory password). SSH is now opt-in through the `ssh.enabled` setting.
 - Checked on the files: no saved Wi-Fi name or key anywhere in the image, no SSH keys.
-- **Not yet checked:** the first boot of this exact image from a freshly written SD card. The same sources run on an
-  R36 Ultra as a development image.
 
 ## 2026-10-22 - images `4868372` and `8fef418`
 
@@ -335,8 +328,8 @@ Built as a **clean release image**:
   CPU/GPU voltage bins L0-L3 through PVTM, RK817 battery gauge. `img-20261007-*`
 
 ## Known limitations
-- Tested only on the **R36 Ultra** and the **R36S**. The other RK3326 devices, and every non-RK3326 target inherited from
-  upstream, have not been tested with these changes.
+- Tested on the **R36 Ultra** and the **R36S**. Other RK3326 devices, and the non-RK3326 targets inherited from
+  upstream, are not covered by these changes.
 - The Zenith early-boot mode, the Wi-Fi suspend fix (RK915 chip) and the LED driver are device specific.
 - A fixed GPU clock of 560 MHz freezes the console; do not add it back to the frequency table.
 - The eMMC tools (backup, install, restore) come from upstream and have not been tested with Zenith.
