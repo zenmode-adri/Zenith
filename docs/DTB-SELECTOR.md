@@ -31,6 +31,13 @@ in **中文, English and Español**, and it needs no installation and no network
    card (the header and size are validated, the name is reduced to a safe base name, and an existing file is never
    replaced without asking) and selects it.
 
+> [!WARNING]
+> **Only import a DTB built for the Linux 6.x kernel** (Zenith / ROCKNIX). The tool only checks that the file is a valid
+> DTB, not that it suits this kernel. A DTB taken from the stock firmware or from another system (ArkOS, dArkOS...) is made
+> for an older kernel and may boot with no picture, or not boot at all. If your console is on the list, pick it there
+> instead. If a DTB does not work, put the card back in the PC and choose another one: the tool only edits the boot
+> entry on the card, so you should not need to flash the image again.
+
 ![Search and import](dtb-selector/03-search-and-import-en-light.jpg)
 
 6. Press **Review & write**. The tool shows the exact change, word by word, **before** writing. Nothing is written until
