@@ -9,7 +9,8 @@
   <a href="https://github.com/zenmode-adri/Zenith/releases"><img src="https://img.shields.io/github/downloads/zenmode-adri/Zenith/total?style=flat-square" alt="Downloads"/></a>
   <img src="https://img.shields.io/badge/SoC-RK3326-blue?style=flat-square" alt="RK3326"/>
   <img src="https://img.shields.io/badge/kernel-Linux%206.12-orange?style=flat-square" alt="Linux 6.12"/>
-  <img src="https://img.shields.io/badge/tested%20on-R36%20Ultra-success?style=flat-square" alt="Tested on R36 Ultra"/>
+  <img src="https://img.shields.io/badge/status-beta-orange?style=flat-square" alt="Beta"/>
+  <img src="https://img.shields.io/badge/tested%20on-R36%20Ultra%20%2B%20R36S-success?style=flat-square" alt="Tested on R36 Ultra and R36S"/>
   <a href="https://ko-fi.com/zenmodeadri"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&style=flat-square" alt="Ko-fi"/></a>
 </p>
 
@@ -18,8 +19,8 @@ patched open GPU driver. It is an **unofficial fork** of [AURKNIX](https://githu
 which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured on the **R36 Ultra**.
 
 > [!WARNING]
-> **Tested only on the R36 Ultra.** Other RK3326 handhelds use the same image but have not been checked with these
-> changes: treat them as beta. Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors; please do
+> **Beta. Tested only on the R36 Ultra and the R36S.** Other RK3326 handhelds use the same image but have not been
+> checked with these changes: treat them as beta too. Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors; please do
 > not report Zenith problems to them.
 
 ## Features
@@ -174,7 +175,7 @@ tested on an R36 Ultra only in part.
 > [!IMPORTANT]
 > **Known issues.** The cover scraper (ScreenScraper) does **not** work in this image: no developer credentials are built
 > in. The root password is still `rocknix` (SSH and Samba are off by default; change it before turning them on).
-> Only the R36 Ultra has been tested.
+> Only the R36 Ultra and the R36S have been tested (beta).
 
 ## Panfrost vs libmali
 

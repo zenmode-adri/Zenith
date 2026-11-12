@@ -2,8 +2,34 @@
 
 Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix) (itself a fork of
 [ROCKNIX](https://github.com/ROCKNIX)) focused on fast boot, its own front-end (zfront) and fast suspend on
-**RK3326** handhelds. Numbers below were measured on a **R36 Ultra**; other RK3326 models are untested.
-Dates are the build dates.
+**RK3326** handhelds. Numbers below were measured on a **R36 Ultra** (some GPU numbers on an **R36S**); other RK3326 models are untested.
+Every release so far is a **beta**. Dates are the build dates.
+
+## v0.2.1 — 2026-11-12 (beta)
+
+Small update on v0.2.0. Its release tag is the build date, `20261112`, which is what the built-in updater looks for.
+
+> [!WARNING]
+> **Beta.** Tested on the **R36 Ultra** and the **R36S**, the two consoles we have. Other RK3326 models use the same image
+> but have not been tried: treat them as beta too.
+
+### Changes
+
+- **Appearance options apply at once.** Selector style, title alignment and list text case change the screen as soon as
+  you pick a value, and you stay in the menu (before, the front-end restarted and you were sent back to the main menu).
+  "Theme default" gives the theme's own look back.
+- **R36 Tuner Next** is listed with the performance rows in `Battery & performance` (when the Tuner is installed), and
+  its "Overclock & monitoring" duplicate is hidden then, because both switched the same turbo.
+- **R36 Tuner Next** is started directly instead of through a terminal window.
+- **R36 Tuner Next:** with Turbo on, the CPU limit can now be set to the Turbo steps (1416 and 1512 MHz on the R36 Ultra);
+  they were missing from the list because the kernel lists them apart.
+- Text: the baseline moves just enough for letters that hang below the line (a "g" was cut in the Iconic theme).
+  "microSD" keeps its spelling in menus.
+- Repository: personal helper scripts, build symlinks and local network addresses removed.
+
+Checked on screen, on an R36 Ultra with a test build: the Appearance change. The R36S ran the build before this one
+(with the Tuner changes), not this exact image. The new Tuner row order, the direct Tuner start and the Turbo CPU range
+are covered by automated tests only.
 
 ## v0.2.0 — 2026-11-11
 
@@ -11,9 +37,8 @@ Second public release (the first was v0.1.0, on 23 October 2026). Its release ta
 what the built-in updater looks for.
 
 > [!WARNING]
-> **Tested only on the R36 Ultra** (720x720). The other RK3326 models use the same image but have **not** been tried with
-> v0.2.0: treat them as beta. The R36S was tested only on an older development image (some of the GPU numbers below come
-> from it).
+> **Beta.** Tested on the **R36 Ultra** (720x720) and the **R36S**. The other RK3326 models use the same image but have
+> **not** been tried: treat them as beta too.
 
 ### Highlights
 
@@ -265,8 +290,7 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 
 ### Known issues
 
-- **Tested only on the R36 Ultra.** Other RK3326 models (R36S and clones) share the image but are untested with this
-  release: beta. The R36S was tested only on an older development image.
+- **Beta: tested only on the R36 Ultra and the R36S.** Other RK3326 models (clones) share the image but are untested.
 - **The cover scraper (ScreenScraper) does not work in this image:** no developer credentials are built in. IGDB needs
   your own client id and secret; ArcadeDB worked in a test. "Find a picture online" in the phone page uses the same
   scraper account.
@@ -278,8 +302,6 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 - The battery tables for the six models above, the DTB Selector test mode, cancelling an update and the low-battery
   shutdown have not been tried on real consoles in every case (see the entries above).
 - Zenith adds no new emulators and does not update cores (those come from AURKNIX), apart from PPSSPP 1.20.2.
-- v0.1.0's update menu cannot see this release (it looked at the original AURKNIX repository): install v0.2.0 by writing
-  the image. From v0.2.0 on, later releases are offered by the built-in updater.
 
 ### Upgrading
 
@@ -384,8 +406,8 @@ Same sources as the development image `44d6084` below, built as a **clean releas
   CPU/GPU voltage bins L0-L3 through PVTM, RK817 battery gauge. `img-20261007-*`
 
 ## Known limitations
-- Tested only on the **R36 Ultra**. The other RK3326 devices, and every non-RK3326 target inherited from upstream,
-  have not been tested with these changes.
+- Tested only on the **R36 Ultra** and the **R36S**. The other RK3326 devices, and every non-RK3326 target inherited from
+  upstream, have not been tested with these changes.
 - The Zenith early-boot mode, the Wi-Fi suspend fix (RK915 chip) and the LED driver are device specific.
 - A fixed GPU clock of 560 MHz freezes the console; do not add it back to the frequency table.
 - The eMMC tools (backup, install, restore) come from upstream and have not been tested with Zenith.
