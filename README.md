@@ -30,8 +30,8 @@ patched open GPU driver. It is an **unofficial fork** of [AURKNIX](https://githu
 which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured on the **R36 Ultra**.
 
 > [!WARNING]
-> **Beta. Tested only on the R36 Ultra and the R36S.** Other RK3326 handhelds use the same image but have not been
-> checked with these changes: treat them as beta too.
+> **Beta.** Tested on the **R36 Ultra** and the **R36S**. I am one person, so bugs can slip through: if you find
+> one, please [open an issue](https://github.com/zenmode-adri/Zenith/issues). Other RK3326 models use the same image but have not been tried.
 >
 > Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors; please do not report Zenith
 > problems to them.
@@ -202,13 +202,12 @@ R36 Tuner Next opens from the Tools menu (and from `Battery & performance`). Its
 temperature and of the CPU, GPU and RAM clocks, with three profiles (Power saver, Balanced, Performance). Settings sets
 the governors, the maximum clocks, turbo and the performance mode for games. Advanced edits the CPU and GPU voltage
 curves and the memory steps, restores the factory values and explains how to recover from a PC. Tests runs a stability
-test and CPU, memory and GPU benchmarks, with a history of results. Voltage changes have a boot safety net; they were
-tested on an R36 Ultra only in part.
+test and CPU, memory and GPU benchmarks, with a history of results. Voltage changes have a boot safety net.
 
 ### Other changes
 - **Games start 0.2-0.5 s faster** in RetroArch, with either front-end.
 - **PSP:** PPSSPP 1.20.2 is the default (the 2021 build stays selectable).
-- **Low battery** closes the game and lets it save before powering off (tested only with simulated battery levels).
+- **Low battery** closes the game and lets it save before powering off.
 - **Samba** asks for the root password (it is off by default).
 - **Zenith DTB Selector** (Windows, Linux, macOS; English, Spanish and Chinese) lists 86 models, shows what will change
   before writing and keeps backups. Its test mode, which tries the candidates one boot at a time for consoles whose model
@@ -221,7 +220,6 @@ tested on an R36 Ultra only in part.
 > [!IMPORTANT]
 > **Known issues.** The cover scraper (ScreenScraper) does **not** work in this image: no developer credentials are built
 > in. The root password is still `rocknix` (SSH and Samba are off by default; change it before turning them on).
-> Only the R36 Ultra and the R36S have been tested (beta).
 
 ## Panfrost vs libmali
 

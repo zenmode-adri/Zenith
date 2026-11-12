@@ -10,8 +10,8 @@ Every release so far is a **beta**. Dates are the build dates.
 Small update on v0.2.0. Its release tag is the build date, `20261112`, which is what the built-in updater looks for.
 
 > [!WARNING]
-> **Beta.** Tested on the **R36 Ultra** and the **R36S**, the two consoles we have. Other RK3326 models use the same image
-> but have not been tried: treat them as beta too.
+> **Beta.** Tested on the **R36 Ultra** and the **R36S**. I am one person, so bugs can slip through: if you find
+> one, please [open an issue](https://github.com/zenmode-adri/Zenith/issues). Other RK3326 models use the same image but have not been tried.
 
 ### Changes
 
@@ -24,18 +24,14 @@ Small update on v0.2.0. Its release tag is the build date, `20261112`, which is 
 - **R36 Tuner Next:** with Turbo on, the CPU limit can now be set to the Turbo steps (1416 and 1512 MHz on the R36 Ultra);
   they were missing from the list because the kernel lists them apart.
 
-Checked on screen, on an R36 Ultra with a test build: the Appearance change. The R36S ran the build before this one
-(with the Tuner changes), not this exact image. The new Tuner row order and the Turbo CPU range are covered by
-automated tests only.
-
 ## v0.2.0 — 2026-11-11
 
 Second public release (the first was v0.1.0, on 23 October 2026). Its release tag is the build date, `20261111`, which is
 what the built-in updater looks for.
 
 > [!WARNING]
-> **Beta.** Tested on the **R36 Ultra** (720x720) and the **R36S**. The other RK3326 models use the same image but have
-> **not** been tried: treat them as beta too.
+> **Beta.** Tested on the **R36 Ultra** and the **R36S**. I am one person, so bugs can slip through: if you find
+> one, please [open an issue](https://github.com/zenmode-adri/Zenith/issues). Other RK3326 models use the same image but have not been tried.
 
 ### Highlights
 

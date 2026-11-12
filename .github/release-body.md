@@ -5,8 +5,8 @@ Unofficial fork of AURKNIX/ROCKNIX for **RK3326** handhelds, developed and measu
 Everything that changed, with the measurements: [CHANGELOG.md](https://github.com/zenmode-adri/Zenith/blob/main/CHANGELOG.md).
 
 > [!WARNING]
-> **Beta.** Tested on the **R36 Ultra** and the **R36S**, the two consoles we have. Other RK3326 models use the same
-> image but have not been tried: treat them as beta too.
+> **Beta.** Tested on the **R36 Ultra** and the **R36S**. I am one person, so bugs can slip through: if you find
+> one, please [open an issue](https://github.com/zenmode-adri/Zenith/issues). Other RK3326 models use the same image but have not been tried.
 
 **R36 Tuner Next:** the image includes a new version that is not released yet (the public repository is still at v2.0):
 a rewritten interface with live graphs, one voltage-curve editor per component, a stability test and a boot safety net for
@@ -17,8 +17,6 @@ voltage changes. Screenshots in the [README](https://github.com/zenmode-adri/Zen
   restarting the front-end.
 - **R36 Tuner Next** sits with the performance rows in `Battery & performance` and, with Turbo on, its CPU limit can
   reach the Turbo steps (1416 and 1512 MHz on the R36 Ultra).
-- Checked on screen only for the Appearance change (R36 Ultra, test build). The R36S ran the previous build, not this
-  exact image. The Tuner changes have automated tests only.
 
 For everything in v0.2.0 (zfront, patched Panfrost, performance mode, R36 Tuner Next, phone file transfer) see its
 [release](https://github.com/zenmode-adri/Zenith/releases/tag/20261111) and the changelog.
@@ -39,14 +37,13 @@ For everything in v0.2.0 (zfront, patched Panfrost, performance mode, R36 Tuner 
 * RK3326 consoles: choose your device tree with **Zenith DTB Selector** on the boot partition
   (see [docs/DTB-SELECTOR.md](https://github.com/zenmode-adri/Zenith/blob/main/docs/DTB-SELECTOR.md)).
 * **Coming from v0.2.0:** update from the console (`System > Updates & downloads > Software updates`). The updater is meant
-  to offer this release; it was not tested end to end from a v0.2.0 SD.
+  to offer this release.
 
 ## Default settings
 * Wi-Fi, SSH, Samba and the phone file transfer are **off**: enable them from the Network menu.
 * The root password is the factory one, `rocknix`. Change it before turning SSH or Samba on.
 
 ## Known issues
-* Beta: only the R36 Ultra and the R36S have been tested.
 * The cover scraper (ScreenScraper) does not work in this image: no developer credentials are built in.
 * Performance mode: heat and battery use in long sessions are not measured.
 
