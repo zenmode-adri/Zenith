@@ -32,6 +32,7 @@ For everything in v0.2.0 (zfront, patched Panfrost, performance mode, R36 Tuner 
 | `*.sha256` | SHA-256 checksums: verify them before writing anything |
 
 ## Installation
+* **Which file?** New install: download the `.img.gz`. Already running Zenith: update from the console with the built-in updater; the `.tar` is only used by the updater, you don't need to download it.
 * Download the image and check its `.sha256`.
 * Decompress it and write it to an SD card (Rufus on Windows, Balena Etcher, Raspberry Pi Imager, `dd`).
   Check the target disk first: everything on it is erased.

@@ -50,7 +50,7 @@ what the built-in updater looks for.
 - **Performance mode** (GPU and RAM at full speed while a game runs) is in the image, **off by default**.
 - **RAM at 786 MHz** on the models that have that step (R36 Ultra and the boards listed below).
 - **R36 Tuner Next** built in, in a **new version that is not released yet** (the public repository is at v2.0), with
-  undervolt and a fix for the hard freezes around a 480 MHz GPU clock.
+  undervolt.
 - **Send files from your phone** through a web page (off by default, 4-digit PIN, QR code to scan).
 - **Zenith DTB Selector** to pick the right screen/device tree for your console from Windows, Linux or macOS.
 
