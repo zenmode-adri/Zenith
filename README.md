@@ -183,8 +183,9 @@ Measured on an **R36 Ultra**, one to three runs per point:
 | Memory the game can still use (God of War, Dead or Alive 2) | 456-488 MB | **504-528 MB** |
 
 - It does **not** make games run faster: in God of War the frame rate is the same with both. What it gives a game is
-  room: 32-48 MB more memory. That is less than the difference in size between the two front-ends, because Linux
-  compresses the memory a front-end is not using while a game runs.
+  room: 32-48 MB more memory. In games that run close to the 1 GB limit that extra room should help avoid stalls, though
+  we have not measured that case. The gain is smaller than the difference in size between the two front-ends, because
+  Linux compresses the memory a front-end is not using while a game runs.
 - It does what ES does (game lists, collections, metadata editor, scrapers, music, video previews, manuals, netplay,
   Kiosk and Kid modes) and adds a continue-playing row, save backups, a library check, play statistics, the battery
   screen and the phone file transfer. More in [`docs/ZFRONT.md`](docs/ZFRONT.md).
