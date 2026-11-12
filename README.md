@@ -14,14 +14,27 @@
   <a href="https://ko-fi.com/zenmodeadri"><img src="https://img.shields.io/badge/Ko--fi-Buy%20me%20a%20coffee-FF5E5B?logo=ko-fi&style=flat-square" alt="Ko-fi"/></a>
 </p>
 
+<p align="center">
+  <a href="#features">Features</a> ·
+  <a href="#screenshots">Screenshots</a> ·
+  <a href="#install">Install</a> ·
+  <a href="#what-changed">What changed</a> ·
+  <a href="#r36-tuner-next">R36 Tuner Next</a> ·
+  <a href="#panfrost-vs-libmali">Panfrost vs libmali</a> ·
+  <a href="CHANGELOG.md">Changelog</a> ·
+  <a href="https://github.com/zenmode-adri/Zenith/releases">Download</a>
+</p>
+
 Zenith is a system image for RK3326 handhelds: Linux 6.12, its own front-end (**zfront**), fast boot and suspend, and a
 patched open GPU driver. It is an **unofficial fork** of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix),
 which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured on the **R36 Ultra**.
 
 > [!WARNING]
 > **Beta. Tested only on the R36 Ultra and the R36S.** Other RK3326 handhelds use the same image but have not been
-> checked with these changes: treat them as beta too. Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors; please do
-> not report Zenith problems to them.
+> checked with these changes: treat them as beta too.
+>
+> Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors; please do not report Zenith
+> problems to them.
 
 ## Features
 
@@ -52,20 +65,23 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 
 <table>
 <tr>
-<td align="center"><img src="docs/images/zfront-minimal-light.png" width="280"/><br/><sub>Zenith Minimal (default)</sub></td>
-<td align="center"><img src="docs/images/zfront-minimal-dark.png" width="280"/><br/><sub>Zenith Minimal, dark</sub></td>
-<td align="center"><img src="docs/images/zfront-next-dark.png" width="280"/><br/><sub>Zenith Next, with the continue-playing row</sub></td>
+<td align="center"><img src="docs/images/zfront-minimal-light.png" width="200"/><br/><sub>Zenith Minimal (default)</sub></td>
+<td align="center"><img src="docs/images/zfront-minimal-dark.png" width="200"/><br/><sub>Zenith Minimal, dark</sub></td>
+<td align="center"><img src="docs/images/zfront-next-light.png" width="200"/><br/><sub>Zenith Next, with the continue-playing row</sub></td>
+<td align="center"><img src="docs/images/zfront-next-dark.png" width="200"/><br/><sub>Zenith Next, dark</sub></td>
 </tr>
+</table>
+
+**zfront menus**
+
+<div align="center">
+<table>
 <tr>
 <td align="center"><img src="docs/images/zfront-menu.png" width="280"/><br/><sub>Main menu</sub></td>
 <td align="center"><img src="docs/images/zfront-battery.png" width="280"/><br/><sub>Battery and power</sub></td>
-<td align="center"><img src="docs/images/zfront-battery-performance.png" width="280"/><br/><sub>Battery &amp; performance settings, with R36 Tuner Next</sub></td>
-</tr>
-<tr>
-<td align="center"><img src="docs/images/zfront-next-light.png" width="280"/><br/><sub>Zenith Next, light</sub></td>
-<td></td><td></td>
 </tr>
 </table>
+</div>
 
 **R36 Tuner Next**
 
@@ -78,7 +94,7 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 <tr>
 <td align="center"><img src="docs/images/tuner-advanced.png" width="280"/><br/><sub>Voltages, factory settings, recovery</sub></td>
 <td align="center"><img src="docs/images/tuner-tests.png" width="280"/><br/><sub>Stability test and benchmarks</sub></td>
-<td></td>
+<td align="center"><img src="docs/images/zfront-battery-performance.png" width="280"/><br/><sub>It opens from Battery &amp; performance</sub></td>
 </tr>
 </table>
 
@@ -102,6 +118,32 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 <td align="center"><img src="docs/images/es-grid-dark.png" width="280"/><br/><sub>Game grid with box art</sub></td>
 </tr>
 </table>
+
+---
+
+## Install
+
+1. Download `AURKNIX-RK3326.aarch64-<date>.img.gz` from the [Releases](https://github.com/zenmode-adri/Zenith/releases) page
+   and check the `.sha256`.
+2. Decompress it and write it to an SD card with an imaging tool (Rufus on Windows, Balena Etcher, Raspberry Pi Imager, `dd`).
+   Double-check the target disk: writing an image erases everything on it.
+3. Pick your RK3326 console's device tree with **Zenith DTB Selector** (`ZenithDtbSelector.exe` on the boot partition,
+   also for Linux and macOS): see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
+
+<table>
+<tr>
+<td align="center"><img src="docs/dtb-selector/01-main-en-light.jpg" width="280"/><br/><sub>Pick your console from 86 models</sub></td>
+<td align="center"><img src="docs/dtb-selector/03-search-and-import-en-light.jpg" width="280"/><br/><sub>Search, or import your own .dtb</sub></td>
+<td align="center"><img src="docs/dtb-selector/04-review-changes-en-light.jpg" width="280"/><br/><sub>The exact change, before anything is written</sub></td>
+</tr>
+</table>
+
+> [!TIP]
+> **Which file?** New install: download the `.img.gz` and write it to an SD card. Already running Zenith: update from the
+> console with the built-in updater; the `.tar` is only used by the updater, you don't need to download it.
+
+**Updating:** from v0.2.0 on, the built-in updater offers new releases. Coming from v0.1.0, write the image again (back up
+your saves first): v0.1.0's updater looked at the original AURKNIX repository.
 
 ---
 
@@ -281,28 +323,6 @@ pixel.
 > was measured both fullscreen and windowed and every game uses its best result.
 
 ---
-
-## Install
-
-1. Download `AURKNIX-RK3326.aarch64-<date>.img.gz` from the [Releases](https://github.com/zenmode-adri/Zenith/releases) page
-   and check the `.sha256`.
-2. Decompress it and write it to an SD card with an imaging tool (Rufus on Windows, Balena Etcher, Raspberry Pi Imager, `dd`).
-   Double-check the target disk: writing an image erases everything on it.
-3. Pick your RK3326 console's device tree with **Zenith DTB Selector** (`ZenithDtbSelector.exe` on the boot partition,
-   also for Linux and macOS): see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
-
-<table>
-<tr>
-<td align="center"><img src="docs/dtb-selector/01-main-en-light.jpg" width="280"/><br/><sub>Pick your console from 86 models</sub></td>
-<td align="center"><img src="docs/dtb-selector/03-search-and-import-en-light.jpg" width="280"/><br/><sub>Search, or import your own .dtb</sub></td>
-<td align="center"><img src="docs/dtb-selector/04-review-changes-en-light.jpg" width="280"/><br/><sub>The exact change, before anything is written</sub></td>
-</tr>
-</table>
-
-**Which file?** New install: download the `.img.gz` and write it to an SD card. Already running Zenith: update from the console with the built-in updater; the `.tar` is only used by the updater, you don't need to download it.
-
-**Updating:** from v0.2.0 on, the built-in updater offers new releases. Coming from v0.1.0, write the image again (back up
-your saves first): v0.1.0's updater looked at the original AURKNIX repository.
 
 ## Under the hood
 
