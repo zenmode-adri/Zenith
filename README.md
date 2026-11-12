@@ -42,7 +42,7 @@ which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured
   a game starts sooner and has more memory to run in. EmulationStation stays installed, one menu away. See
   [zfront and EmulationStation](#zfront-and-emulationstation).
 - **Six themes:** Zenith Minimal (default) and Zenith Next, each light and dark, plus XMB, Art Book, Iconic and
-  TechDweeb.
+  TechDweeb. The four alternative themes are not 100 % polished yet; I will keep finishing them in the next versions.
 - **Fast suspend:** the console sleeps in **2.3 s** and wakes in **4.3 s**.
 - **Battery screen:** charge, current use, history and what used the most.
 - **R36 Tuner Next** built in, in a **new version that is not released yet**: CPU, GPU and RAM clocks, voltage curves,
@@ -98,7 +98,7 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 </tr>
 </table>
 
-**The other themes**
+**The other themes** (still being polished, more in the next versions)
 
 <table>
 <tr>
