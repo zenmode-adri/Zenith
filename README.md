@@ -286,7 +286,7 @@ pixel.
 
 1. Download `AURKNIX-RK3326.aarch64-<date>.img.gz` from the [Releases](https://github.com/zenmode-adri/Zenith/releases) page
    and check the `.sha256`.
-2. Decompress it and write it to an SD card with an imaging tool (Balena Etcher, Raspberry Pi Imager, `dd`).
+2. Decompress it and write it to an SD card with an imaging tool (Rufus on Windows, Balena Etcher, Raspberry Pi Imager, `dd`).
    Double-check the target disk: writing an image erases everything on it.
 3. Pick your RK3326 console's device tree with **Zenith DTB Selector** (`ZenithDtbSelector.exe` on the boot partition,
    also for Linux and macOS): see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).

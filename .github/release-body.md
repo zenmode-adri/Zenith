@@ -33,7 +33,7 @@ For everything in v0.2.0 (zfront, patched Panfrost, performance mode, R36 Tuner 
 
 ## Installation
 * Download the image and check its `.sha256`.
-* Decompress it and write it to an SD card (Balena Etcher, Raspberry Pi Imager, `dd`).
+* Decompress it and write it to an SD card (Rufus on Windows, Balena Etcher, Raspberry Pi Imager, `dd`).
   Check the target disk first: everything on it is erased.
 * RK3326 consoles: choose your device tree with **Zenith DTB Selector** on the boot partition
   (see [docs/DTB-SELECTOR.md](https://github.com/zenmode-adri/Zenith/blob/main/docs/DTB-SELECTOR.md)).
