@@ -142,8 +142,9 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 > **Which file?** New install: download the `.img.gz` and write it to an SD card. Already running Zenith: update from the
 > console with the built-in updater; the `.tar` is only used by the updater, you don't need to download it.
 
-**Updating:** from v0.2.0 on, the built-in updater offers new releases. Coming from v0.1.0, write the image again (back up
-your saves first): v0.1.0's updater looked at the original AURKNIX repository.
+**Updating:** you never download the `.tar` yourself. On the console, open `System > Updates & downloads > Software
+updates`: it looks for the newest release of this repository, downloads the `.tar`, checks it against its `.sha256` and
+installs it when the console restarts.
 
 ---
 

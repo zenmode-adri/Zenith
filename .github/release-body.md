@@ -38,8 +38,8 @@ For everything in v0.2.0 (zfront, patched Panfrost, performance mode, R36 Tuner 
   Check the target disk first: everything on it is erased.
 * RK3326 consoles: choose your device tree with **Zenith DTB Selector** on the boot partition
   (see [docs/DTB-SELECTOR.md](https://github.com/zenmode-adri/Zenith/blob/main/docs/DTB-SELECTOR.md)).
-* **Coming from v0.2.0:** the built-in updater is meant to offer this release (not tested end to end from a v0.2.0 SD).
-  Coming from v0.1.0, write the image (back up your saves first): v0.1.0's update menu does not see releases of this repository.
+* **Coming from v0.2.0:** update from the console (`System > Updates & downloads > Software updates`). The updater is meant
+  to offer this release; it was not tested end to end from a v0.2.0 SD.
 
 ## Default settings
 * Wi-Fi, SSH, Samba and the phone file transfer are **off**: enable them from the Network menu.
