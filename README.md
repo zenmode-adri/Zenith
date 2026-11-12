@@ -165,8 +165,6 @@ tested on an R36 Ultra only in part.
 ### Other changes
 - **Games start 0.2-0.5 s faster** in RetroArch, with either front-end.
 - **PSP:** PPSSPP 1.20.2 is the default (the 2021 build stays selectable).
-- **GPU freezes fixed:** changing the GPU speed limit across 480 MHz used to freeze the console within about a minute;
-  after the fix, more than 25,000 changes per console without a freeze.
 - **Low battery** closes the game and lets it save before powering off (tested only with simulated battery levels).
 - **Samba** asks for the root password (it is off by default).
 - **Zenith DTB Selector** (Windows, Linux, macOS; English, Spanish and Chinese) lists 86 models, shows what will change
