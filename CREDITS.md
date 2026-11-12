@@ -41,11 +41,24 @@ Zenith would not exist without them.
 
 ## Zenith's own work
 
-- **Zenith** EmulationStation theme (light and dark), Tools icons, first-boot screens, boot banner and the changes
-  listed in `CHANGELOG.md`: zenmode-adri. The theme uses the **Rubik** font (SIL Open Font License 1.1) and
-  system logos from **iconic-es** by Delgan (CC0); the icon-only versions of eight of those logos were derived by
-  removing the baked-in label.
-- **R36 Tuner Next** (`projects/ROCKNIX/packages/apps/r36-tuner`): zenmode-adri.
+All of it by zenmode-adri, on top of the base listed above:
+
+- **zfront**, the default front-end: written from scratch in C++17 (about 28,000 lines of its own code), GPL v2. It reads
+  the same settings, game lists and themes as EmulationStation and adds the continue-playing row, save backups, library
+  check, play statistics, the battery screen and the phone file transfer. See `docs/ZFRONT.md` and the `NOTICE.md` of its
+  sources, which lists what it owes to other projects.
+- **Themes:** Zenith Minimal and Zenith Next for zfront, and the **Zenith** EmulationStation theme (light and dark), with
+  the Tools icons, first-boot screens and boot banner. The EmulationStation theme uses the **Rubik** font (SIL Open Font
+  License 1.1) and system logos from **iconic-es** by Delgan (CC0); the icon-only versions of eight of those logos were
+  derived by removing the baked-in label.
+- **R36 Tuner Next** (`projects/ROCKNIX/packages/apps/r36-tuner`): CPU, GPU and RAM clocks, voltage curves, profiles,
+  benchmarks and a stability test.
+- **Zenith DTB Selector** for Windows, Linux and macOS.
+- **Boot and suspend:** the shorter boot (initramfs handing over to systemd, front-end and GPU starting in parallel) and
+  the faster suspend (parallel steps, Wi-Fi reload around sleep).
+- **Panfrost:** the 19 patches to Mesa 26.0.4 and the optimised build, with the tests in `docs/PANFROST-STUDY.md` and
+  `docs/COMPILER-STUDY.md`. Mesa itself is under its own license.
+- **Performance mode**, the low-battery shutdown, and everything else listed in `CHANGELOG.md`.
 - EmulationStation patches (`.../emulationstation/patches/RK3326/`) and the shell scripts changed by Zenith are
   published under the license of the files they modify (GPL v2).
 
