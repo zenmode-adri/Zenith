@@ -33,9 +33,6 @@ which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured
 > [!WARNING]
 > **Beta.** Tested on the **R36 Ultra** and the **R36S**. I am one person, so bugs can slip through: if you find
 > one, please [open an issue](https://github.com/zenmode-adri/Zenith/issues). Other RK3326 models use the same image but have not been tried.
->
-> Zenith is not endorsed by, or affiliated with, ROCKNIX, AURKNIX or their authors; please do not report Zenith
-> problems to them.
 
 ## Features
 
