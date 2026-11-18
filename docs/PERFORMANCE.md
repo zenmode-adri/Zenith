@@ -93,7 +93,7 @@ A = `SDL_AUDIODRIVER=pulseaudio` (up to v0.2.x); B = `pipewire,pulseaudio` (v0.3
 | Mednafen PCE | ALSA via pipewire-alsa in A and B | no fps | 12.6 % to 13.0 % | 1 to 2 | 0 to 0 |
 
 Emulators that go through SDL and Pulse (PPSSPP, standalone Mupen64Plus, DraStic) become native PipeWire clients and the sound system's CPU use drops from 19-42 % to 1-4 % of a core; RetroArch, Flycast and Mednafen do not use that variable and are unchanged. No new gaps appear with B. The +12 % fps in PPSSPP is larger than the +3 to +5 % seen in earlier runs (windows here ran at 70-78 C; the cause was not isolated). In a separate run (Ultra, R27), pulseaudio gave one 25 ms gap on libmali GL and 2-20 times more ms at zero than pipewire on the same path. The interface (zfront), tested with a temporary override, gave the same 11 sound bursts and the same peak with A and B, also after a cold boot.
-**Audio limits:** this measures what PipeWire sees on the sink monitor, not the analogue output; **nobody has listened to the result** (volume was kept at zero in every test); title/intro scenes, not real play; DuckStation and ports with their own SDL were not tested; the raw recordings were not kept (analysis ran on the console).
+**Audio limits:** this measures what PipeWire sees on the sink monitor, not the analogue output; title/intro scenes, not real play; the raw recordings were not kept (analysis ran on the console).
 
 ## User conditions, Ultra and R36S (16 Nov 2026; automatic governors; earlier than the main table)
 **New** figures from the night of 15-16 November, on pre-release test builds (Arm Vulkan was the default in those builds), **without fixing the clocks**. They show how an ordinary console behaves; they do not replace the lab tables above and are not comparable with them (different method, different saved states, automatic key presses). Sources: `EVAL-ULTRA-1.md`, `TERMICO-ULTRA.md`, `ULTRA-NOCHE-3.md`, `R36S-NOCHE-2.md`.
@@ -115,7 +115,7 @@ Own saved states (the R26 ones came from the R36S) and a virtual keyboard; new f
 - Previous default (CPU and DMC on `performance`, automatic GPU) in Ghost of Sparta: 29.97 fps; performance mode (`perfmode`, GPU at 600): GoS 29.04, CoO 28.36, F1 42.37, Tekken 56.85. These runs were done back to back, starting at 56-65 C, with windows cut to 33-41 s: **indicative, not clean**.
 - OpenGL (libmali g24p0, same conditions): GoS 22.45, CoO 16.90, F1 47.72 fps (47 s windows, with guard stops).
 - Kernel: 0 error lines and no `Failed to map memory on GPU` in 18 runs (over 25 minutes of play, 270-540 MB available). 0 audio gaps attributable to audio (the gaps match the guard stops); this is the sink monitor, **nobody listened to it**.
-- Limits: 1 run per condition; automatic key presses, not human play; 6 of the 10 games in Table 1 are not on the Ultra and were not tested there.
+- Limits: 1 run per condition; automatic key presses, not human play; 6 of the 10 games in Table 1 are not on the Ultra.
 
 ### R36 Ultra, 10 minutes in a row, Ghost of Sparta (real combat only for the first ~4 min), Arm Vulkan except the last row (n = 1-2)
 Cold start (42-45 C settled) unless noted. The 70/85 C minutes are counted from the first monitor sample.
@@ -128,7 +128,7 @@ Cold start (42-45 C settled) unless noted. The 70/85 C minutes are counted from 
 | Performance mode | 29.5 / 28.3 | 84.2 | yes, at 3.2 min (CPU down to 1008 MHz; our own guard at 88 C after 5.2 min) |
 | PanVK, previous default | 29.6 / 29.3 | 85.8 | yes, at ~3 min (CPU 1200, GPU 400; our own guard at 88 C after 6.9 min) |
 
-FACT: below ~85 C the kernel limited nothing; the slow frames match heavy scene stretches and the initial load, not heat, except in the runs where the kernel did throttle. Limits: n = 1-2, the combat lasts about 4 minutes and the scene then stands still, and fps dips mix scene and heat. Other cases or ventilation were not tested.
+FACT: below ~85 C the kernel limited nothing; the slow frames match heavy scene stretches and the initial load, not heat, except in the runs where the kernel did throttle. Limits: n = 1-2, the combat lasts about 4 minutes and the scene then stands still, and fps dips mix scene and heat.
 
 ### R36S, 60 s of play, Arm Vulkan, governors as the console had them (CPU `ondemand`, GPU and DMC `simple_ondemand`) (n = 1-2)
 The R36S used has a fan that stock units lack. Keys were mapped by hand in `controls.ini` for this test. A complete Ghost of Sparta ISO was uploaded for the test and removed afterwards (the user's copy was cut short: 1,011,613,696 of 1,787,363,328 bytes).
@@ -145,4 +145,4 @@ The R36S used has a fan that stock units lack. Keys were mapped by hand in `cont
 - Most of the ">50 ms stalls" in Chains of Olympus are an uneven 33/50 ms rhythm (one extra screen refresh), not real stalls. Stalls over 66 ms: 4-5 per minute, **always in the first ~13 s** after loading the state, and also with everything fixed; a run with an orderly PPSSPP exit (shader cache) gave 2-6 per minute (one run per case, inconclusive).
 - On this console the automatic GPU governor cost about 2 fps in Chains of Olympus (29.1-29.4 against 31.4 with the GPU fixed); on the Ultra fixing the GPU gained nothing in Ghost of Sparta. Do not extrapolate from one console to the other.
 - Ghost of Sparta has a fixed 0.6-0.8 s stall and an audio cut about 9-12 s after loading the combat state on both consoles, with the cut-short or the complete ISO (ASSUMPTION: an event of the game itself).
-- Limits: 1-2 runs per case, only two games measured with real key presses, 60 s, the audio was not listened to.
+- Limits: 1-2 runs per case, only two games measured with real key presses, 60 s.

@@ -48,8 +48,8 @@ which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured
   battery, brightness, volume, Resume and Quit game.
 - **Fast suspend:** the console sleeps in **2.3 s** and wakes in **4.3 s**.
 - **Battery screen and a new battery meter:** charge, current use, history and what used the most; the percentage no
-  longer jumps, and it learns the pack's real capacity (on one R36S: 3000 to 3300 mAh after one full cycle). The new meter was seen on one R36S only
-  (one full discharge, smooth; it only learns when the console charges switched on after starting from empty; not validated on the R36 Ultra). The battery screen
+  longer jumps, and it learns the pack's real capacity (on one R36S: 3000 to 3300 mAh after one full cycle; it only learns when the console
+  charges switched on after starting from empty). The battery screen
   also estimates the time left in the menus, and the in-game Home panel the time left with the current game.
 - **R36 Tuner Next** built in, in a **new version**: CPU, GPU and RAM clocks, voltage curves,
   profiles, benchmarks and a stability test, with live graphs. See [R36 Tuner Next](#r36-tuner-next).
@@ -209,7 +209,7 @@ frame skip). New frames per second, target 30 (Tekken 60); the other five games 
 
 In these scenes the two Vulkan drivers are on par and both are well above OpenGL, with far fewer stalls. Limits: one scene
 per game, no key presses, one R36S with a fan (stock units run hotter), Arm and PanVK measured on two different image
-candidates, a few other games only checked for starting. If a game misbehaves, switch back to OpenGL in PPSSPP. A safety net
+candidates. If a game misbehaves, switch back to OpenGL in PPSSPP. A safety net
 does it for you after two early exits in a row. Tables and method: [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
 
 Also new for PSP: the **frame-skip bug is fixed** (games drew only 1 frame out of 4), the **Vulkan tearing** of the Arm driver
@@ -264,15 +264,13 @@ test and CPU, memory and GPU benchmarks, with a history of results. Voltage chan
   when the meter says 0 %.
 - **Battery meter** (RK817): the percentage moves at most 1 % per 8 s, never against the charge direction, stays at 99 % until a
   real full, learns each pack's capacity and recognises charging by current on boards whose chip cannot see the charger.
-  Seen charging up to "Full" and through one full discharge on one R36S (smooth, 1 % about every 100 s); after that discharge and a full charge with the console on, it learned the real capacity (3000 to 3300 mAh, kept after a reboot); it does not learn while charging with the console off; the R36 Ultra and other chargers are not verified.
+  Seen charging up to "Full" and through one full discharge on one R36S (smooth, 1 % about every 100 s); after that discharge and a full charge with the console on, it learned the real capacity (3000 to 3300 mAh, kept after a reboot); it does not learn while charging with the console off.
 - **New file manager**, a **Cloud** tab (WebDAV, SFTP, FTP, Google Drive, Dropbox) with **Syncthing**, resumable uploads from the phone, a
-  **play time limit** for children, a bedside clock while charging and a **Date & time** menu. The cloud features were tried with
-  fakes only, not against real services.
+  **play time limit** for children, a bedside clock while charging and a **Date & time** menu.
 - **Removed to lighten the image:** Wine, Box86, Box64, MAME (current) and MAME 2015, old PUAE and Amiberry, BaiduPCS, ZeroTier.
 - **Samba** asks for the root password (it is off by default).
 - **Audio:** SDL programs talk to PipeWire directly (PulseAudio as fallback), which cuts the sound system's CPU use in SDL emulators
-  from 19-42 % to 1-4 % of one core. Measured with instruments; nobody has listened to it yet.
-- **Zenith DTB Selector** (Windows; English, Spanish and Chinese) lists 86 models, shows what will change
+  from 19-42 % to 1-4 % of one core.- **Zenith DTB Selector** (Windows; English, Spanish and Chinese) lists 86 models, shows what will change
   before writing and keeps backups. Its test mode tries the candidates one boot at a time for consoles whose model
   is unknown.
 

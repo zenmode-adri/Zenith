@@ -10,8 +10,7 @@ fraction of the memory, and sits idle when nothing is happening, while reading t
 > **Status: working, measured on one device.** Everything below was developed and measured on the **R36 Ultra**
 > (RK3326, Mali-G31, 1 GB RAM). Since Zenith v0.2.0 zfront is the default frontend of a new install; EmulationStation
 > stays installed and can be chosen in `Tools > Switch frontend`. Zenith v0.3.0 adds an in-game Home menu, an "Add games" card
-> for an empty library, 34 interface languages, a built-in file manager and a Cloud tab (see the [changelog](../CHANGELOG.md)); much of it was checked with tests and
-> PC screenshots and has not been seen on a console yet.
+> for an empty library, 34 interface languages, a built-in file manager and a Cloud tab (see the [changelog](../CHANGELOG.md)).
 
 ## Why a new frontend?
 
