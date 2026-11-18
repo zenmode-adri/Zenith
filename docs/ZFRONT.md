@@ -109,4 +109,4 @@ zfront is licensed under the **GNU GPL, version 2** (see [`LICENSE`](../projects
 It is written from scratch, but it is built to behave like EmulationStation and borrows its file formats, layout
 rules and some tables, so it owes a lot to **EmulationStation** (MIT, Alec Lofquist and later Batocera/ROCKNIX authors).
 Third-party code that is compiled in (stb_image, nanosvg, pugixml, a libwebp decoder) and the full attribution are in
-[`NOTICE.md`](../projects/ROCKNIX/packages/ui/zfront/sources/NOTICE.md). Zenith is an unofficial fork of ROCKNIX/AURKNIX and is not affiliated with them.
+[`NOTICE.md`](../projects/ROCKNIX/packages/ui/zfront/sources/NOTICE.md). Zenith is an unofficial fork of ROCKNIX/AURKNIX.

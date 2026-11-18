@@ -28,7 +28,7 @@
 
 Zenith is a system image for RK3326 handhelds: Linux 6.12, its own front-end (**zfront**), fast boot and suspend, and a
 patched open GPU driver. It is an **unofficial fork** of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix),
-which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured on the **R36 Ultra**. Zenith is free.
+which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured on the **R36 Ultra**.
 
 > [!WARNING]
 > **Beta.** Tested on the **R36 Ultra** and the **R36S**. I am one person, so bugs can slip through: if you find
