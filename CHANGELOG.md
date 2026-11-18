@@ -203,7 +203,7 @@ what the built-in updater looks for.
 - **R36 Tuner Next** built in, in a **new version that was unreleased at the time** (the public repository is at v2.0), with
   undervolt.
 - **Send files from your phone** through a web page (off by default, 4-digit PIN, QR code to scan).
-- **Zenith DTB Selector** to pick the right screen/device tree for your console from Windows, Linux or macOS.
+- **Zenith DTB Selector** to pick the right screen/device tree for your console from Windows.
 
 ### zfront front-end
 
@@ -389,7 +389,7 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   password (the one of SSH). Windows 11 already refused the old guest login, so Samba did not work from it at all. Samba
   stays off by default.
 - A network drive (WebDAV) for Windows Explorer and Finder is **not** in this release.
-- **Choosing the right device tree:** **Zenith DTB Selector** (Windows, Linux, macOS; English, Spanish and Chinese) finds
+- **Choosing the right device tree:** **Zenith DTB Selector** (Windows; English, Spanish and Chinese) finds
   the SD card, lists 86 models, shows what will change before writing, keeps dated backups of `extlinux.conf` and can
   import your own `.dtb` (tested on a copy of the real card and on an R36 Ultra). Its **test mode** tries, one boot at a time,
   the candidates for clones whose model cannot be guessed. See [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).

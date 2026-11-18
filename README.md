@@ -133,8 +133,8 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1; screenshots of v0.3.0
    and check the `.sha256`.
 2. Decompress it and write it to an SD card with an imaging tool (Rufus on Windows, Balena Etcher, Raspberry Pi Imager, `dd`).
    Double-check the target disk: writing an image erases everything on it.
-3. Pick your RK3326 console's device tree with **Zenith DTB Selector** (`!Zenith DTB Selector.exe` on the boot partition,
-   also for Linux and macOS): see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md). DTB files from other systems (ArkOS,
+3. Pick your RK3326 console's device tree with **Zenith DTB Selector** (`!Zenith DTB Selector.exe` on the boot partition):
+   see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md). DTB files from other systems (ArkOS,
    stock firmware) do not work with Zenith's kernel: use the selector (Windows) or `dtbselect` (console).
 
 <table>
@@ -272,7 +272,7 @@ test and CPU, memory and GPU benchmarks, with a history of results. Voltage chan
 - **Samba** asks for the root password (it is off by default).
 - **Audio:** SDL programs talk to PipeWire directly (PulseAudio as fallback), which cuts the sound system's CPU use in SDL emulators
   from 19-42 % to 1-4 % of one core. Measured with instruments; nobody has listened to it yet.
-- **Zenith DTB Selector** (Windows, Linux, macOS; English, Spanish and Chinese) lists 86 models, shows what will change
+- **Zenith DTB Selector** (Windows; English, Spanish and Chinese) lists 86 models, shows what will change
   before writing and keeps backups. Its test mode tries the candidates one boot at a time for consoles whose model
   is unknown.
 
