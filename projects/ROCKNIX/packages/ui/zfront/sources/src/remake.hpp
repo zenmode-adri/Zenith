@@ -19,6 +19,7 @@
 #include "recent.hpp"
 #include "status.hpp"
 #include "theme.hpp"
+#include "ui_style.hpp"
 
 namespace zf {
 struct SystemItem;
@@ -67,7 +68,10 @@ struct Grid {
   float colw() const { return (w - 2.0f * float(mx) - 22.0f * float(u)) / 12.0f; }
   float col(int i) const { return float(mx) + float(i) * (colw() + 2.0f * float(u)); }
   float span(int n) const { return float(n) * colw() + float(n - 1) * 2.0f * float(u); }
-  /// The status bar: four cells, its top on the top margin, the same in every theme.
+  /// Text size of a level (ui::level_px: it already includes TEXT SIZE) and the whole cells that hold `px`.
+  int L(ui::Level lv) const { return ui::level_px(lv, w, h); }
+  int cells_over(float px) const { return std::max(1, int(std::ceil(px / float(u) - 0.001f))); }
+  /// The status bar: four cells, its top on the top margin, the same in every theme (its text is `Level::Small`, which always fits).
   int bar_h() const { return 4 * u; }
   int status_y() const { return my + bar_h() / 2; }
   /// Where the content starts: two cells under the bar.
@@ -162,6 +166,8 @@ void list_view(const Theme& th, Assets& a, float w, float h, const std::string& 
 void status(const Theme& th, Assets& a, float w, float h, const Status& st, std::vector<Op>& ops);
 /// Behind the rows of a menu: the theme's backdrop, over the flat colour Menu has drawn.
 void menu_backdrop(const Theme& th, Assets& a, float w, float h, std::vector<Op>& ops);
+/// The skin the menus of this theme wear: 0 = the common one, 1 Aurora, 2 Swiss, 3 Industrial, 4 Cinema (menu_skin.cpp draws them).
+int menu_skin(const Theme& th);
 /// The help row of the views, for the screens that are not views: same place, same size, the colours of the menus.
 void menu_help(const Theme& th, Assets& a, float w, float h, const std::vector<std::pair<const char*, const char*>>& prompts, std::vector<Op>& ops);
 /// Iconic: the colour of the little tile behind a menu icon; alpha 0 = no tile.

@@ -701,6 +701,32 @@ int main() {
           tn.screen->draw(cx, on);
           CHECK_EQ(op.size(), on.size());  // seven prompts each: none of them dropped for lack of width (eight were)
         }
+        {  // the in-game HOME panel (menu_home.cpp): warm frames allocate nothing, with the rows and with the question, and at rest it asks for no frames
+          auto hp = Registry::instance().make("menu.home", cx, "states");
+          CHECK(hp != nullptr);
+          if (hp) {
+            std::vector<Op> o;
+            hp->tick(1.0f, cx);
+            hp->draw(cx, o);
+            hp->handle(Action::Down, cx);  // SAVE STATE
+            for (int phase = 0; phase < 2; ++phase) {
+              if (phase == 1) hp->handle(Action::A, cx);  // the question of SAVE STATE
+              o.clear();
+              hp->draw(cx, o);
+              o.clear();
+              hp->draw(cx, o);
+              const size_t before = g_allocs;
+              for (int i = 0; i < 50; ++i) {
+                o.clear();
+                hp->draw(cx, o);
+              }
+              std::printf("[home panel] %ux%u: %zu allocations in 50 frames, %zu ops\n", wh[0], wh[1], g_allocs - before, o.size());
+              CHECK_EQ(g_allocs - before, size_t(0));
+            }
+            CHECK(!hp->tick(0.016f, cx));
+            CHECK(!hp->wake_in().has_value());
+          }
+        }
         auto f = std::make_shared<Fixture>();
         auto m = make(f);
         std::vector<Op> a1, a2;

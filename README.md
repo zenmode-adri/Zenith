@@ -19,6 +19,7 @@
   <a href="#screenshots">Screenshots</a> ·
   <a href="#install">Install</a> ·
   <a href="#what-changed">What changed</a> ·
+  <a href="#vulkan-for-psp-games-experimental">Vulkan</a> ·
   <a href="#r36-tuner-next">R36 Tuner Next</a> ·
   <a href="#panfrost-vs-libmali">Panfrost vs libmali</a> ·
   <a href="CHANGELOG.md">Changelog</a> ·
@@ -27,7 +28,7 @@
 
 Zenith is a system image for RK3326 handhelds: Linux 6.12, its own front-end (**zfront**), fast boot and suspend, and a
 patched open GPU driver. It is an **unofficial fork** of [AURKNIX](https://github.com/AveyondFly/distribution_rocknix),
-which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured on the **R36 Ultra**.
+which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured on the **R36 Ultra**. Zenith is free.
 
 > [!WARNING]
 > **Beta.** Tested on the **R36 Ultra** and the **R36S**. I am one person, so bugs can slip through: if you find
@@ -41,25 +42,36 @@ which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured
 - **zfront, a front-end made for these consoles, is the default.** The console is ready about **13 s** after power-on,
   a game starts sooner and has more memory to run in. EmulationStation stays installed, one menu away. See
   [zfront and EmulationStation](#zfront-and-emulationstation).
-- **Six themes:** Zenith Minimal (default) and Zenith Next, each light and dark, plus XMB, Art Book, Iconic and
-  TechDweeb. The four alternative themes are not 100 % polished yet; I will keep finishing them in the next versions.
+- **Vulkan for PSP games (experimental, off by default):** PPSSPP on Vulkan, with Vulkan 1.3 from Arm or with PanVK, chosen in
+  PPSSPP's own menu. In the scenes measured on an R36S it runs God of War: Chains of Olympus about 50 % faster than
+  OpenGL. See [Vulkan for PSP](#vulkan-for-psp-games-experimental).
+- **Nine themes:** Zenith Minimal (default) and Zenith Next, each light and dark, plus XMB, Art Book, Iconic,
+  TechDweeb and the newly polished Aurora, Swiss and Industrial. XMB, Art Book, Iconic and TechDweeb are not 100 % polished yet.
+- **In-game Home menu** (experimental, off by default): hold START + R1 to pause the game and open a panel with
+  battery, brightness, volume, Resume and Quit game.
 - **Fast suspend:** the console sleeps in **2.3 s** and wakes in **4.3 s**.
-- **Battery screen:** charge, current use, history and what used the most.
-- **R36 Tuner Next** built in, in a **new version that is not released yet**: CPU, GPU and RAM clocks, voltage curves,
+- **Battery screen and a new battery meter:** charge, current use, history and what used the most; the percentage no
+  longer jumps, and it learns the pack's real capacity (on one R36S: 3000 to 3300 mAh after one full cycle). The new meter was seen on one R36S only
+  (one full discharge, smooth; it only learns when the console charges switched on after starting from empty; not validated on the R36 Ultra). The battery screen
+  also estimates the time left in the menus, and the in-game Home panel the time left with the current game.
+- **R36 Tuner Next** built in, in a **new version**: CPU, GPU and RAM clocks, voltage curves,
   profiles, benchmarks and a stability test, with live graphs. See [R36 Tuner Next](#r36-tuner-next).
 - **Patched Panfrost (open GPU driver):** 39 % faster than stock Panfrost and close to Arm's libmali when you play.
   libmali stays the default. See [Panfrost vs libmali](#panfrost-vs-libmali).
 - **Performance mode** (off by default): GPU and RAM at full speed while a game runs; Mario Tennis goes from 19.3 to
   25.0 fps. **RAM at 786 MHz** on the models that have that step.
 - **Send files from your phone:** scan a QR code and upload games, folders, BIOS and saves from the browser (off by
-  default).
+  default). With an empty library the console starts on an **"Add games"** card that opens it for you (temporary: it turns itself
+  off after about 20 minutes without requests).
 - **Zenith DTB Selector** to pick the right screen for your console from Windows, Linux or macOS. See
   [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
-- English and Spanish everywhere.
+- **34 languages** in the interface (English and Spanish reviewed; the rest are machine translations, corrections welcome).
+- **A lighter image** (Wine, Box86/Box64, MAME and a few unused packages removed) and **no usage statistics sent to a
+  ROCKNIX server** (v0.2.0 and v0.2.1 still send them).
 
 ## Screenshots
 
-Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
+Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1; screenshots of v0.3.0 are not retaken yet.
 
 **zfront: Zenith Minimal and Zenith Next**
 
@@ -123,23 +135,24 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 
 ## Install
 
-1. Download `AURKNIX-RK3326.aarch64-<date>.img.gz` from the [Releases](https://github.com/zenmode-adri/Zenith/releases) page
+1. Download `Zenith-v0.3.0-<date>-RK3326.img.gz` from the [Releases](https://github.com/zenmode-adri/Zenith/releases) page
    and check the `.sha256`.
 2. Decompress it and write it to an SD card with an imaging tool (Rufus on Windows, Balena Etcher, Raspberry Pi Imager, `dd`).
    Double-check the target disk: writing an image erases everything on it.
-3. Pick your RK3326 console's device tree with **Zenith DTB Selector** (`ZenithDtbSelector.exe` on the boot partition,
-   also for Linux and macOS): see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
+3. Pick your RK3326 console's device tree with **Zenith DTB Selector** (`!Zenith DTB Selector.exe` on the boot partition,
+   also for Linux and macOS): see [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md). DTB files from other systems (ArkOS,
+   stock firmware) do not work with Zenith's kernel: use the selector (Windows) or `dtbselect` (console).
 
 <table>
 <tr>
 <td align="center"><img src="docs/dtb-selector/01-main-en-light.jpg" width="280"/><br/><sub>Pick your console from 86 models</sub></td>
-<td align="center"><img src="docs/dtb-selector/03-search-and-import-en-light.jpg" width="280"/><br/><sub>Search, or import your own .dtb</sub></td>
+<td align="center"><img src="docs/dtb-selector/03-search-and-import-en-light.jpg" width="280"/><br/><sub>Search, or import a Zenith DTB (ArkOS/stock DTBs will not boot)</sub></td>
 <td align="center"><img src="docs/dtb-selector/04-review-changes-en-light.jpg" width="280"/><br/><sub>The exact change, before anything is written</sub></td>
 </tr>
 </table>
 
-4. Put the card in the console and switch it on. The first start asks for a language (press the button next to
-   yours), sets the console up (do not turn it off while it does) and opens the menu.
+4. Put the card in the console and switch it on. The first start sets the console up (do not turn it off while it does) and
+   opens a welcome: language, Wi-Fi and time zone (Start skips it; `System > Language & time > Run welcome again` brings it back).
 
 <table>
 <tr>
@@ -152,6 +165,9 @@ Taken on an R36 Ultra (720x720) running v0.2.0 and v0.2.1.
 > [!TIP]
 > **Which file?** New install: download the `.img.gz` and write it to an SD card. Already running Zenith: update from the
 > console with the built-in updater; the `.tar` is only used by the updater, you don't need to download it.
+>
+> **Updating from v0.2.x:** you keep the time zone already saved (New York in v0.2.0), so the clock may look hours off until you
+> change it in `System > Language & time > Date & time`.
 
 **Updating:** you never download the `.tar` yourself. On the console, open `System > Updates & downloads > Software
 updates`: it looks for the newest release of this repository, downloads the `.tar`, checks it against its `.sha256` and
@@ -174,6 +190,37 @@ Measured on an **R36 Ultra**. Every change is listed in [`CHANGELOG.md`](CHANGEL
 > The AURKNIX boot was timed with a stopwatch; Zenith's is the moment the front-end draws its first frame. The rows marked
 > EmulationStation and the suspend times were measured on v0.1.0. Thanks to AURKNIX and ROCKNIX for the base these numbers
 > start from.
+
+### Vulkan for PSP games (experimental)
+
+PPSSPP can now run on **Vulkan** on the Mali-G31. **It starts on OpenGL and you turn Vulkan on yourself**, in PPSSPP's
+`Settings > Graphics > Backend` (PPSSPP restarts and returns to its own main menu; the choice is kept). Which Vulkan you get
+depends on `GPU DRIVER` in the system menu (it needs a reboot and applies to the whole console):
+
+| GPU DRIVER | PSP on OpenGL | PSP on Vulkan |
+|---|---|---|
+| **Arm (official)** (default) | libmali | Vulkan 1.3 from Arm |
+| **Open source (Panfrost / PanVK)** | Panfrost | PanVK (Vulkan 1.0, not conformant) |
+
+Measured on an **R36S**, 10 PSP games, one saved scene each, the way you play (factory settings, nothing fixed, 1x, no
+frame skip). New frames per second, target 30 (Tekken 60); the other five games sit at the game's 30 fps cap with all three:
+
+| Game | OpenGL (Arm) | Vulkan (Arm) | PanVK |
+|---|---:|---:|---:|
+| God of War: Chains of Olympus | 18.2 | 27.5 | 27.8 |
+| God of War: Ghost of Sparta | 25.8 | 30.3 | 30.3 |
+| F1 2009 | 29.7 | 36.7 | **39.5** |
+| Tekken: Dark Resurrection (60) | 55.3 | 59.7 | 59.7 |
+| FlatOut: Head On | 28.1 | 29.2 | 28.9 |
+
+In these scenes the two Vulkan drivers are on par and both are well above OpenGL, with far fewer stalls. Limits: one scene
+per game, no key presses, one R36S with a fan (stock units run hotter), Arm and PanVK measured on two different image
+candidates, a few other games only checked for starting. If a game misbehaves, switch back to OpenGL in PPSSPP. A safety net
+does it for you after two early exits in a row. Tables and method: [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md).
+
+Also new for PSP: the **frame-skip bug is fixed** (games drew only 1 frame out of 4), the **Vulkan tearing** of the Arm driver
+is gone, PPSSPP now **keeps its shader cache** (leaving a game takes 1-2 s instead of being instant), the CPU governor for PSP is
+automatic, and PPSSPP's menus fit 640x480 and 720x720.
 
 ### zfront and EmulationStation
 
@@ -219,10 +266,18 @@ test and CPU, memory and GPU benchmarks, with a history of results. Voltage chan
 ### Other changes
 - **Games start 0.2-0.5 s faster** in RetroArch, with either front-end.
 - **PSP:** PPSSPP 1.20.2 is the default (the 2021 build stays selectable).
-- **Low battery** closes the game and lets it save before powering off.
-- **Battery gauge** corrected for the R36S panel 4, R36XX Pro Max, R40XX, R40XX Pro Max, R45H and R46H: the percentage
-  now follows the maker's voltage table and can reach 0 %.
+- **Low battery** closes the game and lets it save before powering off; the safety power-off now also needs the voltage below 3.5 V
+  when the meter says 0 %.
+- **Battery meter** (RK817): the percentage moves at most 1 % per 8 s, never against the charge direction, stays at 99 % until a
+  real full, learns each pack's capacity and recognises charging by current on boards whose chip cannot see the charger.
+  Seen charging up to "Full" and through one full discharge on one R36S (smooth, 1 % about every 100 s); after that discharge and a full charge with the console on, it learned the real capacity (3000 to 3300 mAh, kept after a reboot); it does not learn while charging with the console off; the R36 Ultra and other chargers are not verified.
+- **New file manager**, a **Cloud** tab (WebDAV, SFTP, FTP, Google Drive, Dropbox) with **Syncthing**, resumable uploads from the phone, a
+  **play time limit** for children, a bedside clock while charging and a **Date & time** menu. The cloud features were tried with
+  fakes only, not against real services.
+- **Removed to lighten the image:** Wine, Box86, Box64, MAME (current) and MAME 2015, old PUAE and Amiberry, BaiduPCS, ZeroTier.
 - **Samba** asks for the root password (it is off by default).
+- **Audio:** SDL programs talk to PipeWire directly (PulseAudio as fallback), which cuts the sound system's CPU use in SDL emulators
+  from 19-42 % to 1-4 % of one core. Measured with instruments; nobody has listened to it yet.
 - **Zenith DTB Selector** (Windows, Linux, macOS; English, Spanish and Chinese) lists 86 models, shows what will change
   before writing and keeps backups. Its test mode tries the candidates one boot at a time for consoles whose model
   is unknown.
@@ -233,19 +288,22 @@ test and CPU, memory and GPU benchmarks, with a history of results. Voltage chan
 
 > [!IMPORTANT]
 > **Known issues.** The cover scraper (ScreenScraper) does **not** work in this image: no developer credentials are built
-> in. The root password is still `rocknix` (SSH and Samba are off by default; change it before turning them on).
+> in. The root password is still `rocknix` (SSH and Samba are off by default; change it before turning them on). Vulkan, the new
+> battery meter and many new zfront screens are only lightly tested; the full list is in the [changelog](CHANGELOG.md).
 
 ## Panfrost vs libmali
 
 Panfrost is the open-source driver for the console's GPU (Mali-G31). Zenith ships it with 19 patches to Mesa 26.0.4 and an
 optimised build; libmali (Arm's driver) stays the default because it has been tested the longest and supports OpenGL ES
-3.2 (Panfrost: 3.1). To try Panfrost, pick `GPU DRIVER > Panfrost` in the menu; it takes effect after a reboot, and picking libmali goes back. If
+3.2 (Panfrost: 3.1). To try Panfrost, pick `GPU DRIVER > Open source (Panfrost / PanVK)` in the menu; it takes effect after a reboot, and picking `Arm (official)` goes back. If
 Panfrost cannot start, the console goes back to libmali by itself.
 
 Two tests. **At real speed** is how a game feels when you play it. The **free-running test** lets every game run as fast
 as it can: it shows how much work each driver gets through, but most of its differences shrink at real speed.
 
 ### At real speed
+
+> **Note:** these OpenGL figures predate the Vulkan work in v0.3.0. For PSP games they are superseded by the Vulkan numbers in [docs/PERFORMANCE.md](docs/PERFORMANCE.md) (N64 and the other emulators were not measured again).
 
 Measured on the **R36S** the way you play (vsync and audio sync on, same save states, CPU at 1296 MHz, one run per point,
 so differences under 5 % may be noise). "Auto" is how the console ships; "RAM fixed" pins the RAM at 666 MHz; "GPU + RAM
@@ -269,10 +327,11 @@ fixed" also pins the GPU at 600 MHz, which is what the performance mode does on 
   explained).
 - **God of War** (PSP): 7.8 fps with libmali, 8.2 with stock Panfrost and 8.4 with patched Panfrost. It is limited by the
   CPU, so neither the driver nor the GPU clock changes much there.
+  Those numbers were taken with PPSSPP's frame skipping stuck at 3 (it drew one frame in four), a fault fixed in
+  v0.3.0; they are not comparable with the v0.3.0 table in [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 
-**R36 Ultra**, patched Panfrost, same games, with the RAM at 666 or 786 MHz. The 786 MHz step is in the image on the
-same boards [dArkOSen](https://github.com/djparentx/dArkOSen-R36S) enables it on (the original R36S V12/V20/V21/V22/Y02,
-R36S Plus, R36H, R45H, R46H, the R36S Sauce) and on the R36 Ultra; clones and other models stay at 666 MHz. fps:
+**R36 Ultra**, patched Panfrost, same games, with the RAM at 666 or 786 MHz. The 786 MHz step is in the image on
+the original R36S (V12/V20/V21/V22/Y02), R36S Plus, R36H, R45H, R46H, the R36S Sauce and the R36 Ultra; clones and other models stay at 666 MHz. fps:
 
 | Game (N64) | Auto, RAM up to 666 | Auto, RAM up to 786 | Fixed GPU 600 + RAM 666 | Fixed GPU 600 + RAM 786 (performance mode) |
 |---|---:|---:|---:|---:|
@@ -285,7 +344,7 @@ R36S Plus, R36H, R45H, R46H, the R36S Sauce) and on the R36 Ultra; clones and ot
 - **Fixing the clocks is the big step on the Ultra too:** Mario Tennis +74 %, GoldenEye +16 %, Wave Race 64 +15 %.
 - **RAM at 786 MHz adds little on top** (Mario Tennis +6 %, GoldenEye +2 %, Wave Race 64 +1 %, one run).
 - **Stable in our tests:** `memtester` (300 MB) ran 6 full passes in 57 minutes at 786 MHz with no errors (65 °C at
-  most), on one R36 Ultra. The other boards get the step because dArkOSen ships it on them.
+  most), on one R36 Ultra. The other boards were not stress-tested by us.
 
 ### Free-running test (20 games)
 

@@ -25,6 +25,7 @@ struct Options {
   std::string ratio = "4/3";  // ES `screen.ratio`
   unsigned width = 640, height = 480;
   std::string lang = "en";    // ES `lang` filter
+  std::string carousel;       // a theme of zfront's own on Iconic's pictures (boot::virtual_carousel): its home carousel; "" = Iconic's
   /// ES setting lookup (es_settings.cfg): `ThemeColorSet`, `ThemeIconSet`, `ThemeMenu`, `ThemeSystemView`, `ThemeGamelistView`,
   /// `ThemeRegionName`, `subset.<name>`. Null result (or no function): the theme's own default (first option of each subset).
   std::function<const std::string*(const std::string&)> setting;

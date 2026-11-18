@@ -8,7 +8,6 @@
 #include "menu_game.hpp"
 #include "menu_startup.hpp"
 #include "registry.hpp"
-#include "scraper_run.hpp"
 #include "ui_dialogs.hpp"
 #include "util.hpp"
 
@@ -157,16 +156,6 @@ void build_edit(MenuBuilder& m, Ctx& cx, const std::shared_ptr<Draft>& d) {
     save_draft(c, *d);
     return Transition::pop();
   });
-  if (d->sys >= 0 && scraper::system_supported(cx, size_t(d->sys))) {
-    m.action(tr("SCRAPE"), [d](Ctx& c) {
-      save_draft(c, *d);  // the scrape writes to the gamelist itself: what is pending goes first, the rows read it again afterwards
-      return Transition::open("menu.scraper.game", game_arg(d->system, d->path));
-    });
-  }
-  std::string system = d->system, path = d->path;
-  m.action(tr("DELETE"), [system, path](Ctx& c) { return delete_game_now(c, system, path); })
-      .danger()
-      .confirm(tr("THIS WILL DELETE THE ACTUAL GAME FILE(S)!\nARE YOU SURE?"));
 }
 
 }  // namespace

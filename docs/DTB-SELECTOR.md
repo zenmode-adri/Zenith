@@ -10,12 +10,13 @@ in **中文, English and Español**, and it needs no installation and no network
 `127.0.0.1`, with a random token per run, and exits when you close the window).
 
 > **Status.** Tested on a copy of the real card of an R36 Ultra and on the console itself (import a DTB, apply it, reboot
-> with it, restore).
+> with it, restore). **Not tested on any other model.** The *test mode* described below has **not been tested on
+> hardware yet**.
 
 ## Using it
 
 1. Switch the console off and put its SD card in the PC.
-2. Open `ZenithDtbSelector.exe` (Windows). It is on the root of the card itself (`mkimage` copies it there) and in the
+2. Open `!Zenith DTB Selector.exe` (Windows). It is on the root of the card itself (`mkimage` copies it there) and in the
    repository at `projects/ROCKNIX/devices/RK3326/packages/rk3326-dtb-select/prebuilt/`. Linux and macOS binaries are
    built with `zenith-dtb-selector/build.sh` (Go 1.22 or newer). The exe is **not code-signed**: Windows SmartScreen may
    warn ("More info" > "Run anyway").
@@ -27,16 +28,12 @@ in **中文, English and Español**, and it needs no installation and no network
 
 4. Pick your console. There are 86 models, grouped by brand; the search box looks at the name, the brand and the `.dtb`
    file name. The R36S clone families keep their exact variants ("type 3 panel 2", "Sauce panel 4"...).
-5. If your console is not on the list, press **Import my own DTB...**: it copies a `.dtb` from the PC to the root of the
+5. **Only device trees built for Zenith's mainline Linux 6.x kernel work.** DTB files from stock firmware, ArkOS, dArkOS or
+   other systems will NOT boot Zenith. If your console is not on the list, try the **test mode** below (it tries the
+   candidates one boot at a time) or open an issue with its model and photos. **Import a Zenith DTB...** is only for a
+   device tree built for Zenith's 6.x kernel: it copies a `.dtb` from the PC to the root of the
    card (the header and size are validated, the name is reduced to a safe base name, and an existing file is never
    replaced without asking) and selects it.
-
-> [!WARNING]
-> **Only import a DTB built for the Linux 6.x kernel** (Zenith / ROCKNIX). The tool only checks that the file is a valid
-> DTB, not that it suits this kernel. A DTB taken from the stock firmware or from another system (ArkOS, dArkOS...) is made
-> for an older kernel and may boot with no picture, or not boot at all. If your console is on the list, pick it there
-> instead. If a DTB does not work, put the card back in the PC and choose another one: the tool only edits the boot
-> entry on the card, so you should not need to flash the image again.
 
 ![Search and import](dtb-selector/03-search-and-import-en-light.jpg)
 
@@ -79,7 +76,7 @@ dark.
 Some clone consoles share the same boot ID, so no program can tell which DTB they need. The test mode lets the console
 try the candidates itself, one per boot, until you see a clear picture.
 
-> Read the safety notes below before using it, and try it first on a spare card.
+> **Not tested on hardware yet.** Read the safety notes below before using it, and try it first on a spare card.
 
 **How it works**
 
@@ -141,6 +138,9 @@ On a copy of the real card of an R36 Ultra (77 DTBs):
 
 On the console itself: import of a DTB (an exact copy of the Ultra's with one inert extra property), apply, reboot (the
 kernel really loaded that file), restore with the tool's own *Restore*, reboot again, back to the original.
+
+**Not covered:** other console models, a real SD card auto-detected in Windows/macOS beyond a read-only check, and the
+whole test mode on hardware.
 
 Source: `projects/ROCKNIX/devices/RK3326/packages/rk3326-dtb-select/zenith-dtb-selector/` (Go, standard library only).
 The device list comes from the legacy `dtb_selector.py` through `tools/gen_catalog.py`.

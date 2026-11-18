@@ -72,7 +72,7 @@ echo "Apply dev wifi config if available..." >>${LOG}
 if [ -d /usr/config/iwd ]
 then
   tocon "Update developer wifi config..."
-  cp /usr/config/iwd/* /storage/.cache/iwd/
+  copy_dir_atomic /usr/config/iwd /storage/.cache/iwd
 fi
 
 ### Sync rsync configs
@@ -312,9 +312,10 @@ cp -rf /usr/config/java/* /storage/.config/java/
 cp -rf /usr/config/ruffle/* /storage/.config/ruffle/
 cp -rf /usr/config/krkr2/* /storage/.config/krkr2/
 
-rm -rf /storage/.cache/rocknix-stats-reported
-
 # Clean old GPU 'governor' values
 sed -i '/gpuperf=low/d' /storage/.config/system/configs/system.cfg
 sed -i '/gpuperf=profile_standard/d' /storage/.config/system/configs/system.cfg
 sed -i '/gpuperf=profile_peak/d' /storage/.config/system/configs/system.cfg
+
+# Todo a disco antes de que nada pueda reiniciar (claves del WiFi, ssh, ajustes)
+sync

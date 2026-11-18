@@ -59,8 +59,8 @@ std::unique_ptr<Screen> make_settings() {
     });
     conf_text(m, cx, tr("NICKNAME"), "global.netplay.nickname");           // :27
 
-    m.header(tr("OPTIONS"));
     if (!adhoc(cx)) {
+      m.header(tr("OPTIONS"));
       conf_text(m, cx, tr("HOST"), "global.netplay.host");  // :35
       conf_text(m, cx, tr("PORT"), "global.netplay.port");  // :36
       std::vector<Option> o = {{"", tr("NONE")}, {"nyc", tr("NEW YORK")}, {"madrid", tr("MADRID")}, {"montreal", tr("MONTREAL")}, {"saopaulo", tr("SAO PAULO")}};
@@ -73,13 +73,9 @@ std::unique_ptr<Screen> make_settings() {
                })
           .no_cycle();
       if (relay_selected(cx.conf.map(), *relays) == "custom") conf_text(m, cx, tr("CUSTOM RELAY SERVER"), "global.netplay.customserver");  // :191
-      es_switch(m, cx, tr("AUTOMATICALLY CREATE LOBBY"), "NetPlayAutomaticallyCreateLobby", tr("Automatically creates a Netplay lobby when starting a game."));
       es_switch(m, cx, tr("SHOW RELAY SERVER GAMES ONLY"), "NetPlayShowOnlyRelayServerGames", tr("Relay server games have a higher chance of successful entry."));
       es_switch(m, cx, tr("SHOW UNAVAILABLE GAMES"), "NetPlayShowMissingGames", tr("Show rooms for games not present on this machine."));
     }
-
-    m.header(tr("GAME INDEXES"));
-    es_switch(m, cx, tr("INDEX NEW GAMES AT STARTUP"), "NetPlayCheckIndexesAtStart", std::string());
   };
   s.on_open = [](Ctx& cx, const Refresh&) {
     if (conf_get(cx, "global.netplay.port").empty()) mg::conf_put(cx, "global.netplay.port", std::to_string(kDefaultPort));  // :17-19
@@ -268,7 +264,7 @@ std::unique_ptr<Screen> make_game(const std::string& arg) {
     });
     m.header(tr("OPTIONS"));
     conf_text(m, cx, tr("NETPLAY NICKNAME"), "global.netplay.nickname");
-    conf_text(m, cx, tr("PLAYER PASSWORD"), "global.netplay.password");
+    conf_text(m, cx, tr("PLAYER PASSWORD"), "global.netplay.password", true);
     if (!adhoc(cx)) {
       conf_switch(m, cx, tr("PUBLICLY ANNOUNCE GAME"), "global.netplay_public_announce", "1", "0");
       conf_text(m, cx, tr("NETPLAY HOST"), "global.netplay.host");

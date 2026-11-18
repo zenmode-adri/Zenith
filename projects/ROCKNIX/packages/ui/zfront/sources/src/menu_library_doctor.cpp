@@ -53,7 +53,6 @@ void build(MenuBuilder& m, const State& st) {
       m.info(b.first, std::to_string(b.second));
     }
     more(m, st.bios.size());
-    m.submenu(tr("MISSING BIOS CHECK"), "menu.game.bios").value(std::to_string(bios_total(st)));
   }
   if (!st.rep.broken.empty()) {
     m.header(tr("POSSIBLY BROKEN FILES"));

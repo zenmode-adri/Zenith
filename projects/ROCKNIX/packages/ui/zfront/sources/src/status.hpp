@@ -16,6 +16,13 @@ namespace zf {
 struct Battery {
   uint8_t percent = 100;
   bool charging = false;
+  /// A charger is connected: a charger `online`, or the kernel's own status says Charging / Full. Unlike `charging` it does not stop at what the
+  /// charger file says (the R36S's chip does not see the charger, but the gauge reports Charging / Full). Only the bedside clock and the plug-in
+  /// notice (dock.hpp) read it, so it is not part of the comparison (a change of it alone does not redraw the bar).
+  bool plugged = false;
+  /// `plugged` comes from the charger's own `online` file (R36 Ultra): reliable, no flicker to filter. False when it is guessed from the
+  /// battery's status (R36S: the RK817 does not see its charger).
+  bool from_charger = false;
   bool operator==(const Battery& o) const { return percent == o.percent && charging == o.charging; }
 };
 
@@ -29,6 +36,9 @@ struct Status {
   bool bluetooth = false;
   /// XMB while charging: the cells lit in the PSP's charging animation (0-3), stepped by `App`; -1: the cells show the level.
   int8_t charge_frame = -1;
+  /// The day as XMB's corner box shows it ("dd/mm"). Empty: read from the clock when drawn (the device). Set only by `demo`, so the
+  /// pictures of the tests do not change with the day they run (the XMB hashes of test_theme_sel failed every day but the one they were made).
+  std::string date;
 
   bool operator==(const Status& o) const {
     return time == o.time && battery == o.battery && wifi == o.wifi && bluetooth == o.bluetooth && charge_frame == o.charge_frame;
@@ -61,6 +71,11 @@ class StatusSource {
   virtual int wake_fd() const { return -1; }
   /// The machine slept: everything is old, read it all again at the next `poll` (the WiFi too, which comes back some seconds later).
   virtual void invalidate() {}
+  /// How many times the battery was really read from the kernel so far. A caller that wants fresh data (the plug-in filter of dock.hpp) compares
+  /// it between two polls: the source re-reads only every ~30 s or on a uevent, and the same old value must not count as a new reading.
+  virtual unsigned battery_reads() const { return 0; }
+  /// Read the battery (and WiFi) at the next `poll` instead of waiting for the half-minute; nothing else is reset.
+  virtual void reread() {}
 };
 
 /// The source the app uses (`sysfs_root` is "/sys" on the device).
@@ -77,8 +92,13 @@ struct StatusProbes {
 std::unique_ptr<StatusSource> make_status_source(const std::string& sysfs_root, const StatusProbes& probes);
 /// Real probes: any up non-loopback interface with IPv4 (getifaddrs); local time via tzset+localtime_r (year >= 2000).
 bool probe_wifi();
-/// An adapter under `<sysfs>/class/bluetooth` and a bluetooth rfkill switch in state 1 (no adapter, or switched off: false).
+/// An adapter under `<sysfs>/class/bluetooth`, a bluetooth rfkill switch in state 1 and the bluetooth service running
+/// (no adapter, blocked, or switched off: false).
 bool probe_bluetooth(const std::string& sysfs_root);
+/// Something that changes the bar without a kernel event (the Bluetooth switch starts or stops a service) asks for an
+/// immediate re-read; the app takes the request in `poll_status`.
+void request_status_refresh();
+bool take_status_refresh();
 void probe_time(std::string& out);
 /// Battery under `<sysfs>/class/power_supply`; nullopt without battery. One-shot helper (tests).
 std::optional<Battery> read_battery(const std::string& sysfs_root);

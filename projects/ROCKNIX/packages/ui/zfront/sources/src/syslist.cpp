@@ -2,10 +2,15 @@
 
 #include <algorithm>
 
+#include "addgames.hpp"
 #include "collections.hpp"
+#include "library_doctor.hpp"
+#include "scan.hpp"
 #include "util.hpp"
 
 namespace zf {
+
+const char* system_icon_label(const std::string& t);  // scene.cpp: the translated caption of Tools, Screenshots, Music...
 
 std::vector<SystemItem> make_items(const std::vector<System>& systems, const EsSettings& es, const std::vector<System>& cols) {
   const std::vector<std::string> hidden = collections::hidden_systems(es);
@@ -21,11 +26,22 @@ std::vector<SystemItem> make_items(const std::vector<System>& systems, const EsS
   }
   std::vector<SystemItem> items;
   items.reserve(order.size());
-  for (size_t i : order) items.push_back(SystemItem{systems[i].theme, systems[i].fullname, uint32_t(systems[i].count), i});
+  for (size_t i : order) {
+    // the systems with a caption of their own (Tools, Screenshots, Music...) are named by it, translated: the big name of the carousel
+    // said "Tools" while its card said "Herramientas" (seen on the R36S in Spanish)
+    const char* label = system_icon_label(systems[i].theme);
+    items.push_back(SystemItem{systems[i].theme, label ? std::string(label) : systems[i].fullname, uint32_t(systems[i].count), i});
+  }
   for (size_t j = 0; j < cols.size(); ++j) {
     if (std::find(hidden.begin(), hidden.end(), cols[j].name) != hidden.end()) continue;
     items.push_back(SystemItem{cols[j].theme, cols[j].fullname, uint32_t(cols[j].count), systems.size() + j});
   }
+  // A console with no game at all (only Tools, Music, Screenshots...): the "Add games" card goes first. Its count is "pending", so no
+  // theme writes "0 games" or reads a "continue playing" row for it. A loaded game system always has a game unless LoadEmptySystems.
+  bool any_game = false;
+  for (const System& s : systems)
+    if (s.count != 0 && doctor::is_game_system(s)) any_game = true;
+  if (!any_game && !systems.empty()) items.insert(items.begin(), SystemItem{"addgames", addgames::card_label(), kCountPending, kItemAddGames});
   return items;
 }
 
@@ -34,7 +50,8 @@ std::vector<std::string> item_names(const std::vector<System>& systems, const st
   v.reserve(items.size());
   for (size_t k = 0; k < items.size(); ++k) {
     const size_t s = items[k].sys == kItemIsSystem ? k : items[k].sys;
-    if (s < systems.size()) v.push_back(systems[s].name);
+    if (items[k].sys == kItemAddGames) v.push_back("\x01addgames");  // not a system name: never matched by a real one
+    else if (s < systems.size()) v.push_back(systems[s].name);
     else if (s - systems.size() < cols.size()) v.push_back(cols[s - systems.size()].name);
     else v.push_back(std::string());
   }

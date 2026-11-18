@@ -488,6 +488,33 @@ void test_upload_check() {
   webtransfer::set_enabled(false);
 }
 
+// Android adds " (1)" to a file it already has, some tools add "-1": the upload takes both and saves the plain name, never over a copy
+void test_upload_names() {
+  Rig r;
+  webtransfer::set_enabled(true);
+  const string arch = gz(tar_entry("roms/gba/Game.srm", '0', "state") + tar_end(), r.tmp);
+  string out;
+  CHECK_EQ(put(r.port(), "saves-20210101-0101%20(1).tar.gz", arch, &out), 200);
+  CHECK(has(body_of(out).c_str(), "\"name\":\"saves-20210101-0101.tar.gz\""));
+  CHECK(names(r.bk) == (std::vector<string>{"saves-20210101-0101.tar.gz"}));
+  CHECK_EQ(put(r.port(), "saves-20210101-0101%20(2).tar.gz", arch, &out), 409);  // that copy is already there
+  CHECK_EQ(put(r.port(), "saves-20210101-0202-3.tar.gz", arch, &out), 200);
+  CHECK(has(body_of(out).c_str(), "\"name\":\"saves-20210101-0202.tar.gz\""));
+  CHECK_EQ(put(r.port(), "saves-20210101-0303-pre2%20(1).tar.gz", arch, &out), 200);
+  CHECK(has(body_of(out).c_str(), "\"name\":\"saves-20210101-0303-pre2.tar.gz\""));
+  CHECK_EQ(names(r.bk).size(), size_t(3));
+  for (const char* bad : {"saves-20210101-0404%20(x).tar.gz", "saves-20210101-0404%20().tar.gz", "saves-20210101-0404-.tar.gz",
+                          "saves-20210101-0404%20(1)%20(2).tar.gz", "other%20(1).tar.gz", "saves-2021%20(1).tar.gz"})
+    CHECK_EQ(put(r.port(), bad, arch, &out), 400);
+  CHECK_EQ(names(r.bk).size(), size_t(3));
+  // the refusal says what the name has to look like
+  CHECK_EQ(put(r.port(), "evil.tar.gz", "x", &out), 400);
+  CHECK(has(body_of(out).c_str(), "saves-YYYYMMDD-HHMM"));
+  // the page lets the same names through before sending
+  const string html = webtransfer::page_html();
+  CHECK(has(html.c_str(), "( \\(\\d+\\)|-\\d+)?"));
+}
+
 // restore: confirmation, game running, one at a time, and the files really come back (with the automatic backup first)
 void test_restore() {
   Rig r;
@@ -586,6 +613,7 @@ int main() {
   test_off_and_auth();
   test_create_and_get();
   test_upload_check();
+  test_upload_names();
   test_restore();
   test_page();
   return zt::done();

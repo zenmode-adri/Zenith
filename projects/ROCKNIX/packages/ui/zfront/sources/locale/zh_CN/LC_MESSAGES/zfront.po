@@ -1,0 +1,2366 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "游戏列表已损坏"
+
+msgid "Not available yet"
+msgstr "暂不可用"
+
+msgid "Game lists updated"
+msgstr "游戏列表已更新"
+
+msgid "COVERS ADDED"
+msgstr "已添加封面"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "性能模式可能对此游戏有帮助"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "此游戏在性能模式下可能运行更流畅"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "为此游戏开启性能模式"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "此游戏已开启性能模式"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "此游戏在性能模式下可能运行更流畅：游玩时 GPU 和内存会保持全速运行。"
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "不再建议性能模式"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "不再为此游戏建议性能模式。"
+
+msgid "BATTERY"
+msgstr "电池"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "数据尚不足"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "使用电池游玩此游戏五分钟以上后，预估时间会显示在这里。"
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "按当前电量，以此游戏最近几次游玩的耗电速度计算。"
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "按当前电量。此游戏还没有游玩记录，因此使用所属系统的平均值。"
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "按当前电量。此系统还没有游玩记录，因此使用所有游戏的平均值。"
+
+msgid "Never"
+msgstr "从不"
+
+msgid "What used the most"
+msgstr "耗电最多的项目"
+
+msgid "Since the last full charge. Estimated."
+msgstr "自上次充满电以来。为估算值。"
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "尚无测量数据，游玩后会逐渐填充。"
+
+msgid "Asleep"
+msgstr "休眠"
+
+msgid "Menus and system"
+msgstr "菜单和系统"
+
+msgid "Screen"
+msgstr "屏幕"
+
+msgid "Charging"
+msgstr "充电中"
+
+msgid "About"
+msgstr "约"
+
+msgid "Since full"
+msgstr "充满后"
+
+msgid "Using now"
+msgstr "当前耗电"
+
+msgid "Last hours"
+msgstr "最近几小时"
+
+msgid "Now"
+msgstr "现在"
+
+msgid "More settings"
+msgstr "更多设置"
+
+msgid "Power saver"
+msgstr "省电模式"
+
+msgid "Screensaver after"
+msgstr "屏幕保护延迟"
+
+msgid "Turn on by itself at"
+msgstr "自动开启的电量"
+
+msgid "ADJUST"
+msgstr "调整"
+
+msgid "Action"
+msgstr "动作"
+
+msgid "Adult"
+msgstr "成人"
+
+msgid "Adventure"
+msgstr "冒险"
+
+msgid "Beat'em Up"
+msgstr "清版动作"
+
+msgid "Casino"
+msgstr "赌场"
+
+msgid "Casual Game"
+msgstr "休闲游戏"
+
+msgid "Hunting and Fishing"
+msgstr "狩猎和钓鱼"
+
+msgid "Fight"
+msgstr "格斗"
+
+msgid "Race, Driving"
+msgstr "竞速、驾驶"
+
+msgid "Demo"
+msgstr "演示"
+
+msgid "Pinball"
+msgstr "弹球"
+
+msgid "Playing cards"
+msgstr "纸牌"
+
+msgid "Role playing games"
+msgstr "角色扮演"
+
+msgid "Asiatic board game"
+msgstr "亚洲棋牌"
+
+msgid "Educational"
+msgstr "教育"
+
+msgid "Music and Dance"
+msgstr "音乐和舞蹈"
+
+msgid "Platform"
+msgstr "平台跳跃"
+
+msgid "Puzzle-Game"
+msgstr "益智"
+
+msgid "Quiz"
+msgstr "问答"
+
+msgid "Reflection"
+msgstr "思考"
+
+msgid "Shoot'em Up"
+msgstr "射击（弹幕）"
+
+msgid "Simulation"
+msgstr "模拟"
+
+msgid "Sports"
+msgstr "体育"
+
+msgid "Sports with Animals"
+msgstr "动物运动"
+
+msgid "Strategy"
+msgstr "策略"
+
+msgid "Shooter"
+msgstr "射击"
+
+msgid "Not set"
+msgstr "未设置"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "周一"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "周日"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "周二"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "周三"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "周五"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "周六"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "周四"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "4月"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "2月"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "1月"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "6月"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "3月"
+
+msgctxt "date"
+msgid "May"
+msgstr "5月"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "8月"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "12月"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "7月"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "11月"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "10月"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "9月"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "无法保存游戏数据"
+
+msgid "Could not save the settings"
+msgstr "无法保存设置"
+
+msgid "FILTER BY"
+msgstr "筛选条件"
+
+msgid "FAVORITES ONLY"
+msgstr "仅收藏"
+
+msgid "LIST"
+msgstr "列表"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "无法加载所选主题，改用 Zenith"
+
+msgid "PAGE"
+msgstr "页面"
+
+msgid "Could not show this page"
+msgstr "无法显示此页面"
+
+msgid "INSTALLED"
+msgstr "已安装"
+
+msgid "SMART COLLECTIONS"
+msgstr "智能合辑"
+
+msgid "EDIT FILTERS"
+msgstr "编辑筛选器"
+
+msgid "NO OPTIONS"
+msgstr "无选项"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "确定要删除“%s”吗？"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "之后请在自定义游戏合辑中设置其筛选器。"
+
+msgid "Restart the front-end to apply the changes."
+msgstr "重启前端以应用更改。"
+
+msgid "Could not save the setting"
+msgstr "无法保存设置"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "为玩家分配手柄"
+
+msgid "Could not start Bluetooth"
+msgstr "无法启动蓝牙"
+
+msgid "Searching..."
+msgstr "正在搜索..."
+
+msgid "CONTROLLERS"
+msgstr "手柄"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "对调确认和取消按钮"
+
+msgid "ENABLE RUMBLE"
+msgstr "启用震动"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "自动配置 RetroArch 热键"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "已连接的手柄"
+
+msgid "Not configured"
+msgstr "未配置"
+
+msgid "Unknown controller"
+msgstr "未知手柄"
+
+msgid "PAIRED"
+msgstr "已配对"
+
+msgid "Could not pair"
+msgstr "无法配对"
+
+msgid "Connected"
+msgstr "已连接"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "移除所有蓝牙设备？"
+
+msgid "Could not disconnect"
+msgstr "无法断开连接"
+
+msgid "Could not connect"
+msgstr "无法连接"
+
+msgid "Could not remove"
+msgstr "无法移除"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "A 键 / 东"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "B 键 / 南"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "X 键 / 北"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "Y 键 / 西"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "左摇杆按下"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "右摇杆按下"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "热键启用"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "内置手柄"
+
+msgid "GAMEPAD DETECTED"
+msgstr "检测到手柄"
+
+msgid "GAMEPADS DETECTED"
+msgstr "检测到手柄"
+
+msgid "PRESS B TO CANCEL."
+msgstr "按 B 取消。"
+
+msgid "Could not save the controller configuration"
+msgstr "无法保存手柄配置"
+
+msgid "Controller configuration saved"
+msgstr "手柄配置已保存"
+
+msgid "Controller configuration cancelled"
+msgstr "手柄配置已取消"
+
+msgid "Controller disconnected"
+msgstr "手柄已断开连接"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "继续按住可取消"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "按住任意按钮 3 秒可取消。"
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "按住任意按钮可跳过，继续按住可取消。"
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "所有按钮均已设置"
+
+msgid "set"
+msgstr "已设置"
+
+msgid "skipped"
+msgstr "已跳过"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "尚未分配热键按钮。使用手柄退出游戏时需要它。"
+
+msgid "DATE & TIME"
+msgstr "日期和时间"
+
+msgid "MONTH"
+msgstr "月"
+
+msgid "DAY"
+msgstr "日"
+
+msgid "HOUR"
+msgstr "时"
+
+msgid "MINUTE"
+msgstr "分"
+
+msgid "SET DATE & TIME"
+msgstr "设置日期和时间"
+
+msgid "Date and time set"
+msgstr "日期和时间已设置"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "连接 Wi-Fi 后会自动设置时间。"
+
+msgid "That folder is protected"
+msgstr "该文件夹受保护"
+
+msgid "Outside the allowed folders"
+msgstr "不在允许的文件夹内"
+
+msgid "Not enough free space"
+msgstr "可用空间不足"
+
+msgid "That name already exists"
+msgstr "该名称已存在"
+
+msgid "Cancelled"
+msgstr "已取消"
+
+msgid "A folder cannot go into itself"
+msgstr "文件夹不能移入其自身"
+
+msgid "That name is not valid"
+msgstr "该名称无效"
+
+msgid "Not found"
+msgstr "未找到"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "文件大于 4 GB：此存储卡无法存放"
+
+msgid "This card does not accept that name"
+msgstr "此存储卡不接受该名称"
+
+msgid "This location is read-only"
+msgstr "此位置为只读"
+
+msgid "An error occurred"
+msgstr "发生错误"
+
+msgid "%s of %s done"
+msgstr "已完成 %s / %s"
+
+msgid "item"
+msgstr "项"
+
+msgid "items"
+msgstr "项"
+
+msgid "link skipped"
+msgstr "个链接已跳过"
+
+msgid "links skipped"
+msgstr "个链接已跳过"
+
+msgid "This can't be undone."
+msgstr "此操作无法撤销。"
+
+msgid "Files"
+msgstr "文件"
+
+msgid "selected"
+msgstr "已选择"
+
+msgid "Cannot read this folder"
+msgstr "无法读取此文件夹"
+
+msgid "This folder is empty"
+msgstr "此文件夹为空"
+
+msgid "free"
+msgstr "可用"
+
+msgid "File"
+msgstr "文件"
+
+msgid "Folder"
+msgstr "文件夹"
+
+msgid "Link"
+msgstr "链接"
+
+msgid "Properties"
+msgstr "属性"
+
+msgid "Copy"
+msgstr "复制"
+
+msgid "Move"
+msgstr "移动"
+
+msgid "Paste here"
+msgstr "粘贴到此处"
+
+msgid "Rename"
+msgstr "重命名"
+
+msgid "New folder"
+msgstr "新建文件夹"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Select all"
+msgstr "全选"
+
+msgid "Clear selection"
+msgstr "取消选择"
+
+msgid "Date"
+msgstr "日期"
+
+msgid "Size"
+msgstr "大小"
+
+msgid "Sort by"
+msgstr "排序方式"
+
+msgid "Hide hidden files"
+msgstr "隐藏隐藏文件"
+
+msgid "Show hidden files"
+msgstr "显示隐藏文件"
+
+msgid "Actions"
+msgstr "操作"
+
+msgid "Home"
+msgstr "主目录"
+
+msgid "Games"
+msgstr "游戏"
+
+msgid "Game card"
+msgstr "游戏卡"
+
+msgid "USB drive"
+msgstr "USB 驱动器"
+
+msgid "Screenshots"
+msgstr "截图"
+
+msgid "Go to"
+msgstr "转到"
+
+msgid "Ready to copy"
+msgstr "准备复制"
+
+msgid "Ready to move"
+msgstr "准备移动"
+
+msgid "Warning"
+msgstr "警告"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "这是系统文件，重命名可能导致设备无法正常运行。"
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "这是系统文件，删除可能导致设备无法正常运行。"
+
+msgid "Wait for the other job"
+msgstr "请等待另一个任务完成"
+
+msgid "Copied"
+msgstr "已复制"
+
+msgid "Deleted"
+msgstr "已删除"
+
+msgid "Moved"
+msgstr "已移动"
+
+msgid "originals kept"
+msgstr "已保留原文件"
+
+msgid "Copying"
+msgstr "正在复制"
+
+msgid "Deleting"
+msgstr "正在删除"
+
+msgid "Moving"
+msgstr "正在移动"
+
+msgid "Calculating..."
+msgstr "正在计算..."
+
+msgid "Back"
+msgstr "返回"
+
+msgid "Close"
+msgstr "关闭"
+
+msgid "Mark"
+msgstr "标记"
+
+msgid "Open"
+msgstr "打开"
+
+msgid "Page"
+msgstr "页"
+
+msgid "WHILE PLAYING"
+msgstr "游玩时"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "启动时继续上次的游戏"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "开机时从自动存档处启动上次的游戏。按 B 取消。"
+
+msgid "HOME MENU DURING GAMES"
+msgstr "游戏中的主页菜单"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "实验性功能。游戏运行时按住 START 和所选肩键一秒，可暂停游戏并打开面板，其中有电池、亮度、音量、继续和退出游戏（保存状态和加载状态仅在开启 RetroArch 网络命令时可用）。"
+
+msgid "HOME MENU BUTTONS"
+msgstr "主页菜单按键"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "与 START 一起按住以打开主页菜单的按键。基于 SELECT 的组合键由 RetroArch 使用。"
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "性能建议"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "为 GPU 调速器限制了性能的游戏建议使用性能模式。"
+
+msgid "PLAY TIME LIMIT"
+msgstr "游玩时间限制"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "每天可游玩的时间。结束前 5 分钟会弹出提示（游戏内仅在开启 RetroArch 网络命令时显示），之后游戏将被关闭。开启后开始计时。"
+
+msgid "SAVED GAMES"
+msgstr "游戏存档"
+
+msgid "PICTURE AND CONTROL"
+msgstr "画面和控制"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "MOONLIGHT 游戏串流"
+
+msgid "MORE"
+msgstr "更多"
+
+msgid "PLAY STATISTICS"
+msgstr "游玩统计"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "各系统选项"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "性能模式"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "游玩时 GPU 和内存全速运行"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "未知系统"
+
+msgid "EMULATOR"
+msgstr "模拟器"
+
+msgid "The emulator and core that run this."
+msgstr "运行此项的模拟器和核心。"
+
+msgid "SYSTEM OPTIONS"
+msgstr "系统选项"
+
+msgid "DISPLAY"
+msgstr "显示"
+
+msgid "GAMEPLAY"
+msgstr "游戏玩法"
+
+msgid "ACTIONS"
+msgstr "操作"
+
+msgid "RANDOM GAME"
+msgstr "随机游戏"
+
+msgid "COOLING PROFILE"
+msgstr "散热配置"
+
+msgid "AGGRESSIVE"
+msgstr "强力"
+
+msgid "MODERATE"
+msgstr "适中"
+
+msgid "QUIET"
+msgstr "静音"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "CPU 调速器"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GPU 调速器"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "MangoHud 浮层"
+
+msgid "UNKNOWN GAME"
+msgstr "未知游戏"
+
+msgid "INVALID DATE"
+msgstr "日期无效"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "无法删除该游戏"
+
+msgid "CONFIG"
+msgstr "配置"
+
+msgid "CORE PROVIDED"
+msgstr "核心提供"
+
+msgid "FULL"
+msgstr "全屏"
+
+msgid "SQUARE PIXEL"
+msgstr "方形像素"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "屏幕面板调整"
+
+msgid "SCREEN & SOUND"
+msgstr "屏幕和声音"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "空闲"
+
+msgid "MONITORING"
+msgstr "监控"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "超频和监控"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "电池和性能"
+
+msgid "LIBRARY"
+msgstr "游戏库"
+
+msgid "CHECK LIBRARY"
+msgstr "检查游戏库"
+
+msgid "SAVE BACKUPS"
+msgstr "存档备份"
+
+msgid "LANGUAGE & TIME"
+msgstr "语言和时间"
+
+msgid "HOME MENU"
+msgstr "主页菜单"
+
+msgid "CHARGING"
+msgstr "充电中"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "屏幕亮度"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "覆盖该状态存档？"
+
+msgid "LOAD STATE"
+msgstr "加载状态"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "加载该状态存档？未保存的进度将会丢失。"
+
+msgid "RESUME"
+msgstr "继续"
+
+msgid "QUIT GAME"
+msgstr "退出游戏"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "确定要退出游戏吗？"
+
+msgid "AND MORE"
+msgstr "等"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "未发现问题"
+
+msgid "PROBLEMS FOUND"
+msgstr "发现问题"
+
+msgid "MISSING BIOS"
+msgstr "缺少 BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "可能已损坏的文件"
+
+msgid "DUPLICATES"
+msgstr "重复项"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "没有图片的游戏"
+
+msgid "NETWORK"
+msgstr "网络"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "手柄和蓝牙"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "仅限开发：菜单框架的所有控件。"
+
+msgid "WIDGET DEMO"
+msgstr "控件演示"
+
+msgid "Unable to connect to server"
+msgstr "无法连接到服务器"
+
+msgid "Succesfully paired with server"
+msgstr "已成功与服务器配对"
+
+msgid "QUIT CURRENT GAME"
+msgstr "退出当前游戏"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "更新 MOONLIGHT 游戏"
+
+msgid "PAIR WITH SERVER"
+msgstr "与服务器配对"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "取消与服务器配对"
+
+msgid "Unpaired and settings cleared"
+msgstr "已取消配对并清除设置"
+
+msgid "Unpaired from server"
+msgstr "已与服务器取消配对"
+
+msgid "SERVER IP"
+msgstr "服务器 IP"
+
+msgid "PAIRING PIN"
+msgstr "配对 PIN"
+
+msgid "HOST"
+msgstr "主机"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "加入联网游戏"
+
+msgid "NETPLAY NICKNAME"
+msgstr "联网游戏昵称"
+
+msgid "NETPLAY HOST"
+msgstr "联网游戏主机"
+
+msgid "NETPLAY PORT"
+msgstr "联网游戏端口"
+
+msgid "Turning Wi-Fi on..."
+msgstr "正在开启 Wi-Fi..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Wi-Fi 配置错误"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi 已开启"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi 已关闭"
+
+msgid "Wi-Fi region updated"
+msgstr "Wi-Fi 地区已更新"
+
+msgid "Please wait..."
+msgstr "请稍候..."
+
+msgid "Local play mode updated"
+msgstr "本地联机模式已更新"
+
+msgid "The service did not answer"
+msgstr "服务没有响应"
+
+msgid "WI-FI"
+msgstr "Wi-Fi"
+
+msgid "WI-FI NETWORKS"
+msgstr "Wi-Fi 网络"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "设置无线电法规，决定可使用的信道。"
+
+msgid "TRANSFER FILES"
+msgstr "传输文件"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "通过此网络中的手机或电脑向设备发送游戏。"
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "可用的 IP 地址："
+
+msgid "LOCAL PLAY"
+msgstr "本地联机"
+
+msgid "LOCAL PLAY MODE"
+msgstr "本地联机模式"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "创建接入点，用于与其他设备联网游戏。"
+
+msgid "1 (HOST)"
+msgstr "1（主机）"
+
+msgid "2 (CLIENT 1)"
+msgstr "2（客户端 1）"
+
+msgid "3 (CLIENT 2)"
+msgstr "3（客户端 2）"
+
+msgid "4 (CLIENT 3)"
+msgstr "4（客户端 3）"
+
+msgid "LOCAL PLAY ID"
+msgstr "本地联机 ID"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH、USB、云、VPN 和设备名称。"
+
+msgid "NETWORK SERVICES"
+msgstr "网络服务"
+
+msgid "ENABLE SSH"
+msgstr "启用 SSH"
+
+msgid "SSH is off"
+msgstr "SSH 已关闭"
+
+msgid "SSH is on"
+msgstr "SSH 已开启"
+
+msgid "Remote access to the console over the network."
+msgstr "通过网络远程访问设备。"
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "启用简易 HTTP 服务器"
+
+msgid "HTTP server is off"
+msgstr "HTTP 服务器已关闭"
+
+msgid "HTTP server is on"
+msgstr "HTTP 服务器已开启"
+
+msgid "FILE TRANSFER"
+msgstr "文件传输"
+
+msgid "USB GADGET FUNCTION"
+msgstr "USB Gadget 功能"
+
+msgid "USB networking is on. The console is at"
+msgstr "USB 网络已开启。设备地址："
+
+msgid "What the console offers on its USB-C port."
+msgstr "设备在 USB-C 接口上提供的功能。"
+
+msgid "CLOUD SERVICES"
+msgstr "云服务"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "挂载云盘"
+
+msgid "Cloud drive mounted"
+msgstr "云盘已挂载"
+
+msgid "Cloud drive unmounted"
+msgstr "云盘已卸载"
+
+msgid "VPN SERVICES"
+msgstr "VPN 服务"
+
+msgid "WIREGUARD VPN"
+msgstr "WireGuard VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuard 已关闭"
+
+msgid "WireGuard is on"
+msgstr "WireGuard 已开启"
+
+msgid "TAILSCALE VPN"
+msgstr "Tailscale VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscale 已关闭"
+
+msgid "Tailscale is on"
+msgstr "Tailscale 已开启"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale 无法连接"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale 需要登录"
+
+msgid "SHOW LINK"
+msgstr "显示链接"
+
+msgid "TAILSCALE LOGIN"
+msgstr "Tailscale 登录"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "Tailscale 重新验证："
+
+msgid "Use letters, digits and dashes only"
+msgstr "只能使用字母、数字和连字符"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "主机名已保存，下次启动时生效"
+
+msgid "The new name is used at the next boot."
+msgstr "新名称将在下次启动时使用。"
+
+msgid "WEB FILE TRANSFER"
+msgstr "网页文件传输"
+
+msgid "Could not start the web transfer"
+msgstr "无法启动网页传输"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "允许此网络中的手机或电脑向设备发送游戏。"
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "无法启动（端口被占用？）"
+
+msgid "WEB ADDRESS"
+msgstr "网页地址"
+
+msgid "WEB PIN"
+msgstr "网页 PIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "网络驱动器 (Samba)"
+
+msgid "ENABLE SAMBA"
+msgstr "启用 Samba"
+
+msgid "Samba is off"
+msgstr "Samba 已关闭"
+
+msgid "Samba is on"
+msgstr "Samba 已开启"
+
+msgid "Shares the games folder with other computers."
+msgstr "与其他电脑共享游戏文件夹。"
+
+msgid "SAMBA ADDRESS"
+msgstr "Samba 地址"
+
+msgid "SAMBA USER"
+msgstr "Samba 用户"
+
+msgid "SAMBA PASSWORD"
+msgstr "Samba 密码"
+
+msgid "Connecting to"
+msgstr "正在连接"
+
+msgid "Connected successfully"
+msgstr "连接成功"
+
+msgid "Failed to connect"
+msgstr "连接失败"
+
+msgid "SAVED"
+msgstr "已保存"
+
+msgid "ENTERPRISE"
+msgstr "企业"
+
+msgid "SECURED"
+msgstr "已加密"
+
+msgid "Enterprise networks are not supported"
+msgstr "不支持企业网络"
+
+msgid "Network forgotten"
+msgstr "已忘记该网络"
+
+msgid "WI-FI KEY FOR "
+msgstr "Wi-Fi 密码： "
+
+msgid "CONNECTING..."
+msgstr "正在连接..."
+
+msgid "WI-FI SSID"
+msgstr "Wi-Fi SSID"
+
+msgid "WI-FI KEY"
+msgstr "Wi-Fi 密码"
+
+msgid "REALLY SUSPEND ?"
+msgstr "确定要休眠吗？"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "确定要关机吗？"
+
+msgid "REALLY RESTART?"
+msgstr "确定要重启吗？"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "确定要重启前端吗？"
+
+msgid "RESTART THE FRONTEND"
+msgstr "重启前端"
+
+msgid "TEST ACCOUNT"
+msgstr "测试账号"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "通过 retroachievements.org 验证用户名和密码。"
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "正在连接 RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "已登录"
+
+msgid "LED NOTIFICATIONS"
+msgstr "LED 通知"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "在主菜单中显示 RetroAchievements 项。"
+
+msgid "NO SAVES FOUND"
+msgstr "未找到存档"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "可用空间不足"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "这一分钟内已有备份"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "备份已损坏或丢失"
+
+msgid "BACKUP DONE"
+msgstr "备份完成"
+
+msgid "SAVES RESTORED"
+msgstr "存档已恢复"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "云备份完成"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "云备份失败"
+
+msgid "BEFORE A RESTORE"
+msgstr "恢复前"
+
+msgid "BACK UP SAVES NOW"
+msgstr "立即备份存档"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "游戏存档、状态存档和 PSP 存档，不含 ROM 和媒体文件"
+
+msgid "CLOUD BACKUP"
+msgstr "云备份"
+
+msgid "BACKUPS"
+msgstr "备份"
+
+msgid "NO BACKUPS YET"
+msgstr "暂无备份"
+
+msgid "BACKUP DELETED"
+msgstr "备份已删除"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "这将用 %s 的存档替换当前存档。替换前会先备份当前存档。"
+
+msgid "RESTORE"
+msgstr "恢复"
+
+msgid "DELETE BACKUP"
+msgstr "删除备份"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "删除此备份？"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "此版本无法连接 ScreenScraper"
+
+msgid "ALL GAMES"
+msgstr "所有游戏"
+
+msgid "GAMES TO SCRAPE"
+msgstr "要抓取的游戏"
+
+msgid "WITH MISSING MEDIA"
+msgstr "缺少媒体的游戏"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "没有任何媒体的游戏"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "要查询所选系统中的哪些游戏。"
+
+msgid "1 DAY"
+msgstr "1 天"
+
+msgid "1 MONTH"
+msgstr "1 个月"
+
+msgid "1 WEEK"
+msgstr "1 周"
+
+msgid "1 YEAR"
+msgstr "1 年"
+
+msgid "15 DAYS"
+msgstr "15 天"
+
+msgid "3 MONTHS"
+msgstr "3 个月"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "此时间内已抓取过的游戏会被跳过，以节省请求次数。"
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "自动获取缺少的媒体"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "空闲时在后台下载缺少的封面。"
+
+msgid "SCRAPER SETTINGS"
+msgstr "抓取器设置"
+
+msgid "ACCOUNT"
+msgstr "账号"
+
+msgid "Choose at least one system."
+msgstr "请至少选择一个系统。"
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "在 ScreenScraper 上查询游戏。"
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "没有包含 ScreenScraper 已收录游戏的系统"
+
+msgid "PICTURES"
+msgstr "图片"
+
+msgid "IMAGE"
+msgstr "图像"
+
+msgid "BOX FRONT"
+msgstr "包装盒正面"
+
+msgid "TITLE SCREEN"
+msgstr "标题画面"
+
+msgid "The main picture of each game."
+msgstr "每个游戏的主图。"
+
+msgid "THUMBNAIL"
+msgstr "缩略图"
+
+msgid "The small picture of each game."
+msgstr "每个游戏的小图。"
+
+msgid "LOGO"
+msgstr "标志"
+
+msgid "The logo of each game."
+msgstr "每个游戏的标志。"
+
+msgid "WHEEL HD"
+msgstr "高清 Wheel"
+
+msgid "FULL SIZE"
+msgstr "原始大小"
+
+msgid "IMAGE SIZE"
+msgstr "图片大小"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper 会先缩小图片再发送，更快也更省空间。"
+
+msgid "AUTOMATIC"
+msgstr "自动"
+
+msgid "BRAZIL"
+msgstr "巴西"
+
+msgid "EUROPE"
+msgstr "欧洲"
+
+msgid "FRANCE"
+msgstr "法国"
+
+msgid "GERMANY"
+msgstr "德国"
+
+msgid "ITALY"
+msgstr "意大利"
+
+msgid "JAPAN"
+msgstr "日本"
+
+msgid "SPAIN"
+msgstr "西班牙"
+
+msgid "USA"
+msgstr "美国"
+
+msgid "WORLD"
+msgstr "全球"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "名称、日期和图片的首选地区。"
+
+msgid "NAMES"
+msgstr "名称"
+
+msgid "Replace the names of the games."
+msgstr "替换游戏名称。"
+
+msgid "DESCRIPTIONS"
+msgstr "描述"
+
+msgid "Replace the descriptions."
+msgstr "替换描述。"
+
+msgid "Download the rating of each game."
+msgstr "下载每个游戏的评分。"
+
+msgid "RATINGS"
+msgstr "评分"
+
+msgid "EXTRA MEDIA"
+msgstr "附加媒体"
+
+msgid "VIDEOS"
+msgstr "视频"
+
+msgid "Videos are big and take longer to download."
+msgstr "视频文件较大，下载耗时更长。"
+
+msgid "MANUALS"
+msgstr "手册"
+
+msgid "PDF manuals."
+msgstr "PDF 手册。"
+
+msgid "MAPS"
+msgstr "地图"
+
+msgid "Maps of the game."
+msgstr "游戏地图。"
+
+msgid "Background pictures."
+msgstr "背景图片。"
+
+msgid "FANART"
+msgstr "同人图"
+
+msgid "BOX BACK"
+msgstr "包装盒背面"
+
+msgid "The back of the box."
+msgstr "包装盒背面。"
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "仅适用于“所有游戏”：已有的图片也会重新下载。"
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "替换现有媒体"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "可选。没有账号时，ScreenScraper 允许的请求次数很少。"
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB 不需要账号。"
+
+msgid "Asks IGDB for an access token."
+msgstr "向 IGDB 请求访问令牌。"
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "向 ScreenScraper 查询你的额度限制。"
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "正在连接 SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "匿名"
+
+msgid "LOGIN"
+msgstr "登录"
+
+msgid "REQUESTS TODAY"
+msgstr "今日请求数"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "每分钟请求数"
+
+msgid "STOP"
+msgstr "停止"
+
+msgid "SCROLL"
+msgstr "滚动"
+
+msgid "SCRAPE COMPLETE"
+msgstr "抓取完成"
+
+msgid "SCRAPE STOPPED"
+msgstr "抓取已停止"
+
+msgid "FOUND"
+msgstr "已找到"
+
+msgid "NOT FOUND"
+msgstr "未找到"
+
+msgid "ERRORS"
+msgstr "错误"
+
+msgid "MEDIA FILES"
+msgstr "媒体文件"
+
+msgid "READING GAME LISTS"
+msgstr "正在读取游戏列表"
+
+msgid "STOPPING"
+msgstr "正在停止"
+
+msgid "SECONDS"
+msgstr "秒"
+
+msgid "WAITING"
+msgstr "等待中"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "已停止，已完成的部分已保存"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "按这些条件没有可抓取的游戏"
+
+msgid "GAMES"
+msgstr "游戏"
+
+msgid "PROBLEMS"
+msgstr "问题"
+
+msgid "MEDIA MISSING"
+msgstr "缺少媒体"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "开关和滑块"
+
+msgid "The clock shows in the top right corner."
+msgstr "时钟显示在右上角。"
+
+msgid "Volume saved"
+msgstr "音量已保存"
+
+msgid "LISTS AND TEXT"
+msgstr "列表和文本"
+
+msgid "TEXT"
+msgstr "文本"
+
+msgid "WI-FI PASSWORD"
+msgstr "Wi-Fi 密码"
+
+msgid "SHOW A TOAST"
+msgstr "显示提示消息"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi 已连接：Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "显示音量条"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "显示亮度条"
+
+msgid "ASK A QUESTION"
+msgstr "显示提问"
+
+msgid "Delete all saved states of this game?"
+msgstr "删除此游戏的所有状态存档？"
+
+msgid "SHOW A MESSAGE"
+msgstr "显示消息"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "更新已安装，请重启设备以使用。"
+
+msgid "Restart the system now?"
+msgstr "现在重启系统？"
+
+msgid "Restarting..."
+msgstr "正在重启..."
+
+msgid "DISABLED ENTRY"
+msgstr "已禁用项"
+
+msgid "SELECTOR STYLE"
+msgstr "选择框样式"
+
+msgid "TITLE ALIGNMENT"
+msgstr "标题对齐"
+
+msgid "LIST TEXT CASE"
+msgstr "列表文字大小写"
+
+msgid "TEXT SIZE"
+msgstr "文字大小"
+
+msgid "HIGH CONTRAST"
+msgstr "高对比度"
+
+msgid "options"
+msgstr "选项"
+
+msgid "AUDIO"
+msgstr "音频"
+
+msgid "Could not change the audio output"
+msgstr "无法更改音频输出"
+
+msgid "BATTERY WARNING"
+msgstr "电量警告"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "启用电量警告音"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "电量警告阈值"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "设备开机时先于菜单启动此游戏，每次开机仅一次。"
+
+msgid "Reboot now"
+msgstr "立即重启"
+
+msgid "Later"
+msgstr "稍后"
+
+msgid "Default"
+msgstr "默认"
+
+msgid "Arm (official)"
+msgstr "Arm（官方）"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "开源（Panfrost / PanVK）"
+
+msgid "TIME LEFT TODAY"
+msgstr "今日剩余时间"
+
+msgid "UPTIME"
+msgstr "运行时间"
+
+msgid "No information available"
+msgstr "没有可用信息"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "系统管理和重置"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr "确定吗？\n\n此操作无法撤销。"
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "备份配置"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr "警告：这将重启前端！\n\n脚本完成后，请务必将文件 /storage/roms/backup/ROCKNIX_BACKUP.zip 复制到安全的地方，否则下次重启时它将被删除！\n\n备份当前配置并重启？"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "从备份恢复"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr "警告：这将重启设备！\n\n现有配置将被覆盖！\n\n从备份恢复并重启？"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "模拟器管理"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "将 RetroArch 配置重置为默认"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr "警告：RetroArch 配置将重置为默认\n\n各核心的配置不受影响，且不会创建备份！\n\n将 RetroArch 配置重置为默认？"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "重置浮层（核心、金手指、手柄等）"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr "警告：所有自定义 RetroArch 浮层都将被删除\n\n包括自定义核心、摇杆、金手指等，且不会创建备份！\n\n将 RetroArch 浮层重置为默认？"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "完全重置 RetroArch"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr "警告：RetroArch 及所有用户保存的配置都将重置为默认\n\n各核心的配置也将被删除，且不会创建备份！\n\n重置 RetroArch？"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "将 Mednafen 配置重置为默认"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr "警告：Mednafen 配置将重置为默认\n\n不会创建备份！\n\n将 Mednafen 配置重置为默认？"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "将独立模拟器配置重置为默认"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr "警告：独立模拟器配置将重置为默认\n\n不会创建备份！\n\n将独立模拟器配置重置为默认？"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "完全重置 PortMaster"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr "警告：PortMaster 将重置为默认\n\n不会创建备份！\n\n将 PortMaster 重置为默认？"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "系统管理"
+
+msgid "AUDIO RESET"
+msgstr "重置音频"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr "警告：音频设置将重置为默认，系统将重启！\n\n重置音频并重启？"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "重置电量计"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr "警告：PMIC 电量计将被重置，系统将关机！\n\n请不要连接充电器，几秒后再重新开机。电量会根据静置时的电池电压重新估算，充满一次电后恢复准确。\n\n重置电量计并关机？"
+
+msgid "FACTORY RESET"
+msgstr "恢复出厂设置"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr "警告：你的数据和所有其他配置都将重置为默认！\n\n如需保留设置，请在执行此选项前先备份并保存到外部存储器！\n\n继续之前请取出游戏卡！\n\n重置系统并重启？"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "为所选布局选择键盘变体（例如死键或替代键位）。"
+
+msgid "TIMEZONE"
+msgstr "时区"
+
+msgid "Run welcome again"
+msgstr "再次运行欢迎向导"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "再次显示首次开机的欢迎向导：语言、Wi-Fi 和时区。"
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "启用 MangoHud 浮层"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "启用触屏键盘"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "启用 ROCKNIX 截图"
+
+msgid "SCREEN"
+msgstr "屏幕"
+
+msgid "CONTRAST"
+msgstr "对比度"
+
+msgid "GAMMA"
+msgstr "伽马"
+
+msgid "HUE"
+msgstr "色调"
+
+msgid "SATURATION"
+msgstr "饱和度"
+
+msgid "LEDS"
+msgstr "LED"
+
+msgid "DISABLE POWER LED"
+msgstr "关闭电源 LED"
+
+msgid "LED COLOR"
+msgstr "LED 颜色"
+
+msgid "JOYSTICK LED"
+msgstr "摇杆 LED"
+
+msgid "MAX"
+msgstr "最大"
+
+msgid "MID"
+msgstr "中"
+
+msgid "MIN"
+msgstr "最小"
+
+msgid "THIS DEVICE IS"
+msgstr "此设备是"
+
+msgid "Device will be switched on next reboot"
+msgstr "设备将在下次重启时切换"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "自动检测游戏卡"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "启用合并存储"
+
+msgid "EXTERNAL"
+msgstr "外部"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "合并存储的主卡"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "警告：更改主卡可能导致无法访问游戏，需要手动修复。继续？"
+
+msgid "EJECT MICROSD CARD"
+msgstr "弹出 microSD 卡"
+
+msgid "You may now remove the card."
+msgstr "现在可以取出存储卡了。"
+
+msgid "PERFORMANCE"
+msgstr "性能"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "默认调速器"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "默认 GPU 调速器"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "启用 CPU 超频"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "启用 GPU 超频"
+
+msgid "GPU DRIVER"
+msgstr "GPU 驱动"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "GPU 驱动将在下次重启时切换"
+
+msgid "Restarting to apply the theme"
+msgstr "正在重启以应用主题"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "前端将重启以应用主题"
+
+msgid "Dark"
+msgstr "深色"
+
+msgid "Light"
+msgstr "浅色"
+
+msgid "Theme default"
+msgstr "主题默认"
+
+msgid "Filled"
+msgstr "填充"
+
+msgid "Outline"
+msgstr "轮廓"
+
+msgid "Side bar"
+msgstr "侧边条"
+
+msgid "Underline"
+msgstr "下划线"
+
+msgid "Centered"
+msgstr "居中"
+
+msgid "Left"
+msgstr "靠左"
+
+msgid "Lowercase"
+msgstr "小写"
+
+msgid "Uppercase"
+msgstr "大写"
+
+msgid "EXTRA LARGE"
+msgstr "特大"
+
+msgid "LARGE"
+msgstr "大"
+
+msgid "SMALL"
+msgstr "小"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "菜单、对话框和帮助栏中的文字大小"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "纯白或纯黑文字、不透明面板和更粗的选择框"
+
+msgid "CONTROL OPTIONS"
+msgstr "控制选项"
+
+msgid "TOP BAR"
+msgstr "顶部栏"
+
+msgid "BEDSIDE CLOCK"
+msgstr "床头时钟"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "插着充电器时，如果这么长时间没有操作设备，将显示大时钟，代替屏幕保护。按任意键即可关闭。游戏运行时不会显示。"
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "无法取消下载"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "下载已取消"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "无法下载更新。请检查网络连接后重试。"
+
+msgid "No update source available"
+msgstr "没有可用的更新源"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "强制下次更新"
+
+msgid "UPDATING"
+msgstr "正在更新"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "取消下载"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "取消下载？已下载的部分文件将被删除。"
+
+msgid "Checking..."
+msgstr "正在检查..."
+
+msgid "available"
+msgstr "可用"
+
+msgid "SKIP ALL"
+msgstr "全部跳过"
+
+msgid "Welcome"
+msgstr "欢迎"
+
+msgid "of"
+msgstr "/"
+
+msgid "Choose your language"
+msgstr "选择语言"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "You can change it later in System."
+msgstr "之后可在“系统”中更改。"
+
+msgid "Connect to WiFi"
+msgstr "连接 Wi-Fi"
+
+msgid "WiFi"
+msgstr "Wi-Fi"
+
+msgid "Clock, updates and file transfer."
+msgstr "时钟、更新和文件传输。"
+
+msgid "Continue"
+msgstr "继续"
+
+msgid "Not now"
+msgstr "暂不"
+
+msgid "Choose a network"
+msgstr "选择网络"
+
+msgid "Choose another network"
+msgstr "选择其他网络"
+
+msgid "Where are you?"
+msgstr "你在哪里？"
+
+msgid "Time zone"
+msgstr "时区"
+
+msgid "Sets your local time."
+msgstr "设置你的本地时间。"
+
+msgid "Keep UTC"
+msgstr "保持 UTC"
+
+msgid "LOADING..."
+msgstr "正在加载..."
+
+msgid "All set"
+msgstr "设置完成"
+
+msgid "Add games from your phone"
+msgstr "从手机添加游戏"
+
+msgid "Network"
+msgstr "网络"
+
+msgid "Start opens the menu"
+msgstr "按 START 打开菜单"
+
+msgid "anywhere"
+msgstr "随时随地"
+
+msgid "Screen looks wrong?"
+msgstr "屏幕显示不正常？"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "开始游玩"
+
+msgid "PLAY THEME MUSIC"
+msgstr "播放主题音乐"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "没有网络连接"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "电量消耗（充满电）"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "总游玩时间"
+
+msgid "LAST FIVE WEEKS"
+msgstr "最近五周"
+
+msgid "2 WEEKS AGO"
+msgstr "2 周前"
+
+msgid "3 WEEKS AGO"
+msgstr "3 周前"
+
+msgid "4 WEEKS AGO"
+msgstr "4 周前"
+
+msgid "THIS WEEK"
+msgstr "本周"
+
+msgid "MOST PLAYED GAMES"
+msgstr "最常玩的游戏"
+
+msgid "TIME PER SYSTEM"
+msgstr "各系统时间"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "还没有游玩记录。玩一个游戏后就会显示在这里。"
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "今天的游玩时间只剩 %d 分钟"
+
+msgid "Power saver on"
+msgstr "省电模式已开启"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "RETROACHIEVEMENTS 返回了意外的响应"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "此版本不可用"
+
+msgid "%i min ago"
+msgstr "%i 分钟前"
+
+msgid "%i h ago"
+msgstr "%i 小时前"
+
+msgid "%i d ago"
+msgstr "%i 天前"
+
+msgid "CONTINUE PLAYING"
+msgstr "继续游玩"
+
+msgid "START NOW"
+msgstr "立即开始"
+
+msgid "RESUMING"
+msgstr "正在继续"
+
+msgid "STARTING IN %i"
+msgstr "%i 秒后开始"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "改版"
+
+msgid "Homebrew"
+msgstr "自制软件"
+
+msgid "Minis"
+msgstr "迷你版"
+
+msgid "Vertical"
+msgstr "竖屏"
+
+msgid "recently added"
+msgstr "最近添加"
+
+msgid "unfinished"
+msgstr "未完成"
+
+msgid "most played this week"
+msgstr "本周最常玩"
+
+msgid "BOOKS"
+msgstr "书籍"
+
+msgid "screenshots"
+msgstr "截图"
+
+msgid "media player"
+msgstr "媒体播放器"
+
+msgid "NETWORK ERROR"
+msgstr "网络错误"
+
+msgid "SERVER BUSY"
+msgstr "服务器繁忙"
+
+msgid "SERVER ERROR"
+msgstr "服务器错误"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "无法写入游戏列表"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "登录失败。请检查用户名和密码"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER 目前对此账号关闭"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER 正在维护"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "此软件已被 SCREENSCRAPER 屏蔽"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "已达每日抓取额度。请明天再试"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "今天无法识别的 ROM 太多。请明天再试"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "存储卡已无剩余空间"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "请先在账号中输入 IGDB 客户端 ID 和密钥"
+
+msgid "SCRAPING STOPPED"
+msgstr "抓取已停止"
+
+msgid "GAME NOT FOUND"
+msgstr "未找到游戏"
+
+msgid "NO OTHER GAME"
+msgstr "没有其他游戏"
+
+msgid "Time is up for today"
+msgstr "今天的时间已用完"
+
+msgid "ACCENTS"
+msgstr "强调色"
+
+msgid "SHOW"
+msgstr "显示"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "显示视频预览"
+
+msgid "Device paired"
+msgstr "设备已配对"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "允许此设备？"
+
+msgid "RECEIVED"
+msgstr "已接收"
+
+msgid "QR CODE"
+msgstr "二维码"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "刚刚"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d 分钟前"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d 小时前"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d 天前"
+
+msgid "NO PAIRED DEVICES"
+msgstr "没有已配对的设备"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "忘记此设备？"
+
+msgid "FORGET ALL DEVICES"
+msgstr "忘记所有设备"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "忘记所有设备？"
+
+msgid "PAIRED DEVICES"
+msgstr "已配对的设备"
+
+msgid "SHOW QR CODE"
+msgstr "显示二维码"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "用手机相机扫描：页面会打开并自动带上 PIN。"
+
+msgid "Phones that need no PIN."
+msgstr "无需 PIN 的手机。"
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "从网页恢复存档？"
+
+msgid "BUILD ID"
+msgstr "构建 ID"
+
+msgid "KERNEL"
+msgstr "内核"
+
+msgid "OPERATING SYSTEM"
+msgstr "操作系统"
+
+msgid "SYSTEM INFORMATION"
+msgstr "系统信息"
+
+msgid "BATTERY INFORMATION"
+msgstr "电池信息"
+
+msgid "DISK SPACE"
+msgstr "磁盘空间"
+
+msgid "HOST NAME"
+msgstr "主机名"
+
+msgid "NETWORK INFORMATION"
+msgstr "网络信息"
+
+msgid "BATTERY HEALTH"
+msgstr "电池健康"
+
+msgid "BATTERY REMAINING"
+msgstr "剩余电量"
+
+msgid "BATTERY STATE"
+msgstr "电池状态"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "CPU 信息"
+
+msgid "CPU TEMPERATURE"
+msgstr "CPU 温度"
+
+msgid "CPU FAN"
+msgstr "CPU 风扇"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "GPU 当前频率"
+
+msgid "GPU INFORMATION"
+msgstr "GPU 信息"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "GPU 最大频率"
+
+msgid "GPU TEMPERATURE"
+msgstr "GPU 温度"
+
+msgid "RAM AVAILABLE"
+msgstr "可用 RAM"
+
+msgid "RAM CAPACITY"
+msgstr "RAM 容量"
+
+msgid "RAM INFORMATION"
+msgstr "RAM 信息"
+
+msgid "CURRENT FREQUENCY"
+msgstr "当前频率"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "最大频率"
+
+msgid "DISCHARGING"
+msgstr "放电中"
+
+msgid "NOT CHARGING"
+msgstr "未充电"
+
+msgid "Follows the language until you choose one here."
+msgstr "在此手动选择之前，随语言自动切换。"
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "没有网络。把 microSD 卡插到电脑上，将每个游戏复制到 roms 里对应系统的文件夹（例如 roms/snes）。或者连接 WiFi 后回到这里，用手机添加游戏。"
+
+msgid "Add games"
+msgstr "添加游戏"
+
+msgid "left, in the menus"
+msgstr "剩余(在菜单中)"
+
+msgid "From your phone or microSD"
+msgstr "从手机或 microSD 卡"
+
+msgid "Web transfer turned off"
+msgstr "网页传输已关闭"

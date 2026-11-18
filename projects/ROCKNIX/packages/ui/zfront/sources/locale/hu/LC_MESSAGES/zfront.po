@@ -1,0 +1,2370 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "SÉRÜLT JÁTÉKLISTA"
+
+msgid "Not available yet"
+msgstr "Még nem elérhető"
+
+msgid "Game lists updated"
+msgstr "A játéklisták frissítve"
+
+msgid "COVERS ADDED"
+msgstr "BORÍTÓK HOZZÁADVA"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "A TELJESÍTMÉNY MÓD SEGÍTHET EZEN A JÁTÉKON"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "EZ A JÁTÉK JOBBAN FUTHAT TELJESÍTMÉNY MÓDDAL"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "TELJESÍTMÉNY MÓD BEKAPCSOLÁSA EHHEZ A JÁTÉKHOZ"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "A TELJESÍTMÉNY MÓD BE VAN KAPCSOLVA EHHEZ A JÁTÉKHOZ"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Ez a játék jobban futhat teljesítmény móddal: a GPU és a memória teljes sebességen marad játék közben."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "TELJESÍTMÉNY MÓD JAVASLÁSÁNAK LEÁLLÍTÁSA"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Ne javasolja többé a teljesítmény módot ennél a játéknál."
+
+msgid "BATTERY"
+msgstr "AKKUMULÁTOR"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "MÉG NINCS ELÉG ADAT"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Játssz ezzel a játékkal öt percig vagy tovább akkumulátorról, és itt megjelenik a becslés."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "A jelenlegi töltöttséggel, a játék utolsó munkameneteinek ütemében."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "A jelenlegi töltöttséggel. Ehhez a játékhoz még nincs munkamenet: a rendszerének átlaga van használva."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "A jelenlegi töltöttséggel. Ehhez a rendszerhez még nincs munkamenet: az összes játék átlaga van használva."
+
+msgid "Never"
+msgstr "Soha"
+
+msgid "What used the most"
+msgstr "Mi használta a legtöbbet"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Az utolsó teljes töltés óta. Becsült érték."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Még nincs mért adat. Játék közben feltöltődik."
+
+msgid "Asleep"
+msgstr "Alvó állapot"
+
+msgid "Menus and system"
+msgstr "Menük és rendszer"
+
+msgid "Screen"
+msgstr "Kijelző"
+
+msgid "Charging"
+msgstr "Töltés"
+
+msgid "About"
+msgstr "Névjegy"
+
+msgid "Since full"
+msgstr "A teljes töltés óta"
+
+msgid "Using now"
+msgstr "Jelenlegi fogyasztás"
+
+msgid "Last hours"
+msgstr "Utolsó órák"
+
+msgid "Now"
+msgstr "Most"
+
+msgid "More settings"
+msgstr "További beállítások"
+
+msgid "Power saver"
+msgstr "Energiatakarékos mód"
+
+msgid "Screensaver after"
+msgstr "Képernyővédő ennyi idő után"
+
+msgid "Turn on by itself at"
+msgstr "Magától bekapcsol ekkor"
+
+msgid "ADJUST"
+msgstr "BEÁLLÍTÁS"
+
+msgid "Action"
+msgstr "Akció"
+
+msgid "Adult"
+msgstr "Felnőtt"
+
+msgid "Adventure"
+msgstr "Kaland"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Kaszinó"
+
+msgid "Casual Game"
+msgstr "Casual játék"
+
+msgid "Hunting and Fishing"
+msgstr "Vadászat és horgászat"
+
+msgid "Fight"
+msgstr "Harc"
+
+msgid "Race, Driving"
+msgstr "Verseny, vezetés"
+
+msgid "Demo"
+msgstr "Demó"
+
+msgid "Pinball"
+msgstr "Flipper"
+
+msgid "Playing cards"
+msgstr "Kártyajátékok"
+
+msgid "Role playing games"
+msgstr "Szerepjátékok"
+
+msgid "Asiatic board game"
+msgstr "Ázsiai társasjáték"
+
+msgid "Educational"
+msgstr "Oktató"
+
+msgid "Music and Dance"
+msgstr "Zene és tánc"
+
+msgid "Platform"
+msgstr "Platform"
+
+msgid "Puzzle-Game"
+msgstr "Logikai játék"
+
+msgid "Quiz"
+msgstr "Kvíz"
+
+msgid "Reflection"
+msgstr "Gondolkodtató"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Szimuláció"
+
+msgid "Sports"
+msgstr "Sport"
+
+msgid "Sports with Animals"
+msgstr "Sport állatokkal"
+
+msgid "Strategy"
+msgstr "Stratégia"
+
+msgid "Shooter"
+msgstr "Lövöldözős"
+
+msgid "Not set"
+msgstr "Nincs beállítva"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Hé"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Vas"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Ke"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "Sze"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Pé"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "Szo"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "Csü"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Ápr"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Feb"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Jan"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Jún"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Már"
+
+msgctxt "date"
+msgid "May"
+msgstr "Máj"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Aug"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Dec"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Júl"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Nov"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Okt"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Szep"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "A JÁTÉKADATOKAT NEM LEHETETT MENTENI"
+
+msgid "Could not save the settings"
+msgstr "A beállításokat nem lehetett menteni"
+
+msgid "FILTER BY"
+msgstr "SZŰRÉS"
+
+msgid "FAVORITES ONLY"
+msgstr "CSAK KEDVENCEK"
+
+msgid "LIST"
+msgstr "LISTA"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "A kiválasztott témát nem lehetett betölteni: a Zenith van használva"
+
+msgid "PAGE"
+msgstr "OLDAL"
+
+msgid "Could not show this page"
+msgstr "Ezt az oldalt nem lehetett megjeleníteni"
+
+msgid "INSTALLED"
+msgstr "TELEPÍTVE"
+
+msgid "SMART COLLECTIONS"
+msgstr "OKOS GYŰJTEMÉNYEK"
+
+msgid "EDIT FILTERS"
+msgstr "SZŰRŐK SZERKESZTÉSE"
+
+msgid "NO OPTIONS"
+msgstr "NINCS LEHETŐSÉG"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Biztosan törlöd a(z) „%s” elemet?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "A szűrőit utána add meg az Egyéni játékgyűjteményeknél."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Indítsd újra a felületet a módosítások alkalmazásához."
+
+msgid "Could not save the setting"
+msgstr "A beállítást nem lehetett menteni"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "VEZÉRLŐK HOZZÁRENDELÉSE JÁTÉKOSOKHOZ"
+
+msgid "Could not start Bluetooth"
+msgstr "A Bluetooth-t nem lehetett elindítani"
+
+msgid "Searching..."
+msgstr "Keresés..."
+
+msgid "CONTROLLERS"
+msgstr "VEZÉRLŐK"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "MEGERŐSÍTÉS ÉS MÉGSE GOMB FELCSERÉLÉSE"
+
+msgid "ENABLE RUMBLE"
+msgstr "REZGÉS BEKAPCSOLÁSA"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "RETROARCH GYORSBILLENTYŰK AUTOMATIKUS BEÁLLÍTÁSA"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "CSATLAKOZTATOTT VEZÉRLŐK"
+
+msgid "Not configured"
+msgstr "Nincs beállítva"
+
+msgid "Unknown controller"
+msgstr "Ismeretlen vezérlő"
+
+msgid "PAIRED"
+msgstr "PÁROSÍTVA"
+
+msgid "Could not pair"
+msgstr "A párosítás nem sikerült"
+
+msgid "Connected"
+msgstr "Csatlakoztatva"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Eltávolítod az összes Bluetooth-eszközt?"
+
+msgid "Could not disconnect"
+msgstr "A leválasztás nem sikerült"
+
+msgid "Could not connect"
+msgstr "A csatlakozás nem sikerült"
+
+msgid "Could not remove"
+msgstr "Az eltávolítás nem sikerült"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "A GOMB / KELET"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "B GOMB / DÉL"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "X GOMB / ÉSZAK"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "Y GOMB / NYUGAT"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "BAL ANALÓG NYOMÁS"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "JOBB ANALÓG NYOMÁS"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "GYORSBILLENTYŰ ENGEDÉLYEZÉSE"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "BEÉPÍTETT VEZÉRLŐ"
+
+msgid "GAMEPAD DETECTED"
+msgstr "JÁTÉKVEZÉRLŐ ÉSZLELVE"
+
+msgid "GAMEPADS DETECTED"
+msgstr "JÁTÉKVEZÉRLŐK ÉSZLELVE"
+
+msgid "PRESS B TO CANCEL."
+msgstr "NYOMD MEG A B GOMBOT A MÉGSEHEZ."
+
+msgid "Could not save the controller configuration"
+msgstr "A vezérlő beállítását nem lehetett menteni"
+
+msgid "Controller configuration saved"
+msgstr "A vezérlő beállítása mentve"
+
+msgid "Controller configuration cancelled"
+msgstr "A vezérlő beállítása megszakítva"
+
+msgid "Controller disconnected"
+msgstr "A vezérlő leválasztva"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "TARTSD LENYOMVA A MÉGSEHEZ"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "TARTSD LENYOMVA BÁRMELY GOMBOT 3 MÁSODPERCIG A MÉGSEHEZ."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "TARTSD LENYOMVA BÁRMELY GOMBOT A KIHAGYÁSHOZ. TARTSD TOVÁBB A MÉGSEHEZ."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "MINDEN GOMB KÉSZ"
+
+msgid "set"
+msgstr "beállítva"
+
+msgid "skipped"
+msgstr "kihagyva"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "NINCS GYORSBILLENTYŰ-GOMB KIOSZTVA. EZ SZÜKSÉGES A JÁTÉKOKBÓL VALÓ KILÉPÉSHEZ VEZÉRLŐVEL."
+
+msgid "DATE & TIME"
+msgstr "DÁTUM ÉS IDŐ"
+
+msgid "MONTH"
+msgstr "HÓNAP"
+
+msgid "DAY"
+msgstr "NAP"
+
+msgid "HOUR"
+msgstr "ÓRA"
+
+msgid "MINUTE"
+msgstr "PERC"
+
+msgid "SET DATE & TIME"
+msgstr "DÁTUM ÉS IDŐ BEÁLLÍTÁSA"
+
+msgid "Date and time set"
+msgstr "A dátum és az idő beállítva"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Wi-Fi-vel az idő automatikusan beállítódik."
+
+msgid "That folder is protected"
+msgstr "Ez a mappa védett"
+
+msgid "Outside the allowed folders"
+msgstr "Az engedélyezett mappákon kívül"
+
+msgid "Not enough free space"
+msgstr "Nincs elég szabad hely"
+
+msgid "That name already exists"
+msgstr "Ez a név már létezik"
+
+msgid "Cancelled"
+msgstr "Megszakítva"
+
+msgid "A folder cannot go into itself"
+msgstr "Egy mappa nem kerülhet saját magába"
+
+msgid "That name is not valid"
+msgstr "Ez a név érvénytelen"
+
+msgid "Not found"
+msgstr "Nem található"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "4 GB-nál nagyobb fájl: ez a kártya nem tudja tárolni"
+
+msgid "This card does not accept that name"
+msgstr "Ez a kártya nem fogadja el ezt a nevet"
+
+msgid "This location is read-only"
+msgstr "Ez a hely csak olvasható"
+
+msgid "An error occurred"
+msgstr "Hiba történt"
+
+msgid "%s of %s done"
+msgstr "%s / %s kész"
+
+msgid "item"
+msgstr "elem"
+
+msgid "items"
+msgstr "elem"
+
+msgid "link skipped"
+msgstr "hivatkozás kihagyva"
+
+msgid "links skipped"
+msgstr "hivatkozás kihagyva"
+
+msgid "This can't be undone."
+msgstr "Ez nem vonható vissza."
+
+msgid "Files"
+msgstr "Fájlok"
+
+msgid "selected"
+msgstr "kijelölve"
+
+msgid "Cannot read this folder"
+msgstr "Ez a mappa nem olvasható"
+
+msgid "This folder is empty"
+msgstr "Ez a mappa üres"
+
+msgid "free"
+msgstr "szabad"
+
+msgid "File"
+msgstr "Fájl"
+
+msgid "Folder"
+msgstr "Mappa"
+
+msgid "Link"
+msgstr "Hivatkozás"
+
+msgid "Properties"
+msgstr "Tulajdonságok"
+
+msgid "Copy"
+msgstr "Másolás"
+
+msgid "Move"
+msgstr "Áthelyezés"
+
+msgid "Paste here"
+msgstr "Beillesztés ide"
+
+msgid "Rename"
+msgstr "Átnevezés"
+
+msgid "New folder"
+msgstr "Új mappa"
+
+msgid "Delete"
+msgstr "Törlés"
+
+msgid "Select all"
+msgstr "Összes kijelölése"
+
+msgid "Clear selection"
+msgstr "Kijelölés törlése"
+
+msgid "Date"
+msgstr "Dátum"
+
+msgid "Size"
+msgstr "Méret"
+
+msgid "Sort by"
+msgstr "Rendezés"
+
+msgid "Hide hidden files"
+msgstr "Rejtett fájlok elrejtése"
+
+msgid "Show hidden files"
+msgstr "Rejtett fájlok megjelenítése"
+
+msgid "Actions"
+msgstr "Műveletek"
+
+msgid "Home"
+msgstr "Kezdőlap"
+
+msgid "Games"
+msgstr "Játékok"
+
+msgid "Game card"
+msgstr "Játékkártya"
+
+msgid "USB drive"
+msgstr "USB-meghajtó"
+
+msgid "Screenshots"
+msgstr "Képernyőképek"
+
+msgid "Go to"
+msgstr "Ugrás ide"
+
+msgid "Ready to copy"
+msgstr "Másolásra kész"
+
+msgid "Ready to move"
+msgstr "Áthelyezésre kész"
+
+msgid "Warning"
+msgstr "Figyelem"
+
+msgid "Cancel"
+msgstr "Mégse"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Ez egy rendszerfájl. Az átnevezése tönkreteheti a konzolt."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Ez egy rendszerfájl. A törlése tönkreteheti a konzolt."
+
+msgid "Wait for the other job"
+msgstr "Várj a másik feladat befejezésére"
+
+msgid "Copied"
+msgstr "Másolva"
+
+msgid "Deleted"
+msgstr "Törölve"
+
+msgid "Moved"
+msgstr "Áthelyezve"
+
+msgid "originals kept"
+msgstr "az eredetik megmaradtak"
+
+msgid "Copying"
+msgstr "Másolás"
+
+msgid "Deleting"
+msgstr "Törlés"
+
+msgid "Moving"
+msgstr "Áthelyezés"
+
+msgid "Calculating..."
+msgstr "Számítás..."
+
+msgid "Back"
+msgstr "Vissza"
+
+msgid "Close"
+msgstr "Bezár"
+
+msgid "Mark"
+msgstr "Megjelölés"
+
+msgid "Open"
+msgstr "Megnyitás"
+
+msgid "Page"
+msgstr "Oldal"
+
+msgid "WHILE PLAYING"
+msgstr "JÁTÉK KÖZBEN"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "UTOLSÓ JÁTÉK FOLYTATÁSA INDÍTÁSKOR"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Indításkor elindítja az utolsó játékodat az automatikus mentéséből. A B megszakítja."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "KEZDŐMENÜ JÁTÉK KÖZBEN"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Kísérleti. Játék közben tartsd lenyomva a START gombot és a kiválasztott vállgombot egy másodpercig, hogy szüneteltesd a játékot, és megnyisd a panelt akkumulátorral, fényerővel, hangerővel, FOLYTATÁS és KILÉPÉS A JÁTÉKBÓL lehetőséggel (ÁLLAPOT MENTÉSE és ÁLLAPOT BETÖLTÉSE csak bekapcsolt RetroArch hálózati parancsokkal)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "KEZDŐMENÜ GOMBJAI"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "A START mellett lenyomva tartott gombok a kezdőmenü megnyitásához. A Select alapú kombinációkat a RetroArch használja."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "TELJESÍTMÉNYJAVASLATOK"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Teljesítmény módot javasol azoknak a játékoknak, amelyeket a GPU-szabályozó visszatart."
+
+msgid "PLAY TIME LIMIT"
+msgstr "JÁTÉKIDŐ-KORLÁT"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Napi játékidő. Üzenet érkezik 5 perccel a vége előtt (játékon belül csak bekapcsolt RetroArch hálózati parancsokkal), majd a játék bezárul. Az idő a funkció bekapcsolásától számít."
+
+msgid "SAVED GAMES"
+msgstr "MENTETT JÁTÉKOK"
+
+msgid "PICTURE AND CONTROL"
+msgstr "KÉP ÉS VEZÉRLÉS"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "MOONLIGHT JÁTÉKSTREAMELÉS"
+
+msgid "MORE"
+msgstr "TOVÁBBI"
+
+msgid "PLAY STATISTICS"
+msgstr "JÁTÉKSTATISZTIKA"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "RENDSZERENKÉNTI BEÁLLÍTÁSOK"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "teljesítmény mód"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU és memória teljes sebességen játék közben"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "ISMERETLEN RENDSZER"
+
+msgid "EMULATOR"
+msgstr "EMULÁTOR"
+
+msgid "The emulator and core that run this."
+msgstr "Az emulátor és a mag, amely ezt futtatja."
+
+msgid "SYSTEM OPTIONS"
+msgstr "RENDSZERBEÁLLÍTÁSOK"
+
+msgid "DISPLAY"
+msgstr "MEGJELENÍTÉS"
+
+msgid "GAMEPLAY"
+msgstr "JÁTÉKMENET"
+
+msgid "ACTIONS"
+msgstr "MŰVELETEK"
+
+msgid "RANDOM GAME"
+msgstr "VÉLETLEN JÁTÉK"
+
+msgid "COOLING PROFILE"
+msgstr "HŰTÉSI PROFIL"
+
+msgid "AGGRESSIVE"
+msgstr "AGRESSZÍV"
+
+msgid "MODERATE"
+msgstr "MÉRSÉKELT"
+
+msgid "QUIET"
+msgstr "CSENDES"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "CPU FREKVENCIASZABÁLYOZÓ"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GPU FREKVENCIASZABÁLYOZÓ"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "MANGOHUD FELÜLET"
+
+msgid "UNKNOWN GAME"
+msgstr "ISMERETLEN JÁTÉK"
+
+msgid "INVALID DATE"
+msgstr "ÉRVÉNYTELEN DÁTUM"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "A JÁTÉKOT NEM LEHETETT TÖRÖLNI"
+
+msgid "CONFIG"
+msgstr "KONFIGURÁCIÓ"
+
+msgid "CORE PROVIDED"
+msgstr "A MAG BIZTOSÍTJA"
+
+msgid "FULL"
+msgstr "TELJES"
+
+msgid "SQUARE PIXEL"
+msgstr "NÉGYZETES PIXEL"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "PANELBEÁLLÍTÁS"
+
+msgid "SCREEN & SOUND"
+msgstr "KÉPERNYŐ ÉS HANG"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "TÉTLEN"
+
+msgid "MONITORING"
+msgstr "FIGYELÉS"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "TÚLHAJTÁS ÉS FIGYELÉS"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "AKKUMULÁTOR ÉS TELJESÍTMÉNY"
+
+msgid "LIBRARY"
+msgstr "KÖNYVTÁR"
+
+msgid "CHECK LIBRARY"
+msgstr "KÖNYVTÁR ELLENŐRZÉSE"
+
+msgid "SAVE BACKUPS"
+msgstr "MENTÉSEK BIZTONSÁGI MÁSOLATA"
+
+msgid "LANGUAGE & TIME"
+msgstr "NYELV ÉS IDŐ"
+
+msgid "HOME MENU"
+msgstr "KEZDŐMENÜ"
+
+msgid "CHARGING"
+msgstr "TÖLTÉS"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "KÉPERNYŐ FÉNYEREJE"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "FELÜLÍRJAM AZ ÁLLAPOTMENTÉST?"
+
+msgid "LOAD STATE"
+msgstr "ÁLLAPOT BETÖLTÉSE"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "BETÖLTSEM AZ ÁLLAPOTMENTÉST? A NEM MENTETT HALADÁS ELVESZIK."
+
+msgid "RESUME"
+msgstr "FOLYTATÁS"
+
+msgid "QUIT GAME"
+msgstr "KILÉPÉS A JÁTÉKBÓL"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "BIZTOSAN KILÉPSZ A JÁTÉKBÓL?"
+
+msgid "AND MORE"
+msgstr "ÉS TÖBB"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "NEM TALÁLHATÓ PROBLÉMA"
+
+msgid "PROBLEMS FOUND"
+msgstr "PROBLÉMÁK TALÁLHATÓK"
+
+msgid "MISSING BIOS"
+msgstr "HIÁNYZÓ BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "ESETLEG SÉRÜLT FÁJLOK"
+
+msgid "DUPLICATES"
+msgstr "DUPLIKÁTUMOK"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "KÉP NÉLKÜLI JÁTÉKOK"
+
+msgid "NETWORK"
+msgstr "HÁLÓZAT"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "VEZÉRLŐ ÉS BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Csak fejlesztéshez: a menükeretrendszer minden widgetje."
+
+msgid "WIDGET DEMO"
+msgstr "WIDGET BEMUTATÓ"
+
+msgid "Unable to connect to server"
+msgstr "Nem sikerült csatlakozni a szerverhez"
+
+msgid "Succesfully paired with server"
+msgstr "A szerverrel való párosítás sikerült"
+
+msgid "QUIT CURRENT GAME"
+msgstr "JELENLEGI JÁTÉK BEZÁRÁSA"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "MOONLIGHT JÁTÉKOK FRISSÍTÉSE"
+
+msgid "PAIR WITH SERVER"
+msgstr "PÁROSÍTÁS A SZERVERREL"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "PÁROSÍTÁS MEGSZÜNTETÉSE A SZERVERREL"
+
+msgid "Unpaired and settings cleared"
+msgstr "A párosítás megszűnt, a beállítások törölve"
+
+msgid "Unpaired from server"
+msgstr "A szerverrel való párosítás megszűnt"
+
+msgid "SERVER IP"
+msgstr "SZERVER IP-CÍME"
+
+msgid "PAIRING PIN"
+msgstr "PÁROSÍTÓ PIN"
+
+msgid "HOST"
+msgstr "GAZDA"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "CSATLAKOZÁS NETPLAY JÁTÉKHOZ"
+
+msgid "NETPLAY NICKNAME"
+msgstr "NETPLAY BECENÉV"
+
+msgid "NETPLAY HOST"
+msgstr "NETPLAY GAZDA"
+
+msgid "NETPLAY PORT"
+msgstr "NETPLAY PORT"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Wi-Fi bekapcsolása..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Wi-Fi beállítási hiba"
+
+msgid "Wi-Fi is on"
+msgstr "A Wi-Fi be van kapcsolva"
+
+msgid "Wi-Fi is off"
+msgstr "A Wi-Fi ki van kapcsolva"
+
+msgid "Wi-Fi region updated"
+msgstr "A Wi-Fi régió frissítve"
+
+msgid "Please wait..."
+msgstr "Kérlek várj..."
+
+msgid "Local play mode updated"
+msgstr "A helyi játék mód frissítve"
+
+msgid "The service did not answer"
+msgstr "A szolgáltatás nem válaszolt"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "WI-FI HÁLÓZATOK"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "A rádiós szabályozást állítja be: a használható csatornákat."
+
+msgid "TRANSFER FILES"
+msgstr "FÁJLÁTVITEL"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Játékok küldése a konzolra telefonról vagy számítógépről ebben a hálózatban."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "ELÉRHETŐ IP-CÍMEK:"
+
+msgid "LOCAL PLAY"
+msgstr "HELYI JÁTÉK"
+
+msgid "LOCAL PLAY MODE"
+msgstr "HELYI JÁTÉK MÓD"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Hozzáférési pontot hoz létre netplayhez más konzolokkal."
+
+msgid "1 (HOST)"
+msgstr "1 (GAZDA)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (KLIENS 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (KLIENS 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (KLIENS 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "HELYI JÁTÉK AZONOSÍTÓ"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, felhő, VPN és a konzol neve."
+
+msgid "NETWORK SERVICES"
+msgstr "HÁLÓZATI SZOLGÁLTATÁSOK"
+
+msgid "ENABLE SSH"
+msgstr "SSH ENGEDÉLYEZÉSE"
+
+msgid "SSH is off"
+msgstr "Az SSH ki van kapcsolva"
+
+msgid "SSH is on"
+msgstr "Az SSH be van kapcsolva"
+
+msgid "Remote access to the console over the network."
+msgstr "Távoli hozzáférés a konzolhoz a hálózaton keresztül."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "EGYSZERŰ HTTP-SZERVER ENGEDÉLYEZÉSE"
+
+msgid "HTTP server is off"
+msgstr "A HTTP-szerver ki van kapcsolva"
+
+msgid "HTTP server is on"
+msgstr "A HTTP-szerver be van kapcsolva"
+
+msgid "FILE TRANSFER"
+msgstr "FÁJLÁTVITEL"
+
+msgid "USB GADGET FUNCTION"
+msgstr "USB GADGET FUNKCIÓ"
+
+msgid "USB networking is on. The console is at"
+msgstr "Az USB-hálózat be van kapcsolva. A konzol címe:"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Mit kínál a konzol az USB-C portján."
+
+msgid "CLOUD SERVICES"
+msgstr "FELHŐSZOLGÁLTATÁSOK"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "FELHŐMEGHAJTÓ CSATLAKOZTATÁSA"
+
+msgid "Cloud drive mounted"
+msgstr "A felhőmeghajtó csatlakoztatva"
+
+msgid "Cloud drive unmounted"
+msgstr "A felhőmeghajtó leválasztva"
+
+msgid "VPN SERVICES"
+msgstr "VPN-SZOLGÁLTATÁSOK"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD VPN"
+
+msgid "WireGuard is off"
+msgstr "A WireGuard ki van kapcsolva"
+
+msgid "WireGuard is on"
+msgstr "A WireGuard be van kapcsolva"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE VPN"
+
+msgid "Tailscale is off"
+msgstr "A Tailscale ki van kapcsolva"
+
+msgid "Tailscale is on"
+msgstr "A Tailscale be van kapcsolva"
+
+msgid "Tailscale could not connect"
+msgstr "A Tailscale nem tudott csatlakozni"
+
+msgid "Tailscale needs you to log in"
+msgstr "A Tailscale bejelentkezést igényel"
+
+msgid "SHOW LINK"
+msgstr "HIVATKOZÁS MEGJELENÍTÉSE"
+
+msgid "TAILSCALE LOGIN"
+msgstr "TAILSCALE BEJELENTKEZÉS"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "TAILSCALE ÚJRAHITELESÍTÉS:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Csak betűk, számjegyek és kötőjelek használhatók"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "A gépnév mentve. A következő indításkor lép érvénybe"
+
+msgid "The new name is used at the next boot."
+msgstr "Az új nevet a következő indításkor használja."
+
+msgid "WEB FILE TRANSFER"
+msgstr "WEBES FÁJLÁTVITEL"
+
+msgid "Could not start the web transfer"
+msgstr "A webes átvitelt nem lehetett elindítani"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Lehetővé teszi, hogy egy telefon vagy számítógép ebben a hálózatban játékokat küldjön a konzolra."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "NEM LEHETETT ELINDÍTANI (FOGLALT PORT?)"
+
+msgid "WEB ADDRESS"
+msgstr "WEBCÍM"
+
+msgid "WEB PIN"
+msgstr "WEB PIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "HÁLÓZATI MEGHAJTÓ (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "SAMBA ENGEDÉLYEZÉSE"
+
+msgid "Samba is off"
+msgstr "A Samba ki van kapcsolva"
+
+msgid "Samba is on"
+msgstr "A Samba be van kapcsolva"
+
+msgid "Shares the games folder with other computers."
+msgstr "Megosztja a játékmappát más számítógépekkel."
+
+msgid "SAMBA ADDRESS"
+msgstr "SAMBA CÍM"
+
+msgid "SAMBA USER"
+msgstr "SAMBA FELHASZNÁLÓ"
+
+msgid "SAMBA PASSWORD"
+msgstr "SAMBA JELSZÓ"
+
+msgid "Connecting to"
+msgstr "Csatlakozás ide:"
+
+msgid "Connected successfully"
+msgstr "Sikeresen csatlakozva"
+
+msgid "Failed to connect"
+msgstr "A csatlakozás sikertelen"
+
+msgid "SAVED"
+msgstr "MENTVE"
+
+msgid "ENTERPRISE"
+msgstr "VÁLLALATI"
+
+msgid "SECURED"
+msgstr "VÉDETT"
+
+msgid "Enterprise networks are not supported"
+msgstr "A vállalati hálózatok nem támogatottak"
+
+msgid "Network forgotten"
+msgstr "A hálózat elfelejtve"
+
+msgid "WI-FI KEY FOR "
+msgstr "WI-FI KULCS ELEMHEZ: "
+
+msgid "CONNECTING..."
+msgstr "CSATLAKOZÁS..."
+
+msgid "WI-FI SSID"
+msgstr "WI-FI SSID"
+
+msgid "WI-FI KEY"
+msgstr "WI-FI KULCS"
+
+msgid "REALLY SUSPEND ?"
+msgstr "BIZTOSAN FELFÜGGESZTED?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "BIZTOSAN LEÁLLÍTOD?"
+
+msgid "REALLY RESTART?"
+msgstr "BIZTOSAN ÚJRAINDÍTOD?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "BIZTOSAN ÚJRAINDÍTOD A FELÜLETET?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "FELÜLET ÚJRAINDÍTÁSA"
+
+msgid "TEST ACCOUNT"
+msgstr "FIÓK TESZTELÉSE"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Ellenőrzi a felhasználónevet és a jelszót a retroachievements.org oldalon."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "CSATLAKOZÁS A RETROACHIEVEMENTS-HEZ"
+
+msgid "LOGGED IN"
+msgstr "BEJELENTKEZVE"
+
+msgid "LED NOTIFICATIONS"
+msgstr "LED ÉRTESÍTÉSEK"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "A RetroAchievements sor megjelenítése a főmenüben."
+
+msgid "NO SAVES FOUND"
+msgstr "NEM TALÁLHATÓ MENTÉS"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "NINCS ELÉG SZABAD HELY"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "MÁR LÉTEZIK BIZTONSÁGI MÁSOLAT ERRŐL A PERCRŐL"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "A BIZTONSÁGI MÁSOLAT SÉRÜLT VAGY HIÁNYZIK"
+
+msgid "BACKUP DONE"
+msgstr "BIZTONSÁGI MÁSOLAT KÉSZ"
+
+msgid "SAVES RESTORED"
+msgstr "MENTÉSEK VISSZAÁLLÍTVA"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "FELHŐBE MENTÉS KÉSZ"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "A FELHŐBE MENTÉS SIKERTELEN"
+
+msgid "BEFORE A RESTORE"
+msgstr "VISSZAÁLLÍTÁS ELŐTT"
+
+msgid "BACK UP SAVES NOW"
+msgstr "MENTÉSEK BIZTONSÁGI MÁSOLATA MOST"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "JÁTÉKMENTÉSEK, ÁLLAPOTMENTÉSEK ÉS PSP-MENTÉSEK, ROM-OK ÉS MÉDIA NÉLKÜL"
+
+msgid "CLOUD BACKUP"
+msgstr "FELHŐBE MENTÉS"
+
+msgid "BACKUPS"
+msgstr "BIZTONSÁGI MÁSOLATOK"
+
+msgid "NO BACKUPS YET"
+msgstr "MÉG NINCS BIZTONSÁGI MÁSOLAT"
+
+msgid "BACKUP DELETED"
+msgstr "A BIZTONSÁGI MÁSOLAT TÖRÖLVE"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "EZ FELÜLÍRJA A JELENLEGI MENTÉSEIDET A(Z) %s MENTÉSEIVEL. ELŐTTE KÉSZÜL EGY BIZTONSÁGI MÁSOLAT A JELENLEGI MENTÉSEKRŐL."
+
+msgid "RESTORE"
+msgstr "VISSZAÁLLÍTÁS"
+
+msgid "DELETE BACKUP"
+msgstr "BIZTONSÁGI MÁSOLAT TÖRLÉSE"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "TÖRLÖD EZT A BIZTONSÁGI MÁSOLATOT?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "EZ A VERZIÓ NEM ÉRI EL A SCREENSCRAPERT"
+
+msgid "ALL GAMES"
+msgstr "ÖSSZES JÁTÉK"
+
+msgid "GAMES TO SCRAPE"
+msgstr "SCRAPELENDŐ JÁTÉKOK"
+
+msgid "WITH MISSING MEDIA"
+msgstr "HIÁNYZÓ MÉDIÁVAL"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "MÉDIA NÉLKÜL"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "A kiválasztott rendszerek mely játékait keresse."
+
+msgid "1 DAY"
+msgstr "1 NAP"
+
+msgid "1 MONTH"
+msgstr "1 HÓNAP"
+
+msgid "1 WEEK"
+msgstr "1 HÉT"
+
+msgid "1 YEAR"
+msgstr "1 ÉV"
+
+msgid "15 DAYS"
+msgstr "15 NAP"
+
+msgid "3 MONTHS"
+msgstr "3 HÓNAP"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Az ezen az időn belül scrapelt játékok kimaradnak, így kevesebb kérés kell."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "HIÁNYZÓ MÉDIA AUTOMATIKUS LETÖLTÉSE"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Tétlen állapotban a háttérben letölti a hiányzó borítókat."
+
+msgid "SCRAPER SETTINGS"
+msgstr "SCRAPER BEÁLLÍTÁSOK"
+
+msgid "ACCOUNT"
+msgstr "FIÓK"
+
+msgid "Choose at least one system."
+msgstr "Válassz legalább egy rendszert."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "A ScreenScraperen keresi a játékokat."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "NINCS OLYAN RENDSZER, AMELYNEK JÁTÉKAIT A SCREENSCRAPER ISMERI"
+
+msgid "PICTURES"
+msgstr "KÉPEK"
+
+msgid "IMAGE"
+msgstr "KÉP"
+
+msgid "BOX FRONT"
+msgstr "DOBOZ ELEJE"
+
+msgid "TITLE SCREEN"
+msgstr "CÍMKÉPERNYŐ"
+
+msgid "The main picture of each game."
+msgstr "Minden játék fő képe."
+
+msgid "THUMBNAIL"
+msgstr "BEMUTATÓKÉP"
+
+msgid "The small picture of each game."
+msgstr "Minden játék kis képe."
+
+msgid "LOGO"
+msgstr "LOGÓ"
+
+msgid "The logo of each game."
+msgstr "Minden játék logója."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "TELJES MÉRET"
+
+msgid "IMAGE SIZE"
+msgstr "KÉPMÉRET"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "A ScreenScraper elküldés előtt kicsinyíti a képeket: gyorsabb és könnyebb."
+
+msgid "AUTOMATIC"
+msgstr "AUTOMATIKUS"
+
+msgid "BRAZIL"
+msgstr "BRAZÍLIA"
+
+msgid "EUROPE"
+msgstr "EURÓPA"
+
+msgid "FRANCE"
+msgstr "FRANCIAORSZÁG"
+
+msgid "GERMANY"
+msgstr "NÉMETORSZÁG"
+
+msgid "ITALY"
+msgstr "OLASZORSZÁG"
+
+msgid "JAPAN"
+msgstr "JAPÁN"
+
+msgid "SPAIN"
+msgstr "SPANYOLORSZÁG"
+
+msgid "USA"
+msgstr "USA"
+
+msgid "WORLD"
+msgstr "VILÁG"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "A nevek, dátumok és képek előnyben részesített régiója."
+
+msgid "NAMES"
+msgstr "NEVEK"
+
+msgid "Replace the names of the games."
+msgstr "A játékok nevének cseréje."
+
+msgid "DESCRIPTIONS"
+msgstr "LEÍRÁSOK"
+
+msgid "Replace the descriptions."
+msgstr "A leírások cseréje."
+
+msgid "Download the rating of each game."
+msgstr "Minden játék értékelésének letöltése."
+
+msgid "RATINGS"
+msgstr "ÉRTÉKELÉSEK"
+
+msgid "EXTRA MEDIA"
+msgstr "TOVÁBBI MÉDIA"
+
+msgid "VIDEOS"
+msgstr "VIDEÓK"
+
+msgid "Videos are big and take longer to download."
+msgstr "A videók nagyok és tovább tart a letöltésük."
+
+msgid "MANUALS"
+msgstr "KÉZIKÖNYVEK"
+
+msgid "PDF manuals."
+msgstr "PDF kézikönyvek."
+
+msgid "MAPS"
+msgstr "TÉRKÉPEK"
+
+msgid "Maps of the game."
+msgstr "A játék térképei."
+
+msgid "Background pictures."
+msgstr "Háttérképek."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "DOBOZ HÁTULJA"
+
+msgid "The back of the box."
+msgstr "A doboz hátulja."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Csak az „Összes játék” esetén: a már meglévő képek újra letöltődnek."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "MEGLÉVŐ MÉDIA CSERÉJE"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Opcionális. Fiók nélkül a ScreenScraper nagyon kevés kérést enged."
+
+msgid "ArcadeDB needs no account."
+msgstr "Az ArcadeDB-hez nem kell fiók."
+
+msgid "Asks IGDB for an access token."
+msgstr "Hozzáférési tokent kér az IGDB-től."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Elkéri a ScreenScrapertől a korlátaidat."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "CSATLAKOZÁS A SCREENSCRAPERHEZ"
+
+msgid "ANONYMOUS"
+msgstr "NÉVTELEN"
+
+msgid "LOGIN"
+msgstr "BEJELENTKEZÉS"
+
+msgid "REQUESTS TODAY"
+msgstr "MAI KÉRÉSEK"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "KÉRÉSEK PERCENKÉNT"
+
+msgid "STOP"
+msgstr "LEÁLLÍTÁS"
+
+msgid "SCROLL"
+msgstr "GÖRGETÉS"
+
+msgid "SCRAPE COMPLETE"
+msgstr "SCRAPE KÉSZ"
+
+msgid "SCRAPE STOPPED"
+msgstr "SCRAPE LEÁLLÍTVA"
+
+msgid "FOUND"
+msgstr "MEGTALÁLVA"
+
+msgid "NOT FOUND"
+msgstr "NEM TALÁLHATÓ"
+
+msgid "ERRORS"
+msgstr "HIBÁK"
+
+msgid "MEDIA FILES"
+msgstr "MÉDIAFÁJLOK"
+
+msgid "READING GAME LISTS"
+msgstr "JÁTÉKLISTÁK OLVASÁSA"
+
+msgid "STOPPING"
+msgstr "LEÁLLÍTÁS FOLYAMATBAN"
+
+msgid "SECONDS"
+msgstr "MÁSODPERC"
+
+msgid "WAITING"
+msgstr "VÁRAKOZÁS"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "LEÁLLÍTVA. AMI ELKÉSZÜLT, MENTVE VAN"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "NINCS SCRAPELHETŐ JÁTÉK EZEKKEL A SZŰRŐKKEL"
+
+msgid "GAMES"
+msgstr "JÁTÉKOK"
+
+msgid "PROBLEMS"
+msgstr "PROBLÉMÁK"
+
+msgid "MEDIA MISSING"
+msgstr "HIÁNYZÓ MÉDIA"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "KAPCSOLÓK ÉS CSÚSZKÁK"
+
+msgid "The clock shows in the top right corner."
+msgstr "Az óra a jobb felső sarokban látható."
+
+msgid "Volume saved"
+msgstr "Hangerő mentve"
+
+msgid "LISTS AND TEXT"
+msgstr "LISTÁK ÉS SZÖVEG"
+
+msgid "TEXT"
+msgstr "SZÖVEG"
+
+msgid "WI-FI PASSWORD"
+msgstr "WI-FI JELSZÓ"
+
+msgid "SHOW A TOAST"
+msgstr "ÉRTESÍTÉS MEGJELENÍTÉSE"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi csatlakoztatva: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "HANGERŐSÁV MEGJELENÍTÉSE"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "FÉNYERŐSÁV MEGJELENÍTÉSE"
+
+msgid "ASK A QUESTION"
+msgstr "KÉRDÉS FELTEVÉSE"
+
+msgid "Delete all saved states of this game?"
+msgstr "Törlöd a játék összes mentett állapotát?"
+
+msgid "SHOW A MESSAGE"
+msgstr "ÜZENET MEGJELENÍTÉSE"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "A frissítés telepítve lett. Indítsd újra a konzolt a használatához."
+
+msgid "Restart the system now?"
+msgstr "Újraindítod most a rendszert?"
+
+msgid "Restarting..."
+msgstr "Újraindítás..."
+
+msgid "DISABLED ENTRY"
+msgstr "LETILTOTT ELEM"
+
+msgid "SELECTOR STYLE"
+msgstr "KIJELÖLŐ STÍLUSA"
+
+msgid "TITLE ALIGNMENT"
+msgstr "CÍM IGAZÍTÁSA"
+
+msgid "LIST TEXT CASE"
+msgstr "LISTA BETŰTÍPUSA"
+
+msgid "TEXT SIZE"
+msgstr "SZÖVEGMÉRET"
+
+msgid "HIGH CONTRAST"
+msgstr "MAGAS KONTRASZT"
+
+msgid "options"
+msgstr "lehetőségek"
+
+msgid "AUDIO"
+msgstr "HANG"
+
+msgid "Could not change the audio output"
+msgstr "A hangkimenetet nem lehetett módosítani"
+
+msgid "BATTERY WARNING"
+msgstr "AKKUMULÁTOR FIGYELMEZTETÉS"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "HANGOS AKKUMULÁTOR-FIGYELMEZTETÉS ENGEDÉLYEZÉSE"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "AKKUMULÁTOR-FIGYELMEZTETÉS KÜSZÖBE"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Ezt a játékot indítja a konzol indulásakor, a menük előtt, indításonként egyszer."
+
+msgid "Reboot now"
+msgstr "Újraindítás most"
+
+msgid "Later"
+msgstr "Később"
+
+msgid "Default"
+msgstr "Alapértelmezett"
+
+msgid "Arm (official)"
+msgstr "Arm (hivatalos)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Nyílt forráskódú (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "MAI HÁTRALÉVŐ IDŐ"
+
+msgid "UPTIME"
+msgstr "ÜZEMIDŐ"
+
+msgid "No information available"
+msgstr "Nincs elérhető információ"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "RENDSZERKEZELÉS ÉS VISSZAÁLLÍTÁS"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr "BIZTOSAN?\n\nEZ NEM VONHATÓ VISSZA."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "KONFIGURÁCIÓK BIZTONSÁGI MÁSOLATA"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr "FIGYELEM: EZ ÚJRAINDÍTJA A FELÜLETET!\n\nA SZKRIPT BEFEJEZÉSE UTÁN NE FELEJTSD EL ÁTMÁSOLNI A /storage/roms/backup/ROCKNIX_BACKUP.zip FÁJLT EGY BIZTONSÁGOS HELYRE, KÜLÖNBEN A KÖVETKEZŐ ÚJRAINDÍTÁSKOR TÖRLŐDIK!\n\nMENTSEM A JELENLEGI KONFIGURÁCIÓT ÉS INDÍTSAM ÚJRA?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "VISSZAÁLLÍTÁS BIZTONSÁGI MÁSOLATBÓL"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr "FIGYELEM: EZ ÚJRAINDÍTJA AZ ESZKÖZT!\n\nA MEGLÉVŐ KONFIGURÁCIÓ FELÜLÍRÓDIK!\n\nVISSZAÁLLÍTSAM A BIZTONSÁGI MÁSOLATBÓL ÉS ÚJRAINDÍTSAM?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "EMULÁTORKEZELÉS"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "RETROARCH KONFIGURÁCIÓ VISSZAÁLLÍTÁSA ALAPÉRTELMEZETTRE"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr "FIGYELEM: A RETROARCH KONFIGURÁCIÓ ALAPÉRTELMEZETTRE ÁLL VISSZA\n\nA MAGONKÉNTI KONFIGURÁCIÓKAT NEM ÉRINTI, ÉS NEM KÉSZÜL BIZTONSÁGI MÁSOLAT!\n\nVISSZAÁLLÍTSAM A RETROARCH KONFIGURÁCIÓT ALAPÉRTELMEZETTRE?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "OVERLAYEK VISSZAÁLLÍTÁSA (MAGOK, CSALÁSOK, JOYPADEK STB.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr "FIGYELEM: AZ ÖSSZES EGYÉNI RETROARCH OVERLAY ELTÁVOLÍTÁSRA KERÜL\n\nEGYÉNI MAGOK, JOYSTICKOK, CSALÁSOK STB. NEM KÉSZÜL BIZTONSÁGI MÁSOLAT!\n\nVISSZAÁLLÍTSAM A RETROARCH OVERLAYEKET ALAPÉRTELMEZETTRE?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "RETROARCH TELJES VISSZAÁLLÍTÁSA"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr "FIGYELEM: A RETROARCH ÉS AZ ÖSSZES FELHASZNÁLÓI MENTETT KONFIGURÁCIÓ ALAPÉRTELMEZETTRE ÁLL VISSZA\n\nA MAGONKÉNTI KONFIGURÁCIÓK ELTÁVOLÍTÁSRA KERÜLNEK, ÉS NEM KÉSZÜL BIZTONSÁGI MÁSOLAT!\n\nVISSZAÁLLÍTSAM A RETROARCHOT?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "MEDNAFEN KONFIGURÁCIÓ VISSZAÁLLÍTÁSA ALAPÉRTELMEZETTRE"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr "FIGYELEM: A MEDNAFEN KONFIGURÁCIÓ ALAPÉRTELMEZETTRE ÁLL VISSZA\n\nNEM KÉSZÜL BIZTONSÁGI MÁSOLAT!\n\nVISSZAÁLLÍTSAM A MEDNAFEN KONFIGURÁCIÓT ALAPÉRTELMEZETTRE?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "ÖNÁLLÓ EMULÁTOROK KONFIGURÁCIÓJÁNAK VISSZAÁLLÍTÁSA ALAPÉRTELMEZETTRE"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr "FIGYELEM: AZ ÖNÁLLÓ EMULÁTOROK KONFIGURÁCIÓI ALAPÉRTELMEZETTRE ÁLLNAK VISSZA\n\nNEM KÉSZÜL BIZTONSÁGI MÁSOLAT!\n\nVISSZAÁLLÍTSAM AZ ÖNÁLLÓ EMULÁTOROK KONFIGURÁCIÓIT ALAPÉRTELMEZETTRE?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "PORTMASTER TELJES VISSZAÁLLÍTÁSA"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr "FIGYELEM: A PORTMASTER ALAPÉRTELMEZETTRE ÁLL VISSZA\n\nNEM KÉSZÜL BIZTONSÁGI MÁSOLAT!\n\nVISSZAÁLLÍTSAM A PORTMASTERT ALAPÉRTELMEZETTRE?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "RENDSZERKEZELÉS"
+
+msgid "AUDIO RESET"
+msgstr "HANG VISSZAÁLLÍTÁSA"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr "FIGYELEM: A HANGBEÁLLÍTÁSOK ALAPÉRTELMEZETTRE ÁLLNAK VISSZA, ÉS A RENDSZER ÚJRAINDUL!\n\nVISSZAÁLLÍTSAM A HANGOT ÉS ÚJRAINDÍTSAM?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "AKKUMULÁTOR-TÖLTÖTTSÉGMÉRŐ VISSZAÁLLÍTÁSA"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr "FIGYELEM: A PMIC TÖLTÖTTSÉGMÉRŐJE VISSZAÁLLÍTÁSRA KERÜL, ÉS A RENDSZER KIKAPCSOL!\n\nHAGYD A TÖLTŐT KIHÚZVA, ÉS PÁR MÁSODPERC MÚLVA KAPCSOLD BE ÚJRA AZ ESZKÖZT. AZ AKKUMULÁTOR SZINTJÉT A NYUGALMI FESZÜLTSÉGBŐL BECSLI ÚJRA, ÉS EGY TELJES TÖLTÉS UTÁN VÁLIK ISMÉT PONTOSSÁ.\n\nVISSZAÁLLÍTSAM A TÖLTÖTTSÉGMÉRŐT ÉS KAPCSOLJAM KI?"
+
+msgid "FACTORY RESET"
+msgstr "GYÁRI VISSZAÁLLÍTÁS"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr "FIGYELEM: AZ ADATAID ÉS AZ ÖSSZES TÖBBI KONFIGURÁCIÓ ALAPÉRTELMEZETTRE ÁLL VISSZA!\n\nHA MEG SZERETNÉD TARTANI A BEÁLLÍTÁSAIDAT, KÉSZÍTS BIZTONSÁGI MÁSOLATOT ÉS MENTSD EGY KÜLSŐ MEGHAJTÓRA, MIELŐTT EZT FUTTATOD!\n\nVEDD KI A JÁTÉKKÁRTYÁT A FOLYTATÁS ELŐTT!\n\nVISSZAÁLLÍTSAM A RENDSZERT ÉS ÚJRAINDÍTSAM?"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Válaszd ki a billentyűzetváltozatot a kiválasztott kiosztáshoz (például holt billentyűk vagy alternatív billentyűelrendezés)."
+
+msgid "TIMEZONE"
+msgstr "IDŐZÓNA"
+
+msgid "Run welcome again"
+msgstr "Üdvözlő képernyő újra"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Újra megjeleníti az első indításkor látott üdvözlőt: nyelv, WiFi és időzóna."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "MANGOHUD FELÜLET ENGEDÉLYEZÉSE"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "ÉRINTŐKÉPERNYŐS BILLENTYŰZET ENGEDÉLYEZÉSE"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "ROCKNIX KÉPERNYŐKÉP ENGEDÉLYEZÉSE"
+
+msgid "SCREEN"
+msgstr "KÉPERNYŐ"
+
+msgid "CONTRAST"
+msgstr "KONTRASZT"
+
+msgid "GAMMA"
+msgstr "GAMMA"
+
+msgid "HUE"
+msgstr "ÁRNYALAT"
+
+msgid "SATURATION"
+msgstr "TELÍTETTSÉG"
+
+msgid "LEDS"
+msgstr "LED-EK"
+
+msgid "DISABLE POWER LED"
+msgstr "TÁPELLÁTÁS LED KIKAPCSOLÁSA"
+
+msgid "LED COLOR"
+msgstr "LED SZÍNE"
+
+msgid "JOYSTICK LED"
+msgstr "JOYSTICK LED"
+
+msgid "MAX"
+msgstr "MAX"
+
+msgid "MID"
+msgstr "KÖZ"
+
+msgid "MIN"
+msgstr "MIN"
+
+msgid "THIS DEVICE IS"
+msgstr "EZ AZ ESZKÖZ:"
+
+msgid "Device will be switched on next reboot"
+msgstr "Az eszköz a következő újraindításkor vált át"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "JÁTÉKKÁRTYA AUTOMATIKUS FELISMERÉSE"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "EGYESÍTETT TÁROLÓ ENGEDÉLYEZÉSE"
+
+msgid "EXTERNAL"
+msgstr "KÜLSŐ"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "EGYESÍTETT TÁROLÓ ELSŐDLEGES KÁRTYÁJA"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "FIGYELEM: AZ ELSŐDLEGES KÁRTYA MÓDOSÍTÁSA A JÁTÉKOKHOZ VALÓ HOZZÁFÉRÉS ELVESZTÉSÉHEZ VEZETHET, ÉS KÉZI BEAVATKOZÁS KELL A JAVÍTÁSHOZ. FOLYTATOD?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "MICROSD KÁRTYA KIADÁSA"
+
+msgid "You may now remove the card."
+msgstr "Most már kiveheted a kártyát."
+
+msgid "PERFORMANCE"
+msgstr "TELJESÍTMÉNY"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "ALAPÉRTELMEZETT FREKVENCIASZABÁLYOZÓ"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "ALAPÉRTELMEZETT GPU FREKVENCIASZABÁLYOZÓ"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "CPU TÚLHAJTÁS ENGEDÉLYEZÉSE"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "GPU TÚLHAJTÁS ENGEDÉLYEZÉSE"
+
+msgid "GPU DRIVER"
+msgstr "GPU-ILLESZTŐPROGRAM"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "A GPU-illesztőprogram a következő újraindításkor vált át"
+
+msgid "Restarting to apply the theme"
+msgstr "Újraindítás a téma alkalmazásához"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "A felület újraindul a téma alkalmazásához"
+
+msgid "Dark"
+msgstr "Sötét"
+
+msgid "Light"
+msgstr "Világos"
+
+msgid "Theme default"
+msgstr "A téma alapértelmezése"
+
+msgid "Filled"
+msgstr "Kitöltött"
+
+msgid "Outline"
+msgstr "Körvonal"
+
+msgid "Side bar"
+msgstr "Oldalsáv"
+
+msgid "Underline"
+msgstr "Aláhúzás"
+
+msgid "Centered"
+msgstr "Középre"
+
+msgid "Left"
+msgstr "Balra"
+
+msgid "Lowercase"
+msgstr "Kisbetű"
+
+msgid "Uppercase"
+msgstr "Nagybetű"
+
+msgid "EXTRA LARGE"
+msgstr "EXTRA NAGY"
+
+msgid "LARGE"
+msgstr "NAGY"
+
+msgid "SMALL"
+msgstr "KICSI"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "A szöveg mérete a menükben, párbeszédablakokban és súgósávokban"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Tiszta fehér vagy fekete szöveg, tömör panelek és vastagabb kijelölő"
+
+msgid "CONTROL OPTIONS"
+msgstr "VEZÉRLÉSI BEÁLLÍTÁSOK"
+
+msgid "TOP BAR"
+msgstr "FELSŐ SÁV"
+
+msgid "BEDSIDE CLOCK"
+msgstr "ÉJJELI ÓRA"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Csatlakoztatott töltővel, ennyi idő érintés nélkül után nagy órát mutat a képernyővédő helyett. Bármely gomb bezárja. Soha nem jelenik meg, amíg játék van megnyitva."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "A LETÖLTÉST NEM LEHETETT MEGSZAKÍTANI"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "LETÖLTÉS MEGSZAKÍTVA"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "A FRISSÍTÉST NEM LEHETETT LETÖLTENI. ELLENŐRIZD A KAPCSOLATOT, ÉS PRÓBÁLD ÚJRA."
+
+msgid "No update source available"
+msgstr "Nincs elérhető frissítési forrás"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "KÖVETKEZŐ FRISSÍTÉS ERŐLTETÉSE"
+
+msgid "UPDATING"
+msgstr "FRISSÍTÉS"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "LETÖLTÉS MEGSZAKÍTÁSA"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "MEGSZAKÍTOD A LETÖLTÉST? A RÉSZLEGES FÁJL TÖRLŐDIK."
+
+msgid "Checking..."
+msgstr "Ellenőrzés..."
+
+msgid "available"
+msgstr "elérhető"
+
+msgid "SKIP ALL"
+msgstr "MINDEN KIHAGYÁSA"
+
+msgid "Welcome"
+msgstr "Üdvözlünk"
+
+msgid "of"
+msgstr "/"
+
+msgid "Choose your language"
+msgstr "Válaszd ki a nyelvet"
+
+msgid "Language"
+msgstr "Nyelv"
+
+msgid "You can change it later in System."
+msgstr "Később módosíthatod a Rendszer menüben."
+
+msgid "Connect to WiFi"
+msgstr "Csatlakozás WiFi-hez"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Óra, frissítések és fájlátvitel."
+
+msgid "Continue"
+msgstr "Tovább"
+
+msgid "Not now"
+msgstr "Most nem"
+
+msgid "Choose a network"
+msgstr "Válassz hálózatot"
+
+msgid "Choose another network"
+msgstr "Válassz másik hálózatot"
+
+msgid "Where are you?"
+msgstr "Hol vagy?"
+
+msgid "Time zone"
+msgstr "Időzóna"
+
+msgid "Sets your local time."
+msgstr "Beállítja a helyi időt."
+
+msgid "Keep UTC"
+msgstr "UTC megtartása"
+
+msgid "LOADING..."
+msgstr "BETÖLTÉS..."
+
+msgid "All set"
+msgstr "Minden kész"
+
+msgid "Add games from your phone"
+msgstr "Adj hozzá játékokat a telefonodról"
+
+msgid "Network"
+msgstr "Hálózat"
+
+msgid "Start opens the menu"
+msgstr "A Start megnyitja a menüt"
+
+msgid "anywhere"
+msgstr "bárhol"
+
+msgid "Screen looks wrong?"
+msgstr "Rosszul néz ki a kijelző?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Játék indítása"
+
+msgid "PLAY THEME MUSIC"
+msgstr "TÉMAZENE LEJÁTSZÁSA"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "NINCS HÁLÓZATI KAPCSOLAT"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "AKKUMULÁTORHASZNÁLAT (TELJES TÖLTÉS)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "TELJES JÁTÉKIDŐ"
+
+msgid "LAST FIVE WEEKS"
+msgstr "UTOLSÓ ÖT HÉT"
+
+msgid "2 WEEKS AGO"
+msgstr "2 HETE"
+
+msgid "3 WEEKS AGO"
+msgstr "3 HETE"
+
+msgid "4 WEEKS AGO"
+msgstr "4 HETE"
+
+msgid "THIS WEEK"
+msgstr "EZ A HÉT"
+
+msgid "MOST PLAYED GAMES"
+msgstr "LEGTÖBBET JÁTSZOTT JÁTÉKOK"
+
+msgid "TIME PER SYSTEM"
+msgstr "IDŐ RENDSZERENKÉNT"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "MÉG NEM JÁTSZOTTÁL SEMMIT. JÁTSSZ EGY JÁTÉKKAL, ÉS ITT FOG MEGJELENNI."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Ma már csak %d perc játékidő maradt"
+msgstr[1] "Ma már csak %d perc játékidő maradt"
+
+msgid "Power saver on"
+msgstr "Energiatakarékos mód bekapcsolva"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "VÁRATLAN VÁLASZ A RETROACHIEVEMENTSTŐL"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "EBBEN A VERZIÓBAN NEM ELÉRHETŐ"
+
+msgid "%i min ago"
+msgstr "%i perce"
+
+msgid "%i h ago"
+msgstr "%i órája"
+
+msgid "%i d ago"
+msgstr "%i napja"
+
+msgid "CONTINUE PLAYING"
+msgstr "JÁTÉK FOLYTATÁSA"
+
+msgid "START NOW"
+msgstr "INDÍTÁS MOST"
+
+msgid "RESUMING"
+msgstr "FOLYTATÁS"
+
+msgid "STARTING IN %i"
+msgstr "INDÍTÁS %i MÁSODPERC MÚLVA"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hackek"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Függőleges"
+
+msgid "recently added"
+msgstr "nemrég hozzáadott"
+
+msgid "unfinished"
+msgstr "befejezetlen"
+
+msgid "most played this week"
+msgstr "a legtöbbet játszott a héten"
+
+msgid "BOOKS"
+msgstr "KÖNYVEK"
+
+msgid "screenshots"
+msgstr "képernyőképek"
+
+msgid "media player"
+msgstr "médialejátszó"
+
+msgid "NETWORK ERROR"
+msgstr "HÁLÓZATI HIBA"
+
+msgid "SERVER BUSY"
+msgstr "A SZERVER FOGLALT"
+
+msgid "SERVER ERROR"
+msgstr "SZERVERHIBA"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "A GAMELIST NEM ÍRHATÓ"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "A BEJELENTKEZÉS SIKERTELEN. ELLENŐRIZD A FELHASZNÁLÓNEVET ÉS A JELSZÓT"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "A SCREENSCRAPER JELENLEG ZÁRVA VAN EZ ELŐL A FIÓK ELŐL"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "A SCREENSCRAPER KARBANTARTÁS ALATT ÁLL"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "A SCREENSCRAPER BLOKKOLJA EZT A SZOFTVERT"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "A NAPI SCRAPE-KERET ELFOGYOTT. PRÓBÁLD ÚJRA HOLNAP"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "MA TÚL SOK FELISMERHETETLEN ROM. PRÓBÁLD ÚJRA HOLNAP"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "NINCS TÖBB HELY A KÁRTYÁN"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "ELŐSZÖR ADD MEG AZ IGDB CLIENT ID-T ÉS A SECRETET A FIÓKNÁL"
+
+msgid "SCRAPING STOPPED"
+msgstr "A SCRAPE LEÁLLT"
+
+msgid "GAME NOT FOUND"
+msgstr "A JÁTÉK NEM TALÁLHATÓ"
+
+msgid "NO OTHER GAME"
+msgstr "NINCS MÁS JÁTÉK"
+
+msgid "Time is up for today"
+msgstr "A mai idő lejárt"
+
+msgid "ACCENTS"
+msgstr "ÉKEZETEK"
+
+msgid "SHOW"
+msgstr "MEGJELENÍTÉS"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "VIDEÓELŐNÉZETEK MEGJELENÍTÉSE"
+
+msgid "Device paired"
+msgstr "Eszköz párosítva"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "ENGEDÉLYEZED EZT AZ ESZKÖZT?"
+
+msgid "RECEIVED"
+msgstr "FOGADVA"
+
+msgid "QR CODE"
+msgstr "QR-KÓD"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "ÉPPEN MOST"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d PERCE"
+msgstr[1] "%d PERCE"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d ÓRÁJA"
+msgstr[1] "%d ÓRÁJA"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d NAPJA"
+msgstr[1] "%d NAPJA"
+
+msgid "NO PAIRED DEVICES"
+msgstr "NINCS PÁROSÍTOTT ESZKÖZ"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "ELFELEJTED EZT AZ ESZKÖZT?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "MINDEN ESZKÖZ ELFELEJTÉSE"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "ELFELEJTED AZ ÖSSZES ESZKÖZT?"
+
+msgid "PAIRED DEVICES"
+msgstr "PÁROSÍTOTT ESZKÖZÖK"
+
+msgid "SHOW QR CODE"
+msgstr "QR-KÓD MEGJELENÍTÉSE"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Olvasd be a telefon kamerájával: az oldal megnyílik, és ismeri a PIN-kódot."
+
+msgid "Phones that need no PIN."
+msgstr "Telefonok, amelyeknek nem kell PIN."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "VISSZAÁLLÍTOD A MENTÉSEKET A WEBRŐL?"
+
+msgid "BUILD ID"
+msgstr "ÉPÍTÉSI AZONOSÍTÓ"
+
+msgid "KERNEL"
+msgstr "KERNEL"
+
+msgid "OPERATING SYSTEM"
+msgstr "OPERÁCIÓS RENDSZER"
+
+msgid "SYSTEM INFORMATION"
+msgstr "RENDSZERINFORMÁCIÓK"
+
+msgid "BATTERY INFORMATION"
+msgstr "AKKUMULÁTOR-INFORMÁCIÓK"
+
+msgid "DISK SPACE"
+msgstr "LEMEZTERÜLET"
+
+msgid "HOST NAME"
+msgstr "GÉPNÉV"
+
+msgid "NETWORK INFORMATION"
+msgstr "HÁLÓZATI INFORMÁCIÓK"
+
+msgid "BATTERY HEALTH"
+msgstr "AKKUMULÁTOR ÁLLAPOTA"
+
+msgid "BATTERY REMAINING"
+msgstr "HÁTRALÉVŐ AKKUMULÁTOR"
+
+msgid "BATTERY STATE"
+msgstr "AKKUMULÁTOR TÖLTÖTTSÉGE"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "CPU-INFORMÁCIÓK"
+
+msgid "CPU TEMPERATURE"
+msgstr "CPU-HŐMÉRSÉKLET"
+
+msgid "CPU FAN"
+msgstr "CPU-VENTILÁTOR"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "GPU AKTUÁLIS FREKVENCIA"
+
+msgid "GPU INFORMATION"
+msgstr "GPU-INFORMÁCIÓK"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "GPU MAXIMÁLIS FREKVENCIA"
+
+msgid "GPU TEMPERATURE"
+msgstr "GPU-HŐMÉRSÉKLET"
+
+msgid "RAM AVAILABLE"
+msgstr "ELÉRHETŐ RAM"
+
+msgid "RAM CAPACITY"
+msgstr "RAM-KAPACITÁS"
+
+msgid "RAM INFORMATION"
+msgstr "RAM-INFORMÁCIÓK"
+
+msgid "CURRENT FREQUENCY"
+msgstr "AKTUÁLIS FREKVENCIA"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "MAXIMÁLIS FREKVENCIA"
+
+msgid "DISCHARGING"
+msgstr "KISÜLÉS"
+
+msgid "NOT CHARGING"
+msgstr "NEM TÖLT"
+
+msgid "Follows the language until you choose one here."
+msgstr "A nyelvet követi, amíg itt nem választasz egyet."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Nincs hálózat. Tedd a microSD-kártyát egy PC-be, és másold minden játékot a rendszere mappájába a roms mappán belül (például roms/snes). Vagy csatlakozz WiFi-hez, és gyere vissza ide, hogy a telefonodról adj hozzá játékokat."
+
+msgid "Add games"
+msgstr "Játékok hozzáadása"
+
+msgid "left, in the menus"
+msgstr "maradt, a menükben"
+
+msgid "From your phone or microSD"
+msgstr "Telefonról vagy microSD-ről"
+
+msgid "Web transfer turned off"
+msgstr "Webes átvitel kikapcsolva"

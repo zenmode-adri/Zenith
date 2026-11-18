@@ -68,6 +68,15 @@ struct Env {
 // ---- state (thread-safe) -----------------------------------------------------------------------------------------------
 void set_enabled(bool on);
 bool enabled();
+/// Turned on for a while only (the "Add games" card, the welcome): not stored in system.cfg, so a reboot does not bring it back, and
+/// `idle_expired` says when 20 min passed with no request from a phone. `apply(false)` or turning it on in TRANSFER FILES ends it.
+void set_temporary(bool on);
+bool temporary();
+constexpr long long kTemporaryIdleMs = 20LL * 60 * 1000;
+/// Main thread, from the status poll: true once when a temporary transfer has had no request for `kTemporaryIdleMs` (the caller turns it off).
+bool idle_expired(long long now_ms);
+/// Every request of a phone (any path of the listener) counts as activity.
+void touch(long long now_ms);
 /// 4 digits, random, chosen on first use in this process.
 std::string pin();
 constexpr uint16_t kWebPort = 8080;
@@ -87,13 +96,16 @@ std::string listen_error();
 /// system can be sent from the phone. Those already in `systems` are skipped.
 void publish(const std::vector<System>& systems, const std::vector<System>* also = nullptr);
 void publish_info(std::vector<SystemInfo> info);
+/// How long the `n`-th lock-out since the last right PIN lasts (0 = the first): 30 s, then twice as long each time, up to 5 min.
+long long lock_ms(int n);
 /// Tests: fixed PIN, fresh lock-out counters.
 void reset_for_test(const std::string& fixed_pin);
 
 // ---- pure helpers (tests) ----------------------------------------------------------------------------------------------
 /// Id of a game: 16 hex digits (FNV-1a of its path).
 std::string game_id(const std::string& path);
-/// A plain file name: not empty, at most 200 bytes, no '/', '\\', control characters, no "..", no leading '.'.
+/// A plain file name: not empty, at most 255 bytes, no '/', '\\', control characters, no leading '.' (so never "." or ".."; dots inside a name,
+/// as in "Foo... (USA).nes", are fine).
 bool valid_name(const std::string& name);
 /// The extension of `name` (with the dot, compared without case) is in `exts`.
 bool ext_allowed(const std::string& name, const std::vector<std::string>& exts);

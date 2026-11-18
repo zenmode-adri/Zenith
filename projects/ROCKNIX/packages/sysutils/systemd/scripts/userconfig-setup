@@ -41,7 +41,7 @@ then
   if [ -d /usr/config/iwd ]
   then
     tocon "Update developer wifi config..."
-    cp /usr/config/iwd/* /storage/.cache/iwd/
+    copy_dir_atomic /usr/config/iwd /storage/.cache/iwd
   fi
 
   if [ -e "/usr/bin/emulationstation" ]

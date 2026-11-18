@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "dock.hpp"
 #include "gfx.hpp"
 #include "input.hpp"
 #include "pad.hpp"
@@ -79,6 +80,7 @@ struct Transition {
   std::string cmd;                 // Launch: shell command of the game, the loop blocks until it ends
   int sys = -1, game = -1;         // Launch: system index / game index (hooks, playcount); -1 when unknown
   std::string name, arg;           // Open: registered screen name (registry.hpp) and its argument
+  bool keep_menus = false;         // Launch: the menus stay open; when it ends the user is back on them (a tool opened from a menu)
 
   static Transition none() { return {}; }
   static Transition of(Kind k) {
@@ -139,6 +141,8 @@ class Screen {
   /// True for a non-menu overlay that must be gone when a game starts from it (the savestate manager: ES closes it before the
   /// game). `Transition::Launch` pops every screen on top of the stack that is a menu (dialogs included) or says so here.
   virtual bool closes_on_launch() const { return false; }
+  /// On top again after a launch that kept the menus (`Transition::keep_menus`): what the program changed may show here.
+  virtual void on_back_from_launch(Ctx& cx) { (void)cx; }
   /// The command a launch would run for the item under the cursor, or empty (idle-time preparation, ).
   virtual std::string launch_target(Ctx& cx) {
     (void)cx;
@@ -172,6 +176,8 @@ struct Outcome {
   int sys = -1, game = -1;
 };
 
+const char* system_icon_label(const std::string& t);  // scene.cpp
+
 class App {
  public:
   App(Ctx cx, std::unique_ptr<Screen> root, std::unique_ptr<StatusSource> status);
@@ -184,6 +190,9 @@ class App {
   /// A launch a screen asked for by itself (`Screen::take_transition` returned Launch when its timer ran out): taken once by the loop,
   /// which runs it like the launch of a key press.
   std::optional<Outcome> take_pending_launch();
+  /// The loop calls it when a launch has ended. After one that kept the menus (the R36 Tuner from BATTERY & PERFORMANCE):
+  /// system.cfg is read again and the screen on top refreshes (`Screen::on_back_from_launch`).
+  void after_launch();
   /// A pad without a mapping was pressed (`Pad::take_unconfigured`): like ES, opens the controller detection screen
   /// (`menu.controllers.detect`) unless a menu or an overlay is already up. True when it was opened.
   bool open_controller_detect();
@@ -262,16 +271,23 @@ class App {
   unsigned cols_epoch_ = 0;
   std::vector<System> cols_pending_;
   std::unique_ptr<StatusSource> status_;
+  dock::Dock dock_;                  // plug-in filter, notice timeline (dock.hpp)
+  unsigned dock_reads_ = ~0u;        // StatusSource::battery_reads() at the last poll
+  unsigned items_gen_ = ~0u;         // i18n generation the carousel names were taken in (App::tick)
+  int64_t dock_sample_ms_ = -1;      // monotonic ms of the last real battery reading, -1 = the source does not count them
   std::unique_ptr<CountWorker> counts_;
   std::vector<size_t> count_map_;  // worker job -> system index
   std::function<void()> count_wake_;  // kept to hand it to the next worker
   std::vector<std::pair<size_t, size_t>> count_tmp_;
   std::vector<Op> ops_;
   bool animating_ = false;
+  bool menus_kept_ = false;  // the last launch kept the menus open (after_launch refreshes the top one)
   /// XMB's charging animation: the cells lit now and when the next one lights (see `Status::charge_frame`).
   int8_t charge_frame_ = -1;
   TimePoint charge_next_{};
   bool charge_anim() const;
+  static dock::Clock dock_clock(TimePoint now);
+  bool poll_dock(const dock::Clock& dk, TimePoint now);
   std::vector<Op> warm_;
   // entry motion of the screen at stack index `depth` (seconds since it was pushed); `menu`: windows also slide a little
   struct Enter {

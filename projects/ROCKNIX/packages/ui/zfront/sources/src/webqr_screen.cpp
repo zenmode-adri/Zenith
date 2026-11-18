@@ -42,7 +42,8 @@ float centred(Assets& a, std::vector<Op>& ops, const std::string& s, float cx, f
 
 class QrScreen : public Screen {
  public:
-  explicit QrScreen(Ctx&) { load(); }
+  /// `add_games`: opened from the carousel's "Add games" card or the welcome: the title says what it is for, not "QR code".
+  explicit QrScreen(Ctx&, bool add_games = false) : add_games_(add_games) { load(); }
   bool is_menu() const override { return true; }
   /// The address can change under an open screen (the Wi-Fi joins or drops, a lease changes): looked at every two seconds, the code follows.
   bool tick(float dt, Ctx&) override {
@@ -67,7 +68,7 @@ class QrScreen : public Screen {
     status_bar(cx.th, a, g.w, g.h, cx.status, ops);
     const ui::Metrics mt = ui::Metrics::from(cx.th, g.w, g.h);
     {  // the title, on the line every menu uses
-      const std::string title = sc("QR CODE");
+      const std::string title = add_games_ ? std::string(tr("Add games from your phone")) : sc("QR CODE");
       const float tmax = ui::title_max_w(st, mt, ops, stack_from, g.w * 0.55f);
       int tpx = mt.title_px;  // never taller than the status bar (4 cells): a tall font would stick out over the top margin
       ImgId id = a.text_ellipsis(title, float(tpx), st.txt, tmax);
@@ -142,6 +143,7 @@ class QrScreen : public Screen {
   std::string address_, pin_;
   qr::Code code_;
   float left_ = kLivePoll;
+  bool add_games_ = false;
 };
 
 // "5 minutes ago", "just now"... for the list of devices
@@ -195,7 +197,8 @@ void network_rows(MenuBuilder& m, Ctx&) {
 
 }  // namespace
 
-ZF_REGISTER_SCREEN("menu.webqr", [](Ctx& cx, const std::string&) -> std::unique_ptr<Screen> { return std::make_unique<QrScreen>(cx); });
+// arg "addgames": opened from the "Add games" card or the welcome (addgames::open_phone_page)
+ZF_REGISTER_SCREEN("menu.webqr", [](Ctx& cx, const std::string& arg) -> std::unique_ptr<Screen> { return std::make_unique<QrScreen>(cx, arg == "addgames"); });
 ZF_REGISTER_SCREEN("menu.webdevices", [](Ctx&, const std::string&) { return make_devices(); });
 
 ZF_REGISTER_WEB_MODULE([] {

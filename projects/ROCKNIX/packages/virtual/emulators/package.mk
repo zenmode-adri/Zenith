@@ -8,7 +8,7 @@ PKG_SECTION="emulation" # Do not change to virtual or makeinstall_target will no
 PKG_LONGDESC="Emulation metapackage."
 PKG_TOOLCHAIN="manual"
 
-PKG_EMUS="amiberry flycast-sa flycast2022-sa gzdoom-sa hatarisa hypseus-singe moonlight mupen64plus-sa openbor openbor-ff free-j2me eka2l1-sa pico-8 ppsspp-sa vice-sa wine cpymo mrp-sa krkr2-sa onscripter-sa ruffle-sa"
+PKG_EMUS="flycast-sa flycast2022-sa gzdoom-sa hatarisa hypseus-singe moonlight mupen64plus-sa openbor openbor-ff free-j2me eka2l1-sa pico-8 ppsspp-sa vice-sa cpymo mrp-sa krkr2-sa onscripter-sa ruffle-sa"
 EMUS_32BIT=""
 
 PKG_RETROARCH="core-info libretro-database retroarch retroarch-assets retroarch-joypads retroarch-overlays slang-shaders"
@@ -19,9 +19,9 @@ LIBRETRO_CORES="81-lr a5200-lr arduous-lr atari800-lr b2-lr beetle-gba-lr beetle
                 dosbox-core-lr dosbox-pure-lr easyrpg-lr emuscv-lr fake08-lr fbalpha2012-lr native32emu-lr                              \
                 fbalpha2019-lr fceumm-lr flycast-lr fmsx-lr freechaf-lr freeintv-lr freej2me-lr fuse-lr gambatte-lr         \
                 gam4980-lr gearboy-lr gearcoleco-lr gearsystem-lr genesis-plus-gx-lr genesis-plus-gx-wide-lr gw-lr handy-lr hatari-lr \
-                hbmame-lr idtech-lr jaxe-lr mame-lr mame2003-plus-lr mame2010-lr mame2015-lr melonds-lr melonds-ds-lr mesen-lr mgba-lr \
+                hbmame-lr idtech-lr jaxe-lr mame2003-plus-lr mame2010-lr melonds-lr melonds-ds-lr mesen-lr mgba-lr \
                 minivmac-lr mojozork-lr mu-lr mupen64plus-lr mupen64plus-nx-lr neocd_lr nestopia-lr np2kai-lr o2em-lr onscripter-lr  \
-                opera-lr parallel-n64-lr pcsx_rearmed-lr picodrive-lr pokemini-lr potator-lr ppsspp-lr prosystem-lr puae-lr         \
+                opera-lr parallel-n64-lr pcsx_rearmed-lr picodrive-lr pokemini-lr potator-lr ppsspp-lr prosystem-lr         \
                 puae2021-lr px68k-lr quasi88-lr quicknes-lr race-lr same_cdi-lr sameboy-lr sameduck-lr scummvm-lr smsplus-gx-lr     \
                 snes9x-lr snes9x2002-lr snes9x2005_plus-lr snes9x2010-lr stella-lr swanstation-lr tgbdual-lr theodore-lr tic80-lr  \
                 uzem-lr vba-next-lr vbam-lr vecx-lr vice-lr vircon32-lr virtualjaguar-lr xmil-lr wasm4-lr yabasanshiro-lr fbneoplus-lr"
@@ -31,66 +31,66 @@ PKG_DEPENDS_TARGET+=" gamepadtester"
 ### Emulators or cores for specific devices
 case "${DEVICE}" in
   H700)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
     PKG_DEPENDS_TARGET+=" common-shaders glsl-shaders"
-    PKG_EMUS+=" box64 drastic-sa drastic_adv-sa mednafen portmaster scummvmsa yabasanshiro-sa duckstation-sa"
+    PKG_EMUS+=" drastic-sa drastic_adv-sa mednafen portmaster scummvmsa yabasanshiro-sa duckstation-sa"
     LIBRETRO_CORES+=" flycast2021-lr geolith-lr uae4arm"
     PKG_RETROARCH+=" retropie-shaders"
     ;;
   RK3326*)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
     PKG_DEPENDS_TARGET+=" common-shaders glsl-shaders"
-    PKG_EMUS+=" box64 drastic-sa drastic_adv-sa mednafen portmaster scummvmsa yabasanshiro-sa duckstation-sa"
+    PKG_EMUS+=" drastic-sa drastic_adv-sa mednafen portmaster scummvmsa yabasanshiro-sa duckstation-sa"
     LIBRETRO_CORES+=" flycast2021-lr geolith-lr uae4arm"
     PKG_RETROARCH+=" retropie-shaders"
     PKG_EMUS+=" ppsspp2021-sa"
     ;;
   RK3399)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
-    PKG_EMUS+=" aethersx2-sa box64 dolphin-sa drastic-sa drastic_adv-sa mednafen melonds-sa nanoboyadvance-sa portmaster scummvmsa \
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
+    PKG_EMUS+=" aethersx2-sa dolphin-sa drastic-sa drastic_adv-sa mednafen melonds-sa nanoboyadvance-sa portmaster scummvmsa \
                 yabasanshiro-sa duckstation-sa"
     LIBRETRO_CORES+=" beetle-psx-lr bsnes-lr bsnes-hd-lr dolphin-lr geolith-lr flycast2021-lr pcsx_rearmed-lr uae4arm"
     PKG_RETROARCH+=" retropie-shaders"
     ;;
   RK3566)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
     PKG_DEPENDS_TARGET+=" common-shaders glsl-shaders"
-    PKG_EMUS+=" box64 dolphin-sa drastic-sa drastic_adv-sa mednafen melonds-sa portmaster scummvmsa yabasanshiro-sa duckstation-sa"
+    PKG_EMUS+=" dolphin-sa drastic-sa drastic_adv-sa mednafen melonds-sa portmaster scummvmsa yabasanshiro-sa duckstation-sa"
     LIBRETRO_CORES+=" dolphin-lr flycast2021-lr geolith-lr uae4arm"
     PKG_RETROARCH+=" retropie-shaders"
     PKG_EMUS+=" ppsspp2021-sa"
     ;;
   RK356X)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
     PKG_DEPENDS_TARGET+=" common-shaders glsl-shaders"
-    PKG_EMUS+=" aethersx2-sa box64 dolphin-sa drastic-sa drastic_adv-sa mednafen melonds-sa portmaster scummvmsa yabasanshiro-sa duckstation-sa"
+    PKG_EMUS+=" aethersx2-sa dolphin-sa drastic-sa drastic_adv-sa mednafen melonds-sa portmaster scummvmsa yabasanshiro-sa duckstation-sa"
     LIBRETRO_CORES+=" dolphin-lr flycast2021-lr geolith-lr uae4arm"
     PKG_RETROARCH+=" retropie-shaders"
     PKG_EMUS+=" ppsspp2021-sa"
     ;;
   RK3588)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
-    PKG_EMUS+=" aethersx2-sa azahar-sa box64 dolphin-sa drastic-sa drastic_adv-sa mednafen melonds-sa portmaster scummvmsa supermodel-sa yabasanshiro-sa duckstation-sa"
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
+    PKG_EMUS+=" aethersx2-sa azahar-sa dolphin-sa drastic-sa drastic_adv-sa mednafen melonds-sa portmaster scummvmsa supermodel-sa yabasanshiro-sa duckstation-sa"
     LIBRETRO_CORES+=" beetle-psx-lr beetle-saturn-lr bsnes-lr bsnes-hd-lr dolphin-lr flycast2021-lr geolith-lr pcsx_rearmed-lr uae4arm"
     PKG_RETROARCH+=" retropie-shaders"
     ;;
   SDM845|SM8250|SM8550|SM8650)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 daedalusx64-sa desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
-    PKG_EMUS+=" aethersx2-sa azahar-sa box64 bigpemu-sa cemu-sa dolphin-sa mednafen melonds-sa nanoboyadvance-sa portmaster rpcs3-sa scummvmsa supermodel-sa \
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="daedalusx64-sa desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
+    PKG_EMUS+=" aethersx2-sa azahar-sa bigpemu-sa cemu-sa dolphin-sa mednafen melonds-sa nanoboyadvance-sa portmaster rpcs3-sa scummvmsa supermodel-sa \
                 yabasanshiro-sa xemu-sa duckstation-sa skyemu-sa"
     LIBRETRO_CORES+=" beetle-psx-lr beetle-saturn-lr bsnes-lr bsnes-hd-lr dolphin-lr flycast2021-lr geolith-lr pcsx_rearmed-lr uae4arm kronos-lr"
     PKG_RETROARCH+=" retropie-shaders"
     ;;
   S922X)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 pcsx_rearmed-lr"
-    PKG_EMUS+=" aethersx2-sa azahar-sa box64 dolphin-sa drastic-sa drastic_adv-sa duckstation-sa melonds-sa portmaster scummvmsa yabasanshiro-sa"
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="pcsx_rearmed-lr"
+    PKG_EMUS+=" aethersx2-sa azahar-sa dolphin-sa drastic-sa drastic_adv-sa duckstation-sa melonds-sa portmaster scummvmsa yabasanshiro-sa"
     LIBRETRO_CORES+=" beetle-psx-lr beetle-saturn-lr bsnes-lr bsnes-hd-lr dolphin-lr geolith-lr flycast2021-lr uae4arm"
     PKG_RETROARCH+=" retropie-shaders"
     ;;
   S905)
-    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="box86 desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
+    [ "${ENABLE_32BIT}" == "true" ] && EMUS_32BIT="desmume-lr gpsp-lr gpsp_ezode-lr pcsx_rearmed-lr"
     PKG_DEPENDS_TARGET+=" common-shaders glsl-shaders"
-    PKG_EMUS+=" box64 drastic-sa drastic_adv-sa mednafen portmaster scummvmsa yabasanshiro-sa duckstation-sa ppsspp2021-sa"
+    PKG_EMUS+=" drastic-sa drastic_adv-sa mednafen portmaster scummvmsa yabasanshiro-sa duckstation-sa ppsspp2021-sa"
     LIBRETRO_CORES+=" flycast2021-lr geolith-lr uae4arm"
     PKG_RETROARCH+=" retropie-shaders"
     ;;
@@ -185,16 +185,13 @@ makeinstall_target() {
   case ${DEVICE} in
     H700|RK3326*|RK3399|RK3566|RK356X|RK3588|SDM845|SM8250|SM8550|SM8650)
       add_emu_core amiga retroarch puae2021 true
-      add_emu_core amiga retroarch puae false
       ;;
     *)
-      add_emu_core amiga retroarch puae true
-      add_emu_core amiga retroarch puae2021 false
+      add_emu_core amiga retroarch puae2021 true
       ;;
   esac
   case ${TARGET_ARCH} in
     aarch64)
-      add_emu_core amiga amiberry amiberry false
       add_emu_core amiga retroarch uae4arm false
       ;;
   esac
@@ -204,11 +201,9 @@ makeinstall_target() {
   case ${DEVICE} in
     H700|RK3326*|RK3399|RK3566|RK356X|RK3588|SDM845|SM8250|SM8550|SM8650)
       add_emu_core amigacd32 retroarch puae2021 true
-      add_emu_core amigacd32 retroarch puae false
       ;;
     *)
-      add_emu_core amigacd32 retroarch puae true
-      add_emu_core amigacd32 retroarch puae2021 false
+      add_emu_core amigacd32 retroarch puae2021 true
       ;;
   esac
   case ${TARGET_ARCH} in
@@ -227,11 +222,9 @@ makeinstall_target() {
   add_emu_core arcade retroarch fbneoplus true
   add_emu_core arcade retroarch mame2003_plus false
   add_emu_core arcade retroarch mame2010 false
-  add_emu_core arcade retroarch mame2015 false
   add_emu_core arcade retroarch fbneo false
   add_emu_core arcade retroarch fbalpha2012 false
   add_emu_core arcade retroarch fbalpha2019 false
-  add_emu_core arcade retroarch mame false
   add_es_system arcade
 
   ### Homebrew MAME
@@ -246,11 +239,9 @@ makeinstall_target() {
   add_emu_core varcade retroarch mame2003_plus true
   add_emu_core varcade retroarch fbneoplus false
   add_emu_core varcade retroarch mame2010 false
-  add_emu_core varcade retroarch mame2015 false
   add_emu_core varcade retroarch fbneo false
   add_emu_core varcade retroarch fbalpha2012 false
   add_emu_core varcade retroarch fbalpha2019 false
-  add_emu_core varcade retroarch mame false
   add_es_system varcade
 
   ### Arduboy
@@ -438,8 +429,6 @@ makeinstall_target() {
   add_emu_core fbn retroarch fbneo false
   add_emu_core fbn retroarch mame2003_plus false
   add_emu_core fbn retroarch mame2010 false
-  add_emu_core fbn retroarch mame2015 false
-  add_emu_core fbn retroarch mame false
   add_emu_core fbn retroarch fbalpha2012 false
   add_emu_core fbn retroarch fbalpha2019 false
   add_es_system fbn
@@ -455,7 +444,6 @@ makeinstall_target() {
 
   ### Nintendo Game and Watch
   add_emu_core gameandwatch retroarch gw
-  add_emu_core gameandwatch retroarch mame
   add_es_system gameandwatch
 
   ### Nintendo GameBoy
@@ -732,8 +720,6 @@ makeinstall_target() {
   ### Arcade (MAME)
   add_emu_core mame retroarch mame2003_plus true
   add_emu_core mame retroarch mame2010 false
-  add_emu_core mame retroarch mame2015 false
-  add_emu_core mame retroarch mame false
   add_emu_core mame retroarch fbneoplus false
   add_emu_core mame retroarch fbneo false
   add_emu_core mame retroarch fbalpha2012 false
@@ -815,8 +801,6 @@ makeinstall_target() {
   add_emu_core neogeo retroarch fbalpha2012 false
   add_emu_core neogeo retroarch fbalpha2019 false
   add_emu_core neogeo retroarch mame2010 false
-  add_emu_core neogeo retroarch mame2015 false
-  add_emu_core neogeo retroarch mame false
   case ${TARGET_ARCH} in
     aarch64)
       add_emu_core neogeo retroarch geolith false
@@ -1479,9 +1463,6 @@ makeinstall_target() {
   esac
   add_es_system ports
 
-  ### Windows
-  add_emu_core windows wine wine true
-  add_es_system windows
 
   ### Doom
   add_emu_core doom gzdoom gzdoom-sa true
@@ -1543,20 +1524,13 @@ makeinstall_target() {
   install_script "MOD_TOOLS/Generate SDL GameControllerDB.sh"
   install_script "MOD_TOOLS/Bezels Installer.sh"
   install_script "MOD_TOOLS/Reset Drastic Cfg.sh"
-  install_script "MOD_TOOLS/Reset YabaSanshiro Input.sh"
   if [ "${DEVICE}" = "RK3566" ] || [ "${DEVICE}" = "RK356X" ]; then
     install_script "MOD_TOOLS/FixShutdown.sh"
   fi
   if [ "${DEVICE}" = "RK356X" ]; then
     install_script "MOD_TOOLS/Sync eMMC Bootloader to TF.sh"
   fi
-  if [ "${DEVICE}" != "S905" ]; then
-    install_script "MOD_TOOLS/Install AURKNIX to EMMC.sh"
-    install_script "MOD_TOOLS/Backup EMMC.sh"
-    install_script "MOD_TOOLS/Restore EMMC.sh"
-  fi
   install_script "MOD_TOOLS/Toggle Power Button.sh"
-  install_script "MOD_TOOLS/Start Baidu Sync.sh"
   install_script "MOD_TOOLS/Offline Upgrade.sh"
   mkdir -p ${INSTALL}/usr/share/misc/offline-update
   cp ${PKG_DIR}/sources/MOD_TOOLS/offline-update/*.png ${INSTALL}/usr/share/misc/offline-update/

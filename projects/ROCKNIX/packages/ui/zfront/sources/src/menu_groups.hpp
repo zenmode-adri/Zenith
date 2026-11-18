@@ -35,6 +35,7 @@ enum : unsigned {
   kSuspend = 1024,  // DEVICE SUSPEND MODE
   kUiMode = 2048,   // USER INTERFACE MODE (Full / Kiosk / Kid)
   kNoHdr = 0x4000,  // leave out the section headers (a row of its own inside another menu)
+  kNoCpuOc = 0x8000,  // with kTurbo: leave out ENABLE CPU OVERCLOCK (the R36 Tuner owns the turbo)
   kAll = 0x3FFF,
 };
 }  // namespace sys_sec
@@ -61,7 +62,7 @@ enum : unsigned {
   kBright = 4,   // SCREEN BRIGHTNESS
   kDisplay = 8,  // SHOW CLOCK, SHOW BATTERY STATUS
   kSaver = 16,   // SCREENSAVER
-  kNoHdr = 64,   // leave out the SCREENSAVER SETTINGS header (the group puts its own)
+  kNoHdr = 64,   // leave out the SCREENSAVER SETTINGS and APPEARANCE headers (the group's own title says it)
   kTopBar = 32,  // SHOW CLOCK, SHOW BATTERY STATUS under their own header (kDisplay = the same rows under DISPLAY OPTIONS)
   kTheme = 128,  // THEME SET (only when more than one Zenith theme is installed)
   kAll = 31 | 128,
@@ -73,6 +74,8 @@ MenuSpec sound_spec(Ctx& cx, unsigned parts);      // menu_sound.cpp
 MenuSpec ui_spec(unsigned parts);                  // menu_ui.cpp
 /// True when the console has something for `sys_sec::kTurbo` or `sys_sec::kSysAdv` (a console without them gets no "Advanced" row).
 bool system_has_section(unsigned section);
+/// True when the console has the global ENABLE GPU OVERCLOCK switch.
+bool system_has_gpu_overclock();
 
 /// One menu made of several: the rows of each in order; opens and closes run for all of them.
 MenuSpec merge_specs(std::string title, const char* title_key, std::vector<MenuSpec> parts);

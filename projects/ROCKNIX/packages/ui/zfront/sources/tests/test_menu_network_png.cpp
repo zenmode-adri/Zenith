@@ -98,7 +98,7 @@ struct Shooter {
 void run_all(const std::string& theme_dir, const std::string& theme_name, unsigned w, unsigned h, const std::string& outdir) {
   Machine mc;
   for (const char* p : {"/usr/sbin/sshd", "/usr/sbin/smbd", "/usr/lib/systemd/system/simple-http-server.service", "/usr/bin/usbgadget", "/usr/bin/syncthing",
-                        "/usr/bin/rclonectl", "/usr/sbin/tailscale", "/usr/sbin/zerotier-cli", "/storage/.config/wireguard/wg0.conf", "/fixture/ap_mode"})
+                        "/usr/bin/rclonectl", "/usr/sbin/tailscale", "/storage/.config/wireguard/wg0.conf", "/fixture/ap_mode"})
     mc.touch(p);
   fs::create_directories(mc.root + "/sys/class/net/wlan0");
   put(mc.root + "/sys/class/udc/ff300000.usb/function", "mtp\n");
@@ -137,7 +137,7 @@ void run_all(const std::string& theme_dir, const std::string& theme_name, unsign
     pump(cx, menu_of(s));
     settle(*menu_of(s), cx);
     sh.shot(cx, "main-top", s.get());
-    focus(*menu_of(s), cx, "ZeroTier One");
+    focus(*menu_of(s), cx, "TAILSCALE VPN");
     settle(*menu_of(s), cx);
     sh.shot(cx, "main-end", s.get());
     focus(*menu_of(s), cx, "WI-FI COUNTRY");

@@ -94,6 +94,11 @@ fi
 if [ "${VULKAN_SUPPORT}" = "yes" ]; then
   PKG_DEPENDS_TARGET+=" ${VULKAN} vulkan-tools"
   PKG_MESON_OPTS_TARGET+=" -Dvulkan-drivers=${VULKAN_DRIVERS_MESA// /,}"
+elif [ "${DEVICE}" = "RK3326" ] && [ "${ARCH}" = "aarch64" ]; then
+  # Zenith: PanVK (Vulkan sobre Panfrost) como extra. No se activa VULKAN_SUPPORT (cambiaria SDL2, PPSSPP, RetroArch...):
+  # solo se compila libvulkan_panfrost.so; su ICD va a /usr/lib/r36-vk/ (ver post_makeinstall_target) y el lanzador de PPSSPP
+  # lo pide con VK_DRIVER_FILES. Parche 020 = arreglos de PanVK medidos (R22/R23).
+  PKG_MESON_OPTS_TARGET+=" -Dvulkan-drivers=panfrost"
 else
   PKG_MESON_OPTS_TARGET+=" -Dvulkan-drivers="
 fi
@@ -123,6 +128,16 @@ post_makeinstall_target() {
   # While this likely breaks panfrost vulkan, it does fix vulkaninfo on libmali-vulkan
   if [ "${DEVICE}" = "S922X" ]; then
     rm -f ${INSTALL}/usr/lib/libvulkan_panfrost.so ${INSTALL}/usr/share/vulkan/icd.d/panfrost_icd.*.json
+  fi
+  # Zenith: el ICD de PanVK no se deja en /usr/share/vulkan/icd.d (nadie debe descubrirlo solo): va a /usr/lib/r36-vk/ con ruta absoluta
+  if [ "${DEVICE}" = "RK3326" ] && [ "${ARCH}" = "aarch64" ] && [ -f ${INSTALL}/usr/lib/libvulkan_panfrost.so ]; then
+    mkdir -p ${INSTALL}/usr/lib/r36-vk
+    for icd in ${INSTALL}/usr/share/vulkan/icd.d/panfrost_icd*.json; do
+      [ -f "${icd}" ] || continue
+      sed -e 's#"library_path"[[:space:]]*:[[:space:]]*"[^"]*"#"library_path": "/usr/lib/libvulkan_panfrost.so"#' "${icd}" > ${INSTALL}/usr/lib/r36-vk/panfrost_icd.json
+      rm -f "${icd}"
+    done
+    rmdir ${INSTALL}/usr/share/vulkan/icd.d ${INSTALL}/usr/share/vulkan 2>/dev/null || true
   fi
   # per-program Panfrost settings (glthread, copy_image hidden from PPSSPP); libmali ignores drirc
   if [ -f "${PKG_DIR}/config/${DEVICE}/01-zenith-panfrost.conf" ]; then

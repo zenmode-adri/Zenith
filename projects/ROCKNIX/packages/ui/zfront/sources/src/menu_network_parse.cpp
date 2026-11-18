@@ -189,24 +189,6 @@ TsStatus parse_tailscale_status(std::string_view out) {
   return t;
 }
 
-bool zerotier_running(std::string_view out) {
-  // ES keeps the verdict of the LAST line, so the two-line error of zerotier-cli reads as "running" there; here any line
-  // with the error means the daemon does not answer.
-  bool any = false;
-  size_t i = 0;
-  while (i <= out.size()) {
-    size_t e = out.find('\n', i);
-    if (e == std::string_view::npos) e = out.size();
-    std::string_view line = trim(out.substr(i, e - i));
-    if (!line.empty()) {
-      any = true;
-      if (line.find("Error connecting to the ZeroTier") != std::string_view::npos) return false;
-    }
-    i = e + 1;
-  }
-  return any;
-}
-
 bool valid_hostname(std::string_view s) {
   if (s.empty() || s.size() > 63 || s.front() == '-' || s.back() == '-') return false;
   for (char c : s)

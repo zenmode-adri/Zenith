@@ -15,6 +15,8 @@ CPUWeight=10000
 ExecStart=/usr/bin/automount
 # ES espera este fichero (parche 0045) antes de escanear las ROMs; tambien si el montaje falla (ExecStopPost)
 ExecStartPost=/bin/touch /run/rocknix-automount.ready
+# al apagar: volcar a la tarjeta (exFAT sin fsck de arranque); systemd desmonta despues
+ExecStop=/bin/sync
 ExecStopPost=/bin/touch /run/rocknix-automount.ready
 RemainAfterExit=yes
 

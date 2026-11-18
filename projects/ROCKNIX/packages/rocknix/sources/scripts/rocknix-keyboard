@@ -61,6 +61,21 @@ function list_variants() {
     ' "$RULES_FILE" | sort -k2
 }
 
+# Apply layout/variant to sway at runtime. zfront (child of sway) has SWAYSOCK;
+# over SSH look for the socket. No sway or a failing swaymsg is not an error.
+function sway_apply() {
+    command -v swaymsg > /dev/null || return 0
+    if [ -z "$SWAYSOCK" ]; then
+        local RDIR="${XDG_RUNTIME_DIR:-/var/run/0-runtime-dir}"
+        SWAYSOCK=$(ls "$RDIR"/sway-ipc.*.sock /run/0-runtime-dir/sway-ipc.*.sock 2>/dev/null | head -n 1)
+    fi
+    [ -n "$SWAYSOCK" ] || return 0
+    export SWAYSOCK
+    swaymsg input type:keyboard xkb_layout "$1" >/dev/null 2>&1 || true
+    swaymsg input type:keyboard xkb_variant "$2" >/dev/null 2>&1 || true
+    return 0
+}
+
 case "$1" in
     list-layouts)
         list_layouts
@@ -72,6 +87,15 @@ case "$1" in
         L=$(get_current_layout)
         V=$(get_current_variant)
         echo "$L $V"
+        ;;
+    apply)
+        # At session start: apply the saved layout; nothing saved = keep sway config (us)
+        L=$(get_setting "$CONF_KEY_LAYOUT")
+        V=$(get_setting "$CONF_KEY_VARIANT")
+        [ -n "$L" ] || exit 0
+        [ "$V" == "none" ] && V=""
+        sway_apply "$L" "$V"
+        exit 0
         ;;
     set)
         LAYOUT="$2"
@@ -89,6 +113,9 @@ case "$1" in
              setxkbmap -layout "$LAYOUT" -variant "$VARIANT" 2>/dev/null || true
         fi
 
+        sway_apply "$LAYOUT" "$VARIANT"
+
+        exit 0
         ;;
     *)
         echo "Usage: $0 {list-layouts|list-variants [layout]|get|set <layout> <variant>}"

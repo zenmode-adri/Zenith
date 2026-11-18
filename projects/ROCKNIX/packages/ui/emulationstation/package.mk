@@ -55,6 +55,24 @@ makeinstall_target() {
     localedef --force --verbose --inputfile=en_US --charmap=UTF-8 \
     ${INSTALL}/usr/config/locale/en_US.UTF-8 || true
 
+  # Zenith: precompile the locale of EVERY language the UI offers (zfront's 36 codes, same list as language_names() in
+  # zfront/src/menu_ui.cpp) into a read-only dir of the image, so the first boot after choosing a language does not
+  # run localedef on the console (~22 s on RK3326). es_settings uses it when ${LANG} is there and falls back to the
+  # old on-device localedef when it is not. Same host localedef (+ glibc locale sources) as the en_US step above.
+  ZENITH_LOCALES="ar_YE ca_ES cs_CZ cy_GB de_DE el_GR en_US en_GB es_ES es_MX eu_ES fi_FI fr_FR gl_ES he_IL hu_HU id_ID
+                  it_IT ja_JP ko_KR nb_NO nl_NL nn_NO oc_FR pl_PL pt_BR pt_PT ro_RO ru_RU sk_SK sv_SE tr_TR uk_UA vi_VN
+                  zh_CN zh_TW"
+  mkdir -p ${INSTALL}/usr/lib/zenith-locale
+  export I18NPATH=$(get_install_dir glibc)/usr/share/i18n/locales/
+  for l in ${ZENITH_LOCALES}; do
+    echo ${l}
+  done | xargs -P ${CONCURRENCY_MAKE_LEVEL:-2} -I{} sh -c     "localedef --force --inputfile={} --charmap=UTF-8 ${INSTALL}/usr/lib/zenith-locale/{}.UTF-8 >/dev/null 2>&1 || true"
+  # a failed/partial locale must not exist: es_settings would trust it
+  for d in ${INSTALL}/usr/lib/zenith-locale/*.UTF-8; do
+    [ -s "${d}/LC_NAME" ] || { echo "WARNING: zenith locale ${d##*/} not generated"; rm -rf "${d}"; }
+  done
+  unset I18NPATH
+
   mkdir -p ${INSTALL}/usr/config/emulationstation/resources
   cp -rf ${PKG_BUILD}/resources/* ${INSTALL}/usr/config/emulationstation/resources/
   rm -rf ${INSTALL}/usr/config/emulationstation/resources/logo.png
@@ -70,6 +88,8 @@ makeinstall_target() {
 
   cp ${PKG_BUILD}/start_es.sh ${INSTALL}/usr/bin
   chmod 0755 ${INSTALL}/usr/bin/start_es.sh
+  cp ${PKG_BUILD}/es-themeguard.sh ${INSTALL}/usr/bin
+  chmod 0644 ${INSTALL}/usr/bin/es-themeguard.sh
 
   cp ${PKG_BUILD}/serial_number_check ${INSTALL}/usr/bin
   chmod 0755 ${INSTALL}/usr/bin/serial_number_check
@@ -88,7 +108,7 @@ makeinstall_target() {
     ${INSTALL}/usr/config/emulationstation/es_settings.cfg
 
   # Zenith: default theme (the others are linked by userconfig-setup and selectable in the menu)
-  sed -i 's|</config>|  <string name="ThemeSet" value="es-theme-zenith" />\n</config>|' \
+  sed -i 's|</config>|  <string name="ThemeSet" value="es-theme-zenith-next-dark" />\n</config>|' \
     ${INSTALL}/usr/config/emulationstation/es_settings.cfg
 
   # Zenith: ES screensaver (black frame + backlight off via es-scripts) after 2 minutes instead of 5

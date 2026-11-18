@@ -14,7 +14,9 @@
 #include <algorithm>
 #include <memory>
 
+#include <ctime>
 #include "menu_ui.hpp"
+#include "datetime_set.hpp"
 #include "i18n.hpp"
 #include "menu.hpp"
 #include "menu_groups.hpp"
@@ -141,7 +143,7 @@ void read_caps(State& st) {
   if (!modes.empty()) st.sleep_modes.push_back("default");
   for (const std::string& m : modes)
     if (m != "disk") st.sleep_modes.push_back(m);
-  c.suspend = have_bin("suspendmode") && !st.sleep_modes.empty();
+  c.suspend = false;  // DEVICE SUSPEND MODE is not offered any more (see build_system)
 
   if (c.devswitch) {
     const std::string dir = "/sys/firmware/devicetree/base/rocknix,device_switch";
@@ -196,7 +198,7 @@ std::vector<Option> parse_lines(const std::string& out) {
 std::vector<Option> to_options(const std::vector<std::string>& v) {
   std::vector<Option> o;
   for (const std::string& s : v) o.push_back({s, s});
-  return o;
+  return label_values(std::move(o));
 }
 
 // Posts a read; `parse` runs on the worker, the list is stored from `done` (main thread) and the menu refreshed.
@@ -220,6 +222,7 @@ Caps masked(const Caps& in, unsigned secs) {
   if (!(secs & kPower)) c.fan = c.gpu_govs = false;
   if (!(secs & kSuspend)) c.suspend = false;
   if (!(secs & kTurbo)) c.turbo = c.gpu_oc = c.mangohud = false;
+  if (secs & kNoCpuOc) c.turbo = false;
   if (!(secs & kSysAdv)) c.touch = c.devswitch = c.gpudriver = c.root_pass = c.screenshot = false;
   if (!(secs & kStorage)) c.storage = false;
   if (!(secs & kLang)) c.keyboard = c.timezone = false;
@@ -262,8 +265,17 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
         if (code == n.code) name = n.name;
       o.push_back({code, name});
     }
-    m.choice(tr("LANGUAGE (REGION)"), o, [&cx] { return norm_lang(get(cx, "system.language")); }, [&cx](const std::string& v) {
+    m.choice(tr("LANGUAGE (REGION)"), o, [&cx] { return norm_lang(get(cx, "system.language")); }, [&cx, sp, r = m.refresh](const std::string& v) {
+      const std::string before = sp->kb_layout;
+      keyboard_follow_language(cx, v);  // before the key: it compares with the layout of the old language
       put(cx, "system.language", v, true);
+      sp->kb_layout = get(cx, "system.kblayout", "us");
+      sp->kb_variant = get(cx, "system.kbvariant", "none");
+      if (sp->caps.keyboard && sp->kb_layout != before) {  // the variants belong to the layout: read those of the new one
+        sp->kb_variants.loaded = false;
+        load_list(cx, r, "/usr/bin/rocknix-keyboard list-variants " + shell_quote(sp->kb_layout), parse_code_name,
+                  [sp](std::vector<Option> o) { sp->kb_variants.opts = std::move(o), sp->kb_variants.loaded = true; });
+      }
       i18n::set_language(v);
     }).no_cycle();
   }
@@ -282,8 +294,8 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
                          if (*rc == 0) {
                            put(cx, "system.kblayout", layout, true);
                            put(cx, "system.kbvariant", variant, true);
-                           sp->reboot_msg = tr("REBOOT REQUIRED TO APPLY THE NEW CONFIGURATION");
-                           sp->toast_reboot = true;
+                           put_bool(cx, "zfront.kblayout_manual", true);  // chosen by hand: a new language no longer moves it
+                           // no reboot: rocknix-keyboard applies it at once with swaymsg
                          } else {
                            sp->kb_layout = get(cx, "system.kblayout", "us");
                            sp->kb_variant = get(cx, "system.kbvariant", "none");
@@ -303,7 +315,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
                sp->kb_variants.loaded = false;
                apply(v, "none");  // ES: the variant goes back to "none" with a new layout
                (void)cx;
-             }).no_cycle().hint(tr("Select the physical keyboard layout. A reboot may be required for changes to take full effect."));
+             }).no_cycle().hint(tr("Follows the language until you choose one here."));
     std::vector<Option> vo = {{"none", tr("NONE")}};
     if (st.kb_variants.loaded)
       for (const Option& o : st.kb_variants.opts) vo.push_back(o);
@@ -320,10 +332,19 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
     m.choice(tr("TIMEZONE"), options_or_current(st.zones, cur), [sp] { return sp->tz; }, [&cx, sp](const std::string& v) {
       if (v.empty() || v == sp->tz) return;
       sp->tz = v;
-      // ES: ln -sf /usr/share/zoneinfo/<tz> $(readlink /etc/localtime); then the key
-      cx.sv->cmd.run("ln -sf " + shell_quote("/usr/share/zoneinfo/" + v) + " $(readlink /etc/localtime)");
-      put(cx, "system.timezone", v, true);
+      set_timezone(cx, v);  // ES: ln -sf /usr/share/zoneinfo/<tz> $(readlink /etc/localtime); then the key
     }).no_cycle();
+  }
+
+  if (secs & kLang) {  // no Wi-Fi, no clock: set the date and time by hand (menu_datetime.cpp)
+    time_t now = time(nullptr);
+    tm tmv{};
+    tzset();
+    const bool ok = localtime_r(&now, &tmv) != nullptr;
+    m.submenu(tr("DATE & TIME"), "menu.datetime")
+        .value(dtset::label(ok ? tmv.tm_year + 1900 : 0, tmv.tm_mon + 1, tmv.tm_mday, tmv.tm_hour, tmv.tm_min, cx.es.get_bool("ClockMode12", false)))
+        .hint(tr("With Wi-Fi the time is set automatically."));
+    m.submenu(tr("Run welcome again"), "menu.welcome", "again").hint(tr("Shows the first-boot welcome again: language, WiFi and time zone."));
   }
 
   if (secs & kUiMode) {  // ES: USER INTERFACE MODE (Full / Kiosk / Kid), es_settings.cfg UIMode
@@ -414,7 +435,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
     m.choice(tr("POWER LED COLOR"), {{"on", tr("ON")}, {"off", tr("OFF")}}, [&cx] { return get(cx, "option_powerled", "on") == "off" ? std::string("off") : std::string("on"); },
              [&cx](const std::string& v) {
                // ES (setPowerLedR36): the LED itself, then the key
-               sysfs_write(cx, "/sys/class/leds/blue:power/brightness", v == "off" ? "0" : "1");
+               set_power_led(cx, v);
                put(cx, "option_powerled", v, true);
              });
 
@@ -519,7 +540,7 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
       put_bool(cx, "enable.gpu-overclock", b);
     });
   if (c.gpudriver)
-    m.choice(tr("GPU DRIVER"), options_or_current(st.gpu_drivers, st.gpu_driver), [sp] { return sp->gpu_driver; }, [&cx, sp, r = m.refresh](const std::string& v) {
+    m.choice(tr("GPU DRIVER"), gpu_driver_options(st.gpu_drivers, st.gpu_driver), [sp] { return sp->gpu_driver; }, [&cx, sp, r = m.refresh](const std::string& v) {
       if (v.empty() || v == sp->gpu_driver) return;
       // `gpudriver` takes up to 30 s: slow worker, and only a zero exit code promises the switch
       auto sv = cx.sv;
@@ -540,13 +561,8 @@ void build_system(MenuBuilder& m, Ctx& cx, const std::shared_ptr<State>& sp, uns
            true);
     }).no_cycle();
 
-  if (c.suspend) {
-    if (hdr) m.header(tr("SUSPEND"));
-    m.choice(tr("DEVICE SUSPEND MODE"), to_options(st.sleep_modes), [&cx] { return get(cx, "system.suspendmode", "default"); }, [&cx](const std::string& v) {
-      put(cx, "system.suspendmode", v);
-      cx.sv->cmd.spawn("/usr/bin/suspendmode " + shell_quote(v));
-    }).no_cycle();
-  }
+  // DEVICE SUSPEND MODE is gone (v0.3.0): the image picks the mode that works on these consoles, and the OS moves old settings
+  // back to it. A wrong choice here left a console that did not wake up.
 
   // ---- ADVANCED
   if (hdr && (secs & kSysAdv) && c.root_pass) m.header(tr("ADVANCED"));
@@ -647,9 +663,15 @@ bool system_has_section(unsigned section) {
   read_caps(st);
   const Caps& c = st.caps;
   if (section & sys_sec::kPanel) return c.paneladj;
-  if (section & sys_sec::kTurbo) return c.turbo || c.gpu_oc || c.mangohud;
+  if (section & sys_sec::kTurbo) return (c.turbo && !(section & sys_sec::kNoCpuOc)) || c.gpu_oc || c.mangohud;
   if (section & sys_sec::kSysAdv) return c.touch || c.devswitch || c.gpudriver || c.root_pass || c.screenshot;
   return true;
+}
+
+bool system_has_gpu_overclock() {
+  State st;
+  read_caps(st);
+  return st.caps.gpu_oc;
 }
 
 ZF_REGISTER_SCREEN("menu.system", [](Ctx& cx, const std::string&) { return make_menu(make_system_spec(cx, sys_sec::kAll)); });

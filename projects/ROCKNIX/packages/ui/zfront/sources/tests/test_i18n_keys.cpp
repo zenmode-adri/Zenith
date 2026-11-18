@@ -335,8 +335,8 @@ int main() {
     CHECK_EQ(std::string(i18n::ntr("%i GAME", "%i GAMES", 14)), std::string("%i JUEGOS"));
     // the carousel and list help bars (sentence case, few actions) follow the language and come back when it changes
     const HelpPrompts& sh = system_help();
-    CHECK_EQ(sh.size(), size_t(4));  // CHOOSE, SELECT, RANDOM (X), MENU
-    CHECK_EQ(std::string(sh[3].second), std::string("Menú"));
+    CHECK_EQ(sh.size(), size_t(3));  // CHOOSE, SELECT, MENU (X and Select work, not shown)
+    CHECK_EQ(std::string(sh[2].second), std::string("Menú"));
     const HelpPrompts& lh = list_help();
     CHECK_EQ(lh.size(), size_t(4));
     CHECK_EQ(std::string(lh[0].second), std::string("Iniciar"));
@@ -346,11 +346,12 @@ int main() {
   {
     const HelpPrompts& sh = system_help();
     CHECK_EQ(std::string(sh[0].second), std::string("Choose"));
-    CHECK_EQ(std::string(sh[3].second), std::string("Menu"));
+    CHECK_EQ(std::string(sh[2].second), std::string("Menu"));
     CHECK_EQ(std::string(list_help()[0].second), std::string("Launch"));
   }
-  // another language: zfront has no catalog for it, its keys show in English (sentence case), ES's still translate
-  if (!real.empty() && i18n::set_language("fr", both)) {
+  // another language: zfront has no catalog for it (he: every other language of ES has one since 16-nov; Arabic and Hebrew wait for
+  // right-to-left text), its keys show in English (sentence case), ES's still translate
+  if (!real.empty() && i18n::set_language("he", both)) {
     CHECK_EQ(std::string(tr("ENABLE SSH")), std::string("Enable SSH"));
     CHECK(std::string(tr("QUIT")) != "Quit");
   }

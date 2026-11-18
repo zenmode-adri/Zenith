@@ -31,10 +31,10 @@ int main() {
   {  // the user's own choices (system.cfg zfront.*) go over the theme's; unknown values leave the theme alone
     Theme u;
     CHECK(Theme::from_xml(layout, "<theme><variables><selStyle>bar</selStyle><carCount>5</carCount></variables></theme>", "1/1", u, err));
-    std::map<std::string, std::string> conf = {{"zfront.sel_style", "outline"}, {"zfront.car_count", "9"}, {"zfront.header_align", "center"}};
+    std::map<std::string, std::string> conf = {{"zfront.sel_style", "outline"}, {"zfront.car_count", "3"}, {"zfront.header_align", "center"}};
     boot::apply_user_theme(u, [&](const std::string& k) { return conf.count(k) ? conf[k] : std::string(); });
     CHECK(u.str("selStyle") == "outline");     // valid: replaces the theme's
-    CHECK(u.str("carCount") == "5");           // 9 is not on the list: the theme's own stays
+    CHECK(u.str("carCount") == "5");           // not an option of the user (the cards of the carousel are the theme's): the theme's own stays
     CHECK(u.str("headerAlign") == "center");   // not in the theme: added
     CHECK(!u.has("listCase"));                 // nothing stored: nothing added
   }

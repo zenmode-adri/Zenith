@@ -68,6 +68,9 @@ input * {
     xkb_layout "us"
 }
 
+# saved keyboard layout (system.kblayout/kbvariant); does nothing if none saved
+exec /usr/bin/rocknix-keyboard apply
+
 ### Key bindings
 #
 # Basics:

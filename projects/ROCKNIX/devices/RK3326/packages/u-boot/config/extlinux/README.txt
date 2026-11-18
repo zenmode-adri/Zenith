@@ -17,14 +17,15 @@ Main things to edit:
 Zenith: boot messages and debugging
  * By default the kernel command line has "loglevel=1 vt.global_cursor_default=0", so kernel messages
    (for example harmless driver errors) are NOT drawn on the screen during boot. Nothing is lost:
-   run "dmesg" or "journalctl -k" over SSH, or read the boot logs saved in /flash/bootlog.
+   run "dmesg" or "journalctl -k" over SSH.
  * To see everything on screen (and on the serial console), copy extlinux.conf.debug over
    extlinux.conf, or just remove "loglevel=1" from the APPEND line. Re-add your FDT line if you use one.
 
 Zenith: choosing the DTB for your console
- * Windows: run ZenithDtbSelector.exe from the root of this card. It finds the card, lists every supported
+ * Windows: run "!Zenith DTB Selector.exe" from the root of this card. It finds the card, lists every supported
    console (Chinese, English or Spanish), shows exactly what will change in extlinux.conf and keeps a backup in
    extlinux/backups/ (restore it from the same tool).
  * From the console itself (SSH): run dtbselect.
  * If the screen stays black or the colours are wrong, put the card back in the PC and try another variant of
    the same family (for example "R36S clone type 3 panel 1" instead of "panel 2").
+ * Use only Zenith DTBs: DTB files from other systems (ArkOS, stock firmware) do not work with Zenith's kernel.

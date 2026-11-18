@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
+#include <map>
 #include <mutex>
 
 #include "gamelist.hpp"
@@ -29,17 +30,20 @@ namespace webtransfer {
 namespace {
 
 constexpr int kMaxWrongPins = 5;
-constexpr long long kLockMs = 30000;
-constexpr size_t kMaxNameBytes = 200;  // NAME_MAX is 255 and ".part" is added
+constexpr long long kLockMs = 30000;     // the first lock-out; each one after it doubles, up to 5 min, until a right PIN
+constexpr long long kMaxLockMs = 300000;  // mild on purpose: a cheap console on the home network, the PIN is only 4 digits
 constexpr long long kLaunchGapMs = 4000;  // a second launch request this soon after one is refused (a double tap)
 constexpr size_t kMaxImageBytes = 8u << 20;
 constexpr size_t kMaxShots = 100;
 
 struct State {
   std::atomic<bool> on{false};
+  std::atomic<bool> temporary{false};
+  std::atomic<long long> last_request_ms{0};
   std::mutex m;  // everything below
   std::string pin;
   int wrong = 0;
+  int lockouts = 0;  // lock-outs since the last right PIN: 30 s, 1 min, 2 min, 4 min, then 5 min
   long long locked_until_ms = 0;
   long long launch_block_until_ms = 0;
   std::vector<SystemInfo> systems;
@@ -106,12 +110,14 @@ static bool check_pin(const http::Request& req, http::Response& deny) {
   if (!have || diff != 0) {
     if (++s.wrong >= kMaxWrongPins) {
       s.wrong = 0;
-      s.locked_until_ms = t + kLockMs;
+      s.locked_until_ms = t + lock_ms(s.lockouts);
+      ++s.lockouts;
     }
     deny = err(403, "wrong PIN");
     return false;
   }
   s.wrong = 0;
+  s.lockouts = 0;
   return true;
 }
 
@@ -156,16 +162,27 @@ std::vector<SystemInfo> systems_snapshot() {
 
 namespace {
 
-std::string systems_json() {
+// Free bytes of the card that holds `dir` (null when unknown); asked once per folder in one answer.
+std::string free_json(const Env& env, const std::string& dir, std::map<std::string, std::string>& memo) {
+  auto it = memo.find(dir);
+  if (it != memo.end()) return it->second;
+  uint64_t avail = 0;
+  const bool known = !dir.empty() && (env.free_space ? env.free_space(dir, avail) : real_free_space(dir, avail));
+  // over 2^53 a JSON number is no longer exact in the page, and no card is that big: treated as not known
+  return memo[dir] = known && avail < (1ull << 53) ? std::to_string(avail) : std::string("null");
+}
+
+std::string systems_json(const Env& env) {
   State& s = st();
   std::lock_guard<std::mutex> lk(s.m);
+  std::map<std::string, std::string> memo;
   std::string j = "[";
   for (const SystemInfo& i : s.systems) {
     if (j.size() > 1) j += ",";
     j += "{\"name\":\"" + oscontract::json_escape(i.name) + "\",\"fullname\":\"" + oscontract::json_escape(i.fullname) + "\",\"dir\":\"" +
          oscontract::json_escape(i.rom_dir) + "\",\"exts\":[";
     for (size_t k = 0; k < i.exts.size(); ++k) j += (k ? ",\"" : "\"") + oscontract::json_escape(i.exts[k]) + "\"";
-    j += "],\"count\":" + (i.count == kCountPending ? std::string("null") : std::to_string(i.count)) + "}";  // null: not counted yet
+    j += "],\"count\":" + (i.count == kCountPending ? std::string("null") : std::to_string(i.count)) + ",\"free\":" + free_json(env, i.rom_dir, memo) + "}";  // null: not counted yet / not known
   }
   return j + "]";
 }
@@ -215,6 +232,7 @@ bool stream_pred(std::string_view method, std::string_view path) {
 }
 
 http::Response stream_route(const http::Request& req, http::BodyStream& body, const Env& env) {
+  touch(now_ms());  // an upload in progress is activity
   if (req.method == "POST" && req.path == http::kStreamPath) return upload(req, body, env);
   for (const WebModule& w : mods()) {
     if (!w.stream_owns || !w.stream || !w.stream_owns(req.method, req.path)) continue;
@@ -228,7 +246,25 @@ http::Response stream_route(const http::Request& req, http::BodyStream& body, co
 
 // ---- state ------------------------------------------------------------------------------------------------------------
 
-void set_enabled(bool on) { st().on = on; }
+long long lock_ms(int lockouts) { return std::min(kMaxLockMs, kLockMs << std::min(std::max(lockouts, 0), 7)); }
+
+void set_enabled(bool on) {
+  st().on = on;
+  if (!on) st().temporary = false;
+}
+void set_temporary(bool on) {
+  st().temporary = on;
+  if (on) st().last_request_ms = now_ms();
+}
+bool temporary() { return st().temporary.load(); }
+void touch(long long t) { st().last_request_ms = t; }
+bool idle_expired(long long t) {
+  State& s = st();
+  if (!s.on.load() || !s.temporary.load()) return false;
+  if (t - s.last_request_ms.load() < kTemporaryIdleMs) return false;
+  s.temporary = false;  // once
+  return true;
+}
 
 void set_env(Env env) {
   std::lock_guard<std::mutex> lk(ls().m);
@@ -350,6 +386,7 @@ void reset_for_test(const std::string& fixed_pin) {
   std::lock_guard<std::mutex> lk(s.m);
   s.pin = fixed_pin;
   s.wrong = 0;
+  s.lockouts = 0;
   s.locked_until_ms = 0;
   s.launch_block_until_ms = 0;
   s.systems.clear();
@@ -359,14 +396,18 @@ void reset_for_test(const std::string& fixed_pin) {
 
 // ---- helpers ----------------------------------------------------------------------------------------------------------
 
+// A leading '.' also keeps out "." and ".." (the only names that mean a folder); "Foo... (USA).nes" is an ordinary name.
 bool valid_name(const std::string& n) {
-  if (n.empty() || n.size() > kMaxNameBytes || n[0] == '.') return false;
-  if (n.find("..") != std::string::npos) return false;
+  if (n.empty() || n.size() > kMaxFileNameBytes || n[0] == '.') return false;
   for (char c : n) {
     unsigned char u = static_cast<unsigned char>(c);
     if (u < 0x20 || u == 0x7f || c == '/' || c == '\\') return false;
   }
   return true;
+}
+
+http::Response bad_name(const std::string& name) {
+  return name.size() > kMaxFileNameBytes ? err(400, "name too long") : err(400, "invalid file name");
 }
 
 bool ext_allowed(const std::string& name, const std::vector<std::string>& exts) {
@@ -474,7 +515,11 @@ http::Response games_route(const http::Request& req, const Env& env) {
   bool loaded = true, known = sys.empty();
   std::vector<std::string> to_open;  // systems not read yet that this answer covers
   size_t total = 0;
-  std::string items;
+  struct Row {
+    std::string id, name, system, path;
+    bool cover;
+  };
+  std::vector<Row> rows;
   {
     State& s = st();
     std::lock_guard<std::mutex> lk(s.m);
@@ -487,14 +532,18 @@ http::Response games_route(const http::Request& req, const Env& env) {
       }
       for (const GameInfo& g : si.games) {
         if (!lq.empty() && lower(g.name).find(lq) == std::string::npos) continue;
-        if (total >= offset && total < offset + limit) {
-          if (!items.empty()) items += ",";
-          items += "{\"id\":\"" + game_id(g.path) + "\",\"name\":\"" + oscontract::json_escape(g.name) + "\",\"system\":\"" +
-                   oscontract::json_escape(si.name) + "\",\"cover\":" + (g.meta.span_end != 0 ? "true" : "false") + "}";
-        }
+        if (total >= offset && total < offset + limit) rows.push_back({game_id(g.path), g.name, si.name, g.path, g.meta.span_end != 0});
         ++total;
       }
     }
+  }
+  std::string items;  // built outside the lock: a game that is a folder (ScummVM, ports) is marked, which asks the card
+  for (const Row& r : rows) {
+    struct stat sb;
+    const bool dir = ::lstat(r.path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode);
+    if (!items.empty()) items += ",";
+    items += "{\"id\":\"" + r.id + "\",\"name\":\"" + oscontract::json_escape(r.name) + "\",\"system\":\"" + oscontract::json_escape(r.system) +
+             "\",\"cover\":" + (r.cover ? "true" : "false") + (dir ? ",\"dir\":true" : "") + "}";
   }
   if (!known) return err(404, "unknown system");
   if (env.open_system)
@@ -582,6 +631,7 @@ http::Response cover_route(const http::Request& req) {
 // ---- routes -----------------------------------------------------------------------------------------------------------
 
 http::Response route(const http::Request& req, const Env& env) {
+  touch(now_ms());  // a temporary transfer stays on while the phone uses it
   const std::string& p = req.path;
   const bool page = p == "/files" || p == "/files/";
   const bool list = p == "/files/systems";
@@ -615,7 +665,7 @@ http::Response route(const http::Request& req, const Env& env) {
   if (p == "/files/shot") return shot_route(req, env);
   if (p == "/files/cover") return cover_route(req);
   if (env.refresh) env.refresh();  // the next list is fresher (counts finish after the snapshot)
-  return reply(200, systems_json());
+  return reply(200, systems_json(env));
 }
 
 http::Response upload(const http::Request& req, http::BodyStream& body, const Env& env) {
@@ -626,7 +676,7 @@ http::Response upload(const http::Request& req, http::BodyStream& body, const En
   std::string sysname, name, rep;
   if (!http::query_param(req, "system", sysname) || !http::query_param(req, "name", name)) return err(400, "system and name are required");
   const bool replace = http::query_param(req, "replace", rep) && rep == "1";
-  if (!valid_name(name)) return err(400, "invalid file name");
+  if (!valid_name(name)) return bad_name(name);
   SystemInfo si;
   if (!find_system(sysname, si) || si.rom_dir.empty()) return err(400, "unknown system");
   if (!ext_allowed(name, si.exts)) return err(400, "this system does not accept that file type");
@@ -636,7 +686,8 @@ http::Response upload(const http::Request& req, http::BodyStream& body, const En
   struct stat sb;
   if (::stat(si.rom_dir.c_str(), &sb) != 0 || !S_ISDIR(sb.st_mode)) return err(400, "the ROM folder does not exist");
   const std::string final_path = si.rom_dir + "/" + name;
-  const std::string part_path = final_path + ".part";
+  // a name of 255 bytes leaves no room for ".part": its partial gets a short name of its own
+  const std::string part_path = name.size() + 5 > kMaxFileNameBytes ? si.rom_dir + "/." + game_id(name) + ".part" : final_path + ".part";
   if (::lstat(final_path.c_str(), &sb) == 0) {
     if (!replace) return err(409, "a file with that name already exists");
     if (!S_ISREG(sb.st_mode)) return err(400, "not a regular file");
@@ -738,13 +789,14 @@ button:disabled{opacity:.45;cursor:default;box-shadow:none}
 button.alt{background:transparent;color:var(--fg);border:1px solid var(--line);box-shadow:none}
 button.alt:hover{border-color:var(--accbg)}
 button.bad{background:transparent;color:var(--bad);border:1px solid color-mix(in srgb,var(--bad) 45%,transparent);box-shadow:none}
+#send,#ucancel{min-height:44px}
 #pinbox{text-align:center;padding:28px 20px}
 #pinbox label{text-align:center}
 #pin{letter-spacing:.6em;text-indent:.6em;text-align:center;font-size:2rem;font-weight:500;max-width:15rem;margin:0 auto;display:block;padding:.6rem}
 #pinbox button{max-width:15rem}
 #pairbox{border-color:color-mix(in srgb,var(--accbg) 55%,transparent)}
 #pairbox p{margin:0 0 .2rem}
-#info,#drop,#ovr,#gnote,#snote{font-size:.88rem;color:var(--dim);margin:.6rem 0 0;word-break:break-word}
+#info,#ofree,#drop,#ovr,#gnote,#snote{font-size:.88rem;color:var(--dim);margin:.6rem 0 0;word-break:break-word}
 #drop{border:1.5px dashed var(--line);border-radius:12px;padding:.9rem;text-align:center;margin-top:.9rem}
 #p-up.drag #drop{border-color:var(--accbg);color:var(--acc);background:var(--glow)}
 #msg{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:min(32rem,calc(100% - 32px));z-index:9;margin:0;
@@ -760,9 +812,9 @@ li.ok{color:var(--ok)}li.bad{color:var(--bad)}
 #tabs{position:sticky;top:8px;z-index:4;display:flex;gap:4px;margin:0 0 16px;padding:5px;border-radius:16px;background:var(--card2);border:1px solid var(--line);
  box-shadow:var(--shadow);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);overflow-x:auto;scrollbar-width:none}
 #tabs::-webkit-scrollbar{display:none}
-#tabs button{flex:1 1 0;width:auto;min-width:58px;margin:0;padding:.45rem .35rem .4rem;display:flex;flex-direction:column;align-items:center;gap:3px;
- background:transparent;color:var(--dim);border:1.5px solid transparent;border-radius:12px;font-size:.72rem;font-weight:500;box-shadow:none}
-#tabs button::before{content:"";width:22px;height:22px;background:currentColor;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+#tabs button{flex:1 1 0;width:auto;min-width:48px;margin:0;padding:.45rem .1rem .4rem;display:block;text-align:center;white-space:nowrap;
+ background:transparent;color:var(--dim);border:1.5px solid transparent;border-radius:12px;font-size:.7rem;font-weight:500;box-shadow:none;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+#tabs button::before{content:"";display:block;margin:0 auto 3px;width:22px;height:22px;background:currentColor;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 #tabs button.on{color:var(--acc);border-color:var(--accbg);background:var(--glow)}
 #t-up::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4'/%3E%3Cpath d='M7 9l5-5 5 5'/%3E%3Cpath d='M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V4'/%3E%3Cpath d='M7 9l5-5 5 5'/%3E%3Cpath d='M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3'/%3E%3C/svg%3E")}
 #t-ga::before{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='7' width='19' height='11' rx='5.5'/%3E%3Cpath d='M7.5 10.5v4M5.5 12.5h4'/%3E%3Ccircle cx='15.5' cy='11.5' r='.6'/%3E%3Ccircle cx='17.5' cy='13.5' r='.6'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='7' width='19' height='11' rx='5.5'/%3E%3Cpath d='M7.5 10.5v4M5.5 12.5h4'/%3E%3Ccircle cx='15.5' cy='11.5' r='.6'/%3E%3Ccircle cx='17.5' cy='13.5' r='.6'/%3E%3C/svg%3E")}
@@ -804,6 +856,7 @@ li.ok{color:var(--ok)}li.bad{color:var(--bad)}
 <label for="sys">System</label>
 <select id="sys"></select>
 <p id="info"></p>
+<p id="ofree"></p>
 <label for="files">Files</label>
 <input id="files" type="file" multiple>
 <label for="dir">Folder</label>
@@ -811,6 +864,7 @@ li.ok{color:var(--ok)}li.bad{color:var(--bad)}
 <p id="drop">Or drop files or a folder here.</p>
 <label><input id="rep" type="checkbox">Replace files that already exist</label>
 <button id="send" type="button">Upload</button>
+<button id="ucancel" type="button" class="alt" hidden>Cancel</button>
 <p id="ovr"></p>
 <ul id="log"></ul>
 </section>
@@ -834,12 +888,12 @@ li.ok{color:var(--ok)}li.bad{color:var(--bad)}
 <div id="big" hidden><img id="bigimg" alt=""></div>
 <script>
 (function(){
-var pin="",token="",systems=[],busy=false,gen=0,rq=0,gtimer=0,goff=0,urls=[],queue=[],active=0,io=null;
+var pin="",token="",systems=[],busy=false,gen=0,rq=0,gtimer=0,goff=0,urls=[],queue=[],active=0,io=null,gdirty=false,cancelled=false,curx=null,stopper=null;
 function $(i){return document.getElementById(i)}
 function say(t,bad){var m=$("msg");clearTimeout(say.t);m.textContent=t;m.className=bad?"bad":"";if(t&&!/(\.\.\.|…)$/.test(t))say.t=setTimeout(function(){m.textContent=""},bad?9000:3500)}
 function why(x){var e="";try{e=JSON.parse(x.responseText).error}catch(_){}
  if(x.status===403)return x.zfTok?"This device is no longer paired. Enter the PIN again.":"Wrong PIN.";
- if(x.status===429)return"Too many wrong PINs. Wait 30 seconds.";
+ if(x.status===429)return"Too many wrong PINs. Wait a few minutes.";
  if(x.status===404&&!e)return"File transfer is switched off on the console.";
  return e||("Error "+x.status)}
 function auth(x){if(token){x.zfTok=1;x.setRequestHeader("X-Token",token);
@@ -854,14 +908,17 @@ function fill(){var s=$("sys"),g=$("gsys"),keep=s.value,gk=g.value;s.textContent
   o=document.createElement("option");o.value=y.name;o.textContent=t;s.appendChild(o);
   o=document.createElement("option");o.value=y.name;o.textContent=t;g.appendChild(o)});
  if(keep)s.value=keep;if(gk)g.value=gk;show()}
+function hum(n){return n>=1073741824?(n/1073741824).toFixed(1)+" GB":n>=1048576?Math.round(n/1048576)+" MB":Math.max(1,Math.round(n/1024))+" KB"}
 function show(){var y=null,v=$("sys").value;systems.forEach(function(z){if(z.name===v)y=z});
- $("info").textContent=y?("Folder: "+y.dir+" - accepts: "+y.exts.join(" ")+(y.count==null?"":" - "+y.count+" games")):""}
+ $("info").textContent=y?("Folder: "+y.dir+" - accepts: "+y.exts.join(" ")+(y.count==null?"":" - "+y.count+" games")):"";
+ $("ofree").textContent=y&&y.free!=null?"Free space: "+hum(y.free):""}
 function load(done){var x=new XMLHttpRequest();x.open("GET","/files/systems");auth(x);
  x.onload=function(){if(x.status===200){try{systems=JSON.parse(x.responseText)}catch(_){systems=[]}done(true)}else{say(why(x),true);done(false)}};
  x.onerror=function(){say("Cannot reach the console.",true);done(false)};x.send()}
-var tabs=["up","ga","sh"/*@TABS@*/],ontab={};
-function tab(n){tabs.forEach(function(k){$("p-"+k).hidden=k!==n;$("t-"+k).className=k===n?"on":""});
- if(n==="ga"&&!$("glist").children.length)games(true);
+var tabs=["up","ga","sh"/*@TABS@*/],ontab={},onleave={},here="up";
+function tab(n){if(here!==n&&onleave[here])onleave[here]();here=n;
+ tabs.forEach(function(k){$("p-"+k).hidden=k!==n;$("t-"+k).className=k===n?"on":""});
+ if(n==="ga"&&(gdirty||!$("glist").children.length)){gdirty=false;games(true)}
  if(n==="sh")shots();
  if(ontab[n])ontab[n]()}
 tabs.forEach(function(k){$("t-"+k).onclick=function(){tab(k)}});
@@ -894,55 +951,79 @@ $("pairgo").onclick=function(){var b=$("pairgo"),x=new XMLHttpRequest();b.disabl
  x.onerror=function(){b.disabled=false;say("Cannot reach the console.",true)};
  x.send(devname())};
 $("sys").onchange=show;
-/* uploads: one file at a time, in 8 MB slices to /files/put; after a cut connection the console is asked how much it has */
+/* uploads: one file at a time, in 8 MB slices to /files/put. Before the first slice the console is asked how much of this file it
+   already has (a page reloaded, a phone that fell asleep): the partial is continued only when this browser remembers starting that
+   very file (same name, size and date), else the upload starts again from 0. After a cut connection the console is asked again. */
 var CH=8*1024*1024,drops=[];
 function enc(s){return encodeURIComponent(s)}
 function putfile(it,rep,last,li,prog,done){
- var f=it.f,off=0,tries=0;
+ var f=it.f,off=0,tries=0,key="zf_up:"+it.s+"/"+it.p,sig=f.size+":"+(f.lastModified||0);
  function label(t){li.textContent=it.p+" - "+t}
  function setoff(n){prog(n-off);off=n}
+ function mark(){try{localStorage.setItem(key,sig)}catch(_){}}
+ function unmark(){try{localStorage.removeItem(key)}catch(_){}}
+ function saved(){try{return localStorage.getItem(key)===sig}catch(_){return false}}
  function fail(t){li.className="bad";label(t);done(false)}
- function finish(){setoff(f.size);li.className="ok";label("done");done(true)}
+ function finish(){setoff(f.size);unmark();li.className="ok";label("done");done(true)}
+ it.stop=function(){li.className="bad";label("cancelled")};
+ function ask(onok,onlost){var x=new XMLHttpRequest();curx=x;
+  x.open("GET","/files/put/status?system="+enc(it.s)+"&path="+enc(it.p));auth(x);x.timeout=15000;
+  x.onload=function(){curx=null;if(!cancelled)onok(x)};
+  x.onerror=x.ontimeout=function(){curx=null;if(!cancelled)onlost()};x.send()}
  function retry(){
+  if(cancelled)return;
   if(++tries>30){fail("connection lost");return}
   label("Reconnecting…");
-  setTimeout(function(){var x=new XMLHttpRequest();
-   x.open("GET","/files/put/status?system="+enc(it.s)+"&path="+enc(it.p));auth(x);x.timeout=15000;
-   x.onload=function(){if(x.status!==200){fail(why(x));return}
+  setTimeout(function(){if(cancelled)return;
+   ask(function(x){if(x.status!==200){fail(why(x));return}
     var r={};try{r=JSON.parse(x.responseText)}catch(_){}
     if(r.done&&!r.have&&r.size===f.size){finish();return}
-    setoff(r.have||0);step()};
-   x.onerror=x.ontimeout=retry;x.send()},2000)}
+    setoff(r.have||0);step()},retry)},2000)}
  function step(){
-  var end=Math.min(off+CH,f.size),x=new XMLHttpRequest();
+  var end=Math.min(off+CH,f.size),x=new XMLHttpRequest();curx=x;
   x.open("POST","/files/put?system="+enc(it.s)+"&path="+enc(it.p)+"&offset="+off+"&total="+f.size+(rep?"&replace=1":"")+(last&&end>=f.size?"&final=1":""));
   auth(x);x.timeout=180000;
   x.upload.onprogress=function(e){if(e.lengthComputable)label(Math.min(100,Math.floor(100*(off+e.loaded)/Math.max(f.size,1)))+"%")};
-  x.onload=function(){
-   if(x.status===200){setoff(end);if(end>=f.size)finish();else step();return}
+  x.onload=function(){curx=null;if(cancelled)return;
+   if(x.status===200){tries=0;setoff(end);if(end>=f.size)finish();else step();return}
    var r={};try{r=JSON.parse(x.responseText)}catch(_){}
    if(x.status===409&&typeof r.have==="number"){if(++tries>30){fail("out of step with the console");return}setoff(r.have);step();return}
    if(x.status===409&&r.busy){retry();return}
    fail(why(x))};
-  x.onerror=x.ontimeout=retry;
+  x.onerror=x.ontimeout=function(){curx=null;retry()};
   x.send(f.slice(off,end))}
- label("0%");step()}
+ function resume(){
+  if(!saved()){mark();step();return}
+  label("Checking…");
+  ask(function(x){var r={};if(x.status===200)try{r=JSON.parse(x.responseText)}catch(_){}
+   if(!rep&&r.done&&!r.have&&r.size===f.size){finish();return}  // it was all there: only the answer to the last slice was lost
+   if(r.have>0&&r.have<=f.size)setoff(r.have);
+   mark();label(Math.floor(100*off/Math.max(f.size,1))+"%");step()},function(){mark();step()})}
+ label("0%");resume()}
 function gather(){var out=[];
  [$("files").files,$("dir").files].forEach(function(l){Array.prototype.forEach.call(l,function(f){out.push({f:f,p:f.webkitRelativePath||f.name})})});
  return out.concat(drops)}
 $("send").onclick=function(){if(busy)return;var list=gather();
  if(!list.length){say("Choose at least one file or a folder.",true);return}
- say("");busy=true;$("send").disabled=true;$("log").textContent="";drops=[];$("drop").textContent="Or drop files or a folder here.";
- var all=0,did=0,sent=0,lastok=true,rep=$("rep").checked,log=$("log"),sysn=$("sys").value;
+ say("");busy=true;cancelled=false;$("send").disabled=true;$("ucancel").hidden=false;$("log").textContent="";drops=[];$("drop").textContent="Or drop files or a folder here.";
+ var all=0,did=0,sent=0,lastok=true,ci=0,rep=$("rep").checked,log=$("log"),sysn=$("sys").value;
  list.forEach(function(it){all+=it.f.size;it.s=sysn});
  function show(i){$("ovr").textContent="Overall "+Math.floor(100*did/Math.max(all,1))+"% - file "+Math.min(i+1,list.length)+" of "+list.length}
+ /* the batch is over, finished or cancelled: the pickers are emptied (else Upload again would send it all again) */
+ function end(cancel){busy=false;stopper=null;curx=null;$("send").disabled=false;$("ucancel").hidden=true;
+  $("files").value="";$("dir").value="";
+  $("ovr").textContent=(cancel?"Cancelled: ":"Finished: ")+sent+" of "+list.length+" files sent.";
+  if(sent)gdirty=true;
+  if(sent&&(cancel||!lastok)){var q=new XMLHttpRequest();q.open("POST","/files/put/rescan");auth(q);q.send()}
+  load(function(ok){if(ok)fill()})}
+ stopper=function(){var it=list[ci];if(it&&it.stop)it.stop();end(true)};
  function next(i){
-  if(i>=list.length){busy=false;$("send").disabled=false;$("ovr").textContent="Finished: "+sent+" of "+list.length+" files sent.";
-   if(sent&&!lastok){var q=new XMLHttpRequest();q.open("POST","/files/put/rescan");auth(q);q.send()}
-   load(function(ok){if(ok)fill()});return}
-  var li=document.createElement("li");log.appendChild(li);show(i);
+  if(i>=list.length){end(false);return}
+  ci=i;var li=document.createElement("li");log.appendChild(li);show(i);
   putfile(list[i],rep,i===list.length-1,li,function(d){did+=d;show(i)},function(ok){if(ok)sent++;lastok=ok;next(i+1)})}
  next(0)};
+/* Cancel: stops the queue and the request in flight; what the console already has of the file stays, to be continued later */
+$("ucancel").onclick=function(){if(!busy)return;cancelled=true;if(curx){try{curx.abort()}catch(_){}curx=null}if(stopper)stopper()};
 /* dropping files (or folders, where the browser lists their entries) on the upload box */
 function walk(list,done){var n=list.length;if(!n){done();return}
  function one(){if(--n===0)done()}
@@ -1018,7 +1099,7 @@ function shots(){var g=$("grid");g.textContent="";resetpics();$("snote").textCon
 $("shre").onclick=shots;
 $("big").onclick=function(){$("big").hidden=true};
 var Z={$:$,say:say,why:why,call:call,jerr:jerr,load:load,fill:fill,systems:function(){return systems},pic:pic,resetpics:resetpics,
- tab:tab,ontab:ontab,auth:auth,nextReq:function(){return ++rq},isReq:function(n){return n===rq},games:function(){games(true)},onrow:null};
+ tab:tab,ontab:ontab,onleave:onleave,auth:auth,nextReq:function(){return ++rq},isReq:function(n){return n===rq},games:function(){games(true)},onrow:null};
 /*@MODULES@*/
 /* start: the PIN of the QR code leaves the address at once; a phone already paired keeps its token (scanning again must not pair
    it twice), and only when the console no longer knows that token does the PIN of the QR code pair it again */

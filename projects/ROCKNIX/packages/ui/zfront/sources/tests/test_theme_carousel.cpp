@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include <unistd.h>
+
 #include "check.hpp"
 #include "gfx.hpp"
 #include "scene.hpp"
@@ -29,12 +31,16 @@ std::string slurp(const fs::path& p) {
   return ss.str();
 }
 
+std::vector<fs::path> g_made;  // the folders made by make_theme: removed at the end
+
 /// A copy of the Zenith folder with `extra` (variables) added to its theme.xml.
 std::string make_theme(const std::string& base, const std::string& tag, const std::string& extra) {
-  const fs::path dst = fs::temp_directory_path() / ("zf-test-carousel-" + tag);
+  // the process id in the name: two runs of this test (ctest -j, two build folders) must not copy and delete each other's folder
+  const fs::path dst = fs::temp_directory_path() / ("zf-test-carousel-" + std::to_string(::getpid()) + "-" + tag);
   std::error_code ec;
   fs::remove_all(dst, ec);
   fs::copy(base, dst, fs::copy_options::recursive, ec);
+  g_made.push_back(dst);
   std::string xml = slurp(dst / "theme.xml");
   const size_t at = xml.find("<variables>");
   CHECK(at != std::string::npos);
@@ -67,9 +73,9 @@ Scene home(const std::string& dir, unsigned w, unsigned h) {
   Theme th;
   Assets as;
   std::string err;
-  CHECK(Theme::load(dir, ratio_name(w, h), th, err));
-  CHECK(as.load_font(th.path(th.str("font")), err));
-  CHECK(load_common(th, as, s.c, err));
+  const bool loaded = Theme::load(dir, ratio_name(w, h), th, err) && as.load_font(th.path(th.str("font")), err) && load_common(th, as, s.c, err);
+  CHECK(loaded);
+  if (!loaded) return s;  // as main.cpp does: nothing is drawn with a theme or a font that did not load
   std::vector<SystemItem> items;
   for (const char* n : {"gb", "gbc", "gba", "nes", "snes", "psx", "psp", "mame"}) items.push_back({n, n, 7});
   system_view(th, as, s.c, float(w), float(h), items, 3, 3.0f, Status::demo("12:04"), nullptr, InfoFade{}, s.ops);
@@ -181,5 +187,7 @@ int main() {
   CHECK(!same(lu, ll));
   CHECK(!same(l0, ll));
   CHECK(same(l0, list(make_theme(dir, "lx", "<listCase>rubbish</listCase>"))));
+  std::error_code ec;
+  for (const fs::path& p : g_made) fs::remove_all(p, ec);
   return zt::done();
 }

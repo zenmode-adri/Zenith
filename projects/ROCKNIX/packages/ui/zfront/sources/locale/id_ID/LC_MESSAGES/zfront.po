@@ -1,0 +1,2424 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: id_ID\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "DAFTAR GAME RUSAK"
+
+msgid "Not available yet"
+msgstr "Belum tersedia"
+
+msgid "Game lists updated"
+msgstr "Daftar game diperbarui"
+
+msgid "COVERS ADDED"
+msgstr "SAMPUL DITAMBAHKAN"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "MODE PERFORMA MUNGKIN MEMBANTU GAME INI"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "GAME INI MUNGKIN BERJALAN LEBIH BAIK DENGAN MODE PERFORMA"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "AKTIFKAN MODE PERFORMA UNTUK GAME INI"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "MODE PERFORMA AKTIF UNTUK GAME INI"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Game ini mungkin berjalan lebih baik dengan mode performa: GPU dan memori tetap berkecepatan penuh saat bermain."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "JANGAN SARANKAN MODE PERFORMA LAGI"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Jangan sarankan mode performa untuk game ini lagi."
+
+msgid "BATTERY"
+msgstr "BATERAI"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "DATA BELUM CUKUP"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Mainkan game ini selama lima menit atau lebih dengan baterai, lalu perkiraan akan muncul di sini."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Dengan daya saat ini, sesuai laju sesi terakhir game ini."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Dengan daya saat ini. Belum ada sesi game ini: dipakai rata-rata sistemnya."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Dengan daya saat ini. Belum ada sesi sistem ini: dipakai rata-rata semua game."
+
+msgid "Never"
+msgstr "Tidak pernah"
+
+msgid "What used the most"
+msgstr "Yang paling banyak memakai"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Sejak pengisian penuh terakhir. Perkiraan."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Belum ada yang terukur. Terisi saat Anda bermain."
+
+msgid "Asleep"
+msgstr "Tidur"
+
+msgid "Menus and system"
+msgstr "Menu dan sistem"
+
+msgid "Screen"
+msgstr "Layar"
+
+msgid "Charging"
+msgstr "Mengisi daya"
+
+msgid "About"
+msgstr "Tentang"
+
+msgid "Since full"
+msgstr "Sejak penuh"
+
+msgid "Using now"
+msgstr "Dipakai sekarang"
+
+msgid "Last hours"
+msgstr "Jam terakhir"
+
+msgid "Now"
+msgstr "Sekarang"
+
+msgid "More settings"
+msgstr "Pengaturan lainnya"
+
+msgid "Power saver"
+msgstr "Penghemat daya"
+
+msgid "Screensaver after"
+msgstr "Screensaver setelah"
+
+msgid "Turn on by itself at"
+msgstr "Menyala sendiri pada"
+
+msgid "ADJUST"
+msgstr "ATUR"
+
+msgid "Action"
+msgstr "Aksi"
+
+msgid "Adult"
+msgstr "Dewasa"
+
+msgid "Adventure"
+msgstr "Petualangan"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Kasino"
+
+msgid "Casual Game"
+msgstr "Game kasual"
+
+msgid "Hunting and Fishing"
+msgstr "Berburu dan memancing"
+
+msgid "Fight"
+msgstr "Pertarungan"
+
+msgid "Race, Driving"
+msgstr "Balapan, mengemudi"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Pinball"
+
+msgid "Playing cards"
+msgstr "Kartu remi"
+
+msgid "Role playing games"
+msgstr "Game peran"
+
+msgid "Asiatic board game"
+msgstr "Papan permainan Asia"
+
+msgid "Educational"
+msgstr "Edukasi"
+
+msgid "Music and Dance"
+msgstr "Musik dan tari"
+
+msgid "Platform"
+msgstr "Platform"
+
+msgid "Puzzle-Game"
+msgstr "Game teka-teki"
+
+msgid "Quiz"
+msgstr "Kuis"
+
+msgid "Reflection"
+msgstr "Refleksi"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Simulasi"
+
+msgid "Sports"
+msgstr "Olahraga"
+
+msgid "Sports with Animals"
+msgstr "Olahraga dengan hewan"
+
+msgid "Strategy"
+msgstr "Strategi"
+
+msgid "Shooter"
+msgstr "Shooter"
+
+msgid "Not set"
+msgstr "Belum diatur"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Sen"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Min"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Sel"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "Rab"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Jum"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "Sab"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "Kam"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Apr"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Feb"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Jan"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Jun"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Mar"
+
+msgctxt "date"
+msgid "May"
+msgstr "Mei"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Agu"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Des"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Jul"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Nov"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Okt"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Sep"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "DATA GAME TIDAK DAPAT DISIMPAN"
+
+msgid "Could not save the settings"
+msgstr "Pengaturan tidak dapat disimpan"
+
+msgid "FILTER BY"
+msgstr "FILTER BERDASARKAN"
+
+msgid "FAVORITES ONLY"
+msgstr "HANYA FAVORIT"
+
+msgid "LIST"
+msgstr "DAFTAR"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Tema yang dipilih tidak dapat dimuat: memakai Zenith"
+
+msgid "PAGE"
+msgstr "HALAMAN"
+
+msgid "Could not show this page"
+msgstr "Halaman ini tidak dapat ditampilkan"
+
+msgid "INSTALLED"
+msgstr "TERPASANG"
+
+msgid "SMART COLLECTIONS"
+msgstr "KOLEKSI PINTAR"
+
+msgid "EDIT FILTERS"
+msgstr "UBAH FILTER"
+
+msgid "NO OPTIONS"
+msgstr "TIDAK ADA OPSI"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Yakin ingin menghapus '%s'?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Atur filternya nanti di Koleksi game kustom."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Mulai ulang antarmuka untuk menerapkan perubahan."
+
+msgid "Could not save the setting"
+msgstr "Pengaturan tidak dapat disimpan"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "TETAPKAN CONTROLLER KE PEMAIN"
+
+msgid "Could not start Bluetooth"
+msgstr "Bluetooth tidak dapat dimulai"
+
+msgid "Searching..."
+msgstr "Mencari..."
+
+msgid "CONTROLLERS"
+msgstr "CONTROLLER"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "TUKAR TOMBOL KONFIRMASI & BATAL"
+
+msgid "ENABLE RUMBLE"
+msgstr "AKTIFKAN GETARAN"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "KONFIGURASI OTOMATIS HOTKEY RETROARCH"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "CONTROLLER TERHUBUNG"
+
+msgid "Not configured"
+msgstr "Belum dikonfigurasi"
+
+msgid "Unknown controller"
+msgstr "Controller tidak dikenal"
+
+msgid "PAIRED"
+msgstr "TERPASANGKAN"
+
+msgid "Could not pair"
+msgstr "Tidak dapat memasangkan"
+
+msgid "Connected"
+msgstr "Terhubung"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Hapus semua perangkat Bluetooth?"
+
+msgid "Could not disconnect"
+msgstr "Tidak dapat memutuskan koneksi"
+
+msgid "Could not connect"
+msgstr "Tidak dapat terhubung"
+
+msgid "Could not remove"
+msgstr "Tidak dapat menghapus"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "TOMBOL A / TIMUR"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "TOMBOL B / SELATAN"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "TOMBOL X / UTARA"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "TOMBOL Y / BARAT"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "TOMBOL STIK KIRI"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "TOMBOL STIK KANAN"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "AKTIFKAN HOTKEY"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "CONTROLLER BAWAAN"
+
+msgid "GAMEPAD DETECTED"
+msgstr "GAMEPAD TERDETEKSI"
+
+msgid "GAMEPADS DETECTED"
+msgstr "GAMEPAD TERDETEKSI"
+
+msgid "PRESS B TO CANCEL."
+msgstr "TAHAN SEBUAH TOMBOL PADA PERANGKAT ANDA UNTUK MENGONFIGURASINYA."
+
+msgid "Could not save the controller configuration"
+msgstr "Konfigurasi controller tidak dapat disimpan"
+
+msgid "Controller configuration saved"
+msgstr "Konfigurasi controller disimpan"
+
+msgid "Controller configuration cancelled"
+msgstr "Konfigurasi controller dibatalkan"
+
+msgid "Controller disconnected"
+msgstr "Controller terputus"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "TERUS TAHAN UNTUK MEMBATALKAN"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "TAHAN TOMBOL APA PUN SELAMA 3 DETIK UNTUK MEMBATALKAN."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "TAHAN TOMBOL APA PUN UNTUK MELEWATI. TERUS TAHAN UNTUK MEMBATALKAN."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "SEMUA TOMBOL SELESAI"
+
+msgid "set"
+msgstr "diatur"
+
+msgid "skipped"
+msgstr "dilewati"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "TOMBOL HOTKEY BELUM DITETAPKAN. DIPERLUKAN UNTUK KELUAR DARI GAME DENGAN CONTROLLER."
+
+msgid "DATE & TIME"
+msgstr "TANGGAL & WAKTU"
+
+msgid "MONTH"
+msgstr "BULAN"
+
+msgid "DAY"
+msgstr "HARI"
+
+msgid "HOUR"
+msgstr "JAM"
+
+msgid "MINUTE"
+msgstr "MENIT"
+
+msgid "SET DATE & TIME"
+msgstr "ATUR TANGGAL & WAKTU"
+
+msgid "Date and time set"
+msgstr "Tanggal dan waktu diatur"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Dengan Wi-Fi, waktu diatur otomatis."
+
+msgid "That folder is protected"
+msgstr "Folder itu dilindungi"
+
+msgid "Outside the allowed folders"
+msgstr "Di luar folder yang diizinkan"
+
+msgid "Not enough free space"
+msgstr "Ruang kosong tidak cukup"
+
+msgid "That name already exists"
+msgstr "Nama itu sudah ada"
+
+msgid "Cancelled"
+msgstr "Dibatalkan"
+
+msgid "A folder cannot go into itself"
+msgstr "Folder tidak dapat dimasukkan ke dalam dirinya sendiri"
+
+msgid "That name is not valid"
+msgstr "Nama itu tidak valid"
+
+msgid "Not found"
+msgstr "Tidak ditemukan"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "File lebih besar dari 4 GB: kartu ini tidak dapat menampungnya"
+
+msgid "This card does not accept that name"
+msgstr "Kartu ini tidak menerima nama itu"
+
+msgid "This location is read-only"
+msgstr "Lokasi ini hanya-baca"
+
+msgid "An error occurred"
+msgstr "Terjadi kesalahan"
+
+msgid "%s of %s done"
+msgstr "%s dari %s selesai"
+
+msgid "item"
+msgstr "item"
+
+msgid "items"
+msgstr "item"
+
+msgid "link skipped"
+msgstr "tautan dilewati"
+
+msgid "links skipped"
+msgstr "tautan dilewati"
+
+msgid "This can't be undone."
+msgstr "Ini tidak dapat dibatalkan."
+
+msgid "Files"
+msgstr "File"
+
+msgid "selected"
+msgstr "dipilih"
+
+msgid "Cannot read this folder"
+msgstr "Folder ini tidak dapat dibaca"
+
+msgid "This folder is empty"
+msgstr "Folder ini kosong"
+
+msgid "free"
+msgstr "kosong"
+
+msgid "File"
+msgstr "File"
+
+msgid "Folder"
+msgstr "Folder"
+
+msgid "Link"
+msgstr "Tautan"
+
+msgid "Properties"
+msgstr "Properti"
+
+msgid "Copy"
+msgstr "Salin"
+
+msgid "Move"
+msgstr "Pindahkan"
+
+msgid "Paste here"
+msgstr "Tempel di sini"
+
+msgid "Rename"
+msgstr "Ganti nama"
+
+msgid "New folder"
+msgstr "Folder baru"
+
+msgid "Delete"
+msgstr "Hapus"
+
+msgid "Select all"
+msgstr "Pilih semua"
+
+msgid "Clear selection"
+msgstr "Hapus pilihan"
+
+msgid "Date"
+msgstr "Tanggal"
+
+msgid "Size"
+msgstr "Ukuran"
+
+msgid "Sort by"
+msgstr "Urutkan"
+
+msgid "Hide hidden files"
+msgstr "Sembunyikan file tersembunyi"
+
+msgid "Show hidden files"
+msgstr "Tampilkan file tersembunyi"
+
+msgid "Actions"
+msgstr "Aksi"
+
+msgid "Home"
+msgstr "Beranda"
+
+msgid "Games"
+msgstr "Game"
+
+msgid "Game card"
+msgstr "Kartu game"
+
+msgid "USB drive"
+msgstr "Drive USB"
+
+msgid "Screenshots"
+msgstr "Tangkapan layar"
+
+msgid "Go to"
+msgstr "Buka"
+
+msgid "Ready to copy"
+msgstr "Siap disalin"
+
+msgid "Ready to move"
+msgstr "Siap dipindahkan"
+
+msgid "Warning"
+msgstr "Peringatan"
+
+msgid "Cancel"
+msgstr "Batal"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Ini file sistem. Mengganti namanya dapat merusak konsol."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Ini file sistem. Menghapusnya dapat merusak konsol."
+
+msgid "Wait for the other job"
+msgstr "Tunggu tugas lainnya"
+
+msgid "Copied"
+msgstr "Disalin"
+
+msgid "Deleted"
+msgstr "Dihapus"
+
+msgid "Moved"
+msgstr "Dipindahkan"
+
+msgid "originals kept"
+msgstr "file asli dipertahankan"
+
+msgid "Copying"
+msgstr "Menyalin"
+
+msgid "Deleting"
+msgstr "Menghapus"
+
+msgid "Moving"
+msgstr "Memindahkan"
+
+msgid "Calculating..."
+msgstr "Menghitung..."
+
+msgid "Back"
+msgstr "Kembali"
+
+msgid "Close"
+msgstr "Tutup"
+
+msgid "Mark"
+msgstr "Tandai"
+
+msgid "Open"
+msgstr "Buka"
+
+msgid "Page"
+msgstr "Halaman"
+
+msgid "WHILE PLAYING"
+msgstr "SAAT BERMAIN"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "LANJUTKAN GAME TERAKHIR SAAT STARTUP"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Memulai game terakhir Anda dari simpanan otomatisnya saat boot. B membatalkan."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "MENU HOME SAAT BERMAIN"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Eksperimental. Tahan START dan tombol bahu yang dipilih selama satu detik saat game berjalan untuk menjeda dan membuka panel berisi baterai, kecerahan, volume, LANJUTKAN, dan KELUAR DARI GAME (SIMPAN STATUS dan MUAT STATUS hanya jika perintah jaringan RetroArch aktif)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "TOMBOL MENU HOME"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Tombol yang ditahan bersama START untuk membuka menu home. Kombinasi berbasis Select dipakai oleh RetroArch."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "SARAN PERFORMA"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Menyarankan mode performa untuk game yang ditahan oleh governor GPU."
+
+msgid "PLAY TIME LIMIT"
+msgstr "BATAS WAKTU BERMAIN"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Waktu bermain setiap hari. Pesan muncul 5 menit sebelum berakhir (di dalam game hanya jika perintah jaringan RetroArch aktif), lalu game ditutup. Waktu mulai dihitung saat ini diaktifkan."
+
+msgid "SAVED GAMES"
+msgstr "GAME TERSIMPAN"
+
+msgid "PICTURE AND CONTROL"
+msgstr "GAMBAR DAN KONTROL"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "STREAMING GAME MOONLIGHT"
+
+msgid "MORE"
+msgstr "LAINNYA"
+
+msgid "PLAY STATISTICS"
+msgstr "STATISTIK BERMAIN"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "OPSI PER SISTEM"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "mode performa"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU dan memori berkecepatan penuh saat bermain"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "SISTEM TIDAK DIKENAL"
+
+msgid "EMULATOR"
+msgstr "EMULATOR"
+
+msgid "The emulator and core that run this."
+msgstr "Emulator dan core yang menjalankan ini."
+
+msgid "SYSTEM OPTIONS"
+msgstr "OPSI SISTEM"
+
+msgid "DISPLAY"
+msgstr "TAMPILAN"
+
+msgid "GAMEPLAY"
+msgstr "GAMEPLAY"
+
+msgid "ACTIONS"
+msgstr "AKSI"
+
+msgid "RANDOM GAME"
+msgstr "GAME ACAK"
+
+msgid "COOLING PROFILE"
+msgstr "PROFIL PENDINGINAN"
+
+msgid "AGGRESSIVE"
+msgstr "AGRESIF"
+
+msgid "MODERATE"
+msgstr "SEDANG"
+
+msgid "QUIET"
+msgstr "SENYAP"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "GOVERNOR PENSKALAAN CPU"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GOVERNOR PENSKALAAN GPU"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "OVERLAY MANGOHUD"
+
+msgid "UNKNOWN GAME"
+msgstr "GAME TIDAK DIKENAL"
+
+msgid "INVALID DATE"
+msgstr "TANGGAL TIDAK VALID"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "GAME TIDAK DAPAT DIHAPUS"
+
+msgid "CONFIG"
+msgstr "KONFIGURASI"
+
+msgid "CORE PROVIDED"
+msgstr "DISEDIAKAN CORE"
+
+msgid "FULL"
+msgstr "PENUH"
+
+msgid "SQUARE PIXEL"
+msgstr "PIKSEL PERSEGI"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "PENYESUAIAN PANEL"
+
+msgid "SCREEN & SOUND"
+msgstr "LAYAR & SUARA"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "SIAGA"
+
+msgid "MONITORING"
+msgstr "PEMANTAUAN"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "OVERCLOCK & PEMANTAUAN"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "BATERAI & PERFORMA"
+
+msgid "LIBRARY"
+msgstr "PUSTAKA"
+
+msgid "CHECK LIBRARY"
+msgstr "PERIKSA PUSTAKA"
+
+msgid "SAVE BACKUPS"
+msgstr "CADANGAN SIMPANAN"
+
+msgid "LANGUAGE & TIME"
+msgstr "BAHASA & WAKTU"
+
+msgid "HOME MENU"
+msgstr "MENU HOME"
+
+msgid "CHARGING"
+msgstr "MENGISI DAYA"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "KECERAHAN LAYAR"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "TIMPA SIMPAN STATUS?"
+
+msgid "LOAD STATE"
+msgstr "MUAT STATUS"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "MUAT SIMPAN STATUS? KEMAJUAN YANG BELUM DISIMPAN AKAN HILANG."
+
+msgid "RESUME"
+msgstr "LANJUTKAN"
+
+msgid "QUIT GAME"
+msgstr "KELUAR DARI GAME"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "BENAR-BENAR KELUAR DARI GAME?"
+
+msgid "AND MORE"
+msgstr "DAN LAINNYA"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "TIDAK ADA MASALAH"
+
+msgid "PROBLEMS FOUND"
+msgstr "MASALAH DITEMUKAN"
+
+msgid "MISSING BIOS"
+msgstr "BIOS HILANG"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "FILE MUNGKIN RUSAK"
+
+msgid "DUPLICATES"
+msgstr "DUPLIKAT"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "GAME TANPA GAMBAR"
+
+msgid "NETWORK"
+msgstr "JARINGAN"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "CONTROLLER & BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Khusus pengembangan: semua widget kerangka menu."
+
+msgid "WIDGET DEMO"
+msgstr "DEMO WIDGET"
+
+msgid "Unable to connect to server"
+msgstr "Tidak dapat terhubung ke server"
+
+msgid "Succesfully paired with server"
+msgstr "Berhasil dipasangkan dengan server"
+
+msgid "QUIT CURRENT GAME"
+msgstr "KELUAR DARI GAME SAAT INI"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "PERBARUI GAME MOONLIGHT"
+
+msgid "PAIR WITH SERVER"
+msgstr "PASANGKAN DENGAN SERVER"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "LEPAS PASANGAN DENGAN SERVER"
+
+msgid "Unpaired and settings cleared"
+msgstr "Pasangan dilepas dan pengaturan dihapus"
+
+msgid "Unpaired from server"
+msgstr "Pasangan dengan server dilepas"
+
+msgid "SERVER IP"
+msgstr "IP SERVER"
+
+msgid "PAIRING PIN"
+msgstr "PIN PEMASANGAN"
+
+msgid "HOST"
+msgstr "HOST"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "GABUNG GAME NETPLAY"
+
+msgid "NETPLAY NICKNAME"
+msgstr "NAMA PANGGILAN NETPLAY"
+
+msgid "NETPLAY HOST"
+msgstr "HOST NETPLAY"
+
+msgid "NETPLAY PORT"
+msgstr "PORT NETPLAY"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Menyalakan Wi-Fi..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Kesalahan konfigurasi Wi-Fi"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi aktif"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi mati"
+
+msgid "Wi-Fi region updated"
+msgstr "Wilayah Wi-Fi diperbarui"
+
+msgid "Please wait..."
+msgstr "Harap tunggu..."
+
+msgid "Local play mode updated"
+msgstr "Mode permainan lokal diperbarui"
+
+msgid "The service did not answer"
+msgstr "Layanan tidak menjawab"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "JARINGAN WI-FI"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Mengatur regulasi radio: kanal yang boleh Anda pakai."
+
+msgid "TRANSFER FILES"
+msgstr "TRANSFER FILE"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Kirim game ke konsol dari ponsel atau komputer di jaringan ini."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "ALAMAT IP YANG TERSEDIA:"
+
+msgid "LOCAL PLAY"
+msgstr "PERMAINAN LOKAL"
+
+msgid "LOCAL PLAY MODE"
+msgstr "MODE PERMAINAN LOKAL"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Menjalankan titik akses untuk netplay dengan konsol lain."
+
+msgid "1 (HOST)"
+msgstr "1 (HOST)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (KLIEN 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (KLIEN 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (KLIEN 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ID PERMAINAN LOKAL"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, cloud, VPN, dan nama konsol."
+
+msgid "NETWORK SERVICES"
+msgstr "LAYANAN JARINGAN"
+
+msgid "ENABLE SSH"
+msgstr "AKTIFKAN SSH"
+
+msgid "SSH is off"
+msgstr "SSH mati"
+
+msgid "SSH is on"
+msgstr "SSH aktif"
+
+msgid "Remote access to the console over the network."
+msgstr "Akses jarak jauh ke konsol melalui jaringan."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "AKTIFKAN SERVER HTTP SEDERHANA"
+
+msgid "HTTP server is off"
+msgstr "Server HTTP mati"
+
+msgid "HTTP server is on"
+msgstr "Server HTTP aktif"
+
+msgid "FILE TRANSFER"
+msgstr "TRANSFER FILE"
+
+msgid "USB GADGET FUNCTION"
+msgstr "FUNGSI USB GADGET"
+
+msgid "USB networking is on. The console is at"
+msgstr "Jaringan USB aktif. Konsol berada di"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Apa yang ditawarkan konsol pada port USB-C-nya."
+
+msgid "CLOUD SERVICES"
+msgstr "LAYANAN CLOUD"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "PASANG DRIVE CLOUD"
+
+msgid "Cloud drive mounted"
+msgstr "Drive cloud terpasang"
+
+msgid "Cloud drive unmounted"
+msgstr "Drive cloud dilepas"
+
+msgid "VPN SERVICES"
+msgstr "LAYANAN VPN"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuard mati"
+
+msgid "WireGuard is on"
+msgstr "WireGuard aktif"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscale mati"
+
+msgid "Tailscale is on"
+msgstr "Tailscale aktif"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale tidak dapat terhubung"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale meminta Anda masuk"
+
+msgid "SHOW LINK"
+msgstr "TAMPILKAN TAUTAN"
+
+msgid "TAILSCALE LOGIN"
+msgstr "LOGIN TAILSCALE"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "OTENTIKASI ULANG TAILSCALE:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Gunakan hanya huruf, angka, dan tanda hubung"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Nama host disimpan. Berlaku pada boot berikutnya"
+
+msgid "The new name is used at the next boot."
+msgstr "Nama baru dipakai pada boot berikutnya."
+
+msgid "WEB FILE TRANSFER"
+msgstr "TRANSFER FILE WEB"
+
+msgid "Could not start the web transfer"
+msgstr "Transfer web tidak dapat dimulai"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Memungkinkan ponsel atau komputer di jaringan ini mengirim game ke konsol."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "TIDAK DAPAT DIMULAI (PORT SIBUK?)"
+
+msgid "WEB ADDRESS"
+msgstr "ALAMAT WEB"
+
+msgid "WEB PIN"
+msgstr "PIN WEB"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "DRIVE JARINGAN (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "AKTIFKAN SAMBA"
+
+msgid "Samba is off"
+msgstr "Samba mati"
+
+msgid "Samba is on"
+msgstr "Samba aktif"
+
+msgid "Shares the games folder with other computers."
+msgstr "Membagikan folder game ke komputer lain."
+
+msgid "SAMBA ADDRESS"
+msgstr "ALAMAT SAMBA"
+
+msgid "SAMBA USER"
+msgstr "PENGGUNA SAMBA"
+
+msgid "SAMBA PASSWORD"
+msgstr "KATA SANDI SAMBA"
+
+msgid "Connecting to"
+msgstr "Menghubungkan ke"
+
+msgid "Connected successfully"
+msgstr "Berhasil terhubung"
+
+msgid "Failed to connect"
+msgstr "Gagal terhubung"
+
+msgid "SAVED"
+msgstr "TERSIMPAN"
+
+msgid "ENTERPRISE"
+msgstr "ENTERPRISE"
+
+msgid "SECURED"
+msgstr "TERAMANKAN"
+
+msgid "Enterprise networks are not supported"
+msgstr "Jaringan enterprise tidak didukung"
+
+msgid "Network forgotten"
+msgstr "Jaringan dilupakan"
+
+msgid "WI-FI KEY FOR "
+msgstr "KUNCI WI-FI UNTUK "
+
+msgid "CONNECTING..."
+msgstr "MENGHUBUNGKAN..."
+
+msgid "WI-FI SSID"
+msgstr "SSID WI-FI"
+
+msgid "WI-FI KEY"
+msgstr "KUNCI WI-FI"
+
+msgid "REALLY SUSPEND ?"
+msgstr "BENAR-BENAR TIDURKAN?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "BENAR-BENAR MATIKAN?"
+
+msgid "REALLY RESTART?"
+msgstr "BENAR-BENAR MULAI ULANG?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "BENAR-BENAR MULAI ULANG ANTARMUKA?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "MULAI ULANG ANTARMUKA"
+
+msgid "TEST ACCOUNT"
+msgstr "UJI AKUN"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Memeriksa nama pengguna dan kata sandi di retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "MENGHUBUNGKAN KE RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "SUDAH MASUK"
+
+msgid "LED NOTIFICATIONS"
+msgstr "NOTIFIKASI LED"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Tampilkan baris RetroAchievements di menu utama."
+
+msgid "NO SAVES FOUND"
+msgstr "TIDAK ADA SIMPANAN"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "RUANG KOSONG TIDAK CUKUP"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "CADANGAN DARI MENIT INI SUDAH ADA"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "CADANGAN RUSAK ATAU HILANG"
+
+msgid "BACKUP DONE"
+msgstr "PENCADANGAN SELESAI"
+
+msgid "SAVES RESTORED"
+msgstr "SIMPANAN DIPULIHKAN"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "PENCADANGAN CLOUD SELESAI"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "PENCADANGAN CLOUD GAGAL"
+
+msgid "BEFORE A RESTORE"
+msgstr "SEBELUM PEMULIHAN"
+
+msgid "BACK UP SAVES NOW"
+msgstr "CADANGKAN SIMPANAN SEKARANG"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "SAVEGAME, SAVESTATE, DAN SIMPANAN PSP, TANPA ROM ATAU MEDIA"
+
+msgid "CLOUD BACKUP"
+msgstr "CADANGAN CLOUD"
+
+msgid "BACKUPS"
+msgstr "CADANGAN"
+
+msgid "NO BACKUPS YET"
+msgstr "BELUM ADA CADANGAN"
+
+msgid "BACKUP DELETED"
+msgstr "CADANGAN DIHAPUS"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "INI AKAN MENGGANTI SIMPANAN ANDA SAAT INI DENGAN SIMPANAN DARI %s. CADANGAN SIMPANAN SAAT INI DIBUAT TERLEBIH DAHULU."
+
+msgid "RESTORE"
+msgstr "PULIHKAN"
+
+msgid "DELETE BACKUP"
+msgstr "HAPUS CADANGAN"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "HAPUS CADANGAN INI?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "BUILD INI TIDAK DAPAT MENJANGKAU SCREENSCRAPER"
+
+msgid "ALL GAMES"
+msgstr "SEMUA GAME"
+
+msgid "GAMES TO SCRAPE"
+msgstr "GAME YANG DI-SCRAPE"
+
+msgid "WITH MISSING MEDIA"
+msgstr "DENGAN MEDIA YANG HILANG"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "TANPA MEDIA APA PUN"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Game mana dari sistem yang dipilih yang dicari."
+
+msgid "1 DAY"
+msgstr "1 HARI"
+
+msgid "1 MONTH"
+msgstr "1 BULAN"
+
+msgid "1 WEEK"
+msgstr "1 MINGGU"
+
+msgid "1 YEAR"
+msgstr "1 TAHUN"
+
+msgid "15 DAYS"
+msgstr "15 HARI"
+
+msgid "3 MONTHS"
+msgstr "3 BULAN"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Game yang di-scrape dalam rentang waktu ini dilewati, menghemat permintaan."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "AMBIL MEDIA YANG HILANG OTOMATIS"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Mengunduh sampul yang hilang di latar belakang saat tidak digunakan."
+
+msgid "SCRAPER SETTINGS"
+msgstr "PENGATURAN SCRAPER"
+
+msgid "ACCOUNT"
+msgstr "AKUN"
+
+msgid "Choose at least one system."
+msgstr "Pilih setidaknya satu sistem."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Mencari game di ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "TIDAK ADA SISTEM DENGAN GAME YANG DIKENAL SCREENSCRAPER"
+
+msgid "PICTURES"
+msgstr "GAMBAR"
+
+msgid "IMAGE"
+msgstr "GAMBAR"
+
+msgid "BOX FRONT"
+msgstr "DEPAN KOTAK"
+
+msgid "TITLE SCREEN"
+msgstr "LAYAR JUDUL"
+
+msgid "The main picture of each game."
+msgstr "Gambar utama setiap game."
+
+msgid "THUMBNAIL"
+msgstr "THUMBNAIL"
+
+msgid "The small picture of each game."
+msgstr "Gambar kecil setiap game."
+
+msgid "LOGO"
+msgstr "LOGO"
+
+msgid "The logo of each game."
+msgstr "Logo setiap game."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "UKURAN PENUH"
+
+msgid "IMAGE SIZE"
+msgstr "UKURAN GAMBAR"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper memperkecil gambar sebelum mengirimnya: lebih cepat dan ringan."
+
+msgid "AUTOMATIC"
+msgstr "OTOMATIS"
+
+msgid "BRAZIL"
+msgstr "BRASIL"
+
+msgid "EUROPE"
+msgstr "EROPA"
+
+msgid "FRANCE"
+msgstr "PRANCIS"
+
+msgid "GERMANY"
+msgstr "JERMAN"
+
+msgid "ITALY"
+msgstr "ITALIA"
+
+msgid "JAPAN"
+msgstr "JEPANG"
+
+msgid "SPAIN"
+msgstr "SPANYOL"
+
+msgid "USA"
+msgstr "AS"
+
+msgid "WORLD"
+msgstr "DUNIA"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Wilayah pilihan untuk nama, tanggal, dan gambar."
+
+msgid "NAMES"
+msgstr "NAMA"
+
+msgid "Replace the names of the games."
+msgstr "Ganti nama game."
+
+msgid "DESCRIPTIONS"
+msgstr "DESKRIPSI"
+
+msgid "Replace the descriptions."
+msgstr "Ganti deskripsi."
+
+msgid "Download the rating of each game."
+msgstr "Unduh peringkat setiap game."
+
+msgid "RATINGS"
+msgstr "PERINGKAT"
+
+msgid "EXTRA MEDIA"
+msgstr "MEDIA TAMBAHAN"
+
+msgid "VIDEOS"
+msgstr "VIDEO"
+
+msgid "Videos are big and take longer to download."
+msgstr "Video berukuran besar dan butuh waktu lebih lama untuk diunduh."
+
+msgid "MANUALS"
+msgstr "MANUAL"
+
+msgid "PDF manuals."
+msgstr "Manual PDF."
+
+msgid "MAPS"
+msgstr "PETA"
+
+msgid "Maps of the game."
+msgstr "Peta game."
+
+msgid "Background pictures."
+msgstr "Gambar latar belakang."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "BELAKANG KOTAK"
+
+msgid "The back of the box."
+msgstr "Bagian belakang kotak."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Hanya untuk \"Semua game\": gambar yang sudah ada diunduh ulang."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "GANTI MEDIA YANG ADA"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Opsional. Tanpa akun, ScreenScraper mengizinkan sangat sedikit permintaan."
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB tidak memerlukan akun."
+
+msgid "Asks IGDB for an access token."
+msgstr "Meminta token akses ke IGDB."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Meminta batas Anda ke ScreenScraper."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "MENGHUBUNGKAN KE SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "ANONIM"
+
+msgid "LOGIN"
+msgstr "LOGIN"
+
+msgid "REQUESTS TODAY"
+msgstr "PERMINTAAN HARI INI"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "PERMINTAAN PER MENIT"
+
+msgid "STOP"
+msgstr "BERHENTI"
+
+msgid "SCROLL"
+msgstr "GULIR"
+
+msgid "SCRAPE COMPLETE"
+msgstr "SCRAPE SELESAI"
+
+msgid "SCRAPE STOPPED"
+msgstr "SCRAPE DIHENTIKAN"
+
+msgid "FOUND"
+msgstr "DITEMUKAN"
+
+msgid "NOT FOUND"
+msgstr "TIDAK DITEMUKAN"
+
+msgid "ERRORS"
+msgstr "KESALAHAN"
+
+msgid "MEDIA FILES"
+msgstr "FILE MEDIA"
+
+msgid "READING GAME LISTS"
+msgstr "MEMBACA DAFTAR GAME"
+
+msgid "STOPPING"
+msgstr "MENGHENTIKAN"
+
+msgid "SECONDS"
+msgstr "DETIK"
+
+msgid "WAITING"
+msgstr "MENUNGGU"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "DIHENTIKAN. YANG SUDAH SELESAI TERSIMPAN"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "TIDAK ADA GAME UNTUK DI-SCRAPE DENGAN FILTER INI"
+
+msgid "GAMES"
+msgstr "GAME"
+
+msgid "PROBLEMS"
+msgstr "MASALAH"
+
+msgid "MEDIA MISSING"
+msgstr "MEDIA HILANG"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "SAKLAR DAN SLIDER"
+
+msgid "The clock shows in the top right corner."
+msgstr "Jam ditampilkan di pojok kanan atas."
+
+msgid "Volume saved"
+msgstr "Volume disimpan"
+
+msgid "LISTS AND TEXT"
+msgstr "DAFTAR DAN TEKS"
+
+msgid "TEXT"
+msgstr "TEKS"
+
+msgid "WI-FI PASSWORD"
+msgstr "KATA SANDI WI-FI"
+
+msgid "SHOW A TOAST"
+msgstr "TAMPILKAN TOAST"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi terhubung: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "TAMPILKAN BILAH VOLUME"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "TAMPILKAN BILAH KECERAHAN"
+
+msgid "ASK A QUESTION"
+msgstr "AJUKAN PERTANYAAN"
+
+msgid "Delete all saved states of this game?"
+msgstr "Hapus semua simpan status game ini?"
+
+msgid "SHOW A MESSAGE"
+msgstr "TAMPILKAN PESAN"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Pembaruan terpasang. Mulai ulang konsol untuk menggunakannya."
+
+msgid "Restart the system now?"
+msgstr "Mulai ulang sistem sekarang?"
+
+msgid "Restarting..."
+msgstr "Memulai ulang..."
+
+msgid "DISABLED ENTRY"
+msgstr "ENTRI NONAKTIF"
+
+msgid "SELECTOR STYLE"
+msgstr "GAYA PENYELEKSI"
+
+msgid "TITLE ALIGNMENT"
+msgstr "PERATAAN JUDUL"
+
+msgid "LIST TEXT CASE"
+msgstr "HURUF DAFTAR"
+
+msgid "TEXT SIZE"
+msgstr "UKURAN TEKS"
+
+msgid "HIGH CONTRAST"
+msgstr "KONTRAS TINGGI"
+
+msgid "options"
+msgstr "opsi"
+
+msgid "AUDIO"
+msgstr "AUDIO"
+
+msgid "Could not change the audio output"
+msgstr "Keluaran audio tidak dapat diubah"
+
+msgid "BATTERY WARNING"
+msgstr "PERINGATAN BATERAI"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "AKTIFKAN PERINGATAN BATERAI BERSUARA"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "BATAS PERINGATAN BATERAI"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Memulai game ini saat konsol boot, sebelum menu, sekali per boot."
+
+msgid "Reboot now"
+msgstr "Mulai ulang sekarang"
+
+msgid "Later"
+msgstr "Nanti"
+
+msgid "Default"
+msgstr "Default"
+
+msgid "Arm (official)"
+msgstr "Arm (resmi)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Sumber terbuka (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "SISA WAKTU HARI INI"
+
+msgid "UPTIME"
+msgstr "WAKTU AKTIF"
+
+msgid "No information available"
+msgstr "Tidak ada informasi"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "MANAJEMEN SISTEM DAN RESET"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr ""
+"YAKIN?\n"
+"\n"
+"INI TIDAK DAPAT DIBATALKAN."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "CADANGKAN KONFIGURASI"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr ""
+"PERINGATAN: INI AKAN MEMULAI ULANG ANTARMUKA!\n"
+"\n"
+"SETELAH SKRIP SELESAI, INGAT UNTUK MENYALIN FILE /storage/roms/backup/ROCKNIX_BACKUP.zip KE TEMPAT AMAN ATAU AKAN DIHAPUS PADA REBOOT BERIKUTNYA!\n"
+"\n"
+"CADANGKAN KONFIGURASI SAAT INI DAN MULAI ULANG?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "PULIHKAN DARI CADANGAN"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr ""
+"PERINGATAN: INI AKAN MEMBOOT ULANG PERANGKAT ANDA!\n"
+"\n"
+"KONFIGURASI ANDA SAAT INI AKAN DITIMPA!\n"
+"\n"
+"PULIHKAN DARI CADANGAN DAN MULAI ULANG?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "MANAJEMEN EMULATOR"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "RESET KONFIGURASI RETROARCH KE DEFAULT"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr ""
+"PERINGATAN: KONFIGURASI RETROARCH AKAN DIRESET KE DEFAULT\n"
+"\n"
+"KONFIGURASI PER-CORE TIDAK TERPENGARUH DAN TIDAK ADA CADANGAN YANG DIBUAT!\n"
+"\n"
+"RESET KONFIGURASI RETROARCH KE DEFAULT?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "RESET OVERLAY (CORE, CHEAT, JOYPAD, DLL.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr ""
+"PERINGATAN: SEMUA OVERLAY RETROARCH KUSTOM AKAN DIHAPUS\n"
+"\n"
+"CORE, JOYSTICK, CHEAT KUSTOM, DLL. TIDAK ADA CADANGAN YANG DIBUAT!\n"
+"\n"
+"RESET OVERLAY RETROARCH KE DEFAULT?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "RESET PENUH RETROARCH"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr ""
+"PERINGATAN: RETROARCH DAN SEMUA KONFIGURASI TERSIMPAN PENGGUNA AKAN DIRESET KE DEFAULT\n"
+"\n"
+"KONFIGURASI PER-CORE AKAN DIHAPUS DAN TIDAK ADA CADANGAN YANG DIBUAT!\n"
+"\n"
+"RESET RETROARCH?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "RESET KONFIGURASI MEDNAFEN KE DEFAULT"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr ""
+"PERINGATAN: KONFIGURASI MEDNAFEN AKAN DIRESET KE DEFAULT\n"
+"\n"
+"TIDAK ADA CADANGAN YANG DIBUAT!\n"
+"\n"
+"RESET KONFIGURASI MEDNAFEN KE DEFAULT?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "RESET KONFIGURASI EMULATOR STANDALONE KE DEFAULT"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr ""
+"PERINGATAN: KONFIGURASI EMULATOR STANDALONE AKAN DIRESET KE DEFAULT\n"
+"\n"
+"TIDAK ADA CADANGAN YANG DIBUAT!\n"
+"\n"
+"RESET KONFIGURASI EMULATOR STANDALONE KE DEFAULT?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "RESET PENUH PORTMASTER"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr ""
+"PERINGATAN: PORTMASTER AKAN DIRESET KE DEFAULT\n"
+"\n"
+"TIDAK ADA CADANGAN YANG DIBUAT!\n"
+"\n"
+"RESET PORTMASTER KE DEFAULT?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "MANAJEMEN SISTEM"
+
+msgid "AUDIO RESET"
+msgstr "RESET AUDIO"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr ""
+"PERINGATAN: PENGATURAN AUDIO AKAN DIRESET KE DEFAULT DAN SISTEM AKAN REBOOT!\n"
+"\n"
+"RESET AUDIO DAN MULAI ULANG?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "RESET PENGUKUR DAYA BATERAI"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr ""
+"PERINGATAN: PENGUKUR DAYA PMIC AKAN DIRESET DAN SISTEM AKAN MATI!\n"
+"\n"
+"BIARKAN CHARGER TERCABUT DAN NYALAKAN PERANGKAT KEMBALI SETELAH BEBERAPA DETIK. LEVEL BATERAI DIPERKIRAKAN ULANG DARI TEGANGAN BATERAI SAAT ISTIRAHAT DAN MENJADI AKURAT LAGI SETELAH PENGISIAN PENUH.\n"
+"\n"
+"RESET PENGUKUR DAYA DAN MATIKAN?"
+
+msgid "FACTORY RESET"
+msgstr "RESET PABRIK"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr ""
+"PERINGATAN: DATA ANDA DAN SEMUA KONFIGURASI LAIN AKAN DIRESET KE DEFAULT!\n"
+"\n"
+"JIKA INGIN MEMPERTAHANKAN PENGATURAN, BUAT CADANGAN DAN SIMPAN DI DRIVE EKSTERNAL SEBELUM MENJALANKAN OPSI INI!\n"
+"\n"
+"KELUARKAN KARTU GAME ANDA SEBELUM MELANJUTKAN!\n"
+"\n"
+"RESET SISTEM DAN MULAI ULANG?"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Pilih varian keyboard untuk tata letak yang dipilih (misalnya tombol mati atau penempatan tombol alternatif)."
+
+msgid "TIMEZONE"
+msgstr "ZONA WAKTU"
+
+msgid "Run welcome again"
+msgstr "Jalankan sambutan lagi"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Menampilkan lagi sambutan boot pertama: bahasa, WiFi, dan zona waktu."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "AKTIFKAN OVERLAY MANGOHUD"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "AKTIFKAN KEYBOARD LAYAR SENTUH"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "AKTIFKAN SCREENSHOT ROCKNIX"
+
+msgid "SCREEN"
+msgstr "LAYAR"
+
+msgid "CONTRAST"
+msgstr "KONTRAS"
+
+msgid "GAMMA"
+msgstr "GAMMA"
+
+msgid "HUE"
+msgstr "HUE"
+
+msgid "SATURATION"
+msgstr "SATURASI"
+
+msgid "LEDS"
+msgstr "LED"
+
+msgid "DISABLE POWER LED"
+msgstr "NONAKTIFKAN LED DAYA"
+
+msgid "LED COLOR"
+msgstr "WARNA LED"
+
+msgid "JOYSTICK LED"
+msgstr "LED JOYSTICK"
+
+msgid "MAX"
+msgstr "MAKS"
+
+msgid "MID"
+msgstr "SEDANG"
+
+msgid "MIN"
+msgstr "MIN"
+
+msgid "THIS DEVICE IS"
+msgstr "PERANGKAT INI ADALAH"
+
+msgid "Device will be switched on next reboot"
+msgstr "Perangkat akan diganti pada reboot berikutnya"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "DETEKSI OTOMATIS KARTU GAME"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "AKTIFKAN PENYIMPANAN GABUNGAN"
+
+msgid "EXTERNAL"
+msgstr "EKSTERNAL"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "KARTU UTAMA PENYIMPANAN GABUNGAN"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "PERINGATAN: MENGGANTI KARTU UTAMA DAPAT MEMUTUS AKSES KE GAME, SEHINGGA PERLU PERBAIKAN MANUAL. LANJUTKAN?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "KELUARKAN KARTU MICROSD"
+
+msgid "You may now remove the card."
+msgstr "Sekarang Anda dapat melepas kartu."
+
+msgid "PERFORMANCE"
+msgstr "PERFORMA"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "GOVERNOR PENSKALAAN DEFAULT"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "GOVERNOR PENSKALAAN GPU DEFAULT"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "AKTIFKAN OVERCLOCK CPU"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "AKTIFKAN OVERCLOCK GPU"
+
+msgid "GPU DRIVER"
+msgstr "DRIVER GPU"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "Driver GPU akan diganti pada reboot berikutnya"
+
+msgid "Restarting to apply the theme"
+msgstr "Memulai ulang untuk menerapkan tema"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Antarmuka dimulai ulang untuk menerapkan tema"
+
+msgid "Dark"
+msgstr "Gelap"
+
+msgid "Light"
+msgstr "Terang"
+
+msgid "Theme default"
+msgstr "Default tema"
+
+msgid "Filled"
+msgstr "Terisi"
+
+msgid "Outline"
+msgstr "Garis tepi"
+
+msgid "Side bar"
+msgstr "Bilah samping"
+
+msgid "Underline"
+msgstr "Garis bawah"
+
+msgid "Centered"
+msgstr "Tengah"
+
+msgid "Left"
+msgstr "Kiri"
+
+msgid "Lowercase"
+msgstr "Huruf kecil"
+
+msgid "Uppercase"
+msgstr "Huruf besar"
+
+msgid "EXTRA LARGE"
+msgstr "SANGAT BESAR"
+
+msgid "LARGE"
+msgstr "BESAR"
+
+msgid "SMALL"
+msgstr "KECIL"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Ukuran teks di menu, dialog, dan bilah bantuan"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Teks putih atau hitam murni, panel solid, dan penyeleksi lebih tebal"
+
+msgid "CONTROL OPTIONS"
+msgstr "OPSI KONTROL"
+
+msgid "TOP BAR"
+msgstr "BILAH ATAS"
+
+msgid "BEDSIDE CLOCK"
+msgstr "JAM DI SAMPING TEMPAT TIDUR"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Saat charger terpasang, menampilkan jam besar setelah selama ini konsol tidak disentuh, sebagai pengganti screensaver. Tombol apa pun menutupnya. Tidak pernah saat game terbuka."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "TIDAK DAPAT MEMBATALKAN UNDUHAN"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "UNDUHAN DIBATALKAN"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "PEMBARUAN TIDAK DAPAT DIUNDUH. PERIKSA KONEKSI DAN COBA LAGI."
+
+msgid "No update source available"
+msgstr "Sumber pembaruan tidak tersedia"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "PAKSA PEMBARUAN BERIKUTNYA"
+
+msgid "UPDATING"
+msgstr "MEMPERBARUI"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "BATALKAN UNDUHAN"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "BATALKAN UNDUHAN? FILE PARSIAL DIHAPUS."
+
+msgid "Checking..."
+msgstr "Memeriksa..."
+
+msgid "available"
+msgstr "tersedia"
+
+msgid "SKIP ALL"
+msgstr "LEWATI SEMUA"
+
+msgid "Welcome"
+msgstr "Selamat datang"
+
+msgid "of"
+msgstr "dari"
+
+msgid "Choose your language"
+msgstr "Pilih bahasa Anda"
+
+msgid "Language"
+msgstr "Bahasa"
+
+msgid "You can change it later in System."
+msgstr "Anda dapat mengubahnya nanti di Sistem."
+
+msgid "Connect to WiFi"
+msgstr "Hubungkan ke WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Jam, pembaruan, dan transfer file."
+
+msgid "Continue"
+msgstr "Lanjut"
+
+msgid "Not now"
+msgstr "Jangan sekarang"
+
+msgid "Choose a network"
+msgstr "Pilih jaringan"
+
+msgid "Choose another network"
+msgstr "Pilih jaringan lain"
+
+msgid "Where are you?"
+msgstr "Di mana Anda?"
+
+msgid "Time zone"
+msgstr "Zona waktu"
+
+msgid "Sets your local time."
+msgstr "Mengatur waktu lokal Anda."
+
+msgid "Keep UTC"
+msgstr "Tetap UTC"
+
+msgid "LOADING..."
+msgstr "MEMUAT..."
+
+msgid "All set"
+msgstr "Semua siap"
+
+msgid "Add games from your phone"
+msgstr "Tambahkan game dari ponsel Anda"
+
+msgid "Network"
+msgstr "Jaringan"
+
+msgid "Start opens the menu"
+msgstr "Start membuka menu"
+
+msgid "anywhere"
+msgstr "di mana saja"
+
+msgid "Screen looks wrong?"
+msgstr "Layar tampak aneh?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Mulai bermain"
+
+msgid "PLAY THEME MUSIC"
+msgstr "PUTAR MUSIK TEMA"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "TIDAK ADA KONEKSI JARINGAN"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "PEMAKAIAN BATERAI (PENGISIAN PENUH)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "TOTAL WAKTU BERMAIN"
+
+msgid "LAST FIVE WEEKS"
+msgstr "LIMA MINGGU TERAKHIR"
+
+msgid "2 WEEKS AGO"
+msgstr "2 MINGGU LALU"
+
+msgid "3 WEEKS AGO"
+msgstr "3 MINGGU LALU"
+
+msgid "4 WEEKS AGO"
+msgstr "4 MINGGU LALU"
+
+msgid "THIS WEEK"
+msgstr "MINGGU INI"
+
+msgid "MOST PLAYED GAMES"
+msgstr "GAME PALING SERING DIMAINKAN"
+
+msgid "TIME PER SYSTEM"
+msgstr "WAKTU PER SISTEM"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "BELUM ADA YANG DIMAINKAN. MAINKAN GAME DAN AKAN MUNCUL DI SINI."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Hanya tersisa %d menit waktu bermain hari ini"
+
+msgid "Power saver on"
+msgstr "Penghemat daya aktif"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "JAWABAN TAK TERDUGA DARI RETROACHIEVEMENTS"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "TIDAK TERSEDIA DI BUILD INI"
+
+msgid "%i min ago"
+msgstr "%i mnt lalu"
+
+msgid "%i h ago"
+msgstr "%i jam lalu"
+
+msgid "%i d ago"
+msgstr "%i hr lalu"
+
+msgid "CONTINUE PLAYING"
+msgstr "LANJUTKAN BERMAIN"
+
+msgid "START NOW"
+msgstr "MULAI SEKARANG"
+
+msgid "RESUMING"
+msgstr "MELANJUTKAN"
+
+msgid "STARTING IN %i"
+msgstr "DIMULAI DALAM %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacks"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Vertikal"
+
+msgid "recently added"
+msgstr "baru ditambahkan"
+
+msgid "unfinished"
+msgstr "belum selesai"
+
+msgid "most played this week"
+msgstr "paling sering dimainkan minggu ini"
+
+msgid "BOOKS"
+msgstr "BUKU"
+
+msgid "screenshots"
+msgstr "tangkapan layar"
+
+msgid "media player"
+msgstr "pemutar media"
+
+msgid "NETWORK ERROR"
+msgstr "KESALAHAN JARINGAN"
+
+msgid "SERVER BUSY"
+msgstr "SERVER SIBUK"
+
+msgid "SERVER ERROR"
+msgstr "KESALAHAN SERVER"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "TIDAK DAPAT MENULIS GAMELIST"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "LOGIN GAGAL. PERIKSA NAMA PENGGUNA DAN KATA SANDI"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER SEDANG DITUTUP UNTUK AKUN INI"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER SEDANG DALAM PEMELIHARAAN"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "PERANGKAT LUNAK INI DIBLOKIR OLEH SCREENSCRAPER"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "KUOTA SCRAPE HARIAN TERCAPAI. COBA LAGI BESOK"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "TERLALU BANYAK ROM TAK DIKENAL HARI INI. COBA LAGI BESOK"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "TIDAK ADA RUANG TERSISA DI KARTU"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "KETIK CLIENT ID DAN SECRET IGDB DI AKUN TERLEBIH DAHULU"
+
+msgid "SCRAPING STOPPED"
+msgstr "SCRAPE DIHENTIKAN"
+
+msgid "GAME NOT FOUND"
+msgstr "GAME TIDAK DITEMUKAN"
+
+msgid "NO OTHER GAME"
+msgstr "TIDAK ADA GAME LAIN"
+
+msgid "Time is up for today"
+msgstr "Waktu hari ini habis"
+
+msgid "ACCENTS"
+msgstr "AKSEN"
+
+msgid "SHOW"
+msgstr "TAMPILKAN"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "TAMPILKAN PRATINJAU VIDEO"
+
+msgid "Device paired"
+msgstr "Perangkat dipasangkan"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "IZINKAN PERANGKAT INI?"
+
+msgid "RECEIVED"
+msgstr "DITERIMA"
+
+msgid "QR CODE"
+msgstr "KODE QR"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "BARUSAN"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d MENIT LALU"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d JAM LALU"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d HARI LALU"
+
+msgid "NO PAIRED DEVICES"
+msgstr "TIDAK ADA PERANGKAT TERPASANGKAN"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "LUPAKAN PERANGKAT INI?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "LUPAKAN SEMUA PERANGKAT"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "LUPAKAN SEMUA PERANGKAT?"
+
+msgid "PAIRED DEVICES"
+msgstr "PERANGKAT TERPASANGKAN"
+
+msgid "SHOW QR CODE"
+msgstr "TAMPILKAN KODE QR"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Pindai dengan kamera ponsel: halaman terbuka dan mengetahui PIN."
+
+msgid "Phones that need no PIN."
+msgstr "Ponsel yang tidak memerlukan PIN."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "PULIHKAN SIMPANAN DARI WEB?"
+
+msgid "BUILD ID"
+msgstr "ID BUILD"
+
+msgid "KERNEL"
+msgstr "KERNEL"
+
+msgid "OPERATING SYSTEM"
+msgstr "SISTEM OPERASI"
+
+msgid "SYSTEM INFORMATION"
+msgstr "INFORMASI SISTEM"
+
+msgid "BATTERY INFORMATION"
+msgstr "INFORMASI BATERAI"
+
+msgid "DISK SPACE"
+msgstr "RUANG DISK"
+
+msgid "HOST NAME"
+msgstr "NAMA HOST"
+
+msgid "NETWORK INFORMATION"
+msgstr "INFORMASI JARINGAN"
+
+msgid "BATTERY HEALTH"
+msgstr "KESEHATAN BATERAI"
+
+msgid "BATTERY REMAINING"
+msgstr "SISA BATERAI"
+
+msgid "BATTERY STATE"
+msgstr "STATUS BATERAI"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "INFORMASI CPU"
+
+msgid "CPU TEMPERATURE"
+msgstr "SUHU CPU"
+
+msgid "CPU FAN"
+msgstr "KIPAS CPU"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "FREKUENSI GPU SAAT INI"
+
+msgid "GPU INFORMATION"
+msgstr "INFORMASI GPU"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "FREKUENSI GPU MAKSIMUM"
+
+msgid "GPU TEMPERATURE"
+msgstr "SUHU GPU"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM TERSEDIA"
+
+msgid "RAM CAPACITY"
+msgstr "KAPASITAS RAM"
+
+msgid "RAM INFORMATION"
+msgstr "INFORMASI RAM"
+
+msgid "CURRENT FREQUENCY"
+msgstr "FREKUENSI SAAT INI"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "FREKUENSI MAKSIMUM"
+
+msgid "DISCHARGING"
+msgstr "MENGOSONGKAN DAYA"
+
+msgid "NOT CHARGING"
+msgstr "TIDAK MENGISI"
+
+msgid "Follows the language until you choose one here."
+msgstr "Mengikuti bahasa sampai Anda memilihnya di sini."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Tidak ada jaringan. Masukkan kartu microSD ke PC dan salin setiap game ke folder sistemnya, di dalam roms (misalnya roms/snes). Atau sambungkan ke WiFi lalu kembali ke sini untuk menambah game dari ponsel."
+
+msgid "Add games"
+msgstr "Tambah game"
+
+msgid "left, in the menus"
+msgstr "tersisa, di menu"
+
+msgid "From your phone or microSD"
+msgstr "Dari ponsel atau microSD"
+
+msgid "Web transfer turned off"
+msgstr "Transfer web dimatikan"

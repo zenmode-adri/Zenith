@@ -715,10 +715,22 @@ void LaunchPrep::launched() {
 
 // ---- execute -------------------------------------------------------------------------------------------------
 
+std::string direct_command(const std::string& cmd) {
+  static const std::string kRun = "/usr/bin/run ";
+  static const std::string kTuner = "Start\\ R36\\ Tuner.sh";  // as escape_path writes it
+  if (cmd.compare(0, kRun.size(), kRun) != 0) return cmd;
+  std::string rest = cmd.substr(kRun.size());
+  const size_t n = kTuner.size();
+  if (rest.size() < n || rest.compare(rest.size() - n, n, kTuner) != 0) return cmd;
+  const size_t cut = rest.size() - n;  // what comes before the file name must be the end of a folder: nothing, or a slash
+  if (cut != 0 && rest[cut - 1] != '/') return cmd;
+  return rest;
+}
+
 Outcome execute(const Request& r, const Env& env) {
   Outcome o;
   if (env.prep) env.prep->launched();
-  const std::string& cmd = r.cmd;
+  const std::string cmd = direct_command(r.cmd);
   std::vector<std::string> dirs = env.script_dirs.empty() ? default_script_dirs() : env.script_dirs;
   std::fprintf(stderr, "zfront: launching at uptime %s: %s\n", uptime_text().c_str(), cmd.c_str());
   game_start(dirs, r.rom_raw, r.name);
@@ -732,9 +744,9 @@ Outcome execute(const Request& r, const Env& env) {
   if (o.after.error.kind != ExitError::None) {
     std::string log;
     const std::string* lp = nullptr;
-    if (o.after.error.kind == ExitError::LogFile && read_file("/tmp/launch_error.log", log)) {
+    if (o.after.error.kind == ExitError::LogFile && read_file(env.error_log, log)) {
       lp = &log;
-      ::unlink("/tmp/launch_error.log");
+      ::unlink(env.error_log.c_str());
     }
     o.message = error_message(o.after.error, lp);
   }

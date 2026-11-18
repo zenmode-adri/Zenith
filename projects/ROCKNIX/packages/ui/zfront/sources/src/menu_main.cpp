@@ -14,7 +14,7 @@ std::vector<MainRow> main_rows() {
       // what is touched often outside a game first, what is set once last (diseno-menus/PROPUESTA-REORDEN-10nov.md). NETWORK before
       // LIBRARY: the games come in (Wi-Fi, transfer files) before they are sorted. RETROACHIEVEMENTS: ES's row (shown with an account and
       // its own switch on), next to the games rather than first
-      {tr("GAMES"), "menu.game", "games", nullptr},
+      {tr("GAME SETTINGS"), "menu.game", "games", nullptr},
       {tr("RETROACHIEVEMENTS"), "menu.retroachievements", "achievements", [](const Ctx& cx) { return ra::in_main_menu(cx); }},
       {tr("BATTERY & PERFORMANCE"), "menu.battery", "battery", nullptr},
       {tr("SCREEN & SOUND"), "menu.g.screen", "screen", nullptr},

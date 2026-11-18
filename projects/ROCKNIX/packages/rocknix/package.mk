@@ -100,9 +100,6 @@ EOF
   ### Calienta la cache de wifictl has_ap_mode (Network Settings abre rapido)
   enable_service wifi-apcache.service
 
-  ### Guarda el log de arranque en la FAT (/flash/bootlog) para depurar desde Windows
-  enable_service bootlog.service
-
   ### Zenith: pantalla del primer arranque durante la configuracion inicial (solo si /storage/.configured no existe)
   enable_service zenith-splash.service
 
@@ -122,6 +119,11 @@ EOF
     sed -i "s#ssh.enabled=0#ssh.enabled=1#g" ${INSTALL}/usr/config/system/configs/system.cfg
     sed -i "s#wifi.enabled=0#wifi.enabled=1#g" ${INSTALL}/usr/config/system/configs/system.cfg
     sed -i "s#system.loglevel=none#system.loglevel=verbose#g" ${INSTALL}/usr/config/system/configs/system.cfg
+    ### La imagen publica sale en UTC (no se elige pais); las consolas de depuracion, en Madrid.
+    sed -i "s#^system.timezone=UTC\$#system.timezone=Europe/Madrid#" ${INSTALL}/usr/config/system/configs/system.cfg
+    ### Guarda el log de arranque en la FAT (/flash/bootlog) para depurar desde Windows. Solo en la imagen DEBUG (15-nov):
+    ### remonta /flash en escritura 3 veces por arranque y guarda IP y SSID; en la imagen publica no hace falta.
+    enable_service bootlog.service
   fi
 
   ### Enable HDMI hotplug service on H700

@@ -37,6 +37,9 @@ class Theme {
   bool has(std::string_view name) const;
   /// Sets (or replaces) a variable after loading: the user's own choices over the theme's (see boot::apply_user_theme).
   void set_var(std::string_view name, std::string_view value);
+  /// Puts back what the theme itself had for `name` before the first `set_var` (the user's choice taken away). Nothing happens
+  /// for a variable `set_var` never touched.
+  void reset_var(std::string_view name);
   /// Name of the first essential variable the theme lacks (colours, font, the carousel and list geometry for the current
   /// ratio), "" when it is complete. A theme that fails this is not drawn: zfront uses Zenith instead.
   std::string missing() const;
@@ -44,6 +47,7 @@ class Theme {
  private:
   std::string dir_;
   std::unordered_map<std::string, std::string> vars_;
+  std::unordered_map<std::string, std::pair<bool, std::string>> before_;  // first value each `set_var` replaced (had it, what it was)
 };
 
 /// `screen.ratio` string ES would use for a WxH screen (closest of its fixed list).

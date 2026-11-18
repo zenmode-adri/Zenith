@@ -1,0 +1,1384 @@
+From: zenmode-adri <274425265+zenmode-adri@users.noreply.github.com>
+Subject: [PATCH] power: supply: rk817-charger: displayed soc with full/empty anchors
+
+The driver published the raw coulomb counter as the percentage and a
+periodic "ocv recalibration" overwrote the counter from the device tree
+ocv table. Those tables put 100 % near 4.05 V while packs charge to
+4.2 V, and are copied between boards without being measured, so the
+percentage jumped (95 -> 100 while discharging) and drifted for days.
+On boards where the charger is an external IC the PMIC never reports
+CHARGE_FINISH, so the full anchor and the capacity learning never ran.
+
+Move the decision to rk817_gauge.h, a header-only, integer-only logic
+without kernel dependencies (the same file is exercised by a host
+simulator):
+
+ - the displayed soc follows the counter without moving against the
+   charge direction, by at most 1 % per 8 s pass, and stays at 99 %
+   until a full anchor (PMIC FINISH, or a tail the logic recognises on
+   chargers that cut off at once or never report it);
+ - an empty anchor, compensated for the load, rewrites the counter to 0
+   and a low zone pulls an optimistic counter down as the pack empties;
+ - fcc is learned between clean full/empty anchors, bounded;
+ - the ocv table is only used for a trusted rest after a long suspend,
+   and may only lower the counter.
+
+The driver now reads the raw signed counter, feeds the gauge once per
+pass under a mutex (work, plug ISRs and resume all come here), applies
+its decision (counter rewrite with 1 uAh precision, NVRAM, capacity,
+status and online) and notifies userspace only when one of those
+changed. An optional dc-det-gpios property of the charger node is
+accepted as plug detection; without it nothing changes. The sleep
+credit for a charge that happened while suspended is kept, as a
+correction of the counter.
+
+---
+--- a/drivers/power/supply/rk817_charger.c
++++ b/drivers/power/supply/rk817_charger.c
+@@ -10,14 +10,31 @@
+ 
+ #include <linux/unaligned.h>
+ #include <linux/devm-helpers.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/math64.h>
+ #include <linux/mfd/rk808.h>
+ #include <linux/irq.h>
++#include <linux/mutex.h>
+ #include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/power_supply.h>
+ #include <linux/regmap.h>
+ 
++/* The gauge logic divides 64 bit values: use the kernel helper. */
++#define GAUGE_DIV64(a, b) div_s64((a), (b))
++#include "rk817_gauge.h"
++
++/* Seconds of sleep after which a latched rest voltage is trusted (R7'). */
++#define RK817_REST_MIN_SLEEP_S	1800
++
++/* Learned full capacity may reach this many percent of the design capacity. */
++#define RK817_FCC_MAX_DESIGN_PCT	130
++
++static bool rest_correct = true;
++module_param(rest_correct, bool, 0644);
++MODULE_PARM_DESC(rest_correct,
++		 "Let a rest voltage after a long suspend correct the counter (R7'), default on");
++
+ /* Charging statuses reported by hardware register */
+ enum rk817_charge_status {
+ 	CHRG_OFF,
+@@ -66,12 +83,10 @@
+ 	uint32_t voltage_b;
+ 
+ 	/*
+-	 * soc - state of charge - like the BSP this is stored as a percentage,
+-	 * to the thousandth. BSP has a display state of charge (dsoc) and a
+-	 * remaining state of charge (rsoc). This value will be used for both
+-	 * purposes here so we don't do any fancy math to try and "smooth" the
+-	 * charge and just report it as it is. Note for example an soc of 100
+-	 * is stored as 100000, an soc of 50 is stored as 50000, etc.
++	 * soc - displayed state of charge (dsoc of the BSP) - stored as a
++	 * percentage to the thousandth, e.g. 100 is 100000, 50 is 50000. It is
++	 * owned by the gauge logic (rk817_gauge.h), which smooths it and keeps
++	 * it consistent with the charge direction; it is what goes to NVRAM.
+ 	 */
+ 	int soc;
+ 
+@@ -82,11 +97,35 @@
+ 	 */
+ 	int fcc_mah;
+ 
+-	/*
+-	 * Calibrate the SOC on a fully charged battery, this way we can use
+-	 * the calibrated SOC value to correct for columb counter drift.
+-	 */
+-	bool soc_cal;
++	/* Serialises rk817_read_props() (work, plug ISRs, resume) and the gauge. */
++	struct mutex lock;
++
++	/* Optional gpio telling whether a supply is present (dc-det-gpios). */
++	struct gpio_desc *dc_det;
++
++	/* Gauge logic: immutable config, state, and what it last decided. */
++	struct gauge_config gauge_cfg;
++	struct gauge_state gauge;
++	int capacity;
++	int status;		/* POWER_SUPPLY_STATUS_* */
++	bool online;
++
++	/* Boot: what the gauge starts from (see rk817_read_or_set_full_charge_on_boot). */
++	int boot_saved_soc;
++	int boot_counter_uah;
++
++	/* Raw signed coulomb counter of the last pass, and its timestamp. */
++	int raw_counter_uah;
++	time64_t last_sample_s;
++
++	/* Last plug inputs, for the gauge_debug attribute (dcdet -1: no gpio). */
++	int dbg_pmic_plug;
++	int dbg_dcdet;
++
++	/* Set by the resume path, consumed by the next pass. */
++	bool resumed;
++	int resume_dt_s;
++	int resume_rest_ocv_soc;
+ 
+ 	/* Implementation specific immutable properties from device tree */
+ 	int res_div;
+@@ -102,7 +141,7 @@
+ 	/* Rested voltage the gauge latched, 0 if it took no usable pair. */
+ 	int relax_voltage_uv;
+ 
+-	/* Retained for the ocv-capacity table the recalibration needs. */
++	/* Retained for the ocv-capacity table the resume path needs. */
+ 	struct power_supply_battery_info *bat_info;
+ 
+ 	/* Stamped at system suspend to correct the gauge across sleep. */
+@@ -216,6 +255,38 @@
+ }
+ 
+ /*
++ * Coulomb counter <-> uAh, exact to 1 uAh. The ADC_TO_CHARGE_UAH() and
++ * CHARGE_TO_ADC() macros above divide before multiplying (172 uAh steps on
++ * read, up to 1 mAh lost on write); the gauge rewrites the counter often, so
++ * it uses these 64 bit versions instead.
++ */
++static int rk817_bat_read_counter_uah(struct rk817_charger *charger)
++{
++	u8 bulk_reg[4];
++	s32 adc;
++
++	regmap_bulk_read(charger->rk808->regmap, RK817_GAS_GAUGE_Q_PRES_H3,
++			 bulk_reg, 4);
++	adc = (s32)get_unaligned_be32(bulk_reg);
++
++	return div_s64((s64)adc * 172, 3600 * charger->res_div);
++}
++
++static int rk817_bat_write_counter_uah(struct rk817_charger *charger, int uah)
++{
++	u8 bulk_reg[4];
++	s64 adc;
++
++	if (uah < 0)
++		uah = 0;
++	adc = div_s64((s64)uah * charger->res_div * 3600, 172);
++	put_unaligned_be32((u32)adc, bulk_reg);
++
++	return regmap_bulk_write(charger->rk808->regmap,
++				 RK817_GAS_GAUGE_Q_INIT_H3, bulk_reg, 4);
++}
++
++/*
+  * note that only the fcc_mah is really used by this driver, the other values
+  * are to ensure we can remain backwards compatible with the BSP kernel.
+  */
+@@ -253,123 +324,6 @@
+ 	return 0;
+ }
+ 
+-static int rk817_bat_calib_cap(struct rk817_charger *charger)
+-{
+-	struct rk808 *rk808 = charger->rk808;
+-	int tmp, charge_now, charge_now_adc, volt_avg;
+-	u8 bulk_reg[4];
+-
+-	/* Calibrate the soc and fcc on a fully charged battery */
+-
+-	if (charger->charge_status == CHARGE_FINISH && (!charger->soc_cal)) {
+-		/*
+-		 * soc should be 100000 and columb counter should show the full
+-		 * charge capacity. Note that if the device is unplugged for a
+-		 * period of several days the columb counter will have a large
+-		 * margin of error, so setting it back to the full charge on
+-		 * a completed charge cycle should correct this (my device was
+-		 * showing 33% battery after 3 days unplugged when it should
+-		 * have been closer to 95% based on voltage and charge
+-		 * current).
+-		 */
+-
+-		charger->soc = 100000;
+-		charge_now_adc = CHARGE_TO_ADC(charger->fcc_mah,
+-					       charger->res_div);
+-		put_unaligned_be32(charge_now_adc, bulk_reg);
+-		regmap_bulk_write(rk808->regmap, RK817_GAS_GAUGE_Q_INIT_H3,
+-				  bulk_reg, 4);
+-
+-		charger->soc_cal = 1;
+-		dev_dbg(charger->dev,
+-			"Fully charged. SOC is %d, full capacity is %d\n",
+-			charger->soc, charger->fcc_mah * 1000);
+-	}
+-
+-	/*
+-	 * The columb counter can drift up slightly, so we should correct for
+-	 * it. But don't correct it until we're at 100% soc.
+-	 */
+-	if (charger->charge_status == CHARGE_FINISH && charger->soc_cal) {
+-		regmap_bulk_read(rk808->regmap, RK817_GAS_GAUGE_Q_PRES_H3,
+-				 bulk_reg, 4);
+-		charge_now_adc = get_unaligned_be32(bulk_reg);
+-		if (charge_now_adc < 0)
+-			return charge_now_adc;
+-		charge_now = ADC_TO_CHARGE_UAH(charge_now_adc,
+-					       charger->res_div);
+-
+-		/*
+-		 * Re-init columb counter with updated values to correct drift.
+-		 */
+-		if (charge_now / 1000 > charger->fcc_mah) {
+-			dev_dbg(charger->dev,
+-				"Recalibrating columb counter to %d uah\n",
+-				charge_now);
+-			/*
+-			 * Order of operations matters here to ensure we keep
+-			 * enough precision until the last step to keep from
+-			 * making needless updates to columb counter.
+-			 */
+-			charge_now_adc = CHARGE_TO_ADC(charger->fcc_mah,
+-					 charger->res_div);
+-			put_unaligned_be32(charge_now_adc, bulk_reg);
+-			regmap_bulk_write(rk808->regmap,
+-					  RK817_GAS_GAUGE_Q_INIT_H3,
+-					  bulk_reg, 4);
+-		}
+-	}
+-
+-	/*
+-	 * Calibrate the fully charged capacity when we previously had a full
+-	 * battery (soc_cal = 1) and are now empty (at or below minimum design
+-	 * voltage). If our columb counter is still positive, subtract that
+-	 * from our fcc value to get a calibrated fcc, and if our columb
+-	 * counter is negative add that to our fcc (but not to exceed our
+-	 * design capacity).
+-	 */
+-	regmap_bulk_read(charger->rk808->regmap, RK817_GAS_GAUGE_BAT_VOL_H,
+-			 bulk_reg, 2);
+-	tmp = get_unaligned_be16(bulk_reg);
+-	volt_avg = (charger->voltage_k * tmp) + 1000 * charger->voltage_b;
+-	if (volt_avg <= charger->bat_voltage_min_design_uv &&
+-	    charger->soc_cal) {
+-		regmap_bulk_read(rk808->regmap, RK817_GAS_GAUGE_Q_PRES_H3,
+-				 bulk_reg, 4);
+-		charge_now_adc = get_unaligned_be32(bulk_reg);
+-		charge_now = ADC_TO_CHARGE_UAH(charge_now_adc,
+-					       charger->res_div);
+-		/*
+-		 * Note, if charge_now is negative this will add it (what we
+-		 * want) and if it's positive this will subtract (also what
+-		 * we want).
+-		 */
+-		charger->fcc_mah = charger->fcc_mah - (charge_now / 1000);
+-
+-		dev_dbg(charger->dev,
+-			"Recalibrating full charge capacity to %d uah\n",
+-			charger->fcc_mah * 1000);
+-	}
+-
+-	/*
+-	 * Set the SOC to 0 if we are below the minimum system voltage.
+-	 */
+-	if (volt_avg <= charger->bat_voltage_min_design_uv) {
+-		charger->soc = 0;
+-		charge_now_adc = CHARGE_TO_ADC(0, charger->res_div);
+-		put_unaligned_be32(charge_now_adc, bulk_reg);
+-		regmap_bulk_write(rk808->regmap,
+-				  RK817_GAS_GAUGE_Q_INIT_H3, bulk_reg, 4);
+-		dev_warn(charger->dev,
+-			 "Battery voltage %d below minimum voltage %d\n",
+-			 volt_avg, charger->bat_voltage_min_design_uv);
+-		}
+-
+-	rk817_record_battery_nvram_values(charger);
+-
+-	return 0;
+-}
+-
+ /* Calibrated microvolts from one of the gas gauge's 16 bit voltage registers. */
+ static int rk817_bat_voltage_uv(struct rk817_charger *charger, unsigned int reg)
+ {
+@@ -414,9 +368,15 @@
+ 
+ static void rk817_read_props(struct rk817_charger *charger)
+ {
+-	int tmp, reg;
++	struct gauge_input in = {};
++	struct gauge_output out = {};
++	int tmp, reg, raw_uah, status;
++	bool changed;
++	time64_t now;
+ 	u8 bulk_reg[4];
+ 
++	mutex_lock(&charger->lock);
++
+ 	/*
+ 	 * Recalibrate voltage and current readings if we need to BSP does both
+ 	 * on CUR_CALIB_UPD, ignoring VOL_CALIB_UPD. Curiously enough, both
+@@ -433,18 +393,9 @@
+ 				  RK817_VOL_CUR_CALIB_UPD);
+ 	}
+ 
+-	/* Update reported charge. */
+-	regmap_bulk_read(charger->rk808->regmap, RK817_GAS_GAUGE_Q_PRES_H3,
+-			 bulk_reg, 4);
+-	tmp = get_unaligned_be32(bulk_reg);
+-	charger->charge_now_uah = ADC_TO_CHARGE_UAH(tmp, charger->res_div);
+-	if (charger->charge_now_uah < 0)
+-		charger->charge_now_uah = 0;
+-	if (charger->charge_now_uah > charger->fcc_mah * 1000)
+-		charger->charge_now_uah = charger->fcc_mah * 1000;
+-
+-	/* Update soc based on reported charge. */
+-	charger->soc = charger->charge_now_uah * 100 / charger->fcc_mah;
++	/* Raw signed coulomb counter: the gauge logic needs it unclamped. */
++	raw_uah = rk817_bat_read_counter_uah(charger);
++	charger->raw_counter_uah = raw_uah;
+ 
+ 	/* Update reported voltage. */
+ 	charger->volt_avg_uv = rk817_bat_voltage_uv(charger,
+@@ -509,8 +460,94 @@
+ 
+ 	charger->relax_voltage_uv = rk817_bat_relax_voltage_uv(charger, true);
+ 
+-	/* Calibrate battery capacity and soc. */
+-	rk817_bat_calib_cap(charger);
++	/*
++	 * A supply is present if the PMIC says so or the optional dc-det gpio
++	 * does: some boards charge through an external IC the PMIC cannot see.
++	 */
++	regmap_read(charger->rk808->regmap, RK817_SYS_STS, &reg);
++	charger->plugged_in = reg & RK817_PLUG_IN_STS;
++	in.plugged = charger->plugged_in;
++	charger->dbg_pmic_plug = charger->plugged_in;
++	charger->dbg_dcdet = -1;
++	if (charger->dc_det) {
++		charger->dbg_dcdet = gpiod_get_value_cansleep(charger->dc_det);
++		if (charger->dbg_dcdet > 0)
++			in.plugged = true;
++	}
++
++	/*
++	 * Time since the previous pass. Passes also come from the plug ISRs, so
++	 * never pass less than 1 s (the gauge reads 0 as "one nominal period").
++	 */
++	now = ktime_get_boottime_seconds();
++	in.rest_ocv_soc = -1;
++	if (charger->resumed) {
++		in.resumed = true;
++		in.dt_s = charger->resume_dt_s;
++		in.rest_ocv_soc = charger->resume_rest_ocv_soc;
++		charger->resumed = false;
++	} else if (charger->last_sample_s) {
++		in.dt_s = clamp_t(time64_t, now - charger->last_sample_s, 1, INT_MAX);
++	} else {
++		in.dt_s = GAUGE_SAMPLE_S;
++	}
++	charger->last_sample_s = now;
++
++	in.counter_uah = raw_uah;
++	in.voltage_uv = charger->volt_avg_uv;
++	in.current_ua = charger->cur_avg_ua;
++	in.pmic_status = charger->charge_status;
++	gauge_step(&charger->gauge, &charger->gauge_cfg, &in, &out);
++
++	/* Apply the decision. */
++	if (out.set_counter) {
++		dev_info(charger->dev,
++			 "gauge: counter %d -> %d uAh, %d uV, %d uA, shown %d%%, fcc %d uAh\n",
++			 raw_uah, out.set_counter_uah, in.voltage_uv,
++			 in.current_ua, out.capacity, charger->gauge.fcc_uah);
++		rk817_bat_write_counter_uah(charger, out.set_counter_uah);
++	}
++	charger->soc = charger->gauge.dsoc;
++	charger->fcc_mah = charger->gauge.fcc_uah / 1000;
++	if (out.save)
++		rk817_record_battery_nvram_values(charger);
++
++	/* Update reported charge: the counter, limited to the pack's range. */
++	charger->charge_now_uah = clamp(raw_uah, 0, charger->fcc_mah * 1000);
++
++	switch (out.status) {
++	case GAUGE_CHARGING:
++		status = POWER_SUPPLY_STATUS_CHARGING;
++		break;
++	case GAUGE_FULL:
++		status = POWER_SUPPLY_STATUS_FULL;
++		break;
++	case GAUGE_DISCHARGING:
++		status = POWER_SUPPLY_STATUS_DISCHARGING;
++		break;
++	default:
++		status = POWER_SUPPLY_STATUS_NOT_CHARGING;
++		break;
++	}
++
++	changed = out.capacity != charger->capacity ||
++		  status != charger->status ||
++		  out.online != charger->online;
++	if (status != charger->status || out.online != charger->online)
++		dev_info(charger->dev,
++			 "gauge: status %d -> %d, online %d -> %d, shown %d%%, %d uV, %d uA\n",
++			 charger->status, status, charger->online, out.online,
++			 out.capacity, in.voltage_uv, in.current_ua);
++	charger->capacity = out.capacity;
++	charger->status = status;
++	charger->online = out.online;
++
++	mutex_unlock(&charger->lock);
++
++	if (changed) {
++		power_supply_changed(charger->bat_ps);
++		power_supply_changed(charger->chg_ps);
++	}
+ }
+ 
+ static int rk817_bat_get_prop(struct power_supply *ps,
+@@ -524,32 +561,7 @@
+ 		val->intval = charger->battery_present;
+ 		break;
+ 	case POWER_SUPPLY_PROP_STATUS:
+-		if (charger->cur_avg_ua < 0) {
+-			val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
+-			break;
+-		}
+-		switch (charger->charge_status) {
+-		case CHRG_OFF:
+-			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+-			break;
+-		/*
+-		 * Dead charge is documented, but not explained. I never
+-		 * observed it but assume it's a pre-charge for a dead
+-		 * battery.
+-		 */
+-		case DEAD_CHRG:
+-		case TRICKLE_CHRG:
+-		case CC_OR_CV_CHRG:
+-			val->intval = POWER_SUPPLY_STATUS_CHARGING;
+-			break;
+-		case CHARGE_FINISH:
+-			val->intval = POWER_SUPPLY_STATUS_FULL;
+-			break;
+-		default:
+-			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
+-			return -EINVAL;
+-
+-		}
++		val->intval = charger->status;
+ 		break;
+ 	case POWER_SUPPLY_PROP_CHARGE_TYPE:
+ 		switch (charger->charge_status) {
+@@ -585,12 +597,7 @@
+ 		val->intval = charger->bat_voltage_min_design_uv;
+ 		break;
+ 	case POWER_SUPPLY_PROP_CAPACITY:
+-		/* Add 500 so that values like 99999 are 100% not 99%. */
+-		val->intval = (charger->soc + 500) / 1000;
+-		if (val->intval > 100)
+-			val->intval = 100;
+-		if (val->intval < 0)
+-			val->intval = 0;
++		val->intval = charger->capacity;
+ 		break;
+ 	case POWER_SUPPLY_PROP_VOLTAGE_AVG:
+ 		val->intval = charger->volt_avg_uv;
+@@ -629,7 +636,7 @@
+ 
+ 	switch (prop) {
+ 	case POWER_SUPPLY_PROP_ONLINE:
+-		val->intval = charger->plugged_in;
++		val->intval = charger->online;
+ 		break;
+ 	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
+ 		/* max voltage from datasheet at 5.5v (default 5.0v) */
+@@ -662,12 +669,8 @@
+ 	struct rk817_charger *charger;
+ 
+ 	charger = (struct rk817_charger *)cg;
+-	charger->plugged_in = 1;
+-	power_supply_changed(charger->chg_ps);
+-	power_supply_changed(charger->bat_ps);
+-	/* try to recalibrate capacity if we hit full charge. */
+-	charger->soc_cal = 0;
+ 
++	/* read_props() notifies userspace if online/status/capacity changed. */
+ 	rk817_read_props(charger);
+ 
+ 	dev_dbg(charger->dev, "Power Cord Inserted\n");
+@@ -682,9 +685,6 @@
+ 
+ 	charger = (struct rk817_charger *)cg;
+ 	rk808 = charger->rk808;
+-	charger->plugged_in = 0;
+-	power_supply_changed(charger->bat_ps);
+-	power_supply_changed(charger->chg_ps);
+ 
+ 	/*
+ 	 * For some reason the bits of RK817_PMIC_CHRG_IN reset whenever the
+@@ -777,7 +777,8 @@
+ 	 * correct it.
+ 	 */
+ 	if ((charger->fcc_mah < 500) ||
+-	   ((charger->fcc_mah * 1000) > charger->bat_charge_full_design_uah)) {
++	   ((s64)charger->fcc_mah * 1000 * 100 >
++	    (s64)charger->bat_charge_full_design_uah * RK817_FCC_MAX_DESIGN_PCT)) {
+ 		dev_info(charger->dev,
+ 			 "Invalid NVRAM max charge, setting to %u uAH\n",
+ 			 charger->bat_charge_full_design_uah);
+@@ -804,41 +805,6 @@
+ 	return 0;
+ }
+ 
+-/*
+- * The relax pair is a true rested voltage: where it disagrees with the
+- * tracked soc by more than 5% (chosen arbitrarily), re-init the counter
+- * from it.
+- */
+-static void rk817_bat_ocv_recalibrate(struct rk817_charger *charger)
+-{
+-	struct rk808 *rk808 = charger->rk808;
+-	int ocv_soc, charge_now_adc;
+-	u8 bulk_reg[4];
+-
+-	if (!charger->battery_present)
+-		return;
+-
+-	if (!charger->relax_voltage_uv)
+-		return;
+-
+-	ocv_soc = power_supply_batinfo_ocv2cap(charger->bat_info,
+-					       charger->relax_voltage_uv,
+-					       20) * 1000;
+-	if (ocv_soc < 0 || abs(ocv_soc - charger->soc) <= 5000)
+-		return;
+-
+-	dev_info(charger->dev,
+-		 "OCV %duV disagrees with soc, recalibrating (%d -> %d)\n",
+-		 charger->relax_voltage_uv, charger->soc, ocv_soc);
+-	charger->soc = ocv_soc;
+-	charge_now_adc = CHARGE_TO_ADC(ocv_soc * charger->fcc_mah / 100000,
+-				       charger->res_div);
+-	put_unaligned_be32(charge_now_adc, bulk_reg);
+-	regmap_bulk_write(rk808->regmap, RK817_GAS_GAUGE_Q_INIT_H3,
+-			  bulk_reg, 4);
+-	rk817_record_battery_nvram_values(charger);
+-}
+-
+ static int
+ rk817_read_or_set_full_charge_on_boot(struct rk817_charger *charger,
+ 				struct power_supply_battery_info *bat_info)
+@@ -858,6 +824,9 @@
+ 		return ret;
+ 	first_boot = reg & RK817_BAT_CON;
+ 
++	/* The gauge starts from the saved soc; there is none on the first boot. */
++	charger->boot_saved_soc = -1;
++
+ 	/* PWRON_VOL only refreshes on a real power-on; bound it to the pack. */
+ 	charger->boot_voltage_uv =
+ 		clamp(rk817_bat_voltage_uv(charger, RK817_GAS_GAUGE_PWRON_VOL_H),
+@@ -893,6 +862,9 @@
+ 		if (ret < 0)
+ 			return ret;
+ 
++		/* What the last run saved, before the checks below may replace it. */
++		charger->boot_saved_soc = charger->soc;
++
+ 		/*
+ 		 * The columb counter keeps counting while the system is off,
+ 		 * so take it, capped at full, unless it reads invalid; the
+@@ -951,6 +923,7 @@
+ 	boot_charge_mah = charger->soc * charger->fcc_mah / 100 / 1000;
+ 	if (boot_charge_mah > charger->fcc_mah)
+ 		boot_charge_mah = charger->fcc_mah;
++	charger->boot_counter_uah = boot_charge_mah * 1000;
+ 	tmp = CHARGE_TO_ADC(boot_charge_mah, charger->res_div);
+ 	put_unaligned_be32(tmp, bulk_reg);
+ 	ret = regmap_bulk_write(rk808->regmap, RK817_GAS_GAUGE_Q_INIT_H3,
+@@ -959,7 +932,9 @@
+ 		return ret;
+ 
+ 	/* Set QMAX value to max design capacity. */
+-	tmp = CHARGE_TO_ADC((charger->bat_charge_full_design_uah / 1000),
++	/* Learned capacity may exceed the design one (up to 130 %). */
++	tmp = CHARGE_TO_ADC((int)div_s64((s64)charger->bat_charge_full_design_uah *
++					 RK817_FCC_MAX_DESIGN_PCT, 100 * 1000),
+ 			    charger->res_div);
+ 	put_unaligned_be32(tmp, bulk_reg);
+ 	ret = regmap_bulk_write(rk808->regmap, RK817_GAS_GAUGE_Q_MAX_H3,
+@@ -1121,6 +1096,23 @@
+ 	if (ret < 0)
+ 		return ret;
+ 
++	/* Start the gauge logic from the saved soc and the counter just set. */
++	charger->gauge_cfg.design_uah = bat_info->charge_full_design_uah;
++	charger->gauge_cfg.v_empty_uv = bat_info->voltage_min_design_uv;
++	charger->gauge_cfg.v_charge_uv = bat_info->constant_charge_voltage_max_uv;
++	charger->gauge_cfg.r_bat_uohm =
++		bat_info->factory_internal_resistance_uohm > 0 ?
++		bat_info->factory_internal_resistance_uohm : 0;
++	gauge_init(&charger->gauge, &charger->gauge_cfg, charger->boot_saved_soc,
++		   charger->fcc_mah * 1000, charger->boot_counter_uah);
++	charger->soc = charger->gauge.dsoc;
++	charger->fcc_mah = charger->gauge.fcc_uah / 1000;
++	/* 0 % is only ever the gauge's empty anchor: show at least 1 until its first pass. */
++	charger->capacity = clamp((charger->soc + 500) / 1000, 1, 100);
++	charger->status = POWER_SUPPLY_STATUS_UNKNOWN;
++	charger->online = charger->plugged_in;
++	rk817_record_battery_nvram_values(charger);
++
+ 	/*
+ 	 * Set minimum USB input voltage to 4.5v and enable USB voltage input
+ 	 * limit.
+@@ -1158,7 +1150,6 @@
+ 	charger = container_of(work, struct rk817_charger, work.work);
+ 
+ 	rk817_read_props(charger);
+-	rk817_bat_ocv_recalibrate(charger);
+ 
+ 	/* Run every 8 seconds like the BSP driver did. */
+ 	queue_delayed_work(system_wq, &charger->work, msecs_to_jiffies(8000));
+@@ -1178,6 +1169,36 @@
+ 	power_supply_put_battery_info(charger->bat_ps, charger->bat_info);
+ }
+ 
++static ssize_t gauge_debug_show(struct device *dev,
++				struct device_attribute *attr, char *buf)
++{
++	struct rk817_charger *charger = dev_get_drvdata(dev);
++	const struct gauge_state *g = &charger->gauge;
++	ssize_t n;
++
++	mutex_lock(&charger->lock);
++	n = sysfs_emit(buf,
++		       "raw=%d ctr=%d rsoc=%d dsoc=%d fcc=%d dir=%d full=%d full_shown=%d chg_seen=%d peak=%d tap1_t=%d tap2_t=%d emp_t=%d lz_n=%d cyc=%d plugged=%d dcdet=%d\n",
++		       charger->raw_counter_uah, g->ctr,
++		       gauge_rsoc(g->ctr, g->fcc_uah), g->dsoc, g->fcc_uah,
++		       g->dir, g->full, g->full_shown, g->chg_seen, g->peak,
++		       g->tap1_t, g->tap2_t, g->emp_t, g->lz_n, g->cyc,
++		       charger->dbg_pmic_plug, charger->dbg_dcdet);
++	mutex_unlock(&charger->lock);
++
++	return n;
++}
++static DEVICE_ATTR_RO(gauge_debug);
++
++static struct attribute *rk817_gauge_attrs[] = {
++	&dev_attr_gauge_debug.attr,
++	NULL
++};
++
++static const struct attribute_group rk817_gauge_group = {
++	.attrs = rk817_gauge_attrs,
++};
++
+ static int rk817_charger_probe(struct platform_device *pdev)
+ {
+ 	struct rk808 *rk808 = dev_get_drvdata(pdev->dev.parent);
+@@ -1203,10 +1224,34 @@
+ 		return -ENOMEM;
+ 
+ 	charger->rk808 = rk808;
++	mutex_init(&charger->lock);
++
++	/*
++	 * The power supplies are registered before the gauge is initialised;
++	 * never let userspace read a 0 % that is merely uninitialised memory.
++	 */
++	charger->capacity = 50;
++	charger->status = POWER_SUPPLY_STATUS_UNKNOWN;
+ 
+ 	charger->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, charger);
+ 
++	/*
++	 * Optional gpio that tells whether a supply is present, for boards whose
++	 * charger the PMIC cannot see. Its absence is not an error.
++	 */
++	charger->dc_det = devm_fwnode_gpiod_get(dev, of_fwnode_handle(node),
++						"dc-det", GPIOD_IN,
++						"rk817-dc-det");
++	if (IS_ERR(charger->dc_det)) {
++		ret = PTR_ERR(charger->dc_det);
++		charger->dc_det = NULL;
++		if (ret == -EPROBE_DEFER)
++			return dev_err_probe(dev, ret, "dc-det gpio not ready\n");
++		if (ret != -ENOENT)
++			dev_warn(dev, "ignoring dc-det gpio: %d\n", ret);
++	}
++
+ 	rk817_bat_calib_vol(charger);
+ 
+ 	pscfg.drv_data = charger;
+@@ -1295,8 +1340,8 @@
+ 		return ret;
+ 
+ 	/*
+-	 * Keep the battery info: the periodic recalibration needs its
+-	 * ocv-capacity table for as long as the driver is bound.
++	 * Keep the battery info: the resume path needs its ocv-capacity
++	 * table for as long as the driver is bound.
+ 	 */
+ 	charger->bat_info = bat_info;
+ 	ret = devm_add_action_or_reset(dev, rk817_put_battery_info, charger);
+@@ -1334,6 +1379,11 @@
+ 	if (ret)
+ 		return ret;
+ 
++	/* Created only now: the attribute needs the lock and the gauge state. */
++	ret = devm_device_add_group(dev, &rk817_gauge_group);
++	if (ret)
++		return ret;
++
+ 	/* Force the first update immediately. */
+ 	mod_delayed_work(system_wq, &charger->work, 0);
+ 
+@@ -1343,31 +1393,39 @@
+ /*
+  * The columb counter is erratic while the system sleeps, and the signals
+  * that could correct it (a live relax status, a finished charge) are gone
+- * before the monitor runs again. Correct from what persists instead, as
+- * the BSP driver does.
++ * before the monitor runs again. Credit what persists: when the system slept
++ * charging, the counter is topped up with what the charge current implies
++ * (this is a correction of the hardware counter, the gauge then follows it).
++ * It also hands the next gauge pass the sleep length and, after a long sleep
++ * with a latched rest voltage, the soc that voltage says (the gauge acts on
++ * it only if it disagrees with the counter by more than 30 %, either way;
++ * rest_correct=0 disables this). The displayed soc is the gauge's business,
++ * not set here.
+  */
+ static void rk817_bat_sleep_adjust(struct rk817_charger *charger)
+ {
+-	struct rk808 *rk808 = charger->rk808;
+ 	time64_t elapsed = ktime_get_boottime_seconds() - charger->slp_boottime;
+-	int expected_uah, moved_uah, charge_uah, credit_uah, tmp;
++	int expected_uah, moved_uah, charge_uah, credit_uah, fcc_uah, ocv_soc;
+ 	unsigned int sts;
+-	u8 bulk_reg[4];
+ 
+-	if (!charger->battery_present || elapsed <= 0)
++	if (elapsed <= 0)
+ 		return;
+ 
+-	regmap_read(rk808->regmap, RK817_SYS_STS, &sts);
++	mutex_lock(&charger->lock);
++
++	/* The next gauge pass is the first after a system suspend of this long. */
++	charger->resumed = true;
++	charger->resume_dt_s = min_t(time64_t, elapsed, INT_MAX);
++	charger->resume_rest_ocv_soc = -1;
++
++	if (!charger->battery_present)
++		goto out;
++
++	regmap_read(charger->rk808->regmap, RK817_SYS_STS, &sts);
+ 	charger->plugged_in = (sts & RK817_PLUG_IN_STS);
+ 
+ 	/* Start from what the counter did during sleep, not the pre-sleep soc. */
+-	regmap_bulk_read(rk808->regmap, RK817_GAS_GAUGE_Q_PRES_H3,
+-			 bulk_reg, 4);
+-	tmp = get_unaligned_be32(bulk_reg);
+-	charge_uah = tmp > 0 ? ADC_TO_CHARGE_UAH(tmp, charger->res_div) : 0;
+-	if (charge_uah > charger->fcc_mah * 1000)
+-		charge_uah = charger->fcc_mah * 1000;
+-	charger->soc = div_s64((s64)charge_uah * 100, charger->fcc_mah);
++	charge_uah = rk817_bat_read_counter_uah(charger);
+ 
+ 	/* Flags were cleared at suspend: any pair now is from this sleep. */
+ 	charger->relax_voltage_uv = rk817_bat_relax_voltage_uv(charger, false);
+@@ -1377,12 +1435,18 @@
+ 		 rk817_bat_voltage_uv(charger, RK817_GAS_GAUGE_BAT_VOL_H),
+ 		 charger->relax_voltage_uv);
+ 	if (charger->relax_voltage_uv) {
+-		rk817_bat_ocv_recalibrate(charger);
+-		return;
++		if (rest_correct && elapsed >= RK817_REST_MIN_SLEEP_S) {
++			ocv_soc = power_supply_batinfo_ocv2cap(charger->bat_info,
++							       charger->relax_voltage_uv,
++							       20);
++			if (ocv_soc >= 0)
++				charger->resume_rest_ocv_soc = ocv_soc * 1000;
++		}
++		goto out;
+ 	}
+ 
+ 	if (!charger->slp_charging || !charger->plugged_in)
+-		return;
++		goto out;
+ 
+ 	moved_uah = charge_uah - charger->slp_charge_uah;
+ 	expected_uah = div_s64((s64)charger->slp_cur_ua * elapsed, 3600);
+@@ -1393,24 +1457,22 @@
+ 		 (long long)elapsed, moved_uah, expected_uah);
+ 
+ 	if (credit_uah <= 0)
+-		return;
++		goto out;
+ 
+ 	/*
+ 	 * Credit the shortfall, saturating at full - covers a charge that
+ 	 * terminated during sleep. A constant-current estimate reads high
+ 	 * across a taper; the cap bounds it, the next rested pair corrects
+-	 * the rest.
++	 * the rest. A counter already above full is never lowered here.
+ 	 */
+-	charge_uah += credit_uah;
+-	if (charge_uah > charger->fcc_mah * 1000)
+-		charge_uah = charger->fcc_mah * 1000;
++	fcc_uah = charger->gauge.fcc_uah;
++	if (charge_uah + credit_uah > fcc_uah)
++		credit_uah = max(fcc_uah - charge_uah, 0);
++	if (credit_uah > 0)
++		rk817_bat_write_counter_uah(charger, charge_uah + credit_uah);
+ 
+-	charger->soc = div_s64((s64)charge_uah * 100, charger->fcc_mah);
+-	tmp = CHARGE_TO_ADC(charge_uah / 1000, charger->res_div);
+-	put_unaligned_be32(tmp, bulk_reg);
+-	regmap_bulk_write(rk808->regmap, RK817_GAS_GAUGE_Q_INIT_H3,
+-			  bulk_reg, 4);
+-	rk817_record_battery_nvram_values(charger);
++out:
++	mutex_unlock(&charger->lock);
+ }
+ 
+ static int __maybe_unused rk817_suspend(struct device *dev)
+@@ -1419,12 +1481,14 @@
+ 
+ 	cancel_delayed_work_sync(&charger->work);
+ 
++	mutex_lock(&charger->lock);
+ 	charger->slp_boottime = ktime_get_boottime_seconds();
+-	charger->slp_charge_uah = charger->charge_now_uah;
++	charger->slp_charge_uah = charger->raw_counter_uah;
+ 	charger->slp_cur_ua = abs(charger->cur_avg_ua);
+ 	charger->slp_charging = charger->plugged_in &&
+ 				(charger->charge_status == CC_OR_CV_CHRG ||
+ 				 charger->charge_status == TRICKLE_CHRG);
++	mutex_unlock(&charger->lock);
+ 
+ 	/* Any relax pair found at resume will postdate this suspend. */
+ 	regmap_write_bits(charger->rk808->regmap, RK817_GAS_GAUGE_GG_STS,
+--- /dev/null
++++ b/drivers/power/supply/rk817_gauge.h
+@@ -0,0 +1,521 @@
++/* rk817_gauge.h - battery percentage logic for RK817 handhelds (see SPEC.md), v1.3.
++ * Header only, C99, integer math, no libc, no globals, no malloc.
++ * Units: uV, uA, uAh, seconds; percentages in milli-percent (100000 = 100 %).
++ * Deterministic: output depends only on (config, state, input).
++ *
++ * Out of scope (documented limit): the driver may apply set_counter up to ONE sample late
++ * (handled by the pend_* logic); a delay of two or more samples is not handled.
++ */
++#ifndef RK817_GAUGE_H
++#define RK817_GAUGE_H
++
++#ifndef __KERNEL__
++#include <stdint.h>
++#include <stdbool.h>
++typedef int64_t gauge_s64;
++#else
++typedef s64 gauge_s64;
++#endif
++
++/* The kernel may redefine this to div_s64(). */
++#ifndef GAUGE_DIV64
++#define GAUGE_DIV64(a, b) ((a) / (b))
++#endif
++
++/* Test-only: -DGAUGE_MUTANT=n breaks one rule (mutation testing). 0 = real code. */
++#ifndef GAUGE_MUTANT
++#define GAUGE_MUTANT 0
++#endif
++#define GAUGE_M(n) (GAUGE_MUTANT == (n))
++
++/* ------------------------------------------------------------------ tunables */
++#define GAUGE_SAMPLE_S            8        /* nominal sample period */
++#define GAUGE_TIME_CREDIT_S       24       /* max seconds one sample adds to a timer */
++#define GAUGE_DT_MAX_S            2592000  /* longest sleep we believe (30 days) */
++#define GAUGE_STEP_MPCT           1000     /* max displayed move per normal sample */
++#define GAUGE_FULL_MPCT           100000
++#define GAUGE_NOFULL_CAP_MPCT     99000    /* ceiling until the full anchor */
++#define GAUGE_MIN_SHOWN           1        /* lowest capacity shown before the empty anchor */
++
++/* D1 sanity window: a sample outside it is garbage and is ignored as a whole */
++#define GAUGE_V_MIN_UV            2500000
++#define GAUGE_V_MAX_UV            4600000
++#define GAUGE_I_MAX_UA            10000000
++#define GAUGE_CTR_MAX_UAH         20000000
++#define GAUGE_CTR_BELIEF_MAX      100000000
++
++/* R2 direction (uA). Charging: > CHG_ON for 2 samples; leaves it when < HOLD for 2.
++ * Discharging: < -DIS_ON for 2 samples; leaves it when > HOLD for 2. Between: keep state. */
++#define GAUGE_CHG_ON_UA           30000
++#define GAUGE_DIS_ON_UA           10000
++#define GAUGE_HOLD_UA             10000
++#define GAUGE_DIR_SAMPLES         2
++#define GAUGE_ONLINE_MIN_UA       (-30000)
++
++/* R4 full anchor */
++#define GAUGE_FIN_TIME_S          30
++#define GAUGE_FIN_MIN_UA          (-30000)
++#define GAUGE_TAP_TIME_S          180
++#define GAUGE_TAP1_HV_UV          25000    /* branch 1: at rest near v_charge */
++#define GAUGE_TAP1_MIN_UA         (-10000)
++#define GAUGE_TAP_MAX_UA          100000
++#define GAUGE_TAP2_HV_UV          60000    /* branch 2: a seen charge tapering */
++#define GAUGE_TAP2_MIN_UA         20000
++#define GAUGE_TAP2_PEAK_DIV       3
++#define GAUGE_PEAK_MAX_UA         3500000
++#define GAUGE_CLEAR_DIS_UA        150000   /* a clear discharge: resets the charge peak */
++#define GAUGE_FULL_DROP_MPCT      1500     /* counter below fcc by this: not full any more */
++#define GAUGE_FULL_CLAMP_MPCT     500      /* counter above fcc by this while full: clamp */
++#define GAUGE_OFF_UA              1500     /* unplugged and drawing at least this ... */
++#define GAUGE_OFF_N               15       /* ... for this many samples: not "full" any more */
++
++/* R5 empty anchor / low zone */
++#define GAUGE_RBAT_DEFAULT_UOHM   100000
++#define GAUGE_RBAT_EXTRA_UOHM     30000
++#define GAUGE_VCUT_MAX_DROP_UV    100000
++#define GAUGE_EMPTY_TIME_S        60
++#define GAUGE_EMPTY_DEEP_UV       50000
++#define GAUGE_EMPTY_DEEP_N        2
++#define GAUGE_LZ_SPAN_UV          150000   /* zone width above v_cut */
++#define GAUGE_LZ_MPCT             15000    /* ceiling at the top of the zone */
++#define GAUGE_LZ_SAMPLES          3
++#define GAUGE_EMPTY_INST_UV       150000   /* one sample below v_empty - this: empty at once ... */
++#define GAUGE_EMPTY_INST_MAX_MPCT 30000    /* ... if the counter does not say more than this */
++
++/* R6 learning, init, R7 */
++#define GAUGE_LEARN_MAX_PCT       10
++#define GAUGE_FCC_MIN_DESIGN_MPCT 50000    /* learned fcc range, of design */
++#define GAUGE_FCC_MAX_DESIGN_MPCT 130000
++#define GAUGE_FCC_VALID_MIN_MPCT  15000    /* saved fcc accepted range, of design */
++#define GAUGE_INIT_KEEP_MPCT      3000
++#define GAUGE_REST_FAR_MPCT       30000    /* R7': counter this far from a trusted rest ... */
++#define GAUGE_REST_BAND_MPCT      20000    /* ... goes to the edge of this band around it */
++#define GAUGE_PEND_SAMPLES        2        /* how long a counter rewrite may take to show up */
++#define GAUGE_CNT_MAX             100
++
++/* ------------------------------------------------------------------ interface */
++enum gauge_pmic_status { GAUGE_PMIC_OFF, GAUGE_PMIC_DEAD, GAUGE_PMIC_TRICKLE, GAUGE_PMIC_CC_CV,
++                         GAUGE_PMIC_FINISH, GAUGE_PMIC_USB_OVER_VOL, GAUGE_PMIC_BAT_TMP_ERR,
++                         GAUGE_PMIC_BAT_TIM_ERR };
++enum gauge_status { GAUGE_DISCHARGING, GAUGE_CHARGING, GAUGE_FULL, GAUGE_NOT_CHARGING };
++
++struct gauge_config {
++	int design_uah;
++	int v_empty_uv;
++	int v_charge_uv;
++	int r_bat_uohm;              /* 0 -> GAUGE_RBAT_DEFAULT_UOHM */
++};
++
++struct gauge_input {
++	int counter_uah;             /* raw signed coulomb counter, NOT clamped */
++	int voltage_uv;
++	int current_ua;              /* + = into the battery */
++	int pmic_status;
++	bool plugged;
++	int rest_ocv_soc;            /* milli-%, trusted rest only, else -1 */
++	int dt_s;
++	bool resumed;
++};
++
++enum { GAUGE_DIR_NONE, GAUGE_DIR_CHG, GAUGE_DIR_DIS };
++enum { GAUGE_CYC_NONE, GAUGE_CYC_FROM_FULL, GAUGE_CYC_FROM_EMPTY };
++
++struct gauge_state {
++	int dsoc;                    /* displayed, milli-% (persist) */
++	int fcc_uah;                 /* learned full capacity (persist) */
++	/* private */
++	int ctr;                     /* believed counter (survives late rewrites) */
++	int prev_raw;
++	int pend_n, pend_jump;       /* a rewrite we issued may still show up as a jump */
++	int dir;
++	int chg_n, dis_n, hi_n, lo_n;
++	int fin_t, tap1_t, tap2_t, emp_t, emp_n, lz_n;
++	int peak, prev_c, cdis_n, off_n;   /* R4(b): charge peak, last current, drain counters */
++	int last_rsoc;               /* counter-based soc of the previous sample (D7) */
++	int last_cap, last_status;   /* outputs repeated for a garbage sample (D1) */
++	bool last_online;
++	int cyc;                     /* clean-cycle tracking (R6) */
++	int saved_pct, saved_fcc;
++	bool full, full_shown, empty, chg_seen, lock;
++};
++
++struct gauge_output {
++	int capacity;                /* 0..100 */
++	int status;
++	bool online;
++	bool set_counter;
++	int set_counter_uah;
++	bool save;
++};
++
++/* ------------------------------------------------------------------ helpers */
++static inline int gauge_abs(int x) { return x < 0 ? -x : x; }
++static inline int gauge_min(int a, int b) { return a < b ? a : b; }
++static inline int gauge_clamp(int x, int lo, int hi) { return x < lo ? lo : (x > hi ? hi : x); }
++
++/* fcc * mpct / 100 % */
++static inline int gauge_pct_of(int fcc, int mpct)
++{
++	return (int)GAUGE_DIV64((gauge_s64)fcc * mpct, GAUGE_FULL_MPCT);
++}
++
++/* R1 */
++static inline int gauge_rsoc(int ctr, int fcc)
++{
++	if (ctr <= 0 || fcc <= 0)
++		return 0;
++	if (ctr >= fcc)
++		return GAUGE_FULL_MPCT;
++	return (int)GAUGE_DIV64((gauge_s64)ctr * GAUGE_FULL_MPCT, fcc);
++}
++
++/* D1: is this sample believable at all? */
++static inline bool gauge_sane(const struct gauge_input *in)
++{
++	if (GAUGE_M(32))
++		return true;
++	return in->voltage_uv >= GAUGE_V_MIN_UV && in->voltage_uv <= GAUGE_V_MAX_UV &&
++	       in->current_ua >= -GAUGE_I_MAX_UA && in->current_ua <= GAUGE_I_MAX_UA &&
++	       in->counter_uah >= -GAUGE_CTR_MAX_UAH && in->counter_uah <= GAUGE_CTR_MAX_UAH;
++}
++
++/* R6: limit a learned capacity to +-10 % of the current one and [50 %, 130 %] of design */
++static inline int gauge_learn_limit(const struct gauge_config *cfg, int cur, int cand)
++{
++	int lim = (int)GAUGE_DIV64((gauge_s64)cur * GAUGE_LEARN_MAX_PCT, 100);
++	int lo = cur - lim, hi = cur + lim;
++	int dmax = gauge_pct_of(cfg->design_uah,
++				GAUGE_M(40) ? GAUGE_FULL_MPCT : GAUGE_FCC_MAX_DESIGN_MPCT);
++
++	if (GAUGE_M(14))
++		lo = 0, hi = 0x7fffffff;
++	cand = gauge_clamp(cand, lo, hi);
++	return gauge_clamp(cand, gauge_pct_of(cfg->design_uah, GAUGE_FCC_MIN_DESIGN_MPCT), dmax);
++}
++
++/* R5: load compensated cut-off voltage. ia = discharge current, >= 0 */
++static inline int gauge_vcut(const struct gauge_config *cfg, int ia, int rbat)
++{
++	int drop;
++
++	if (GAUGE_M(7))
++		return cfg->v_empty_uv;
++	drop = (int)GAUGE_DIV64((gauge_s64)ia * rbat, 1000000);
++	return cfg->v_empty_uv - gauge_min(drop, GAUGE_VCUT_MAX_DROP_UV);
++}
++
++/* Ask the caller to rewrite the counter. The belief follows at once; the jump that will
++ * show up in the raw counter (now or one sample late) is remembered and ignored. */
++static inline void gauge_rewrite(struct gauge_state *st, const struct gauge_input *in,
++				 struct gauge_output *out, int target)
++{
++	st->pend_jump = target - in->counter_uah;
++	st->pend_n = GAUGE_PEND_SAMPLES;
++	st->ctr = target;
++	out->set_counter = true;
++	out->set_counter_uah = target;
++}
++
++static inline void gauge_init(struct gauge_state *st, const struct gauge_config *cfg,
++			      int saved_dsoc, int saved_fcc_uah, int counter_uah)
++{
++	int rsoc;
++
++	counter_uah = gauge_clamp(counter_uah, -GAUGE_CTR_BELIEF_MAX, GAUGE_CTR_BELIEF_MAX);
++	st->fcc_uah = cfg->design_uah;
++	if (saved_fcc_uah > 0 &&
++	    saved_fcc_uah >= gauge_pct_of(cfg->design_uah, GAUGE_FCC_VALID_MIN_MPCT) &&
++	    saved_fcc_uah <= gauge_pct_of(cfg->design_uah, GAUGE_FCC_MAX_DESIGN_MPCT))
++		st->fcc_uah = saved_fcc_uah;
++	st->ctr = counter_uah;
++	st->prev_raw = counter_uah;
++	st->pend_n = st->pend_jump = 0;
++	st->dir = GAUGE_DIR_NONE;
++	st->chg_n = st->dis_n = st->hi_n = st->lo_n = 0;
++	st->fin_t = st->tap1_t = st->tap2_t = st->emp_t = st->emp_n = st->lz_n = 0;
++	st->peak = st->prev_c = st->cdis_n = st->off_n = 0;
++	st->cyc = GAUGE_CYC_NONE;
++	st->full = st->full_shown = st->empty = st->chg_seen = st->lock = false;
++	rsoc = gauge_rsoc(counter_uah, st->fcc_uah);
++	st->last_rsoc = rsoc;
++	if (saved_dsoc >= 0 && gauge_abs(saved_dsoc - rsoc) <= GAUGE_INIT_KEEP_MPCT) {
++		st->dsoc = gauge_clamp(saved_dsoc, 0, GAUGE_FULL_MPCT);
++		st->full = st->dsoc >= GAUGE_FULL_MPCT;   /* a saved 100 % was a real full */
++		st->full_shown = st->full;
++	} else {
++		st->dsoc = gauge_min(rsoc, GAUGE_NOFULL_CAP_MPCT);
++	}
++	/* Booted from a real empty (saved and counted soc both within the init band of 0 %):
++	 * the charge counted from here to the next full anchor is a clean empty->full
++	 * measurement, so let that anchor learn fcc (bounded by gauge_learn_limit). The
++	 * empty anchor itself may never run when a power-off guard cuts first. */
++	if (saved_dsoc >= 0 && saved_dsoc <= GAUGE_INIT_KEEP_MPCT &&
++	    rsoc <= GAUGE_INIT_KEEP_MPCT)
++		st->cyc = GAUGE_CYC_FROM_EMPTY;
++	st->saved_pct = st->dsoc / 1000;
++	st->saved_fcc = st->fcc_uah;
++	st->last_cap = gauge_clamp((st->dsoc + 500) / 1000, 0, 100);
++	st->last_status = GAUGE_NOT_CHARGING;
++	st->last_online = false;
++}
++
++static inline void gauge_step(struct gauge_state *st, const struct gauge_config *cfg,
++			      const struct gauge_input *in, struct gauge_output *out)
++{
++	const int c = in->current_ua, v = in->voltage_uv;
++	const int dt = in->dt_s > 0 ? gauge_min(in->dt_s, GAUGE_DT_MAX_S) : GAUGE_SAMPLE_S;
++	const int tdt = in->resumed ? 0 : gauge_min(dt, GAUGE_TIME_CREDIT_S);
++	const int rest = in->rest_ocv_soc < 0 ? -1 : gauge_min(in->rest_ocv_soc, GAUGE_FULL_MPCT);
++	const int rbat = (cfg->r_bat_uohm > 0 ? cfg->r_bat_uohm : GAUGE_RBAT_DEFAULT_UOHM) +
++			 GAUGE_RBAT_EXTRA_UOHM;
++	const bool pmic_chg = in->pmic_status == GAUGE_PMIC_DEAD ||
++			      in->pmic_status == GAUGE_PMIC_TRICKLE ||
++			      in->pmic_status == GAUGE_PMIC_CC_CV;
++	const int vhi = cfg->v_charge_uv;
++	bool anchor = false, empty_hit = false, rewrote = false, ok1, ok2;
++	int delta, rsoc, target, budget, thr, cm;
++
++	out->set_counter = false;
++	out->set_counter_uah = 0;
++	out->save = false;
++	if (!gauge_sane(in)) {            /* D1: repeat the last answer, touch nothing */
++		out->capacity = st->last_cap;
++		out->status = st->last_status;
++		out->online = st->last_online;
++		return;
++	}
++
++	/* counter belief: follow raw deltas, minus the jump of a rewrite we asked for */
++	delta = in->counter_uah - st->prev_raw;
++	st->prev_raw = in->counter_uah;
++	if (st->pend_n > 0) {
++		if (gauge_abs(delta - st->pend_jump) < gauge_abs(delta)) {
++			delta -= st->pend_jump;
++			st->pend_n = 0;
++		} else {
++			st->pend_n--;
++		}
++	}
++	st->ctr = gauge_clamp(st->ctr + delta, -GAUGE_CTR_BELIEF_MAX, GAUGE_CTR_BELIEF_MAX);
++
++	/* R2 direction with hysteresis */
++	st->chg_n = c > GAUGE_CHG_ON_UA ? gauge_min(st->chg_n + 1, GAUGE_CNT_MAX) : 0;
++	st->dis_n = c < -GAUGE_DIS_ON_UA ? gauge_min(st->dis_n + 1, GAUGE_CNT_MAX) : 0;
++	st->hi_n = c > GAUGE_HOLD_UA ? gauge_min(st->hi_n + 1, GAUGE_CNT_MAX) : 0;
++	st->lo_n = c < GAUGE_HOLD_UA ? gauge_min(st->lo_n + 1, GAUGE_CNT_MAX) : 0;
++	if (in->resumed)
++		st->chg_n = st->dis_n = st->hi_n = st->lo_n = 0;
++	if (GAUGE_M(11)) {
++		st->dir = c > 0 ? GAUGE_DIR_CHG : (c < 0 ? GAUGE_DIR_DIS : GAUGE_DIR_NONE);
++	} else if (st->chg_n >= GAUGE_DIR_SAMPLES || (pmic_chg && c > -GAUGE_DIS_ON_UA)) {
++		st->dir = GAUGE_DIR_CHG;
++	} else if (st->dis_n >= GAUGE_DIR_SAMPLES) {
++		st->dir = GAUGE_DIR_DIS;
++	} else if (st->dir == GAUGE_DIR_CHG && st->lo_n >= GAUGE_DIR_SAMPLES) {
++		st->dir = GAUGE_DIR_NONE;
++	} else if (st->dir == GAUGE_DIR_DIS && st->hi_n >= GAUGE_DIR_SAMPLES) {
++		st->dir = GAUGE_DIR_NONE;
++	}
++	if (st->dir == GAUGE_DIR_CHG) {
++		st->chg_seen = true;
++		st->empty = false;
++	} else if (st->dir == GAUGE_DIR_DIS) {
++		st->chg_seen = false;
++	}
++
++	/* charge peak: the highest current two samples in a row agree on (a stray sample is no
++	 * peak); a clear discharge starts a new charge */
++	cm = GAUGE_M(37) ? c : gauge_min(c, st->prev_c);
++	st->prev_c = c;
++	st->cdis_n = c < -GAUGE_CLEAR_DIS_UA ? gauge_min(st->cdis_n + 1, GAUGE_CNT_MAX) : 0;
++	if (st->cdis_n >= GAUGE_DIR_SAMPLES)
++		st->peak = 0;
++	if (cm > st->peak)
++		st->peak = gauge_min(cm, GAUGE_PEAK_MAX_UA);
++
++	/* "full" on the display ends when we are unplugged and clearly drawing current */
++	st->off_n = (c <= -GAUGE_OFF_UA && !in->plugged) ?
++		gauge_min(st->off_n + 1, GAUGE_CNT_MAX) : 0;
++	if (st->off_n >= GAUGE_OFF_N && !GAUGE_M(38))
++		st->full_shown = false;
++	if (st->full && in->plugged)
++		st->full_shown = true;
++
++	/* a big counter rise during a suspend means a charge happened meanwhile */
++	if (in->resumed && delta > gauge_pct_of(st->fcc_uah, GAUGE_STEP_MPCT))
++		st->chg_seen = true;
++	if (st->chg_seen || in->plugged)
++		st->lock = false;
++
++	/* R7': a trusted rest voltage far from the counter pulls it to the edge of a band */
++	if (rest >= 0) {
++		int d = gauge_rsoc(st->ctr, st->fcc_uah) - rest;
++		int far = GAUGE_M(6) ? 0 : GAUGE_REST_FAR_MPCT;
++		int tgt = 0;
++		bool fix = false;
++
++		if (d > far) {
++			tgt = rest + (GAUGE_M(34) ? 0 : GAUGE_REST_BAND_MPCT);
++			fix = true;
++		} else if (d < -far && !GAUGE_M(33)) {
++			tgt = rest - (GAUGE_M(34) ? 0 : GAUGE_REST_BAND_MPCT);
++			fix = true;
++		}
++		if (fix) {
++			tgt = gauge_clamp(tgt, 0, GAUGE_FULL_MPCT);
++			gauge_rewrite(st, in, out, gauge_pct_of(st->fcc_uah, tgt));
++			st->cyc = GAUGE_CYC_NONE;
++			rewrote = true;
++		}
++	}
++
++	/* R4: the full flag drops once the counter fell 1.5 % under fcc, whatever the direction */
++	thr = st->fcc_uah - gauge_pct_of(st->fcc_uah, GAUGE_FULL_DROP_MPCT);
++	if (st->full && st->ctr < thr &&
++	    (!GAUGE_M(26) || st->dir == GAUGE_DIR_DIS || in->resumed || rewrote)) {
++		st->full = false;
++		st->full_shown = false;
++		st->chg_seen = false;             /* a new charge has to be seen again */
++		st->lock = true;
++	}
++
++	/* R4 full anchor: (a) PMIC FINISH, (b) blind taper, two branches */
++	st->fin_t = (in->pmic_status == GAUGE_PMIC_FINISH && c >= GAUGE_FIN_MIN_UA) ?
++		    st->fin_t + tdt : 0;
++	/* branch 1: at rest near v_charge (a full pack on a charger we cannot see). Not after
++	 * the full flag dropped from use, until a charge or the charger shows up again. */
++	ok1 = (!st->lock || GAUGE_M(43)) && v >= vhi - GAUGE_TAP1_HV_UV &&
++	      c >= GAUGE_TAP1_MIN_UA && c <= GAUGE_TAP_MAX_UA;
++	/* branch 2: a charge we saw, tapering: 20 mA..100 mA and under a third of its peak */
++	ok2 = (st->chg_seen || GAUGE_M(10)) && c <= GAUGE_TAP_MAX_UA &&
++	      (GAUGE_M(9) || v >= vhi - GAUGE_TAP2_HV_UV) &&
++	      c >= (GAUGE_M(35) ? GAUGE_TAP1_MIN_UA : GAUGE_TAP2_MIN_UA) &&
++	      (GAUGE_M(36) || c <= st->peak / GAUGE_TAP2_PEAK_DIV);
++	st->tap1_t = ok1 ? st->tap1_t + (GAUGE_M(8) ? GAUGE_TAP_TIME_S : tdt) : 0;
++	st->tap2_t = ok2 ? st->tap2_t + (GAUGE_M(8) ? GAUGE_TAP_TIME_S : tdt) : 0;
++	if (!st->full && (st->fin_t >= (GAUGE_M(20) ? 1 : GAUGE_FIN_TIME_S) ||
++			  st->tap1_t >= GAUGE_TAP_TIME_S || st->tap2_t >= GAUGE_TAP_TIME_S)) {
++		if (st->cyc == GAUGE_CYC_FROM_EMPTY && st->ctr > 0 && !GAUGE_M(15))
++			st->fcc_uah = gauge_learn_limit(cfg, st->fcc_uah, st->ctr);
++		gauge_rewrite(st, in, out, st->fcc_uah);
++		st->full = st->full_shown = true;
++		st->empty = false;
++		st->cyc = GAUGE_CYC_FROM_FULL;
++		anchor = true;
++		if (!GAUGE_M(29))                 /* the evidence is spent */
++			st->peak = 0;
++		st->tap1_t = st->tap2_t = 0;
++	} else if (st->full && st->pend_n == 0 &&
++		   st->ctr > st->fcc_uah + gauge_pct_of(st->fcc_uah, GAUGE_FULL_CLAMP_MPCT)) {
++		/* keep "full" honest while overcharging */
++		gauge_rewrite(st, in, out, st->fcc_uah);
++	}
++
++	/* R5 empty anchor */
++	if (!st->empty && !in->resumed && c < 0 && st->dir != GAUGE_DIR_CHG) {
++		int vcut = gauge_vcut(cfg, -c, rbat);
++		bool inst, timed;
++
++		st->emp_t = v < vcut ? st->emp_t + tdt : 0;
++		/* one very low sample is enough only if the counter agrees that the pack is low */
++		inst = !GAUGE_M(23) && v < cfg->v_empty_uv - GAUGE_EMPTY_INST_UV &&
++		       (GAUGE_M(41) ||
++		        gauge_rsoc(st->ctr, st->fcc_uah) <= GAUGE_EMPTY_INST_MAX_MPCT);
++		st->emp_n = v < vcut - GAUGE_EMPTY_DEEP_UV ?
++			gauge_min(st->emp_n + 1, GAUGE_CNT_MAX) : 0;
++		timed = GAUGE_M(13) ? v < vcut : (st->emp_t >= GAUGE_EMPTY_TIME_S ||
++						  st->emp_n >= GAUGE_EMPTY_DEEP_N);
++		if (inst || timed) {
++			if (st->cyc == GAUGE_CYC_FROM_FULL && !GAUGE_M(15) &&
++			    (timed || GAUGE_M(42)))      /* a one-sample hit does not teach */
++				st->fcc_uah = gauge_learn_limit(cfg, st->fcc_uah,
++								st->fcc_uah - st->ctr);
++			gauge_rewrite(st, in, out, 0);
++			st->dsoc = 0;
++			st->empty = true;
++			st->full = st->full_shown = false;
++			st->cyc = GAUGE_CYC_FROM_EMPTY;
++			st->emp_t = st->emp_n = st->lz_n = 0;
++			empty_hit = anchor = true;
++		}
++	} else if (c >= 0 || st->dir == GAUGE_DIR_CHG) {
++		st->emp_t = st->emp_n = 0;
++	}
++
++	/* R3 displayed soc */
++	rsoc = gauge_rsoc(st->ctr, st->fcc_uah);
++	target = rsoc;
++	if (!st->full && !GAUGE_M(2) && !(GAUGE_M(19) && in->resumed) &&
++	    target > GAUGE_NOFULL_CAP_MPCT)
++		target = GAUGE_NOFULL_CAP_MPCT;
++
++	/* R5 low zone: voltage ceiling while discharging, applied after 3 samples */
++	if (!GAUGE_M(3) && !empty_hit && st->dir == GAUGE_DIR_DIS && !in->resumed && c < 0) {
++		int margin = v - gauge_vcut(cfg, -c, rbat);
++		int zmax = margin <= 0 ? 0 : margin / (GAUGE_LZ_SPAN_UV / GAUGE_LZ_MPCT);
++
++		if (margin < GAUGE_LZ_SPAN_UV && zmax <= st->dsoc)
++			st->lz_n = gauge_min(st->lz_n + 1, GAUGE_CNT_MAX);
++		else
++			st->lz_n = 0;
++		if (st->lz_n >= GAUGE_LZ_SAMPLES && zmax < target)
++			target = zmax;
++	} else {
++		st->lz_n = 0;
++	}
++
++	if (!empty_hit) {
++		budget = GAUGE_STEP_MPCT;
++		if (in->resumed && !GAUGE_M(12))
++			budget = gauge_clamp(dt / GAUGE_SAMPLE_S, 1, GAUGE_CNT_MAX) *
++				 GAUGE_STEP_MPCT;
++		if (GAUGE_M(4))
++			budget = GAUGE_FULL_MPCT;
++		if (target > st->dsoc) {
++			if (GAUGE_M(1) || in->resumed ||
++			    (st->dir == GAUGE_DIR_CHG && c >= 0) ||
++			    (st->full && c > -GAUGE_CLEAR_DIS_UA)) {
++				int up = gauge_min(budget, target - st->dsoc);
++
++				/* D7: after a sleep it only rises as far as the counter did */
++				if (in->resumed && !GAUGE_M(39))
++					up = gauge_min(up, gauge_clamp(rsoc - st->last_rsoc, 0,
++								       GAUGE_FULL_MPCT));
++				st->dsoc += up;
++			}
++		} else if (target < st->dsoc) {
++			if (GAUGE_M(5) || in->resumed ||
++			    ((GAUGE_M(24) ? st->dir == GAUGE_DIR_DIS : st->dir != GAUGE_DIR_CHG) &&
++			     c <= GAUGE_HOLD_UA))
++				st->dsoc -= gauge_min(budget, st->dsoc - target);
++		}
++	}
++	st->last_rsoc = rsoc;
++
++	/* outputs */
++	out->capacity = gauge_clamp((st->dsoc + 500) / 1000, 0, 100);
++	if (out->capacity < GAUGE_MIN_SHOWN && !st->empty && !GAUGE_M(17))
++		out->capacity = GAUGE_MIN_SHOWN;
++	out->online = in->plugged || st->dir == GAUGE_DIR_CHG ||
++		      (st->full_shown && c >= GAUGE_ONLINE_MIN_UA);
++	if (st->full_shown && out->online)
++		out->status = GAUGE_FULL;
++	else if (st->dir == GAUGE_DIR_CHG)
++		out->status = GAUGE_CHARGING;
++	else if (st->dir == GAUGE_DIR_DIS)
++		out->status = GAUGE_DISCHARGING;
++	else
++		out->status = GAUGE_NOT_CHARGING;
++	st->last_cap = out->capacity;
++	st->last_status = out->status;
++	st->last_online = out->online;
++
++	/* R9 */
++	if (anchor || st->dsoc / 1000 != st->saved_pct || st->fcc_uah != st->saved_fcc) {
++		out->save = true;
++		st->saved_pct = st->dsoc / 1000;
++		st->saved_fcc = st->fcc_uah;
++	}
++}
++
++#endif /* RK817_GAUGE_H */

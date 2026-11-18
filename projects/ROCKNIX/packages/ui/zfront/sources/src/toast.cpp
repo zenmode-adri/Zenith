@@ -8,7 +8,9 @@
 #include <cmath>
 
 #include "app.hpp"
+#include "dock_screen.hpp"
 #include "motion.hpp"
+#include "remake.hpp"
 #include "ui_osd.hpp"
 #include "ui_style.hpp"
 
@@ -52,6 +54,12 @@ struct ClearHeaderBox {
 void draw_toasts(Ctx& cx, std::vector<Op>& out) {
   ClearHeaderBox clear_after;
   draw_osd(cx, out);
+  // the plug-in notice (dock_screen.cpp) takes the first slot; the toasts stack under it
+  float notice_bottom = 0.0f;
+  if (dock::pill_state().on) {
+    const float u = float(remake::Grid(cx.w, cx.h).u);
+    notice_bottom = dock::draw_plug_pill(cx, toast_slot_top(cx, 2.0f * u), out);
+  }
   const auto& items = cx.sv->toasts.items();
   if (items.empty()) return;
   bool any = false;
@@ -76,6 +84,7 @@ void draw_toasts(Ctx& cx, std::vector<Op>& out) {
   // First slot: below the OSD pill (even while it is hidden, so a toast never jumps when the bar shows up) and below the
   // header hairline of the menu under it.
   float y = toast_slot_top(cx, gap);
+  if (notice_bottom > 0.0f) y = std::max(y, notice_bottom + gap);
   const float limit = m.help_y - float(m.foot_px);  // never into the help bar
 
   for (size_t i = 0; i < items.size(); ++i) {

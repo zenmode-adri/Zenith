@@ -1,0 +1,73 @@
+--- a/Common/UI/PopupScreens.cpp
++++ b/Common/UI/PopupScreens.cpp
+@@ -151,13 +151,18 @@
+ 		vCentering = Centering::None;
+ 	}
+ 
+-	const float popupWidth = PopupWidth();
++	// On small screens (low dp_xres), never let the popup be wider than the screen minus a margin.
++	const float maxPopupWidth = dc.GetLayoutBounds().w - 40.0f;
++	const float requestedWidth = PopupWidth();
++	const bool clampedWidth = requestedWidth > maxPopupWidth && maxPopupWidth > 0.0f;
++	const float popupWidth = clampedWidth ? maxPopupWidth : requestedWidth;
+ 
+ 	AnchorLayoutParams *anchorParams;
+ 	// NOTE: We purely use the popup width here to decide the type of layout, instead of the device orientation.
+ 	if (dc.GetLayoutBounds().w < popupWidth + 50) {
++		// When we had to shrink the popup, center it (20 dp margin on each side) instead of the usual 10 dp left margin.
+ 		anchorParams = new AnchorLayoutParams(popupWidth, ySize,
+-			10, y, 10, NONE, vCentering);
++			clampedWidth ? 20.0f : 10.0f, y, clampedWidth ? 20.0f : 10.0f, NONE, vCentering);
+ 	} else {
+ 		anchorParams = new AnchorLayoutParams(popupWidth, ySize,
+ 			(dc.GetLayoutBounds().w - RootMargins().horiz()) * 0.5, y, NONE, NONE, vCentering | Centering::Horizontal);
+--- a/UI/MainScreen.cpp
++++ b/UI/MainScreen.cpp
+@@ -1455,7 +1455,7 @@
+ 		// no space for a fullscreen button!
+ 	} else {
+ 		const Margins actionMenuMargins(0, 10, 10, 0);
+-		ViewGroup *rightColumn = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(320, FILL_PARENT, actionMenuMargins));
++		ViewGroup *rightColumn = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(std::clamp(0.34f * g_display.dp_xres, 220.0f, 320.0f), FILL_PARENT, actionMenuMargins));
+ 		LinearLayout *rightColumnItems = new LinearLayout(ORIENT_VERTICAL, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT));
+ 		rightColumnItems->SetSpacing(0.0f);
+ 		ViewGroup *logo = new LogoView(false, new LinearLayoutParams(FILL_PARENT, 80.0f));
+--- a/UI/PauseScreen.cpp
++++ b/UI/PauseScreen.cpp
+@@ -44,6 +44,7 @@
+ #include "Core/Config.h"
+ #include "Core/RetroAchievements.h"
+ #include "Core/ELF/ParamSFO.h"
++#include "Common/System/Display.h"
+ #include "Core/HLE/sceDisplay.h"
+ #include "Core/HLE/sceUmd.h"
+ #include "Core/HLE/sceNet.h"
+@@ -602,7 +603,7 @@
+ 		root_->Add(middleColumn);
+ 		middleColumn->SetSpacing(0.0f);
+ 
+-		ViewGroup *buttonColumnScroll = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(320, FILL_PARENT, actionMenuMargins));
++		ViewGroup *buttonColumnScroll = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(std::clamp(0.34f * g_display.dp_xres, 220.0f, 320.0f), FILL_PARENT, actionMenuMargins));
+ 		buttonColumn = new LinearLayout(ORIENT_VERTICAL, new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+ 		buttonColumnScroll->Add(buttonColumn);
+ 		root_->Add(buttonColumnScroll);
+--- a/UI/TabbedDialogScreen.cpp
++++ b/UI/TabbedDialogScreen.cpp
+@@ -85,7 +85,7 @@
+ 		if (flags_ & TabDialogFlags::VerticalShowIcons) {
+ 			tabHolderFlags |= TabHolderFlags::VerticalShowIcons;
+ 		}
+-		tabHolder_ = new TabHolder(ORIENT_VERTICAL, 300, tabHolderFlags, filterNotice_, nullptr, new AnchorLayoutParams(10, 0, 0, 0));
++		tabHolder_ = new TabHolder(ORIENT_VERTICAL, std::min(300.0f, 0.30f * g_display.dp_xres), tabHolderFlags, filterNotice_, nullptr, new AnchorLayoutParams(10, 0, 0, 0));
+ 		CreateExtraButtons(tabHolder_->Container(), 10);
+ 		tabHolder_->AddBack(this);
+ 		root_ = tabHolder_;
+@@ -105,7 +105,7 @@
+ 	if (System_GetPropertyBool(SYSPROP_HAS_KEYBOARD) || System_GetPropertyBool(SYSPROP_HAS_TEXT_INPUT_DIALOG)) {
+ 		// Hide search if screen is too small.
+ 		int deviceType = System_GetPropertyInt(SYSPROP_DEVICE_TYPE);
+-		if ((g_display.dp_xres < g_display.dp_yres || g_display.dp_yres >= 500) && (deviceType != DEVICE_TYPE_VR) && ShowSearchControls()) {
++		if ((g_display.dp_xres < g_display.dp_yres || g_display.dp_yres >= 600) && (deviceType != DEVICE_TYPE_VR) && ShowSearchControls()) {
+ 			// Search
+ 			auto ms = GetI18NCategory(I18NCat::MAINSETTINGS);
+ 			AddTab("GameSettingsSearch", ms->T("Search"), ImageID("I_SEARCH"), [this](UI::LinearLayout *searchSettings) {

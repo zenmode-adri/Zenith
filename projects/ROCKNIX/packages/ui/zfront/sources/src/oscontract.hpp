@@ -135,6 +135,11 @@ class IdleTimer {
 };
 IdleTimer& idle();
 
+/// The bedside clock (dock.hpp): while the charger is plugged in (filtered, see `dock::Dock::plugged`) `minutes` > 0 is how long the console
+/// must be left alone before the clock comes, INSTEAD of `ScreenSaverTime`, and what comes is `screensaver::Mode::Clock` (the light stays on)
+/// instead of the screensaver of the settings. 0: no charger, or the clock is off: the screensaver behaves as always. Set by `App::poll_status`.
+void set_bedside(int minutes);
+int bedside();
 /// The loop's next wake-up for the screensaver (reads `ScreenSaverTime`, ms, default 300000; 0 disables).
 std::optional<TimePoint> idle_deadline(const EsSettings& es);
 /// Device loop, once per iteration BEFORE the actions are handled: starts the screensaver when due; if it is active and the

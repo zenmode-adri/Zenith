@@ -39,6 +39,7 @@ struct State {
   screensaver::ResumeDetector resume;  // a suspend (power button) while the screensaver was on
   bool resumed = false;                // a suspend was noticed (`take_resumed`)
   bool redraw = false;                 // the screensaver started / stopped: the loop must draw
+  int bedside = 0;                     // minutes of the bedside clock while plugged in (0: none), see `set_bedside`
   std::vector<std::string> dirs;
   bool dirs_set = false;
   std::map<std::string, std::pair<TimePoint, bool>> hook_cache;  // `*-selected` events: when checked, has hooks
@@ -392,9 +393,20 @@ void fire_system_selected(const std::string& system) {
 
 IdleTimer& idle() { return st().idle; }
 
+void set_bedside(int minutes) { st().bedside = std::max(0, minutes); }
+int bedside() { return st().bedside; }
+
+namespace {
+/// The inactivity time that counts now: the bedside clock's while plugged in with the clock on, else ScreenSaverTime (ms; 0 = never).
+long idle_timeout_ms(const EsSettings& es) {
+  const int b = st().bedside;
+  return b > 0 ? long(b) * 60000L : es.get_int("ScreenSaverTime", 300000);
+}
+}  // namespace
+
 std::optional<TimePoint> idle_deadline(const EsSettings& es) {
   IdleTimer& t = st().idle;
-  t.set_timeout(es.get_int("ScreenSaverTime", 300000));
+  t.set_timeout(idle_timeout_ms(es));
   if (!t.stamped()) t.input(Clock::now());
   return t.deadline();
 }
@@ -403,6 +415,15 @@ void screensaver_start(const EsSettings& es) {
   State& s = st();
   IdleTimer& t = s.idle;
   if (t.active()) return;
+  if (s.bedside > 0) {  // plugged in with the bedside clock on: the clock replaces whatever the screensaver would be, and the light stays on
+    t.set_active(true);
+    screensaver::set_mode(screensaver::Mode::Clock);
+    music::on_screensaver(true);
+    s.redraw = true;
+    fire_event("screensaver-start", {"dim"});  // "dim": the fork's es-script (10-backlight-off.sh) keeps the backlight on for it
+    fire_event("sleep");
+    return;
+  }
   const std::string* b = es.get("ScreenSaverBehavior");
   std::string behavior = b && !b->empty() ? *b : "black";
   if (behavior == "suspend") {
@@ -463,8 +484,9 @@ bool take_redraw() {
 std::optional<TimePoint> saver_deadline(const EsSettings& es, TimePoint now) {
   if (!st().idle.active()) return std::nullopt;
   if (screensaver::mode() == screensaver::Mode::Media) return ssmedia::deadline(now);  // fade, swap time, clock
-  if (screensaver::mode() != screensaver::Mode::Dim) return std::nullopt;
-  if (!es.get_bool("DrawClock", true)) return std::nullopt;
+  const bool bedside_clock = screensaver::mode() == screensaver::Mode::Clock;  // always draws the time (whatever SHOW CLOCK says)
+  if (screensaver::mode() != screensaver::Mode::Dim && !bedside_clock) return std::nullopt;
+  if (!bedside_clock && !es.get_bool("DrawClock", true)) return std::nullopt;
   timespec ts;
   clock_gettime(CLOCK_REALTIME, &ts);
   double into = double(ts.tv_sec % 60) + double(ts.tv_nsec) / 1e9;
@@ -474,10 +496,13 @@ std::optional<TimePoint> saver_deadline(const EsSettings& es, TimePoint now) {
 void before_acts(const EsSettings& es, TimePoint now, std::vector<Action>& acts, bool raw_input) {
   State& s = st();
   IdleTimer& t = s.idle;
-  t.set_timeout(es.get_int("ScreenSaverTime", 300000));
+  t.set_timeout(idle_timeout_ms(es));
   if (!t.stamped()) t.input(now);
   bool resumed = s.resume.check(screensaver::clock_offset_ns());
   if (resumed) s.resumed = true;
+  // unplugged (confirmed): the clock has no reason to stay lit on the battery. It ends WITHOUT counting as input: the ordinary screensaver
+  // (if it is due) takes over in this same call.
+  if (t.active() && screensaver::mode() == screensaver::Mode::Clock && s.bedside == 0) screensaver_stop();
   if (t.active()) {
     if (!acts.empty() || raw_input || resumed) {  // the first key only wakes the panel; a suspend wakes it too
       acts.clear();
@@ -687,6 +712,7 @@ void reset_for_test() {
   s.idle = IdleTimer();
   s.resume.reset();
   s.redraw = false;
+  s.bedside = 0;
   screensaver::set_mode(screensaver::Mode::Off);
   s.dirs.clear();
   s.dirs_set = false;

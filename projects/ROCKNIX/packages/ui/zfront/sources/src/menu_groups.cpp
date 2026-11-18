@@ -6,6 +6,7 @@
 #include "collections.hpp"
 #include "menu_lang.hpp"
 #include "menu_ui.hpp"
+#include "netplay.hpp"
 #include "oscontract.hpp"
 #include "registry.hpp"
 #include "util.hpp"
@@ -33,6 +34,24 @@ MenuSpec merge_specs(std::string title, const char* title_key, std::vector<MenuS
 }
 
 namespace {
+
+// R36 Tuner Next (package r36-tuner) sets the CPU turbo itself, with a warning and a confirmation, and also the clocks, the
+// voltages and the tests. Where it is installed, BATTERY & PERFORMANCE opens it (the same entry as Tools: its script in a
+// system's folder) instead of the overclock submenu, whose switch set the very same turbo with no warning: two controls for
+// one setting confused people. Without the tuner (other consoles) the submenu stays.
+struct TunerEntry {
+  std::string system, path;
+};
+TunerEntry tuner_entry(const Ctx& cx) {
+  for (const System& s : cx.systems) {
+    std::string p = s.rom_dir;
+    while (p.size() > 1 && p.back() == '/') p.pop_back();
+    if (p.empty()) continue;
+    p += "/Start R36 Tuner.sh";
+    if (file_exists(p)) return {s.name, p};
+  }
+  return {};
+}
 
 // A part of a group that is only a list of links to other screens.
 MenuSpec links(std::function<void(MenuBuilder&, Ctx&)> f) {
@@ -77,7 +96,7 @@ ZF_REGISTER_SCREEN("menu.g.screen", [](Ctx& cx, const std::string&) {
 });
 // APPEARANCE: how zfront looks. Theme and its configuration, the user's own look, text size and contrast, the top bar, navigation.
 ZF_REGISTER_SCREEN("menu.g.look", [](Ctx&, const std::string&) {
-  return group(merge_specs(tr("APPEARANCE"), N_("APPEARANCE"), {ui_spec(ui_part::kTheme | ui_part::kTopBar)}));
+  return group(merge_specs(tr("APPEARANCE"), N_("APPEARANCE"), {ui_spec(ui_part::kTheme | ui_part::kTopBar | ui_part::kNoHdr)}));
 });
 // Gamma, contrast, saturation, hue: calibration, touched once.
 ZF_REGISTER_SCREEN("menu.g.panel", [](Ctx& cx, const std::string&) {
@@ -90,15 +109,33 @@ ZF_REGISTER_SCREEN("menu.g.power", [](Ctx& cx, const std::string&) {
   using namespace sys_sec;
   std::vector<MenuSpec> parts;
   parts.push_back(system_spec(cx, kPower));
+  // the tuner is a performance tool: it sits with governors and cooling, not after the battery warning
+  TunerEntry t = tuner_entry(cx);
+  if (!t.path.empty())
+    parts.push_back(links([t](MenuBuilder& m, Ctx&) {
+      m.action(tr("R36 Tuner Next"), [t](Ctx& c) {
+        Transition go = netplay::launch_path(c, t.system, t.path, launch::Netplay{});
+        go.keep_menus = true;  // on exit the user is back here, on the page it was opened from (refreshed)
+        return go;
+      });
+    }));
   parts.push_back(links([](MenuBuilder& m, Ctx&) { m.header(tr("IDLE")); }));
-  parts.push_back(system_spec(cx, kSuspend | kNoHdr));
   parts.push_back(ui_spec(ui_part::kSaver | ui_part::kNoHdr));
   parts.push_back(sound_spec(cx, snd_part::kBatt));
-  if (system_has_section(kTurbo)) parts.push_back(links([](MenuBuilder& m, Ctx&) { m.submenu(tr("OVERCLOCK & MONITORING"), "menu.g.power.adv"); }));
+  // with the Tuner the CPU turbo is its job ("one knob"), but the global MangoHud / GPU overclock switches only live here
+  if (system_has_section(t.path.empty() ? kTurbo : (kTurbo | kNoCpuOc))) {
+    const bool monitoring_only = !t.path.empty() && !system_has_gpu_overclock();
+    parts.push_back(links([monitoring_only](MenuBuilder& m, Ctx&) {
+      m.submenu(monitoring_only ? tr("MONITORING") : tr("OVERCLOCK & MONITORING"), "menu.g.power.adv");
+    }));
+  }
   return group(merge_specs(tr("BATTERY & PERFORMANCE"), N_("BATTERY & PERFORMANCE"), std::move(parts)));
 });
 ZF_REGISTER_SCREEN("menu.g.power.adv", [](Ctx& cx, const std::string&) {
-  return group(titled(system_spec(cx, sys_sec::kTurbo | sys_sec::kNoHdr), tr("OVERCLOCK & MONITORING"), N_("OVERCLOCK & MONITORING")));
+  const bool tuner = !tuner_entry(cx).path.empty();
+  const unsigned secs = sys_sec::kTurbo | sys_sec::kNoHdr | (tuner ? sys_sec::kNoCpuOc : 0u);
+  if (tuner && !system_has_gpu_overclock()) return group(titled(system_spec(cx, secs), tr("MONITORING"), N_("MONITORING")));
+  return group(titled(system_spec(cx, secs), tr("OVERCLOCK & MONITORING"), N_("OVERCLOCK & MONITORING")));
 });
 
 // LIBRARY: your games. Collections, scraper, the card they live on.

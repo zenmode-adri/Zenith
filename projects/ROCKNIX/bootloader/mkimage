@@ -197,8 +197,8 @@ mkimage_rk3326_dtb_select() {
   mcopy -o "${feat}" ::/zenith-features.txt
   rm -f "${feat}"
   if [ -f "${RELEASE_DIR}/3rdparty/bootloader/ZenithDtbSelector.exe" ]; then
-    echo "image: copying ZenithDtbSelector.exe (Windows) to boot partition (RK3326)..."
-    mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/ZenithDtbSelector.exe" ::/ZenithDtbSelector.exe
+    echo "image: copying '!Zenith DTB Selector.exe' (Windows) to boot partition (RK3326)..."
+    mcopy -o "${RELEASE_DIR}/3rdparty/bootloader/ZenithDtbSelector.exe" '::/!Zenith DTB Selector.exe'
   fi
   if [ -f "${RELEASE_DIR}/3rdparty/bootloader/DtbselectWin64.exe" ]; then
     echo "image: copying DtbselectWin64.exe (Windows) to boot partition (RK3326)..."

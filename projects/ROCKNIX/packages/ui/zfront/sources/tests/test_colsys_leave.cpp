@@ -149,7 +149,7 @@ int main() {
   ::setenv("TZ", "UTC", 1);
   ::tzset();
   Registry::instance().add("menu.main", [](Ctx&, const std::string&) { return std::make_unique<FakeMenu>(); });
-  g_tmp = "/tmp/zf_colleave_" + std::to_string(getpid());
+  g_tmp = zt::tmp_base() + "/zf_colleave_" + std::to_string(getpid());
   mkdir(g_tmp.c_str(), 0755);
   for (const char* d : {"/roms", "/roms/gb", "/roms/snes", "/collections"}) mkdir((g_tmp + d).c_str(), 0755);
   for (const char* f : {"gb/Tetris.gb", "gb/Zelda.gb", "gb/Metroid.gb", "snes/Mario.sfc", "snes/Kirby.sfc", "snes/Hidden.sfc"}) touch(g_tmp + "/roms/" + f);

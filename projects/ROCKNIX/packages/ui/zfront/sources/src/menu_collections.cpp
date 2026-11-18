@@ -249,7 +249,6 @@ std::unique_ptr<Screen> make_custom() {
         if (c.dynamic) m.submenu(c.name, "menu.collections.filter", c.name);
     }
     if (!all.empty()) {
-      m.header(tr("DELETE COLLECTION"));
       m.submenu(tr("DELETE COLLECTION"), "menu.collections.delete").danger();
     }
   };
@@ -363,35 +362,6 @@ std::unique_ptr<Screen> make_main() {
                reload();
              });
 
-    std::vector<Option> start = {{"", tr("NONE")}, {"lastsystem", tr("RESTORE LAST SELECTED")}};
-    for (const System& sys : cx.systems)
-      if (std::find(hidden.begin(), hidden.end(), sys.name) == hidden.end()) start.push_back({sys.name, label_of(sys)});
-    m.choice(tr("START ON SYSTEM"), std::move(start),
-             [&cx] { return es_text(cx, "StartupSystem", "lastsystem"); },
-             [&cx](const std::string& v) {
-               cx.es.set_string("StartupSystem", v);
-               cx.es.set_string("LastSystem", "");  // ES forgets the remembered system
-               es_save(cx);
-             })
-        .no_cycle();
-    m.toggle(tr("START ON GAMELIST"), [&cx] { return cx.es.get_bool("StartupOnGameList", false); }, [&cx](bool v) { es_flag(cx, "StartupOnGameList", v); });
-
-    if (!customs.empty())
-      m.choice(tr("GROUP CUSTOM COLLECTIONS"), {{"", tr("UNTHEMED")}, {"false", tr("NEVER")}, {"true", tr("ALWAYS")}},
-               [&cx] { return es_text(cx, "UseCustomCollectionsSystemEx", ""); },
-               [&cx](const std::string& v) {
-                 es_str(cx, "UseCustomCollectionsSystemEx", v);
-                 reload();
-               });
-    m.toggle(tr("SHOW SYSTEM NAME IN COLLECTIONS"), [&cx] { return cx.es.get_bool("CollectionShowSystemInfo", true); }, [&cx](bool v) {
-      es_flag(cx, "CollectionShowSystemInfo", v);
-      reload();
-    });
-    if (!hidden.empty())
-      m.toggle(tr("SHOW GAMES OF HIDDEN SYSTEMS IN COLLECTIONS"), [&cx] { return cx.es.get_bool("HiddenSystemsShowGames", false); }, [&cx](bool v) {
-        es_flag(cx, "HiddenSystemsShowGames", v);
-        reload();
-      });
     m.toggle(tr("SHOW EMPTY SYSTEMS"), [&cx] { return cx.es.get_bool("LoadEmptySystems", false); }, [&cx](bool v) {
       es_flag(cx, "LoadEmptySystems", v);
       reload();

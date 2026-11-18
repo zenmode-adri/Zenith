@@ -7,7 +7,7 @@
 //   POST /files/put/rescan       read the game folders again (the page asks when the last file of a batch failed)
 //
 // `path` is `name` or `folder/.../name`: at most 4 components below the system's ROM folder, each one passes `valid_name`
-// (no "..", no leading '.', no control characters, no '/' or backslash inside), 400 bytes in all. The client never names a place
+// (no leading '.', no control characters, no '/' or backslash inside, 255 bytes at most), 400 bytes in all. The client never names a place
 // on disk: folders are created INSIDE the ROM folder only, one step at a time with mkdirat + openat(O_DIRECTORY | O_NOFOLLOW)
 // from an fd of the ROM folder, and the file is opened with openat(O_NOFOLLOW) from its folder fd, so a symlink that already
 // lies in the ROM folder (a folder or the file itself) can never take a write elsewhere. A file at the top level needs an
@@ -31,7 +31,10 @@
 #include <string>
 #include <vector>
 
+#include "app.hpp"
+#include "i18n.hpp"
 #include "oscontract.hpp"
+#include "services.hpp"
 #include "webcore.hpp"
 
 namespace zf {
@@ -39,8 +42,8 @@ namespace webtransfer {
 namespace {
 
 constexpr uint64_t kMaxSlice = 16u << 20;
-constexpr size_t kMaxPathBytes = 400;
 constexpr size_t kMaxParts = 4;
+constexpr size_t kMaxPathBytes = 400;
 constexpr time_t kStaleSecs = 2 * 24 * 3600;
 const char kPartSuffix[] = ".zfpart";
 
@@ -105,6 +108,17 @@ Dirs open_dirs(const std::string& root, const std::vector<std::string>& parts, b
   return Dirs::Ok;
 }
 
+/// Some component of `path` is over the longest name a card takes.
+bool has_long_component(const std::string& path) {
+  size_t start = 0;
+  for (;;) {
+    const size_t slash = path.find('/', start);
+    if ((slash == std::string::npos ? path.size() : slash) - start > kMaxFileNameBytes) return true;
+    if (slash == std::string::npos) return false;
+    start = slash + 1;
+  }
+}
+
 /// system + path from the query, checked; false with `deny` filled.
 bool target_of(const http::Request& req, SystemInfo& si, std::vector<std::string>& parts, http::Response& deny) {
   std::string sysname, path;
@@ -113,7 +127,7 @@ bool target_of(const http::Request& req, SystemInfo& si, std::vector<std::string
     return false;
   }
   if (!split_path(path, parts)) {
-    deny = err(400, "invalid path");
+    deny = has_long_component(path) ? err(400, "name too long") : path.size() > kMaxPathBytes ? err(400, "path too long") : err(400, "invalid path");
     return false;
   }
   if (!find_system(sysname, si) || si.rom_dir.empty()) {
@@ -128,7 +142,17 @@ bool target_of(const http::Request& req, SystemInfo& si, std::vector<std::string
 }
 
 /// Where the bytes of `name` gather until the last slice: hidden, with a suffix only this module uses.
-std::string part_of(const std::string& name) { return "." + name + kPartSuffix; }
+/// A name that fills the 255 bytes a card takes leaves no room for the dot and the suffix: its partial is named by a hash of it.
+std::string part_of(const std::string& name) {
+  if (name.size() + 1 + sizeof kPartSuffix - 1 > kMaxFileNameBytes) return "." + game_id(name) + kPartSuffix;
+  return "." + name + kPartSuffix;
+}
+
+/// The console says so when the last file of a batch is in: a toast, put on the main thread (never from this one).
+void announce(const Env& env, const std::string& what) {
+  if (!env.on_main) return;
+  env.on_main([what](App& app) { app.cx.sv->toasts.push(std::string(tr("RECEIVED")) + ": " + what, 4000); });
+}
 
 /// Removes the `.*.zfpart` regular files of the folder `dir` not written for kStaleSecs (never `keep`, never anything else).
 void sweep_stale(int dir, const std::string& keep) {
@@ -237,7 +261,10 @@ http::Response put(const http::Request& req, http::BodyStream& body, const Env& 
       ::unlinkat(dir.v, part.c_str(), 0);
       return err(500, "could not save the file");
     }
-    if (final_file && env.reload) env.reload();
+    if (final_file) {
+      if (env.reload) env.reload();
+      announce(env, parts.size() > 1 ? parts[0] : name);  // a folder is named by its top folder
+    }
   }
   return reply(200, "{\"ok\":true,\"name\":\"" + oscontract::json_escape(name) + "\",\"bytes\":" + std::to_string(len) +
                         ",\"have\":" + std::to_string(offset + len) + ",\"done\":" + (complete ? "true" : "false") + "}");

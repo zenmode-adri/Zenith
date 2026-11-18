@@ -1,0 +1,2428 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "HASARLI OYUN LİSTESİ"
+
+msgid "Not available yet"
+msgstr "Henüz kullanılamıyor"
+
+msgid "Game lists updated"
+msgstr "Oyun listeleri güncellendi"
+
+msgid "COVERS ADDED"
+msgstr "KAPAKLAR EKLENDİ"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "PERFORMANS MODU BU OYUNA YARDIMCI OLABİLİR"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "BU OYUN PERFORMANS MODUYLA DAHA İYİ ÇALIŞABİLİR"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "BU OYUN İÇİN PERFORMANS MODUNU AÇ"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "BU OYUN İÇİN PERFORMANS MODU AÇIK"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Bu oyun performans moduyla daha iyi çalışabilir: oyun sırasında GPU ve bellek tam hızda kalır."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "PERFORMANS MODUNU ÖNERMEYİ BIRAK"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Bu oyun için performans modunu bir daha önerme."
+
+msgid "BATTERY"
+msgstr "PİL"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "HENÜZ YETERLİ VERİ YOK"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Bu oyunu pille beş dakika veya daha uzun oyna; tahmin burada görünür."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Mevcut şarjla, bu oyunun son oturumlarındaki hızda."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Mevcut şarjla. Bu oyunun henüz oturumu yok: sisteminin ortalaması kullanılıyor."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Mevcut şarjla. Bu sistemin henüz oturumu yok: tüm oyunların ortalaması kullanılıyor."
+
+msgid "Never"
+msgstr "Hiçbir zaman"
+
+msgid "What used the most"
+msgstr "En çok kullanan"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Son tam şarjdan beri. Tahmini."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Henüz bir şey ölçülmedi. Oynadıkça dolar."
+
+msgid "Asleep"
+msgstr "Uykuda"
+
+msgid "Menus and system"
+msgstr "Menüler ve sistem"
+
+msgid "Screen"
+msgstr "Ekran"
+
+msgid "Charging"
+msgstr "Şarj oluyor"
+
+msgid "About"
+msgstr "Hakkında"
+
+msgid "Since full"
+msgstr "Tam şarjdan beri"
+
+msgid "Using now"
+msgstr "Şu an kullanılan"
+
+msgid "Last hours"
+msgstr "Son saatler"
+
+msgid "Now"
+msgstr "Şimdi"
+
+msgid "More settings"
+msgstr "Daha fazla ayar"
+
+msgid "Power saver"
+msgstr "Güç tasarrufu"
+
+msgid "Screensaver after"
+msgstr "Ekran koruyucu süresi"
+
+msgid "Turn on by itself at"
+msgstr "Kendiliğinden açılma saati"
+
+msgid "ADJUST"
+msgstr "AYARLA"
+
+msgid "Action"
+msgstr "Aksiyon"
+
+msgid "Adult"
+msgstr "Yetişkin"
+
+msgid "Adventure"
+msgstr "Macera"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Casino"
+
+msgid "Casual Game"
+msgstr "Basit oyun"
+
+msgid "Hunting and Fishing"
+msgstr "Av ve balıkçılık"
+
+msgid "Fight"
+msgstr "Dövüş"
+
+msgid "Race, Driving"
+msgstr "Yarış, sürüş"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Langırt"
+
+msgid "Playing cards"
+msgstr "Kart oyunları"
+
+msgid "Role playing games"
+msgstr "Rol yapma oyunları"
+
+msgid "Asiatic board game"
+msgstr "Asya masa oyunu"
+
+msgid "Educational"
+msgstr "Eğitici"
+
+msgid "Music and Dance"
+msgstr "Müzik ve dans"
+
+msgid "Platform"
+msgstr "Platform"
+
+msgid "Puzzle-Game"
+msgstr "Bulmaca oyunu"
+
+msgid "Quiz"
+msgstr "Bilgi yarışması"
+
+msgid "Reflection"
+msgstr "Düşünme"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Simülasyon"
+
+msgid "Sports"
+msgstr "Spor"
+
+msgid "Sports with Animals"
+msgstr "Hayvanlarla spor"
+
+msgid "Strategy"
+msgstr "Strateji"
+
+msgid "Shooter"
+msgstr "Nişancı"
+
+msgid "Not set"
+msgstr "Ayarlanmadı"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Pzt"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Paz"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Sal"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "Çar"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Cum"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "Cmt"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "Per"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Nis"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Şub"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Oca"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Haz"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Mar"
+
+msgctxt "date"
+msgid "May"
+msgstr "May"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Ağu"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Ara"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Tem"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Kas"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Eki"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Eyl"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "OYUN VERİLERİ KAYDEDİLEMEDİ"
+
+msgid "Could not save the settings"
+msgstr "Ayarlar kaydedilemedi"
+
+msgid "FILTER BY"
+msgstr "FİLTRELE"
+
+msgid "FAVORITES ONLY"
+msgstr "YALNIZCA FAVORİLER"
+
+msgid "LIST"
+msgstr "LİSTE"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Seçilen tema yüklenemedi: Zenith kullanılıyor"
+
+msgid "PAGE"
+msgstr "SAYFA"
+
+msgid "Could not show this page"
+msgstr "Bu sayfa gösterilemedi"
+
+msgid "INSTALLED"
+msgstr "YÜKLÜ"
+
+msgid "SMART COLLECTIONS"
+msgstr "AKILLI KOLEKSİYONLAR"
+
+msgid "EDIT FILTERS"
+msgstr "FİLTRELERİ DÜZENLE"
+
+msgid "NO OPTIONS"
+msgstr "SEÇENEK YOK"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "'%s' silinsin mi?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Filtrelerini sonra Özel oyun koleksiyonları bölümünden ayarla."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Değişiklikleri uygulamak için arayüzü yeniden başlat."
+
+msgid "Could not save the setting"
+msgstr "Ayar kaydedilemedi"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "KONTROLCÜLERİ OYUNCULARA ATA"
+
+msgid "Could not start Bluetooth"
+msgstr "Bluetooth başlatılamadı"
+
+msgid "Searching..."
+msgstr "Aranıyor..."
+
+msgid "CONTROLLERS"
+msgstr "KONTROLCÜLER"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "ONAY VE İPTAL TUŞLARINI DEĞİŞTİR"
+
+msgid "ENABLE RUMBLE"
+msgstr "TİTREŞİMİ ETKİNLEŞTİR"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "RETROARCH KISAYOLLARINI OTOMATİK YAPILANDIR"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "BAĞLI KONTROLCÜLER"
+
+msgid "Not configured"
+msgstr "Yapılandırılmadı"
+
+msgid "Unknown controller"
+msgstr "Bilinmeyen kontrolcü"
+
+msgid "PAIRED"
+msgstr "EŞLEŞTİ"
+
+msgid "Could not pair"
+msgstr "Eşleştirilemedi"
+
+msgid "Connected"
+msgstr "Bağlandı"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Tüm Bluetooth cihazları kaldırılsın mı?"
+
+msgid "Could not disconnect"
+msgstr "Bağlantı kesilemedi"
+
+msgid "Could not connect"
+msgstr "Bağlanılamadı"
+
+msgid "Could not remove"
+msgstr "Kaldırılamadı"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "A TUŞU / DOĞU"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "B TUŞU / GÜNEY"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "X TUŞU / KUZEY"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "Y TUŞU / BATI"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "SOL ÇUBUK TUŞU"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "SAĞ ÇUBUK TUŞU"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "HOTKEY ETKİNLEŞTİR"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "YERLEŞİK KONTROLCÜ"
+
+msgid "GAMEPAD DETECTED"
+msgstr "GAMEPAD ALGILANDI"
+
+msgid "GAMEPADS DETECTED"
+msgstr "GAMEPAD ALGILANDI (BİRDEN ÇOK)"
+
+msgid "PRESS B TO CANCEL."
+msgstr "YAPILANDIRMAK İÇİN CİHAZINDAKİ BİR TUŞA BAS VE TUT."
+
+msgid "Could not save the controller configuration"
+msgstr "Kontrolcü yapılandırması kaydedilemedi"
+
+msgid "Controller configuration saved"
+msgstr "Kontrolcü yapılandırması kaydedildi"
+
+msgid "Controller configuration cancelled"
+msgstr "Kontrolcü yapılandırması iptal edildi"
+
+msgid "Controller disconnected"
+msgstr "Kontrolcü bağlantısı kesildi"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "İPTAL İÇİN BASILI TUTMAYA DEVAM ET"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "İPTAL ETMEK İÇİN HERHANGİ BİR TUŞU 3 SANİYE BASILI TUT."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "ATLAMAK İÇİN HERHANGİ BİR TUŞU BASILI TUT. İPTAL İÇİN TUTMAYA DEVAM ET."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "TÜM TUŞLAR TAMAM"
+
+msgid "set"
+msgstr "ayarlandı"
+
+msgid "skipped"
+msgstr "atlandı"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "HOTKEY TUŞU ATANMADI. KONTROLCÜYLE OYUNDAN ÇIKMAK İÇİN GEREKLİDİR."
+
+msgid "DATE & TIME"
+msgstr "TARİH VE SAAT"
+
+msgid "MONTH"
+msgstr "AY"
+
+msgid "DAY"
+msgstr "GÜN"
+
+msgid "HOUR"
+msgstr "SAAT"
+
+msgid "MINUTE"
+msgstr "DAKİKA"
+
+msgid "SET DATE & TIME"
+msgstr "TARİH VE SAATİ AYARLA"
+
+msgid "Date and time set"
+msgstr "Tarih ve saat ayarlandı"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Wi-Fi ile saat otomatik ayarlanır."
+
+msgid "That folder is protected"
+msgstr "Bu klasör korumalı"
+
+msgid "Outside the allowed folders"
+msgstr "İzin verilen klasörlerin dışında"
+
+msgid "Not enough free space"
+msgstr "Yeterli boş alan yok"
+
+msgid "That name already exists"
+msgstr "Bu isim zaten var"
+
+msgid "Cancelled"
+msgstr "İptal edildi"
+
+msgid "A folder cannot go into itself"
+msgstr "Klasör kendi içine taşınamaz"
+
+msgid "That name is not valid"
+msgstr "Bu isim geçerli değil"
+
+msgid "Not found"
+msgstr "Bulunamadı"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Dosya 4 GB'dan büyük: bu kart onu alamaz"
+
+msgid "This card does not accept that name"
+msgstr "Bu kart bu ismi kabul etmiyor"
+
+msgid "This location is read-only"
+msgstr "Bu konum salt okunur"
+
+msgid "An error occurred"
+msgstr "Bir hata oluştu"
+
+msgid "%s of %s done"
+msgstr "%s / %s tamamlandı"
+
+msgid "item"
+msgstr "öğe"
+
+msgid "items"
+msgstr "öğe"
+
+msgid "link skipped"
+msgstr "bağlantı atlandı"
+
+msgid "links skipped"
+msgstr "bağlantı atlandı"
+
+msgid "This can't be undone."
+msgstr "Bu geri alınamaz."
+
+msgid "Files"
+msgstr "Dosyalar"
+
+msgid "selected"
+msgstr "seçili"
+
+msgid "Cannot read this folder"
+msgstr "Bu klasör okunamıyor"
+
+msgid "This folder is empty"
+msgstr "Bu klasör boş"
+
+msgid "free"
+msgstr "boş"
+
+msgid "File"
+msgstr "Dosya"
+
+msgid "Folder"
+msgstr "Klasör"
+
+msgid "Link"
+msgstr "Bağlantı"
+
+msgid "Properties"
+msgstr "Özellikler"
+
+msgid "Copy"
+msgstr "Kopyala"
+
+msgid "Move"
+msgstr "Taşı"
+
+msgid "Paste here"
+msgstr "Buraya yapıştır"
+
+msgid "Rename"
+msgstr "Yeniden adlandır"
+
+msgid "New folder"
+msgstr "Yeni klasör"
+
+msgid "Delete"
+msgstr "Sil"
+
+msgid "Select all"
+msgstr "Tümünü seç"
+
+msgid "Clear selection"
+msgstr "Seçimi temizle"
+
+msgid "Date"
+msgstr "Tarih"
+
+msgid "Size"
+msgstr "Boyut"
+
+msgid "Sort by"
+msgstr "Sıralama"
+
+msgid "Hide hidden files"
+msgstr "Gizli dosyaları gizle"
+
+msgid "Show hidden files"
+msgstr "Gizli dosyaları göster"
+
+msgid "Actions"
+msgstr "Eylemler"
+
+msgid "Home"
+msgstr "Ana dizin"
+
+msgid "Games"
+msgstr "Oyunlar"
+
+msgid "Game card"
+msgstr "Oyun kartı"
+
+msgid "USB drive"
+msgstr "USB bellek"
+
+msgid "Screenshots"
+msgstr "Ekran görüntüleri"
+
+msgid "Go to"
+msgstr "Git"
+
+msgid "Ready to copy"
+msgstr "Kopyalamaya hazır"
+
+msgid "Ready to move"
+msgstr "Taşımaya hazır"
+
+msgid "Warning"
+msgstr "Uyarı"
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Bu bir sistem dosyasıdır. Yeniden adlandırmak konsolu bozabilir."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Bu bir sistem dosyasıdır. Silmek konsolu bozabilir."
+
+msgid "Wait for the other job"
+msgstr "Diğer işin bitmesini bekle"
+
+msgid "Copied"
+msgstr "Kopyalandı"
+
+msgid "Deleted"
+msgstr "Silindi"
+
+msgid "Moved"
+msgstr "Taşındı"
+
+msgid "originals kept"
+msgstr "orijinaller korundu"
+
+msgid "Copying"
+msgstr "Kopyalanıyor"
+
+msgid "Deleting"
+msgstr "Siliniyor"
+
+msgid "Moving"
+msgstr "Taşınıyor"
+
+msgid "Calculating..."
+msgstr "Hesaplanıyor..."
+
+msgid "Back"
+msgstr "Geri"
+
+msgid "Close"
+msgstr "Kapat"
+
+msgid "Mark"
+msgstr "İşaretle"
+
+msgid "Open"
+msgstr "Aç"
+
+msgid "Page"
+msgstr "Sayfa"
+
+msgid "WHILE PLAYING"
+msgstr "OYNARKEN"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "AÇILIŞTA SON OYUNA DEVAM ET"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Son oyununu açılışta otomatik kaydından başlatır. B iptal eder."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "OYUN SIRASINDA ANA MENÜ"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Deneysel. Oyun çalışırken START ve seçilen omuz tuşunu bir saniye basılı tutarak oyunu duraklat ve pil, parlaklık, ses, DEVAM ET ve OYUNDAN ÇIK içeren bir panel aç (DURUM KAYDET ve DURUM YÜKLE yalnızca RetroArch ağ komutları açıkken)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "ANA MENÜ TUŞLARI"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Ana menüyü açmak için START ile birlikte basılı tutulan tuşlar. Select tabanlı kombinasyonları RetroArch kullanır."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "PERFORMANS ÖNERİLERİ"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "GPU yönetiminin kısıtladığı oyunlar için performans modunu önerir."
+
+msgid "PLAY TIME LIMIT"
+msgstr "OYNAMA SÜRESİ SINIRI"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Her gün oynama süresi. Bitmesine 5 dakika kala bir mesaj gelir (oyunun içinde yalnızca RetroArch ağ komutları açıkken) ve ardından oyun kapatılır. Süre, bu açıldığında saymaya başlar."
+
+msgid "SAVED GAMES"
+msgstr "KAYITLI OYUNLAR"
+
+msgid "PICTURE AND CONTROL"
+msgstr "GÖRÜNTÜ VE KONTROL"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "MOONLIGHT OYUN AKTARIMI"
+
+msgid "MORE"
+msgstr "DAHA FAZLA"
+
+msgid "PLAY STATISTICS"
+msgstr "OYNAMA İSTATİSTİKLERİ"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "SİSTEM BAŞINA SEÇENEKLER"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "performans modu"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "Oyun sırasında GPU ve bellek tam hızda"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "BİLİNMEYEN SİSTEM"
+
+msgid "EMULATOR"
+msgstr "EMÜLATÖR"
+
+msgid "The emulator and core that run this."
+msgstr "Bunu çalıştıran emülatör ve çekirdek."
+
+msgid "SYSTEM OPTIONS"
+msgstr "SİSTEM SEÇENEKLERİ"
+
+msgid "DISPLAY"
+msgstr "EKRAN"
+
+msgid "GAMEPLAY"
+msgstr "OYNANIŞ"
+
+msgid "ACTIONS"
+msgstr "EYLEMLER"
+
+msgid "RANDOM GAME"
+msgstr "RASTGELE OYUN"
+
+msgid "COOLING PROFILE"
+msgstr "SOĞUTMA PROFİLİ"
+
+msgid "AGGRESSIVE"
+msgstr "AGRESİF"
+
+msgid "MODERATE"
+msgstr "ORTA"
+
+msgid "QUIET"
+msgstr "SESSİZ"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "CPU ÖLÇEKLEME YÖNETİCİSİ"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GPU ÖLÇEKLEME YÖNETİCİSİ"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "MANGOHUD KATMANI"
+
+msgid "UNKNOWN GAME"
+msgstr "BİLİNMEYEN OYUN"
+
+msgid "INVALID DATE"
+msgstr "GEÇERSİZ TARİH"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "OYUN SİLİNEMEDİ"
+
+msgid "CONFIG"
+msgstr "YAPILANDIRMA"
+
+msgid "CORE PROVIDED"
+msgstr "ÇEKİRDEĞİN SUNDUĞU"
+
+msgid "FULL"
+msgstr "TAM"
+
+msgid "SQUARE PIXEL"
+msgstr "KARE PİKSEL"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "PANEL AYARI"
+
+msgid "SCREEN & SOUND"
+msgstr "EKRAN VE SES"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "BOŞTA"
+
+msgid "MONITORING"
+msgstr "İZLEME"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "HIZ AŞIRTMA VE İZLEME"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "PİL VE PERFORMANS"
+
+msgid "LIBRARY"
+msgstr "KÜTÜPHANE"
+
+msgid "CHECK LIBRARY"
+msgstr "KÜTÜPHANEYİ KONTROL ET"
+
+msgid "SAVE BACKUPS"
+msgstr "KAYIT YEDEKLERİ"
+
+msgid "LANGUAGE & TIME"
+msgstr "DİL VE SAAT"
+
+msgid "HOME MENU"
+msgstr "ANA MENÜ"
+
+msgid "CHARGING"
+msgstr "ŞARJ"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "EKRAN PARLAKLIĞI"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "DURUM KAYDININ ÜZERİNE YAZILSIN MI?"
+
+msgid "LOAD STATE"
+msgstr "DURUMU YÜKLE"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "DURUM YÜKLENSİN Mİ? KAYDEDİLMEMİŞ İLERLEME KAYBOLUR."
+
+msgid "RESUME"
+msgstr "DEVAM ET"
+
+msgid "QUIT GAME"
+msgstr "OYUNDAN ÇIK"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "OYUNDAN GERÇEKTEN ÇIKILSIN MI?"
+
+msgid "AND MORE"
+msgstr "VE DAHA FAZLASI"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "SORUN BULUNAMADI"
+
+msgid "PROBLEMS FOUND"
+msgstr "SORUN BULUNDU"
+
+msgid "MISSING BIOS"
+msgstr "EKSİK BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "MUHTEMELEN BOZUK DOSYALAR"
+
+msgid "DUPLICATES"
+msgstr "KOPYALAR"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "RESİMSİZ OYUNLAR"
+
+msgid "NETWORK"
+msgstr "AĞ"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "KONTROLCÜ VE BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Yalnızca geliştirme: menü çerçevesinin tüm bileşenleri."
+
+msgid "WIDGET DEMO"
+msgstr "BİLEŞEN DEMOSU"
+
+msgid "Unable to connect to server"
+msgstr "Sunucuya bağlanılamadı"
+
+msgid "Succesfully paired with server"
+msgstr "Sunucuyla başarıyla eşleştirildi"
+
+msgid "QUIT CURRENT GAME"
+msgstr "MEVCUT OYUNDAN ÇIK"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "MOONLIGHT OYUNLARINI GÜNCELLE"
+
+msgid "PAIR WITH SERVER"
+msgstr "SUNUCUYLA EŞLEŞTİR"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "SUNUCUYLA EŞLEŞMEYİ KALDIR"
+
+msgid "Unpaired and settings cleared"
+msgstr "Eşleşme kaldırıldı ve ayarlar temizlendi"
+
+msgid "Unpaired from server"
+msgstr "Sunucuyla eşleşme kaldırıldı"
+
+msgid "SERVER IP"
+msgstr "SUNUCU IP"
+
+msgid "PAIRING PIN"
+msgstr "EŞLEŞTİRME PIN"
+
+msgid "HOST"
+msgstr "SUNUCU"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "BİR NETPLAY OYUNUNA KATIL"
+
+msgid "NETPLAY NICKNAME"
+msgstr "NETPLAY TAKMA ADI"
+
+msgid "NETPLAY HOST"
+msgstr "NETPLAY SUNUCUSU"
+
+msgid "NETPLAY PORT"
+msgstr "NETPLAY PORTU"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Wi-Fi açılıyor..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Wi-Fi yapılandırma hatası"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi açık"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi kapalı"
+
+msgid "Wi-Fi region updated"
+msgstr "Wi-Fi bölgesi güncellendi"
+
+msgid "Please wait..."
+msgstr "Lütfen bekle..."
+
+msgid "Local play mode updated"
+msgstr "Yerel oyun modu güncellendi"
+
+msgid "The service did not answer"
+msgstr "Servis yanıt vermedi"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "WI-FI AĞLARI"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Radyo düzenlemelerini belirler: kullanabileceğin kanallar."
+
+msgid "TRANSFER FILES"
+msgstr "DOSYA AKTAR"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Bu ağdaki bir telefon veya bilgisayardan konsola oyun gönder."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "KULLANILABİLİR IP ADRESLERİ:"
+
+msgid "LOCAL PLAY"
+msgstr "YEREL OYUN"
+
+msgid "LOCAL PLAY MODE"
+msgstr "YEREL OYUN MODU"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Diğer konsollarla netplay için bir erişim noktası kurar."
+
+msgid "1 (HOST)"
+msgstr "1 (SUNUCU)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (İSTEMCİ 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (İSTEMCİ 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (İSTEMCİ 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "YEREL OYUN KİMLİĞİ"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, bulut, VPN ve konsolun adı."
+
+msgid "NETWORK SERVICES"
+msgstr "AĞ SERVİSLERİ"
+
+msgid "ENABLE SSH"
+msgstr "SSH'Yİ ETKİNLEŞTİR"
+
+msgid "SSH is off"
+msgstr "SSH kapalı"
+
+msgid "SSH is on"
+msgstr "SSH açık"
+
+msgid "Remote access to the console over the network."
+msgstr "Konsola ağ üzerinden uzaktan erişim."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "BASİT HTTP SUNUCUSUNU ETKİNLEŞTİR"
+
+msgid "HTTP server is off"
+msgstr "HTTP sunucusu kapalı"
+
+msgid "HTTP server is on"
+msgstr "HTTP sunucusu açık"
+
+msgid "FILE TRANSFER"
+msgstr "DOSYA AKTARIMI"
+
+msgid "USB GADGET FUNCTION"
+msgstr "USB GADGET İŞLEVİ"
+
+msgid "USB networking is on. The console is at"
+msgstr "USB ağı açık. Konsolun adresi"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Konsolun USB-C portunda sunduğu şey."
+
+msgid "CLOUD SERVICES"
+msgstr "BULUT SERVİSLERİ"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "BULUT SÜRÜCÜSÜNÜ BAĞLA"
+
+msgid "Cloud drive mounted"
+msgstr "Bulut sürücüsü bağlandı"
+
+msgid "Cloud drive unmounted"
+msgstr "Bulut sürücüsünün bağlantısı kesildi"
+
+msgid "VPN SERVICES"
+msgstr "VPN SERVİSLERİ"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuard kapalı"
+
+msgid "WireGuard is on"
+msgstr "WireGuard açık"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscale kapalı"
+
+msgid "Tailscale is on"
+msgstr "Tailscale açık"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale bağlanamadı"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale için giriş yapman gerekiyor"
+
+msgid "SHOW LINK"
+msgstr "BAĞLANTIYI GÖSTER"
+
+msgid "TAILSCALE LOGIN"
+msgstr "TAILSCALE GİRİŞİ"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "TAILSCALE YENİDEN KİMLİK DOĞRULAMA:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Yalnızca harf, rakam ve tire kullan"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Ana bilgisayar adı kaydedildi. Sonraki açılışta uygulanır"
+
+msgid "The new name is used at the next boot."
+msgstr "Yeni ad sonraki açılışta kullanılır."
+
+msgid "WEB FILE TRANSFER"
+msgstr "WEB DOSYA AKTARIMI"
+
+msgid "Could not start the web transfer"
+msgstr "Web aktarımı başlatılamadı"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Bu ağdaki bir telefon veya bilgisayarın konsola oyun göndermesini sağlar."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "BAŞLATILAMADI (PORT MEŞGUL MÜ?)"
+
+msgid "WEB ADDRESS"
+msgstr "WEB ADRESİ"
+
+msgid "WEB PIN"
+msgstr "WEB PIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "AĞ SÜRÜCÜSÜ (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "SAMBA'YI ETKİNLEŞTİR"
+
+msgid "Samba is off"
+msgstr "Samba kapalı"
+
+msgid "Samba is on"
+msgstr "Samba açık"
+
+msgid "Shares the games folder with other computers."
+msgstr "Oyun klasörünü diğer bilgisayarlarla paylaşır."
+
+msgid "SAMBA ADDRESS"
+msgstr "SAMBA ADRESİ"
+
+msgid "SAMBA USER"
+msgstr "SAMBA KULLANICISI"
+
+msgid "SAMBA PASSWORD"
+msgstr "SAMBA PAROLASI"
+
+msgid "Connecting to"
+msgstr "Bağlanılıyor:"
+
+msgid "Connected successfully"
+msgstr "Başarıyla bağlandı"
+
+msgid "Failed to connect"
+msgstr "Bağlanılamadı"
+
+msgid "SAVED"
+msgstr "KAYITLI"
+
+msgid "ENTERPRISE"
+msgstr "KURUMSAL"
+
+msgid "SECURED"
+msgstr "KORUMALI"
+
+msgid "Enterprise networks are not supported"
+msgstr "Kurumsal ağlar desteklenmiyor"
+
+msgid "Network forgotten"
+msgstr "Ağ unutuldu"
+
+msgid "WI-FI KEY FOR "
+msgstr "WI-FI ANAHTARI: "
+
+msgid "CONNECTING..."
+msgstr "BAĞLANILIYOR..."
+
+msgid "WI-FI SSID"
+msgstr "WI-FI SSID"
+
+msgid "WI-FI KEY"
+msgstr "WI-FI ANAHTARI"
+
+msgid "REALLY SUSPEND ?"
+msgstr "GERÇEKTEN ASKIYA ALINSIN MI?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "GERÇEKTEN KAPATILSIN MI?"
+
+msgid "REALLY RESTART?"
+msgstr "GERÇEKTEN YENİDEN BAŞLATILSIN MI?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "ARAYÜZ GERÇEKTEN YENİDEN BAŞLATILSIN MI?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "ARAYÜZÜ YENİDEN BAŞLAT"
+
+msgid "TEST ACCOUNT"
+msgstr "HESABI TEST ET"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Kullanıcı adı ve parolayı retroachievements.org ile kontrol eder."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "RETROACHIEVEMENTS'A BAĞLANILIYOR"
+
+msgid "LOGGED IN"
+msgstr "GİRİŞ YAPILDI"
+
+msgid "LED NOTIFICATIONS"
+msgstr "LED BİLDİRİMLERİ"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Ana menüde RetroAchievements satırını göster."
+
+msgid "NO SAVES FOUND"
+msgstr "KAYIT BULUNAMADI"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "YETERLİ BOŞ ALAN YOK"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "BU DAKİKAYA AİT BİR YEDEK ZATEN VAR"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "YEDEK HASARLI VEYA EKSİK"
+
+msgid "BACKUP DONE"
+msgstr "YEDEKLEME TAMAMLANDI"
+
+msgid "SAVES RESTORED"
+msgstr "KAYITLAR GERİ YÜKLENDİ"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "BULUT YEDEKLEME TAMAMLANDI"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "BULUT YEDEKLEME BAŞARISIZ"
+
+msgid "BEFORE A RESTORE"
+msgstr "GERİ YÜKLEMEDEN ÖNCE"
+
+msgid "BACK UP SAVES NOW"
+msgstr "KAYITLARI ŞİMDİ YEDEKLE"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "OYUN KAYITLARI, DURUM KAYITLARI VE PSP KAYITLARI; ROM VEYA MEDYA YOK"
+
+msgid "CLOUD BACKUP"
+msgstr "BULUT YEDEĞİ"
+
+msgid "BACKUPS"
+msgstr "YEDEKLER"
+
+msgid "NO BACKUPS YET"
+msgstr "HENÜZ YEDEK YOK"
+
+msgid "BACKUP DELETED"
+msgstr "YEDEK SİLİNDİ"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "BU, MEVCUT KAYITLARINI %s TARİHLİ KAYITLARLA DEĞİŞTİRECEK. ÖNCE MEVCUT KAYITLARIN YEDEĞİ ALINIR."
+
+msgid "RESTORE"
+msgstr "GERİ YÜKLE"
+
+msgid "DELETE BACKUP"
+msgstr "YEDEĞİ SİL"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "BU YEDEK SİLİNSİN Mİ?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "BU SÜRÜM SCREENSCRAPER'A ULAŞAMIYOR"
+
+msgid "ALL GAMES"
+msgstr "TÜM OYUNLAR"
+
+msgid "GAMES TO SCRAPE"
+msgstr "BİLGİ ÇEKİLECEK OYUNLAR"
+
+msgid "WITH MISSING MEDIA"
+msgstr "EKSİK MEDYALI"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "HİÇ MEDYASI OLMAYAN"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Seçilen sistemlerin hangi oyunları aranır."
+
+msgid "1 DAY"
+msgstr "1 GÜN"
+
+msgid "1 MONTH"
+msgstr "1 AY"
+
+msgid "1 WEEK"
+msgstr "1 HAFTA"
+
+msgid "1 YEAR"
+msgstr "1 YIL"
+
+msgid "15 DAYS"
+msgstr "15 GÜN"
+
+msgid "3 MONTHS"
+msgstr "3 AY"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Bu süre içinde bilgisi çekilen oyunlar atlanır; istek tasarrufu sağlar."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "EKSİK MEDYAYI OTOMATİK ÇEK"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Boştayken eksik kapakları arka planda indirir."
+
+msgid "SCRAPER SETTINGS"
+msgstr "BİLGİ ÇEKİCİ AYARLARI"
+
+msgid "ACCOUNT"
+msgstr "HESAP"
+
+msgid "Choose at least one system."
+msgstr "En az bir sistem seç."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Oyunları ScreenScraper'da arar."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "SCREENSCRAPER'IN TANIDIĞI OYUNLARI OLAN SİSTEM YOK"
+
+msgid "PICTURES"
+msgstr "RESİMLER"
+
+msgid "IMAGE"
+msgstr "GÖRSEL"
+
+msgid "BOX FRONT"
+msgstr "KUTU ÖN YÜZÜ"
+
+msgid "TITLE SCREEN"
+msgstr "BAŞLIK EKRANI"
+
+msgid "The main picture of each game."
+msgstr "Her oyunun ana resmi."
+
+msgid "THUMBNAIL"
+msgstr "KÜÇÜK RESİM"
+
+msgid "The small picture of each game."
+msgstr "Her oyunun küçük resmi."
+
+msgid "LOGO"
+msgstr "LOGO"
+
+msgid "The logo of each game."
+msgstr "Her oyunun logosu."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "TAM BOYUT"
+
+msgid "IMAGE SIZE"
+msgstr "GÖRSEL BOYUTU"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper resimleri göndermeden önce küçültür: daha hızlı ve hafif."
+
+msgid "AUTOMATIC"
+msgstr "OTOMATİK"
+
+msgid "BRAZIL"
+msgstr "BREZİLYA"
+
+msgid "EUROPE"
+msgstr "AVRUPA"
+
+msgid "FRANCE"
+msgstr "FRANSA"
+
+msgid "GERMANY"
+msgstr "ALMANYA"
+
+msgid "ITALY"
+msgstr "İTALYA"
+
+msgid "JAPAN"
+msgstr "JAPONYA"
+
+msgid "SPAIN"
+msgstr "İSPANYA"
+
+msgid "USA"
+msgstr "ABD"
+
+msgid "WORLD"
+msgstr "DÜNYA"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "İsimler, tarihler ve resimler için tercih edilen bölge."
+
+msgid "NAMES"
+msgstr "İSİMLER"
+
+msgid "Replace the names of the games."
+msgstr "Oyunların isimlerini değiştirir."
+
+msgid "DESCRIPTIONS"
+msgstr "AÇIKLAMALAR"
+
+msgid "Replace the descriptions."
+msgstr "Açıklamaları değiştirir."
+
+msgid "Download the rating of each game."
+msgstr "Her oyunun puanını indirir."
+
+msgid "RATINGS"
+msgstr "PUANLAR"
+
+msgid "EXTRA MEDIA"
+msgstr "EK MEDYA"
+
+msgid "VIDEOS"
+msgstr "VİDEOLAR"
+
+msgid "Videos are big and take longer to download."
+msgstr "Videolar büyüktür ve indirilmesi daha uzun sürer."
+
+msgid "MANUALS"
+msgstr "KILAVUZLAR"
+
+msgid "PDF manuals."
+msgstr "PDF kılavuzlar."
+
+msgid "MAPS"
+msgstr "HARİTALAR"
+
+msgid "Maps of the game."
+msgstr "Oyunun haritaları."
+
+msgid "Background pictures."
+msgstr "Arka plan resimleri."
+
+msgid "FANART"
+msgstr "HAYRAN ÇİZİMİ"
+
+msgid "BOX BACK"
+msgstr "KUTU ARKA YÜZÜ"
+
+msgid "The back of the box."
+msgstr "Kutunun arka yüzü."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Yalnızca \"Tüm oyunlar\" için: mevcut resimler yeniden indirilir."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "MEVCUT MEDYANIN ÜZERİNE YAZ"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "İsteğe bağlı. Hesap olmadan ScreenScraper çok az isteğe izin verir."
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB hesap gerektirmez."
+
+msgid "Asks IGDB for an access token."
+msgstr "IGDB'den bir erişim jetonu ister."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "ScreenScraper'dan sınırlarını ister."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "SCREENSCRAPER'A BAĞLANILIYOR"
+
+msgid "ANONYMOUS"
+msgstr "ANONİM"
+
+msgid "LOGIN"
+msgstr "GİRİŞ"
+
+msgid "REQUESTS TODAY"
+msgstr "BUGÜNKÜ İSTEKLER"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "DAKİKADAKİ İSTEKLER"
+
+msgid "STOP"
+msgstr "DURDUR"
+
+msgid "SCROLL"
+msgstr "KAYDIR"
+
+msgid "SCRAPE COMPLETE"
+msgstr "BİLGİ ÇEKME TAMAMLANDI"
+
+msgid "SCRAPE STOPPED"
+msgstr "BİLGİ ÇEKME DURDURULDU"
+
+msgid "FOUND"
+msgstr "BULUNDU"
+
+msgid "NOT FOUND"
+msgstr "BULUNAMADI"
+
+msgid "ERRORS"
+msgstr "HATALAR"
+
+msgid "MEDIA FILES"
+msgstr "MEDYA DOSYALARI"
+
+msgid "READING GAME LISTS"
+msgstr "OYUN LİSTELERİ OKUNUYOR"
+
+msgid "STOPPING"
+msgstr "DURDURULUYOR"
+
+msgid "SECONDS"
+msgstr "SANİYE"
+
+msgid "WAITING"
+msgstr "BEKLENİYOR"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "DURDURULDU. YAPILAN KAYDEDİLDİ"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "BU FİLTRELERLE BİLGİSİ ÇEKİLECEK OYUN YOK"
+
+msgid "GAMES"
+msgstr "OYUNLAR"
+
+msgid "PROBLEMS"
+msgstr "SORUNLAR"
+
+msgid "MEDIA MISSING"
+msgstr "MEDYA EKSİK"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "ANAHTARLAR VE KAYDIRICILAR"
+
+msgid "The clock shows in the top right corner."
+msgstr "Saat sağ üst köşede görünür."
+
+msgid "Volume saved"
+msgstr "Ses kaydedildi"
+
+msgid "LISTS AND TEXT"
+msgstr "LİSTELER VE METİN"
+
+msgid "TEXT"
+msgstr "METİN"
+
+msgid "WI-FI PASSWORD"
+msgstr "WI-FI PAROLASI"
+
+msgid "SHOW A TOAST"
+msgstr "BİR BİLDİRİM GÖSTER"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi bağlandı: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "SES ÇUBUĞUNU GÖSTER"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "PARLAKLIK ÇUBUĞUNU GÖSTER"
+
+msgid "ASK A QUESTION"
+msgstr "BİR SORU SOR"
+
+msgid "Delete all saved states of this game?"
+msgstr "Bu oyunun tüm kayıtlı durumları silinsin mi?"
+
+msgid "SHOW A MESSAGE"
+msgstr "BİR MESAJ GÖSTER"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Güncelleme kuruldu. Kullanmak için konsolu yeniden başlat."
+
+msgid "Restart the system now?"
+msgstr "Sistem şimdi yeniden başlatılsın mı?"
+
+msgid "Restarting..."
+msgstr "Yeniden başlatılıyor..."
+
+msgid "DISABLED ENTRY"
+msgstr "DEVRE DIŞI ÖĞE"
+
+msgid "SELECTOR STYLE"
+msgstr "SEÇİCİ STİLİ"
+
+msgid "TITLE ALIGNMENT"
+msgstr "BAŞLIK HİZALAMA"
+
+msgid "LIST TEXT CASE"
+msgstr "LİSTE HARF BOYUTU"
+
+msgid "TEXT SIZE"
+msgstr "METİN BOYUTU"
+
+msgid "HIGH CONTRAST"
+msgstr "YÜKSEK KONTRAST"
+
+msgid "options"
+msgstr "seçenek"
+
+msgid "AUDIO"
+msgstr "SES"
+
+msgid "Could not change the audio output"
+msgstr "Ses çıkışı değiştirilemedi"
+
+msgid "BATTERY WARNING"
+msgstr "PİL UYARISI"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "SESLİ PİL UYARISINI ETKİNLEŞTİR"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "PİL UYARISI EŞİĞİ"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Konsol açıldığında, menülerden önce, açılış başına bir kez bu oyunu başlatır."
+
+msgid "Reboot now"
+msgstr "Şimdi yeniden başlat"
+
+msgid "Later"
+msgstr "Sonra"
+
+msgid "Default"
+msgstr "Varsayılan"
+
+msgid "Arm (official)"
+msgstr "Arm (resmi)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Açık kaynak (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "BUGÜN KALAN SÜRE"
+
+msgid "UPTIME"
+msgstr "ÇALIŞMA SÜRESİ"
+
+msgid "No information available"
+msgstr "Bilgi yok"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "SİSTEM YÖNETİMİ VE SIFIRLAMA"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr ""
+"EMİN MİSİN?\n"
+"\n"
+"BU GERİ ALINAMAZ."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "YAPILANDIRMALARI YEDEKLE"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr ""
+"UYARI: BU, ARAYÜZÜ YENİDEN BAŞLATACAK!\n"
+"\n"
+"BETİK BİTTİKTEN SONRA /storage/roms/backup/ROCKNIX_BACKUP.zip DOSYASINI GÜVENLİ BİR YERE KOPYALAMAYI UNUTMA, YOKSA BİR SONRAKİ YENİDEN BAŞLATMADA SİLİNECEK!\n"
+"\n"
+"MEVCUT YAPILANDIRMA YEDEKLENSİN VE YENİDEN BAŞLATILSIN MI?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "YEDEKTEN GERİ YÜKLE"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr ""
+"UYARI: BU, CİHAZINI YENİDEN BAŞLATACAK!\n"
+"\n"
+"MEVCUT YAPILANDIRMANIN ÜZERİNE YAZILACAK!\n"
+"\n"
+"YEDEKTEN GERİ YÜKLENSİN VE YENİDEN BAŞLATILSIN MI?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "EMÜLATÖR YÖNETİMİ"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "RETROARCH YAPILANDIRMASINI VARSAYILANA SIFIRLA"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr ""
+"UYARI: RETROARCH YAPILANDIRMASI VARSAYILANA SIFIRLANACAK\n"
+"\n"
+"ÇEKİRDEK BAŞINA YAPILANDIRMALAR ETKİLENMEYECEK VE YEDEK OLUŞTURULMAYACAK!\n"
+"\n"
+"RETROARCH YAPILANDIRMASI VARSAYILANA SIFIRLANSIN MI?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "KATMANLARI SIFIRLA (ÇEKİRDEKLER, HİLELER, KOLLAR VB.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr ""
+"UYARI: TÜM ÖZEL RETROARCH KATMANLARI KALDIRILACAK\n"
+"\n"
+"ÖZEL ÇEKİRDEKLER, KOLLAR, HİLELER VB. YEDEK OLUŞTURULMAYACAK!\n"
+"\n"
+"RETROARCH KATMANLARI VARSAYILANA SIFIRLANSIN MI?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "RETROARCH'I TAMAMEN SIFIRLA"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr ""
+"UYARI: RETROARCH VE KULLANICININ KAYDETTİĞİ TÜM YAPILANDIRMALAR VARSAYILANA SIFIRLANACAK\n"
+"\n"
+"ÇEKİRDEK BAŞINA YAPILANDIRMALAR KALDIRILACAK VE YEDEK OLUŞTURULMAYACAK!\n"
+"\n"
+"RETROARCH SIFIRLANSIN MI?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "MEDNAFEN YAPILANDIRMASINI VARSAYILANA SIFIRLA"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr ""
+"UYARI: MEDNAFEN YAPILANDIRMASI VARSAYILANA SIFIRLANACAK\n"
+"\n"
+"YEDEK OLUŞTURULMAYACAK!\n"
+"\n"
+"MEDNAFEN YAPILANDIRMASI VARSAYILANA SIFIRLANSIN MI?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "BAĞIMSIZ EMÜLATÖR YAPILANDIRMALARINI VARSAYILANA SIFIRLA"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr ""
+"UYARI: BAĞIMSIZ EMÜLATÖR YAPILANDIRMALARI VARSAYILANA SIFIRLANACAK\n"
+"\n"
+"YEDEK OLUŞTURULMAYACAK!\n"
+"\n"
+"BAĞIMSIZ EMÜLATÖR YAPILANDIRMALARI VARSAYILANA SIFIRLANSIN MI?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "PORTMASTER'I TAMAMEN SIFIRLA"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr ""
+"UYARI: PORTMASTER VARSAYILANA SIFIRLANACAK\n"
+"\n"
+"YEDEK OLUŞTURULMAYACAK!\n"
+"\n"
+"PORTMASTER VARSAYILANA SIFIRLANSIN MI?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "SİSTEM YÖNETİMİ"
+
+msgid "AUDIO RESET"
+msgstr "SES SIFIRLAMA"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr ""
+"UYARI: SES AYARLARI VARSAYILANA SIFIRLANACAK VE SİSTEM YENİDEN BAŞLAYACAK!\n"
+"\n"
+"SES SIFIRLANSIN VE YENİDEN BAŞLATILSIN MI?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "PİL ŞARJ GÖSTERGESİNİ SIFIRLA"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr ""
+"UYARI: PMIC ŞARJ GÖSTERGESİ SIFIRLANACAK VE SİSTEM KAPANACAK!\n"
+"\n"
+"ŞARJ CİHAZINI TAKMADAN BIRAK VE CİHAZI BİRKAÇ SANİYE SONRA TEKRAR AÇ. PİL SEVİYESİ, DİNLENME GERİLİMİNDEN YENİDEN TAHMİN EDİLİR VE TAM ŞARJDAN SONRA YENİDEN DOĞRU OLUR.\n"
+"\n"
+"ŞARJ GÖSTERGESİ SIFIRLANSIN VE CİHAZ KAPATILSIN MI?"
+
+msgid "FACTORY RESET"
+msgstr "FABRİKA AYARLARINA SIFIRLAMA"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr ""
+"UYARI: VERİLERİN VE DİĞER TÜM YAPILANDIRMALAR VARSAYILANA SIFIRLANACAK!\n"
+"\n"
+"AYARLARINI KORUMAK İSTİYORSAN, BU SEÇENEĞİ ÇALIŞTIRMADAN ÖNCE YEDEK AL VE HARİCİ BİR SÜRÜCÜYE KAYDET!\n"
+"\n"
+"DEVAM ETMEDEN ÖNCE OYUN KARTINI ÇIKAR!\n"
+"\n"
+"SİSTEM SIFIRLANSIN VE YENİDEN BAŞLATILSIN MI?"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Seçilen yerleşim için klavye çeşidini seç (örneğin ölü tuşlar veya alternatif tuş yerleşimi)."
+
+msgid "TIMEZONE"
+msgstr "SAAT DİLİMİ"
+
+msgid "Run welcome again"
+msgstr "Karşılamayı yeniden çalıştır"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "İlk açılış karşılamasını yeniden gösterir: dil, WiFi ve saat dilimi."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "MANGOHUD KATMANINI ETKİNLEŞTİR"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "DOKUNMATİK EKRAN KLAVYESİNİ ETKİNLEŞTİR"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "ROCKNIX EKRAN GÖRÜNTÜSÜNÜ ETKİNLEŞTİR"
+
+msgid "SCREEN"
+msgstr "EKRAN"
+
+msgid "CONTRAST"
+msgstr "KONTRAST"
+
+msgid "GAMMA"
+msgstr "GAMA"
+
+msgid "HUE"
+msgstr "TON"
+
+msgid "SATURATION"
+msgstr "DOYGUNLUK"
+
+msgid "LEDS"
+msgstr "LED'LER"
+
+msgid "DISABLE POWER LED"
+msgstr "GÜÇ LED'İNİ KAPAT"
+
+msgid "LED COLOR"
+msgstr "LED RENGİ"
+
+msgid "JOYSTICK LED"
+msgstr "JOYSTICK LED'İ"
+
+msgid "MAX"
+msgstr "MAKS"
+
+msgid "MID"
+msgstr "ORTA"
+
+msgid "MIN"
+msgstr "MİN"
+
+msgid "THIS DEVICE IS"
+msgstr "BU CİHAZ"
+
+msgid "Device will be switched on next reboot"
+msgstr "Cihaz sonraki yeniden başlatmada değiştirilecek"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "OYUN KARTINI OTOMATİK ALGILA"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "BİRLEŞİK DEPOLAMAYI ETKİNLEŞTİR"
+
+msgid "EXTERNAL"
+msgstr "HARİCİ"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "BİRLEŞİK DEPOLAMA ANA KARTI"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "UYARI: ANA KARTI DEĞİŞTİRMEK OYUNLARA ERİŞİMİN KAYBOLMASINA YOL AÇABİLİR; DÜZELTMEK İÇİN ELLE MÜDAHALE GEREKİR. DEVAM EDİLSİN Mİ?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "MİKROSD KARTI ÇIKAR"
+
+msgid "You may now remove the card."
+msgstr "Artık kartı çıkarabilirsin."
+
+msgid "PERFORMANCE"
+msgstr "PERFORMANS"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "VARSAYILAN ÖLÇEKLEME YÖNETİCİSİ"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "VARSAYILAN GPU ÖLÇEKLEME YÖNETİCİSİ"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "CPU HIZ AŞIRTMAYI ETKİNLEŞTİR"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "GPU HIZ AŞIRTMAYI ETKİNLEŞTİR"
+
+msgid "GPU DRIVER"
+msgstr "GPU SÜRÜCÜSÜ"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "GPU sürücüsü sonraki yeniden başlatmada değiştirilecek"
+
+msgid "Restarting to apply the theme"
+msgstr "Temayı uygulamak için yeniden başlatılıyor"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Arayüz, temayı uygulamak için yeniden başlar"
+
+msgid "Dark"
+msgstr "Koyu"
+
+msgid "Light"
+msgstr "Açık"
+
+msgid "Theme default"
+msgstr "Temanın varsayılanı"
+
+msgid "Filled"
+msgstr "Dolu"
+
+msgid "Outline"
+msgstr "Çerçeve"
+
+msgid "Side bar"
+msgstr "Yan çubuk"
+
+msgid "Underline"
+msgstr "Alt çizgi"
+
+msgid "Centered"
+msgstr "Ortalı"
+
+msgid "Left"
+msgstr "Sol"
+
+msgid "Lowercase"
+msgstr "Küçük harf"
+
+msgid "Uppercase"
+msgstr "Büyük harf"
+
+msgid "EXTRA LARGE"
+msgstr "ÇOK BÜYÜK"
+
+msgid "LARGE"
+msgstr "BÜYÜK"
+
+msgid "SMALL"
+msgstr "KÜÇÜK"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Menülerde, iletişim kutularında ve yardım çubuklarında metin boyutu"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Saf beyaz veya siyah metin, dolu paneller ve daha kalın bir seçici"
+
+msgid "CONTROL OPTIONS"
+msgstr "KONTROL SEÇENEKLERİ"
+
+msgid "TOP BAR"
+msgstr "ÜST ÇUBUK"
+
+msgid "BEDSIDE CLOCK"
+msgstr "YATAK BAŞI SAATİ"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Şarj cihazı takılıyken, konsola bu süre boyunca dokunulmazsa ekran koruyucu yerine büyük bir saat gösterir. Herhangi bir tuş kapatır. Oyun açıkken asla."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "İNDİRME İPTAL EDİLEMEDİ"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "İNDİRME İPTAL EDİLDİ"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "GÜNCELLEME İNDİRİLEMEDİ. BAĞLANTIYI KONTROL ET VE TEKRAR DENE."
+
+msgid "No update source available"
+msgstr "Kullanılabilir güncelleme kaynağı yok"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "SONRAKİ GÜNCELLEMEYİ ZORLA"
+
+msgid "UPDATING"
+msgstr "GÜNCELLENİYOR"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "İNDİRMEYİ İPTAL ET"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "İNDİRME İPTAL EDİLSİN Mİ? KISMİ DOSYA SİLİNİR."
+
+msgid "Checking..."
+msgstr "Denetleniyor..."
+
+msgid "available"
+msgstr "mevcut"
+
+msgid "SKIP ALL"
+msgstr "HEPSİNİ ATLA"
+
+msgid "Welcome"
+msgstr "Hoş geldin"
+
+msgid "of"
+msgstr "/"
+
+msgid "Choose your language"
+msgstr "Dilini seç"
+
+msgid "Language"
+msgstr "Dil"
+
+msgid "You can change it later in System."
+msgstr "Bunu sonra Sistem bölümünden değiştirebilirsin."
+
+msgid "Connect to WiFi"
+msgstr "WiFi'ye bağlan"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Saat, güncellemeler ve dosya aktarımı."
+
+msgid "Continue"
+msgstr "Devam"
+
+msgid "Not now"
+msgstr "Şimdi değil"
+
+msgid "Choose a network"
+msgstr "Bir ağ seç"
+
+msgid "Choose another network"
+msgstr "Başka bir ağ seç"
+
+msgid "Where are you?"
+msgstr "Neredesin?"
+
+msgid "Time zone"
+msgstr "Saat dilimi"
+
+msgid "Sets your local time."
+msgstr "Yerel saatini ayarlar."
+
+msgid "Keep UTC"
+msgstr "UTC'yi koru"
+
+msgid "LOADING..."
+msgstr "YÜKLENİYOR..."
+
+msgid "All set"
+msgstr "Hepsi hazır"
+
+msgid "Add games from your phone"
+msgstr "Telefonundan oyun ekle"
+
+msgid "Network"
+msgstr "Ağ"
+
+msgid "Start opens the menu"
+msgstr "Start menüyü açar"
+
+msgid "anywhere"
+msgstr "her yerde"
+
+msgid "Screen looks wrong?"
+msgstr "Ekran bozuk mu görünüyor?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Oynamaya başla"
+
+msgid "PLAY THEME MUSIC"
+msgstr "TEMA MÜZİĞİNİ ÇAL"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "AĞ BAĞLANTISI YOK"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "PİL KULLANIMI (TAM ŞARJ)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "TOPLAM OYNAMA SÜRESİ"
+
+msgid "LAST FIVE WEEKS"
+msgstr "SON BEŞ HAFTA"
+
+msgid "2 WEEKS AGO"
+msgstr "2 HAFTA ÖNCE"
+
+msgid "3 WEEKS AGO"
+msgstr "3 HAFTA ÖNCE"
+
+msgid "4 WEEKS AGO"
+msgstr "4 HAFTA ÖNCE"
+
+msgid "THIS WEEK"
+msgstr "BU HAFTA"
+
+msgid "MOST PLAYED GAMES"
+msgstr "EN ÇOK OYNANAN OYUNLAR"
+
+msgid "TIME PER SYSTEM"
+msgstr "SİSTEM BAŞINA SÜRE"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "HENÜZ HİÇ OYNANMADI. BİR OYUN OYNA, BURADA GÖRÜNÜR."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Bugün yalnızca %d dakika oyun süresi kaldı"
+msgstr[1] "Bugün yalnızca %d dakika oyun süresi kaldı"
+
+msgid "Power saver on"
+msgstr "Güç tasarrufu açık"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "RETROACHIEVEMENTS'TAN BEKLENMEDİK YANIT"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "BU SÜRÜMDE KULLANILAMAZ"
+
+msgid "%i min ago"
+msgstr "%i dk önce"
+
+msgid "%i h ago"
+msgstr "%i sa önce"
+
+msgid "%i d ago"
+msgstr "%i gün önce"
+
+msgid "CONTINUE PLAYING"
+msgstr "OYNAMAYA DEVAM ET"
+
+msgid "START NOW"
+msgstr "ŞİMDİ BAŞLAT"
+
+msgid "RESUMING"
+msgstr "DEVAM EDİLİYOR"
+
+msgid "STARTING IN %i"
+msgstr "%i SANİYE SONRA BAŞLIYOR"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacks"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Dikey"
+
+msgid "recently added"
+msgstr "yakın zamanda eklenenler"
+
+msgid "unfinished"
+msgstr "bitmemiş"
+
+msgid "most played this week"
+msgstr "bu hafta en çok oynananlar"
+
+msgid "BOOKS"
+msgstr "KİTAPLAR"
+
+msgid "screenshots"
+msgstr "ekran görüntüleri"
+
+msgid "media player"
+msgstr "medya oynatıcı"
+
+msgid "NETWORK ERROR"
+msgstr "AĞ HATASI"
+
+msgid "SERVER BUSY"
+msgstr "SUNUCU MEŞGUL"
+
+msgid "SERVER ERROR"
+msgstr "SUNUCU HATASI"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "OYUN LİSTESİ YAZILAMIYOR"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "GİRİŞ BAŞARISIZ. KULLANICI ADINI VE PAROLAYI KONTROL ET"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER ŞU AN BU HESABA KAPALI"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER BAKIMDA"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "BU YAZILIM SCREENSCRAPER TARAFINDAN ENGELLENDİ"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "GÜNLÜK BİLGİ ÇEKME KOTASI DOLDU. YARIN TEKRAR DENE"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "BUGÜN ÇOK FAZLA TANINMAYAN ROM VAR. YARIN TEKRAR DENE"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "KARTTA YER KALMADI"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "ÖNCE HESAP BÖLÜMÜNE IGDB İSTEMCİ KİMLİĞİNİ VE GİZLİ ANAHTARINI YAZ"
+
+msgid "SCRAPING STOPPED"
+msgstr "BİLGİ ÇEKME DURDURULDU"
+
+msgid "GAME NOT FOUND"
+msgstr "OYUN BULUNAMADI"
+
+msgid "NO OTHER GAME"
+msgstr "BAŞKA OYUN YOK"
+
+msgid "Time is up for today"
+msgstr "Bugünkü süre doldu"
+
+msgid "ACCENTS"
+msgstr "VURGULAR"
+
+msgid "SHOW"
+msgstr "GÖSTER"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "VİDEO ÖNİZLEMELERİNİ GÖSTER"
+
+msgid "Device paired"
+msgstr "Cihaz eşleştirildi"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "BU CİHAZA İZİN VERİLSİN Mİ?"
+
+msgid "RECEIVED"
+msgstr "ALINDI"
+
+msgid "QR CODE"
+msgstr "QR KODU"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "AZ ÖNCE"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d DAKİKA ÖNCE"
+msgstr[1] "%d DAKİKA ÖNCE"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d SAAT ÖNCE"
+msgstr[1] "%d SAAT ÖNCE"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d GÜN ÖNCE"
+msgstr[1] "%d GÜN ÖNCE"
+
+msgid "NO PAIRED DEVICES"
+msgstr "EŞLEŞTİRİLMİŞ CİHAZ YOK"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "BU CİHAZ UNUTULSUN MU?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "TÜM CİHAZLARI UNUT"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "TÜM CİHAZLAR UNUTULSUN MU?"
+
+msgid "PAIRED DEVICES"
+msgstr "EŞLEŞTİRİLMİŞ CİHAZLAR"
+
+msgid "SHOW QR CODE"
+msgstr "QR KODUNU GÖSTER"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Telefon kamerasıyla tara: sayfa açılır ve PIN'i bilir."
+
+msgid "Phones that need no PIN."
+msgstr "PIN gerektirmeyen telefonlar."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "KAYITLAR WEB'DEN GERİ YÜKLENSİN Mİ?"
+
+msgid "BUILD ID"
+msgstr "DERLEME KİMLİĞİ"
+
+msgid "KERNEL"
+msgstr "ÇEKİRDEK"
+
+msgid "OPERATING SYSTEM"
+msgstr "İŞLETİM SİSTEMİ"
+
+msgid "SYSTEM INFORMATION"
+msgstr "SİSTEM BİLGİSİ"
+
+msgid "BATTERY INFORMATION"
+msgstr "PİL BİLGİSİ"
+
+msgid "DISK SPACE"
+msgstr "DİSK ALANI"
+
+msgid "HOST NAME"
+msgstr "ANA BİLGİSAYAR ADI"
+
+msgid "NETWORK INFORMATION"
+msgstr "AĞ BİLGİSİ"
+
+msgid "BATTERY HEALTH"
+msgstr "PİL SAĞLIĞI"
+
+msgid "BATTERY REMAINING"
+msgstr "KALAN PİL"
+
+msgid "BATTERY STATE"
+msgstr "PİL DURUMU"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "CPU BİLGİSİ"
+
+msgid "CPU TEMPERATURE"
+msgstr "CPU SICAKLIĞI"
+
+msgid "CPU FAN"
+msgstr "CPU FANI"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "GPU MEVCUT FREKANS"
+
+msgid "GPU INFORMATION"
+msgstr "GPU BİLGİSİ"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "GPU MAKSİMUM FREKANS"
+
+msgid "GPU TEMPERATURE"
+msgstr "GPU SICAKLIĞI"
+
+msgid "RAM AVAILABLE"
+msgstr "KULLANILABİLİR RAM"
+
+msgid "RAM CAPACITY"
+msgstr "RAM KAPASİTESİ"
+
+msgid "RAM INFORMATION"
+msgstr "RAM BİLGİSİ"
+
+msgid "CURRENT FREQUENCY"
+msgstr "MEVCUT FREKANS"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "MAKSİMUM FREKANS"
+
+msgid "DISCHARGING"
+msgstr "DEŞARJ"
+
+msgid "NOT CHARGING"
+msgstr "ŞARJ OLMUYOR"
+
+msgid "Follows the language until you choose one here."
+msgstr "Burada bir tane seçene kadar dili izler."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Ağ yok. microSD kartı bir bilgisayara takın ve her oyunu roms içindeki kendi sisteminin klasörüne kopyalayın (örneğin roms/snes). Ya da WiFi'ye bağlanıp telefondan oyun eklemek için buraya geri dönün."
+
+msgid "Add games"
+msgstr "Oyun ekle"
+
+msgid "left, in the menus"
+msgstr "kaldı, menülerde"
+
+msgid "From your phone or microSD"
+msgstr "Telefondan veya microSD'den"
+
+msgid "Web transfer turned off"
+msgstr "Web aktarımı kapatıldı"

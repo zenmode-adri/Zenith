@@ -17,8 +17,5 @@ makeinstall_target() {
   cp -rf ${PKG_DIR}/scripts/* ${INSTALL}/usr/bin/
   chmod +x ${INSTALL}/usr/bin/adckeys.sh
 
-  LAYOUT_URL="https://github.com/AveyondFly/console_mod_res/releases/download/v0.9/commander-baidupcs.tar.gz"
-  wget -O ${PKG_BUILD}/commander-baidupcs.tar.gz "${LAYOUT_URL}"
   mkdir -p ${INSTALL}/usr/config/
-  tar -xzf ${PKG_BUILD}/commander-baidupcs.tar.gz -C ${INSTALL}/usr/config/
 }

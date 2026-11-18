@@ -9,7 +9,9 @@ fraction of the memory, and sits idle when nothing is happening, while reading t
 > [!NOTE]
 > **Status: working, measured on one device.** Everything below was developed and measured on the **R36 Ultra**
 > (RK3326, Mali-G31, 1 GB RAM). Since Zenith v0.2.0 zfront is the default frontend of a new install; EmulationStation
-> stays installed and can be chosen in `Tools > Switch frontend`.
+> stays installed and can be chosen in `Tools > Switch frontend`. Zenith v0.3.0 adds an in-game Home menu, an "Add games" card
+> for an empty library, 34 interface languages, a built-in file manager and a Cloud tab (see the [changelog](../CHANGELOG.md)); much of it was checked with tests and
+> PC screenshots and has not been seen on a console yet.
 
 ## Why a new frontend?
 
@@ -59,8 +61,8 @@ frontend. The gain is in the frontend itself and in the memory it leaves free.
   first-boot screens, and menus for network and Wi-Fi, Bluetooth and controllers, sound, display and per-game options.
   Light and dark Zenith themes at 480x320, 640x480, 720x405 and 720x720. Navigation sounds, smooth motion that turns
   itself off in power-saver mode, live reload of the system list.
-- **Translated.** Every text goes through gettext. Texts that EmulationStation already translates (35 languages) reuse its
-  catalogs; zfront's own texts have a Spanish catalog and fall back to English elsewhere.
+- **Translated.** Every text goes through gettext. The interface comes in **34 languages**: English and Spanish are reviewed, the
+  other 32 are machine translations that nobody has reviewed (corrections welcome). No Arabic or Hebrew yet (no right-to-left text).
 - **Reproducible output.** `-ffp-contract=off` gives identical pixels on x86_64 and aarch64, so the screens can be
   rendered and tested on a PC without a device (`--preview out.png`).
 

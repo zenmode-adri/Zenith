@@ -26,9 +26,11 @@
 #include "idlewait.hpp"
 #include "launch.hpp"
 #include "music.hpp"
+#include "playtime.hpp"
 #include "bootargs.hpp"
 #include "autocover.hpp"
 #include "oscontract.hpp"
+#include "screensaver.hpp"
 #include "resume_last.hpp"
 #include "snapshot.hpp"
 #include "sdlwl.hpp"
@@ -595,6 +597,9 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
       if (oscontract::idle().active()) {
         // screensaver on: the UI underneath is frozen; the only wake-up is the clock of a dimmed screen (none when black)
         dl = oscontract::saver_deadline(app.cx.es, now);
+        if (screensaver::mode() == screensaver::Mode::Clock) {  // the bedside clock also needs the battery readings (percentage, unplug)
+          if (std::optional<TimePoint> sd = app.status_deadline(); sd && (!dl || *sd < *dl)) dl = sd;
+        }
         if (std::optional<TimePoint> cd = autocov.deadline(); cd && (!dl || *cd < *dl)) dl = cd;
       } else {
         dl = app.status_deadline();
@@ -690,6 +695,19 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
         quit = true;
         break;
       }
+      bool play_limited = false;  // PLAY TIME LIMIT applies to games only: tools (Tuner, Tools scripts) are neither counted nor blocked
+      if (o.kind == Outcome::Launch) {
+        const bool in_lists = o.sys >= 0 && o.game >= 0 && size_t(o.sys) < app.cx.systems.size();
+        play_limited = playtime::counts_as_game(in_lists ? &app.cx.systems[size_t(o.sys)] : nullptr);
+      }
+      if (play_limited && playtime::launch_blocked(app.cx.conf)) {  // today's time is spent, nothing starts
+        app.cx.sv->toasts.push(tr("Time is up for today"), 5000);
+        acts.clear();
+        ext.reset();
+        dirty = true;
+        last = Clock::now();
+        break;
+      }
       if (o.kind == Outcome::Launch) {
         launch::Request rq;
         rq.cmd = o.cmd;
@@ -698,6 +716,9 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
           const Game& g = app.cx.systems[size_t(o.sys)].games[size_t(o.game)];
           rq.rom_raw = g.path;
           rq.name = g.name;
+          homemenu::set_game_info(g.name, app.cx.systems[size_t(o.sys)].fullname);  // the HOME panel's title and subtitle
+        } else {
+          homemenu::set_game_info({}, {});
         }
         std::string launched_sys, launched_path;
         if (known) {
@@ -770,7 +791,16 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
         oscontract::game_started(rq.rom_raw.empty() ? rq.cmd : rq.rom_raw, rq.name);
         if (known) autoperf::begin_session(app.cx, launched_sys, launched_path);  // PERFORMANCE SUGGESTIONS: arms the sampler of launch::run
         else autoperf::disarm();
-        pending = launch::execute(rq, env);
+        {
+          // PLAY TIME LIMIT: counts this game and closes it when the day's time runs out; null (and free) when the limit is Off or it is a tool
+          std::unique_ptr<playtime::Watcher> limit_watch = play_limited ? playtime::begin_game(app.cx.conf) : nullptr;
+          pending = launch::execute(rq, env);
+          if (limit_watch) {
+            limit_watch->stop();  // the last step and the save, before anything else looks at the result
+            // back on the menus after the time ran out (the game was closed, or ended by itself at that moment): say why
+            if (playtime::launch_blocked(app.cx.conf) && !launch::term_requested()) app.cx.sv->toasts.push(tr("Time is up for today"), 6000);
+          }
+        }
         {
           const std::string perf_toast = known ? autoperf::end_session(app.cx, launched_sys, launched_path, pending.run.secs, pending.run.exit_code) : std::string();
           if (!perf_toast.empty() && !launch::term_requested()) app.cx.sv->toasts.push(perf_toast, 6000);
@@ -781,6 +811,7 @@ bool sdl_run(App& app, Pad* pad, uint32_t w, uint32_t h, bool fullscreen, std::s
           std::fprintf(stderr, "zfront: AN ERROR OCCURRED: %s\n", pending.message.c_str());
           app.cx.sv->toasts.push(launch::error_toast(pending), 7000);
         }
+        app.after_launch();  // back on the menu a tool was opened from: it reads its values again
         have_pending = known;
         pending_sys_name = launched_sys;
         pending_path = launched_path;

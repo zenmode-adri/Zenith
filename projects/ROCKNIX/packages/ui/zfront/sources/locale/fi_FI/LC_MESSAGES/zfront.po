@@ -1,0 +1,2778 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: fi_FI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "VIALLINEN PELILUETTELO"
+
+msgid "Not available yet"
+msgstr "Ei vielä saatavilla"
+
+msgid "Game lists updated"
+msgstr "Peliluettelot päivitetty"
+
+msgid "COVERS ADDED"
+msgstr "KANSIKUVAT LISÄTTY"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "SUORITUSKYKYTILA VOI AUTTAA TÄSSÄ PELISSÄ"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "TÄMÄ PELI VOI TOIMIA PAREMMIN SUORITUSKYKYTILASSA"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "OTA SUORITUSKYKYTILA KÄYTTÖÖN TÄLLE PELILLE"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "SUORITUSKYKYTILA KÄYTÖSSÄ TÄLLE PELILLE"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Tämä peli voi toimia paremmin suorituskykytilassa: GPU ja muisti pysyvät täydellä nopeudella pelatessa."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "ÄLÄ EHDOTA SUORITUSKYKYTILAA"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Älä ehdota suorituskykytilaa tälle pelille enää."
+
+msgid "BATTERY"
+msgstr "AKKU"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "EI VIELÄ TARPEEKSI TIETOA"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Pelaa tätä peliä viisi minuuttia tai pidempään akulla, niin arvio näkyy tässä."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Nykyisellä varauksella, tämän pelin viimeisten pelikertojen mukaan."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Nykyisellä varauksella. Tästä pelistä ei ole vielä pelikertoja: käytetään sen järjestelmän keskiarvoa."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Nykyisellä varauksella. Tästä järjestelmästä ei ole vielä pelikertoja: käytetään kaikkien pelien keskiarvoa."
+
+msgid "Never"
+msgstr "Ei koskaan"
+
+msgid "What used the most"
+msgstr "Eniten kuluttanut"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Viime täyslatauksesta. Arvio."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Mitään ei ole vielä mitattu. Tiedot kertyvät pelatessasi."
+
+msgid "Asleep"
+msgstr "Lepotilassa"
+
+msgid "Menus and system"
+msgstr "Valikot ja järjestelmä"
+
+msgid "Screen"
+msgstr "Näyttö"
+
+msgid "Charging"
+msgstr "Latautuu"
+
+msgid "About"
+msgstr "Tietoja"
+
+msgid "Since full"
+msgstr "Täydestä"
+
+msgid "Using now"
+msgstr "Kuluttaa nyt"
+
+msgid "Last hours"
+msgstr "Viimeiset tunnit"
+
+msgid "Now"
+msgstr "Nyt"
+
+msgid "More settings"
+msgstr "Lisää asetuksia"
+
+msgid "Power saver"
+msgstr "Virransäästö"
+
+msgid "Screensaver after"
+msgstr "Näytönsäästäjä jälkeen"
+
+msgid "Turn on by itself at"
+msgstr "Käynnistyy itsestään kello"
+
+msgid "ADJUST"
+msgstr "SÄÄDÄ"
+
+msgid "Action"
+msgstr "Toiminta"
+
+msgid "Adult"
+msgstr "Aikuisille"
+
+msgid "Adventure"
+msgstr "Seikkailu"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Kasino"
+
+msgid "Casual Game"
+msgstr "Rennot pelit"
+
+msgid "Hunting and Fishing"
+msgstr "Metsästys ja kalastus"
+
+msgid "Fight"
+msgstr "Taistelu"
+
+msgid "Race, Driving"
+msgstr "Kilpa-ajo, ajaminen"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Flipperi"
+
+msgid "Playing cards"
+msgstr "Korttipelit"
+
+msgid "Role playing games"
+msgstr "Roolipelit"
+
+msgid "Asiatic board game"
+msgstr "Aasialaiset lautapelit"
+
+msgid "Educational"
+msgstr "Opetuspelit"
+
+msgid "Music and Dance"
+msgstr "Musiikki ja tanssi"
+
+msgid "Platform"
+msgstr "Tasohyppely"
+
+msgid "Puzzle-Game"
+msgstr "Pulmapeli"
+
+msgid "Quiz"
+msgstr "Tietovisa"
+
+msgid "Reflection"
+msgstr "Ajattelupelit"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Simulaatio"
+
+msgid "Sports"
+msgstr "Urheilu"
+
+msgid "Sports with Animals"
+msgstr "Eläinurheilu"
+
+msgid "Strategy"
+msgstr "Strategia"
+
+msgid "Shooter"
+msgstr "Ammuntapeli"
+
+msgid "arcade"
+msgstr "arcade"
+
+msgid "vertical arcade"
+msgstr "pystysuuntainen arcade"
+
+msgid "wheel games"
+msgstr "rattipelit"
+
+msgid "trackball games"
+msgstr "pallohiiripelit"
+
+msgid "spinner games"
+msgstr "pyöröohjainpelit"
+
+msgid "Added '%s' to '%s'"
+msgstr "'%s' lisätty kohteeseen '%s'"
+
+msgid "Removed '%s' from '%s'"
+msgstr "'%s' poistettu kohteesta '%s'"
+
+msgid "Not set"
+msgstr "Ei asetettu"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Ma"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Su"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Ti"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "Ke"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Pe"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "La"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "To"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Huhti"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Helmi"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Tammi"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Kesä"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Maalis"
+
+msgctxt "date"
+msgid "May"
+msgstr "Touko"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Elo"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Joulu"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Heinä"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Marras"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Loka"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Syys"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "PELITIETOJA EI VOITU TALLENTAA"
+
+msgid "THE EMULATOR EXITED UNEXPECTEDLY"
+msgstr "EMULAATTORI SULKEUTUI ODOTTAMATTA"
+
+msgid "BAD COMMAND LINE ARGUMENTS"
+msgstr "VIRHEELLISET KOMENTORIVIPARAMETRIT"
+
+msgid "INVALID CONFIGURATION"
+msgstr "VIRHEELLINEN MÄÄRITYS"
+
+msgid "Could not save the settings"
+msgstr "Asetuksia ei voitu tallentaa"
+
+msgid "FILTER BY"
+msgstr "SUODATUS"
+
+msgid "FAVORITES ONLY"
+msgstr "VAIN SUOSIKIT"
+
+msgid "LIST"
+msgstr "LUETTELO"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Valittua teemaa ei voitu ladata: käytetään Zenithiä"
+
+msgid "PAGE"
+msgstr "SIVU"
+
+msgid "ZOOM"
+msgstr "ZOOMAUS"
+
+msgid "ZOOM IN"
+msgstr "LÄHENNÄ"
+
+msgid "ZOOM OUT"
+msgstr "KAUKENNA"
+
+msgid "MOVE"
+msgstr "SIIRRÄ"
+
+msgid "Could not show this page"
+msgstr "Tätä sivua ei voitu näyttää"
+
+msgid "CHANGE"
+msgstr "VAIHDA"
+
+msgid "INSTALLED"
+msgstr "ASENNETTU"
+
+msgid "PER GENRE"
+msgstr "LAJEITTAIN"
+
+msgid "SMART COLLECTIONS"
+msgstr "ÄLYKKÄÄT KOKOELMAT"
+
+msgid "EDIT FILTERS"
+msgstr "MUOKKAA SUODATTIMIA"
+
+msgid "NO OPTIONS"
+msgstr "EI VALINTOJA"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Haluatko varmasti poistaa kohteen '%s'?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Aseta sen suodattimet myöhemmin kohdassa Mukautetut pelikokoelmat."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Käynnistä käyttöliittymä uudelleen ottaaksesi muutokset käyttöön."
+
+msgid "Could not save the setting"
+msgstr "Asetusta ei voitu tallentaa"
+
+msgid "YOU ARE GOING TO MAP A CONTROLLER. MAP BASED ON THE BUTTON'S POSITION, NOT ITS PHYSICAL LABEL. IF YOU DO NOT HAVE A SPECIAL BUTTON FOR HOTKEY, USE THE SELECT BUTTON. SKIP ALL BUTTONS/STICKS YOU DO NOT HAVE BY HOLDING ANY BUTTON. PRESS THE SOUTH BUTTON TO CONFIRM WHEN DONE."
+msgstr "OLET MÄÄRITTÄMÄSSÄ OHJAINTA. MÄÄRITÄ PAINIKKEIDEN SIJAINNIN MUKAAN, ÄLÄ FYYSISTEN TEKSTIEN MUKAAN. JOS LAITTEESSA EI OLE ERILLISTÄ HOTKEY-PAINIKETTA, KÄYTÄ SELECT-PAINIKETTA. OHITA KAIKKI PAINIKKEET JA SAUVAT, JOITA SINULLA EI OLE, PITÄMÄLLÄ MITÄ TAHANSA PAINIKETTA ALHAALLA. VAHVISTA VALMIIKSI PAINAMALLA ETELÄPAINIKETTA."
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "MÄÄRITÄ OHJAIMET PELAAJILLE"
+
+msgid "ENABLE BLUETOOTH"
+msgstr "OTA BLUETOOTH KÄYTTÖÖN"
+
+msgid "Could not start Bluetooth"
+msgstr "Bluetoothia ei voitu käynnistää"
+
+msgid "Searching..."
+msgstr "Etsitään..."
+
+msgid "BLUETOOTH DEVICE LIST"
+msgstr "BLUETOOTH-LAITELUETTELO"
+
+msgid "CONTROLLERS"
+msgstr "OHJAIMET"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "VAIHDA VAHVISTUS- JA PERUUTUSPAINIKKEET"
+
+msgid "Switches the South and East buttons' functionality"
+msgstr "Vaihtaa etelä- ja itäpainikkeen toiminnot keskenään"
+
+msgid "ENABLE RUMBLE"
+msgstr "OTA VÄRINÄ KÄYTTÖÖN"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "MÄÄRITÄ RETROARCHIN PIKANÄPPÄIMET AUTOMAATTISESTI"
+
+msgid "SHOW CONTROLLER NOTIFICATIONS"
+msgstr "NÄYTÄ OHJAINILMOITUKSET"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "YHDISTETYT OHJAIMET"
+
+msgid "Not configured"
+msgstr "Ei määritetty"
+
+msgid "Unknown controller"
+msgstr "Tuntematon ohjain"
+
+msgid "PAIRED"
+msgstr "PARITETTU"
+
+msgid "Could not pair"
+msgstr "Pariliitos epäonnistui"
+
+msgid "Connected"
+msgstr "Yhdistetty"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Poistetaanko kaikki Bluetooth-laitteet?"
+
+msgid "Could not disconnect"
+msgstr "Yhteyden katkaisu epäonnistui"
+
+msgid "DISCONNECT"
+msgstr "KATKAISE YHTEYS"
+
+msgid "ARE YOU SURE YOU WANT TO DISCONNECT '%s' ?"
+msgstr "HALUATKO VARMASTI KATKAISTA YHTEYDEN KOHTEESEEN '%s'?"
+
+msgid "CONNECT"
+msgstr "YHDISTÄ"
+
+msgid "Could not connect"
+msgstr "Yhdistäminen epäonnistui"
+
+msgid "ARE YOU SURE YOU WANT TO CONNECT TO '%s' ?"
+msgstr "HALUATKO VARMASTI YHDISTÄÄ KOHTEESEEN '%s'?"
+
+msgid "Could not remove"
+msgstr "Poisto epäonnistui"
+
+msgid "FORGET"
+msgstr "UNOHDA"
+
+msgid "ARE YOU SURE YOU WANT TO FORGET '%s' ?"
+msgstr "HALUATKO VARMASTI UNOHTAA KOHTEEN '%s'?"
+
+msgctxt "joystick"
+msgid "START"
+msgstr "START"
+
+msgctxt "joystick"
+msgid "SELECT"
+msgstr "SELECT"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "PAINIKE A / ITÄ"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "PAINIKE B / ETELÄ"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "PAINIKE X / POHJOINEN"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "PAINIKE Y / LÄNSI"
+
+msgctxt "joystick"
+msgid "LEFT SHOULDER"
+msgstr "VASEN OLKAPÄÄPAINIKE"
+
+msgctxt "joystick"
+msgid "RIGHT SHOULDER"
+msgstr "OIKEA OLKAPÄÄPAINIKE"
+
+msgctxt "joystick"
+msgid "LEFT TRIGGER"
+msgstr "VASEN LIIPAISIN"
+
+msgctxt "joystick"
+msgid "RIGHT TRIGGER"
+msgstr "OIKEA LIIPAISIN"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "VASEN SAUVAPAINIKE"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "OIKEA SAUVAPAINIKE"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "HOTKEY-YHDISTELMÄ"
+
+msgid "DO NOT ASSIGN HOTKEY"
+msgstr "ÄLÄ MÄÄRITÄ HOTKEYTÄ"
+
+msgid "SET SELECT AS HOTKEY"
+msgstr "ASETA SELECT HOTKEYKSI"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "SISÄÄNRAKENNETTU OHJAIN"
+
+msgid "GAMEPAD DETECTED"
+msgstr "OHJAIN HAVAITTU"
+
+msgid "GAMEPADS DETECTED"
+msgstr "OHJAIMIA HAVAITTU"
+
+msgid "NO GAMEPADS DETECTED"
+msgstr "OHJAIMIA EI HAVAITTU"
+
+msgid "HOLD A BUTTON ON YOUR DEVICE TO CONFIGURE IT."
+msgstr "PIDÄ LAITTEEN PAINIKETTA ALHAALLA MÄÄRITTÄÄKSESI SEN."
+
+msgid "PRESS B TO CANCEL."
+msgstr "PERUUTA PAINAMALLA B."
+
+msgid "Could not save the controller configuration"
+msgstr "Ohjaimen määritystä ei voitu tallentaa"
+
+msgid "Controller configuration saved"
+msgstr "Ohjaimen määritys tallennettu"
+
+msgid "Controller configuration cancelled"
+msgstr "Ohjaimen määritys peruutettu"
+
+msgid "Controller disconnected"
+msgstr "Ohjaimen yhteys katkaistu"
+
+msgid "CONFIGURING"
+msgstr "MÄÄRITETÄÄN"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "PIDÄ ALHAALLA PERUUTTAAKSESI"
+
+msgid "ALREADY TAKEN"
+msgstr "JO KÄYTÖSSÄ"
+
+msgid "PRESS ANYTHING"
+msgstr "PAINA JOTAKIN"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "PERUUTA PITÄMÄLLÄ MITÄ TAHANSA PAINIKETTA ALHAALLA 3 SEKUNTIA."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "OHITA PITÄMÄLLÄ MITÄ TAHANSA PAINIKETTA ALHAALLA. PERUUTA PITÄMÄLLÄ EDELLEEN."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "KAIKKI PAINIKKEET ON MÄÄRITETTY"
+
+msgid "set"
+msgstr "asetettu"
+
+msgid "skipped"
+msgstr "ohitettu"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "HOTKEY-PAINIKETTA EI OLE MÄÄRITETTY. SE TARVITAAN PELIEN SULKEMISEEN OHJAIMELLA."
+
+msgid "DATE & TIME"
+msgstr "PÄIVÄMÄÄRÄ JA KELLONAIKA"
+
+msgid "MONTH"
+msgstr "KUUKAUSI"
+
+msgid "DAY"
+msgstr "PÄIVÄ"
+
+msgid "HOUR"
+msgstr "TUNTI"
+
+msgid "MINUTE"
+msgstr "MINUUTTI"
+
+msgid "SET DATE & TIME"
+msgstr "ASETA PÄIVÄMÄÄRÄ JA AIKA"
+
+msgid "Date and time set"
+msgstr "Päivämäärä ja aika asetettu"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Wi-Fi-yhteydellä aika asetetaan automaattisesti."
+
+msgid "That folder is protected"
+msgstr "Kansio on suojattu"
+
+msgid "Outside the allowed folders"
+msgstr "Sallittujen kansioiden ulkopuolella"
+
+msgid "Not enough free space"
+msgstr "Ei tarpeeksi vapaata tilaa"
+
+msgid "That name already exists"
+msgstr "Nimi on jo olemassa"
+
+msgid "Cancelled"
+msgstr "Peruutettu"
+
+msgid "A folder cannot go into itself"
+msgstr "Kansiota ei voi siirtää itseensä"
+
+msgid "That name is not valid"
+msgstr "Nimi ei kelpaa"
+
+msgid "Not found"
+msgstr "Ei löytynyt"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Tiedosto on yli 4 Gt: tähän korttiin se ei mahdu"
+
+msgid "This card does not accept that name"
+msgstr "Tämä kortti ei hyväksy tuota nimeä"
+
+msgid "This location is read-only"
+msgstr "Tämä sijainti on vain luku -tilassa"
+
+msgid "An error occurred"
+msgstr "Tapahtui virhe"
+
+msgid "%s of %s done"
+msgstr "%s / %s valmis"
+
+msgid "item"
+msgstr "kohde"
+
+msgid "items"
+msgstr "kohdetta"
+
+msgid "link skipped"
+msgstr "linkki ohitettu"
+
+msgid "links skipped"
+msgstr "linkkiä ohitettu"
+
+msgid "This can't be undone."
+msgstr "Tätä ei voi perua."
+
+msgid "Files"
+msgstr "Tiedostot"
+
+msgid "selected"
+msgstr "valittu"
+
+msgid "Cannot read this folder"
+msgstr "Tätä kansiota ei voi lukea"
+
+msgid "This folder is empty"
+msgstr "Tämä kansio on tyhjä"
+
+msgid "free"
+msgstr "vapaana"
+
+msgid "File"
+msgstr "Tiedosto"
+
+msgid "Folder"
+msgstr "Kansio"
+
+msgid "Link"
+msgstr "Linkki"
+
+msgid "Properties"
+msgstr "Ominaisuudet"
+
+msgid "Copy"
+msgstr "Kopioi"
+
+msgid "Move"
+msgstr "Siirrä"
+
+msgid "Paste here"
+msgstr "Liitä tähän"
+
+msgid "Rename"
+msgstr "Nimeä uudelleen"
+
+msgid "New folder"
+msgstr "Uusi kansio"
+
+msgid "Delete"
+msgstr "Poista"
+
+msgid "Select all"
+msgstr "Valitse kaikki"
+
+msgid "Clear selection"
+msgstr "Tyhjennä valinta"
+
+msgid "Date"
+msgstr "Päivämäärä"
+
+msgid "Size"
+msgstr "Koko"
+
+msgid "Sort by"
+msgstr "Lajittelu"
+
+msgid "Hide hidden files"
+msgstr "Piilota piilotiedostot"
+
+msgid "Show hidden files"
+msgstr "Näytä piilotiedostot"
+
+msgid "Actions"
+msgstr "Toiminnot"
+
+msgid "Home"
+msgstr "Koti"
+
+msgid "Games"
+msgstr "Pelit"
+
+msgid "Game card"
+msgstr "Pelikortti"
+
+msgid "USB drive"
+msgstr "USB-asema"
+
+msgid "Screenshots"
+msgstr "Kuvakaappaukset"
+
+msgid "Go to"
+msgstr "Siirry"
+
+msgid "Ready to copy"
+msgstr "Valmis kopioitavaksi"
+
+msgid "Ready to move"
+msgstr "Valmis siirrettäväksi"
+
+msgid "Warning"
+msgstr "Varoitus"
+
+msgid "Cancel"
+msgstr "Peruuta"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Tämä on järjestelmätiedosto. Sen nimeäminen uudelleen voi rikkoa konsolin."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Tämä on järjestelmätiedosto. Sen poistaminen voi rikkoa konsolin."
+
+msgid "Wait for the other job"
+msgstr "Odota toisen työn valmistumista"
+
+msgid "Copied"
+msgstr "Kopioitu"
+
+msgid "Deleted"
+msgstr "Poistettu"
+
+msgid "Moved"
+msgstr "Siirretty"
+
+msgid "originals kept"
+msgstr "alkuperäiset säilytetty"
+
+msgid "Copying"
+msgstr "Kopioidaan"
+
+msgid "Deleting"
+msgstr "Poistetaan"
+
+msgid "Moving"
+msgstr "Siirretään"
+
+msgid "Calculating..."
+msgstr "Lasketaan..."
+
+msgid "Back"
+msgstr "Takaisin"
+
+msgid "Close"
+msgstr "Sulje"
+
+msgid "Mark"
+msgstr "Merkitse"
+
+msgid "Open"
+msgstr "Avaa"
+
+msgid "Page"
+msgstr "Sivu"
+
+msgid "WHILE PLAYING"
+msgstr "PELATESSA"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "JATKA VIIMEISINTÄ PELIÄ KÄYNNISTYKSESSÄ"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Käynnistää viimeisimmän pelisi sen automaattitallennuksesta käynnistyksen yhteydessä. B peruuttaa."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "HOME-VALIKKO PELIEN AIKANA"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Kokeellinen. Pidä START-painiketta ja valittua olkapäänäppäintä sekunnin ajan pelin aikana keskeyttääksesi sen ja avataksesi paneelin, jossa on akku, kirkkaus, äänenvoimakkuus, JATKA ja LOPETA PELI (TALLENNA TILA ja LATAA TILA vain, kun RetroArchin verkkokomennot ovat käytössä)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "HOME-VALIKON PAINIKKEET"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "START-painikkeen kanssa pidettävät painikkeet, jotka avaavat Home-valikon. RetroArch käyttää Select-pohjaisia yhdistelmiä."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "SUORITUSKYKYEHDOTUKSET"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Ehdottaa suorituskykytilaa peleille, joita GPU:n ohjain rajoittaa."
+
+msgid "PLAY TIME LIMIT"
+msgstr "PELIAIKARAJA"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Pelaamiseen käytettävä aika päivässä. Viesti tulee 5 minuuttia ennen loppua (pelin sisällä vain, kun RetroArchin verkkokomennot ovat käytössä) ja sen jälkeen peli suljetaan. Aika alkaa kulua, kun tämä otetaan käyttöön."
+
+msgid "SAVED GAMES"
+msgstr "TALLENNETUT PELIT"
+
+msgid "INCREMENTAL SAVESTATES"
+msgstr "PORRASTETUT PELITILAT"
+
+msgid "DO NOT INCREMENT"
+msgstr "ÄLÄ PORRASTA"
+
+msgid "INCREMENT PER SAVE"
+msgstr "PORRASTA TALLENNUKSITTAIN"
+
+msgid "INCREMENT SLOT"
+msgstr "PORRASTA PAIKKA"
+
+msgid "Never overwrite old savestates, always make new ones."
+msgstr "Älä koskaan korvaa vanhoja pelitilatallennuksia, vaan tee aina uusia."
+
+msgid "SHOW SAVESTATE MANAGER"
+msgstr "NÄYTÄ PELITILAHALLINTA"
+
+msgid "Display savestate manager before launching a game."
+msgstr "Näytä pelitilahallinta ennen pelin käynnistämistä."
+
+msgid "PICTURE AND CONTROL"
+msgstr "KUVA JA OHJAUS"
+
+msgid "SMOOTH GAMES (BILINEAR FILTERING)"
+msgstr "PEHMEÄT PELIT (BILINEAARINEN SUODATUS)"
+
+msgid "VIDEO FILTER"
+msgstr "VIDEOSUODATIN"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "MOONLIGHT-PELIVIRTAUS"
+
+msgid "BIOS SETTINGS"
+msgstr "BIOS-ASETUKSET"
+
+msgid "MORE"
+msgstr "LISÄÄ"
+
+msgid "PLAY STATISTICS"
+msgstr "PELITILASTOT"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "JÄRJESTELMÄKOHTAISET VALINNAT"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "suorituskykytila"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU ja muisti täydellä nopeudella pelatessa"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "TUNTEMATON JÄRJESTELMÄ"
+
+msgid "EMULATOR"
+msgstr "EMULAATTORI"
+
+msgid "The emulator and core that run this."
+msgstr "Emulaattori ja ydin, joka tätä ajaa."
+
+msgid "SYSTEM OPTIONS"
+msgstr "JÄRJESTELMÄVALINNAT"
+
+msgid "DISPLAY"
+msgstr "NÄYTTÖ"
+
+msgid "COLORIZATION"
+msgstr "VÄRITYS"
+
+msgid "GAMEPLAY"
+msgstr "PELAAMINEN"
+
+msgid "ACTIONS"
+msgstr "TOIMINNOT"
+
+msgid "RANDOM GAME"
+msgstr "SATUNNAINEN PELI"
+
+msgid "COOLING PROFILE"
+msgstr "JÄÄHDYTYSPROFIILI"
+
+msgid "AGGRESSIVE"
+msgstr "AGGRESSIIVINEN"
+
+msgid "CUSTOM"
+msgstr "MUKAUTETTU"
+
+msgid "MODERATE"
+msgstr "MALTILLINEN"
+
+msgid "QUIET"
+msgstr "HILJAINEN"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "CPU:N SKAALAUSOHJAIN"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GPU:N SKAALAUSOHJAIN"
+
+msgid "ENABLED"
+msgstr "KÄYTÖSSÄ"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "MANGOHUD-PÄÄLLYSTÄ"
+
+msgid "UNKNOWN GAME"
+msgstr "TUNTEMATON PELI"
+
+msgid "Sort name"
+msgstr "Lajittelunimi"
+
+msgid "enter game sort name"
+msgstr "anna pelin lajittelunimi"
+
+msgid "INVALID DATE"
+msgstr "VIRHEELLINEN PÄIVÄMÄÄRÄ"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "PELIÄ EI VOITU POISTAA"
+
+msgid "CONFIG"
+msgstr "MÄÄRITYS"
+
+msgid "CORE PROVIDED"
+msgstr "YDIN TARJOAA"
+
+msgid "FULL"
+msgstr "KOKO NÄYTTÖ"
+
+msgid "SQUARE PIXEL"
+msgstr "NELIÖPIKSELI"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "NÄYTÖN SÄÄTÖ"
+
+msgid "SCREEN & SOUND"
+msgstr "NÄYTTÖ JA ÄÄNI"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "LEPOTILA"
+
+msgid "MONITORING"
+msgstr "SEURANTA"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "YLIKELLOTUS JA SEURANTA"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "AKKU JA SUORITUSKYKY"
+
+msgid "LIBRARY"
+msgstr "KIRJASTO"
+
+msgid "CHECK LIBRARY"
+msgstr "TARKISTA KIRJASTO"
+
+msgid "SAVE BACKUPS"
+msgstr "TALLENNUSTEN VARMUUSKOPIOT"
+
+msgid "LANGUAGE & TIME"
+msgstr "KIELI JA AIKA"
+
+msgid "HOME MENU"
+msgstr "HOME-VALIKKO"
+
+msgid "CHARGING"
+msgstr "LATAUS"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "NÄYTÖN KIRKKAUS"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "KORVATAANKO PELITILATALLENNUS?"
+
+msgid "SAVE STATE"
+msgstr "TALLENNA TILA"
+
+msgid "LOAD STATE"
+msgstr "LATAA TILA"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "LADATAANKO PELITILA? TALLENTAMATON EDISTYMINEN MENETETÄÄN."
+
+msgid "RESUME"
+msgstr "JATKA"
+
+msgid "QUIT GAME"
+msgstr "LOPETA PELI"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "LOPETATKO PELIN VARMASTI?"
+
+msgid "AND MORE"
+msgstr "JA MUUTA"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "ONGELMIA EI LÖYTYNYT"
+
+msgid "PROBLEMS FOUND"
+msgstr "ONGELMIA LÖYTYI"
+
+msgid "MISSING BIOS"
+msgstr "PUUTTUVA BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "MAHDOLLISESTI VIALLISIA TIEDOSTOJA"
+
+msgid "DUPLICATES"
+msgstr "KAKSOISKAPPALEET"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "PELIT ILMAN KUVAA"
+
+msgid "NETWORK"
+msgstr "VERKKO"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "OHJAIN JA BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Vain kehitykseen: kaikki valikkokehyksen elementit."
+
+msgid "WIDGET DEMO"
+msgstr "ELEMENTTIESITTELY"
+
+msgid "Unable to connect to server"
+msgstr "Palvelimeen ei saatu yhteyttä"
+
+msgid "Succesfully paired with server"
+msgstr "Pariliitos palvelimen kanssa onnistui"
+
+msgid "QUIT CURRENT GAME"
+msgstr "LOPETA NYKYINEN PELI"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "PÄIVITÄ MOONLIGHT-PELIT"
+
+msgid "PAIR WITH SERVER"
+msgstr "PARILIITÄ PALVELIMEN KANSSA"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "POISTA PARILIITOS PALVELIMEN KANSSA"
+
+msgid "Unpaired and settings cleared"
+msgstr "Pariliitos purettu ja asetukset tyhjennetty"
+
+msgid "Unpaired from server"
+msgstr "Pariliitos palvelimeen purettu"
+
+msgid "SERVER IP"
+msgstr "PALVELIMEN IP"
+
+msgid "PAIRING PIN"
+msgstr "PARILIITOKSEN PIN"
+
+msgid "HOST"
+msgstr "ISÄNTÄ"
+
+msgid "CUSTOM RELAY SERVER"
+msgstr "MUKAUTETTU VÄLITYSPALVELIN"
+
+msgid "Relay server games have a higher chance of successful entry."
+msgstr "Välityspalvelimen pelien kautta liittyminen onnistuu todennäköisemmin."
+
+msgid "SHOW RELAY SERVER GAMES ONLY"
+msgstr "NÄYTÄ VAIN VÄLITYSPALVELIMEN PELIT"
+
+msgid "Show rooms for games not present on this machine."
+msgstr "Näytä huoneet peleille, joita ei ole tässä laitteessa."
+
+msgid "ONLINE GAMES"
+msgstr "VERKKOPELIT"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "LIITY NETPLAY-PELIIN"
+
+msgid "NETPLAY NICKNAME"
+msgstr "NETPLAY-NIMIMERKKI"
+
+msgid "NETPLAY HOST"
+msgstr "NETPLAY-ISÄNTÄ"
+
+msgid "NETPLAY PORT"
+msgstr "NETPLAY-PORTTI"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Kytketään Wi-Fi päälle..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Wi-Fi-määritysvirhe"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi on päällä"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi on pois päältä"
+
+msgid "Wi-Fi region updated"
+msgstr "Wi-Fi-alue päivitetty"
+
+msgid "Please wait..."
+msgstr "Odota..."
+
+msgid "Local play mode updated"
+msgstr "Paikallisen pelin tila päivitetty"
+
+msgid "The service did not answer"
+msgstr "Palvelu ei vastannut"
+
+msgid "N/A"
+msgstr "-"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "WI-FI-VERKOT"
+
+msgid "WI-FI COUNTRY"
+msgstr "WI-FI-MAA"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Asettaa radiosäännöt: käytettävät kanavat."
+
+msgid "TRANSFER FILES"
+msgstr "SIIRRÄ TIEDOSTOJA"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Lähetä pelejä konsoliin puhelimesta tai tietokoneelta tässä verkossa."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "SAATAVILLA OLEVAT IP-OSOITTEET:"
+
+msgid "LOCAL PLAY"
+msgstr "PAIKALLINEN PELI"
+
+msgid "LOCAL PLAY MODE"
+msgstr "PAIKALLISEN PELIN TILA"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Luo tukiaseman netplayta varten muiden konsolien kanssa."
+
+msgid "1 (HOST)"
+msgstr "1 (ISÄNTÄ)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (ASIAKAS 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (ASIAKAS 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (ASIAKAS 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "PAIKALLISEN PELIN TUNNUS"
+
+msgid "SERVICES"
+msgstr "PALVELUT"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, pilvi, VPN ja konsolin nimi."
+
+msgid "NETWORK SERVICES"
+msgstr "VERKKOPALVELUT"
+
+msgid "ENABLE SSH"
+msgstr "OTA SSH KÄYTTÖÖN"
+
+msgid "SSH is off"
+msgstr "SSH on pois päältä"
+
+msgid "SSH is on"
+msgstr "SSH on päällä"
+
+msgid "Remote access to the console over the network."
+msgstr "Etäyhteys konsoliin verkon kautta."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "OTA KÄYTTÖÖN YKSINKERTAINEN HTTP-PALVELIN"
+
+msgid "HTTP server is off"
+msgstr "HTTP-palvelin on pois päältä"
+
+msgid "HTTP server is on"
+msgstr "HTTP-palvelin on päällä"
+
+msgid "FILE TRANSFER"
+msgstr "TIEDOSTOSIIRTO"
+
+msgid "USB GADGET FUNCTION"
+msgstr "USB-GADGET-TOIMINTO"
+
+msgid "USB networking is on. The console is at"
+msgstr "USB-verkko on päällä. Konsolin osoite on"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Mitä konsoli tarjoaa USB-C-portissaan."
+
+msgid "CLOUD SERVICES"
+msgstr "PILVIPALVELUT"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "LIITÄ PILVIASEMA"
+
+msgid "Cloud drive mounted"
+msgstr "Pilviasema liitetty"
+
+msgid "Cloud drive unmounted"
+msgstr "Pilviasema irrotettu"
+
+msgid "VPN SERVICES"
+msgstr "VPN-PALVELUT"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuard on pois päältä"
+
+msgid "WireGuard is on"
+msgstr "WireGuard on päällä"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscale on pois päältä"
+
+msgid "Tailscale is on"
+msgstr "Tailscale on päällä"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale ei saanut yhteyttä"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale vaatii kirjautumisen"
+
+msgid "SHOW LINK"
+msgstr "NÄYTÄ LINKKI"
+
+msgid "TAILSCALE LOGIN"
+msgstr "TAILSCALE-KIRJAUTUMINEN"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "TAILSCALE-UUDELLEENTODENNUS:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Käytä vain kirjaimia, numeroita ja yhdysmerkkejä"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Isäntänimi tallennettu. Se tulee voimaan seuraavassa käynnistyksessä"
+
+msgid "The new name is used at the next boot."
+msgstr "Uutta nimeä käytetään seuraavassa käynnistyksessä."
+
+msgid "WEB FILE TRANSFER"
+msgstr "WEB-TIEDOSTOSIIRTO"
+
+msgid "Could not start the web transfer"
+msgstr "Web-siirtoa ei voitu käynnistää"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Antaa puhelimen tai tietokoneen tässä verkossa lähettää pelejä konsoliin."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "KÄYNNISTYS EPÄONNISTUI (PORTTI VARATTU?)"
+
+msgid "WEB ADDRESS"
+msgstr "WEB-OSOITE"
+
+msgid "WEB PIN"
+msgstr "WEB-PIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "VERKKOASEMA (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "OTA SAMBA KÄYTTÖÖN"
+
+msgid "Samba is off"
+msgstr "Samba on pois päältä"
+
+msgid "Samba is on"
+msgstr "Samba on päällä"
+
+msgid "Shares the games folder with other computers."
+msgstr "Jakaa pelikansion muiden tietokoneiden kanssa."
+
+msgid "SAMBA ADDRESS"
+msgstr "SAMBA-OSOITE"
+
+msgid "SAMBA USER"
+msgstr "SAMBA-KÄYTTÄJÄ"
+
+msgid "SAMBA PASSWORD"
+msgstr "SAMBA-SALASANA"
+
+msgid "Connecting to"
+msgstr "Yhdistetään kohteeseen"
+
+msgid "Connected successfully"
+msgstr "Yhdistetty onnistuneesti"
+
+msgid "Failed to connect"
+msgstr "Yhdistäminen epäonnistui"
+
+msgid "SAVED"
+msgstr "TALLENNETTU"
+
+msgid "ENTERPRISE"
+msgstr "YRITYSVERKKO"
+
+msgid "SECURED"
+msgstr "SUOJATTU"
+
+msgid "Enterprise networks are not supported"
+msgstr "Yritysverkkoja ei tueta"
+
+msgid "Network forgotten"
+msgstr "Verkko unohdettu"
+
+msgid "WI-FI KEY FOR "
+msgstr "WI-FI-AVAIN: "
+
+msgid "CONNECTING..."
+msgstr "YHDISTETÄÄN..."
+
+msgid "WI-FI SSID"
+msgstr "WI-FI-VERKON NIMI (SSID)"
+
+msgid "WI-FI KEY"
+msgstr "WI-FI-AVAIN"
+
+msgid "QUICK ACCESS"
+msgstr "PIKAVALINTA"
+
+msgid "REALLY SUSPEND ?"
+msgstr "SIIRRYTÄÄNKÖ VARMASTI VALMIUSTILAAN?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "SAMMUTETAANKO VARMASTI?"
+
+msgid "REALLY RESTART?"
+msgstr "KÄYNNISTETÄÄNKÖ VARMASTI UUDELLEEN?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "KÄYNNISTETÄÄNKÖ KÄYTTÖLIITTYMÄ VARMASTI UUDELLEEN?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "KÄYNNISTÄ KÄYTTÖLIITTYMÄ UUDELLEEN"
+
+msgid "TEST ACCOUNT"
+msgstr "TESTAA TILI"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Tarkistaa käyttäjänimen ja salasanan retroachievements.org-sivustolla."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "YHDISTETÄÄN RETROACHIEVEMENTSIIN"
+
+msgid "LOGGED IN"
+msgstr "KIRJAUTUNUT SISÄÄN"
+
+msgid "Compete in high-score and best time leaderboards (requires hardcore)."
+msgstr "Kilpaile pistetaulukoissa ja parhaiden aikojen taulukoissa (vaatii hardcore-tilan)."
+
+msgid "Show achievement progression on game launch and other notifications."
+msgstr "Näytä saavutusten eteneminen pelin käynnistyessä ja muissa ilmoituksissa."
+
+msgid "VERBOSE MODE"
+msgstr "YKSITYISKOHTAINEN TILA"
+
+msgid "RICH PRESENCE"
+msgstr "RICH PRESENCE"
+
+msgid "Automatically take a screenshot when an achievement is earned."
+msgstr "Ota kuvakaappaus automaattisesti, kun saavutus ansaitaan."
+
+msgid "CHALLENGE INDICATORS"
+msgstr "HAASTEILMAISIMET"
+
+msgid "Shows icons in the bottom right corner when eligible achievements can be earned."
+msgstr "Näyttää kuvakkeita oikeassa alakulmassa, kun ansaittavia saavutuksia on saatavilla."
+
+msgid "Enable unlocking of unofficial achievements."
+msgstr "Ota käyttöön epävirallisten saavutusten avaaminen."
+
+msgid "UNOFFICIAL ACHIEVEMENTS"
+msgstr "EPÄVIRALLISET SAAVUTUKSET"
+
+msgid "UNLOCK SOUND"
+msgstr "AVAUSÄÄNI"
+
+msgid "LED NOTIFICATIONS"
+msgstr "LED-ILMOITUKSET"
+
+msgid "SHOW RETROACHIEVEMENTS ENTRY IN MAIN MENU"
+msgstr "NÄYTÄ RETROACHIEVEMENTS-RIVI PÄÄVALIKOSSA"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Näytä RetroAchievements-rivi päävalikossa."
+
+msgid "NO SAVES FOUND"
+msgstr "TALLENNUKSIA EI LÖYTYNYT"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "EI TARPEEKSI VAPAATA TILAA"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "VARMUUSKOPIO TÄLTÄ MINUUTILTA ON JO OLEMASSA"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "VARMUUSKOPIO ON VAURIOITUNUT TAI PUUTTUU"
+
+msgid "BACKUP DONE"
+msgstr "VARMUUSKOPIOINTI VALMIS"
+
+msgid "SAVES RESTORED"
+msgstr "TALLENNUKSET PALAUTETTU"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "PILVIVARMUUSKOPIOINTI VALMIS"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "PILVIVARMUUSKOPIOINTI EPÄONNISTUI"
+
+msgid "BEFORE A RESTORE"
+msgstr "ENNEN PALAUTUSTA"
+
+msgid "BACK UP SAVES NOW"
+msgstr "VARMUUSKOPIOI TALLENNUKSET NYT"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "TALLENNUKSET, PELITILAT JA PSP-TALLENNUKSET ILMAN ROM-TIEDOSTOJA TAI MEDIAA"
+
+msgid "CLOUD BACKUP"
+msgstr "PILVIVARMUUSKOPIO"
+
+msgid "BACKUPS"
+msgstr "VARMUUSKOPIOT"
+
+msgid "NO BACKUPS YET"
+msgstr "EI VIELÄ VARMUUSKOPIOITA"
+
+msgid "BACKUP DELETED"
+msgstr "VARMUUSKOPIO POISTETTU"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "TÄMÄ KORVAA NYKYISET TALLENNUKSESI TALLENNUKSILLA AJALTA %s. NYKYISISTÄ TALLENNUKSISTA TEHDÄÄN ENSIN VARMUUSKOPIO."
+
+msgid "RESTORE"
+msgstr "PALAUTA"
+
+msgid "DELETE BACKUP"
+msgstr "POISTA VARMUUSKOPIO"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "POISTETAANKO TÄMÄ VARMUUSKOPIO?"
+
+msgid "START NEW AUTO SAVE"
+msgstr "ALOITA UUSI AUTOMAATTITALLENNUS"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "TÄMÄ VERSIO EI VOI YHDISTÄÄ SCREENSCRAPERIIN"
+
+msgid "ALL GAMES"
+msgstr "KAIKKI PELIT"
+
+msgid "GAMES TO SCRAPE"
+msgstr "ETSITTÄVÄT PELIT"
+
+msgid "WITH MISSING MEDIA"
+msgstr "PUUTTUVILLA MEDIOILLA"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "ILMAN MITÄÄN MEDIAA"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Mitkä valittujen järjestelmien pelit haetaan."
+
+msgid "1 DAY"
+msgstr "1 PÄIVÄ"
+
+msgid "1 MONTH"
+msgstr "1 KUUKAUSI"
+
+msgid "1 WEEK"
+msgstr "1 VIIKKO"
+
+msgid "1 YEAR"
+msgstr "1 VUOSI"
+
+msgid "15 DAYS"
+msgstr "15 PÄIVÄÄ"
+
+msgid "3 MONTHS"
+msgstr "3 KUUKAUTTA"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Tässä ajassa haetut pelit ohitetaan, mikä säästää pyyntöjä."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "NOUDA PUUTTUVAT MEDIAT AUTOMAATTISESTI"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Lataa puuttuvat kansikuvat taustalla, kun laite on joutilaana."
+
+msgid "SCRAPER SETTINGS"
+msgstr "TIEDONHAUN ASETUKSET"
+
+msgid "ACCOUNT"
+msgstr "TILI"
+
+msgid "Choose at least one system."
+msgstr "Valitse vähintään yksi järjestelmä."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Hakee pelien tiedot ScreenScraperista."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "EI JÄRJESTELMÄÄ, JONKA PELEJÄ SCREENSCRAPER TUNTEE"
+
+msgid "PICTURES"
+msgstr "KUVAT"
+
+msgid "IMAGE"
+msgstr "KUVA"
+
+msgid "BOX FRONT"
+msgstr "KANNEN ETUPUOLI"
+
+msgid "MIX V1"
+msgstr "MIX V1"
+
+msgid "MIX V2"
+msgstr "MIX V2"
+
+msgid "TITLE SCREEN"
+msgstr "OTSIKKOKUVA"
+
+msgid "The main picture of each game."
+msgstr "Jokaisen pelin pääkuva."
+
+msgid "THUMBNAIL"
+msgstr "PIKKUKUVA"
+
+msgid "The small picture of each game."
+msgstr "Jokaisen pelin pieni kuva."
+
+msgid "LOGO"
+msgstr "LOGO"
+
+msgid "MARQUEE"
+msgstr "MARQUEE"
+
+msgid "The logo of each game."
+msgstr "Jokaisen pelin logo."
+
+msgid "WHEEL"
+msgstr "WHEEL"
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "TÄYSI KOKO"
+
+msgid "IMAGE SIZE"
+msgstr "KUVAN KOKO"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper pienentää kuvat ennen lähettämistä: nopeampi ja kevyempi."
+
+msgid "AUTOMATIC"
+msgstr "AUTOMAATTINEN"
+
+msgid "BRAZIL"
+msgstr "BRASILIA"
+
+msgid "EUROPE"
+msgstr "EUROOPPA"
+
+msgid "FRANCE"
+msgstr "RANSKA"
+
+msgid "GERMANY"
+msgstr "SAKSA"
+
+msgid "ITALY"
+msgstr "ITALIA"
+
+msgid "JAPAN"
+msgstr "JAPANI"
+
+msgid "SPAIN"
+msgstr "ESPANJA"
+
+msgid "USA"
+msgstr "YHDYSVALLAT"
+
+msgid "WORLD"
+msgstr "MAAILMA"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Nimien, päivämäärien ja kuvien ensisijainen alue."
+
+msgid "NAMES"
+msgstr "NIMET"
+
+msgid "Replace the names of the games."
+msgstr "Korvaa pelien nimet."
+
+msgid "DESCRIPTIONS"
+msgstr "KUVAUKSET"
+
+msgid "Replace the descriptions."
+msgstr "Korvaa kuvaukset."
+
+msgid "Download the rating of each game."
+msgstr "Lataa jokaisen pelin arvosana."
+
+msgid "RATINGS"
+msgstr "ARVOSANAT"
+
+msgid "EXTRA MEDIA"
+msgstr "LISÄMEDIAT"
+
+msgid "VIDEOS"
+msgstr "VIDEOT"
+
+msgid "Videos are big and take longer to download."
+msgstr "Videot ovat suuria ja latautuvat hitaammin."
+
+msgid "MANUALS"
+msgstr "KÄYTTÖOHJEET"
+
+msgid "PDF manuals."
+msgstr "PDF-käyttöohjeet."
+
+msgid "MAPS"
+msgstr "KARTAT"
+
+msgid "Maps of the game."
+msgstr "Pelin kartat."
+
+msgid "Background pictures."
+msgstr "Taustakuvat."
+
+msgid "FANART"
+msgstr "FANITAIDE"
+
+msgid "BOX BACK"
+msgstr "KANNEN TAKAPUOLI"
+
+msgid "The back of the box."
+msgstr "Kansilaatikon takapuoli."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Vain kohdassa \"Kaikki pelit\": jo olemassa olevat kuvat ladataan uudelleen."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "KORVAA OLEMASSA OLEVAT MEDIAT"
+
+msgid "SCREENSCRAPER"
+msgstr "SCREENSCRAPER"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Valinnainen. Ilman tiliä ScreenScraper sallii hyvin vähän pyyntöjä."
+
+msgid "IGDB"
+msgstr "IGDB"
+
+msgid "CLIENT ID"
+msgstr "ASIAKASTUNNUS"
+
+msgid "CLIENT SECRET"
+msgstr "ASIAKASSALAISUUS"
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB ei vaadi tiliä."
+
+msgid "Asks IGDB for an access token."
+msgstr "Pyytää IGDB:ltä käyttöoikeustunnisteen."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Pyytää ScreenScraperilta rajasi."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "YHDISTETÄÄN SCREENSCRAPERIIN"
+
+msgid "ANONYMOUS"
+msgstr "ANONYYMI"
+
+msgid "LOGIN"
+msgstr "KIRJAUTUMINEN"
+
+msgid "REQUESTS TODAY"
+msgstr "PYYNTÖJÄ TÄNÄÄN"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "PYYNTÖJÄ MINUUTISSA"
+
+msgid "STOP"
+msgstr "PYSÄYTÄ"
+
+msgid "SCROLL"
+msgstr "SELAA"
+
+msgid "SCRAPE COMPLETE"
+msgstr "HAKU VALMIS"
+
+msgid "SCRAPE STOPPED"
+msgstr "HAKU PYSÄYTETTY"
+
+msgid "SCRAPE FAILED"
+msgstr "HAKU EPÄONNISTUI"
+
+msgid "SCRAPING"
+msgstr "HAETAAN"
+
+msgid "FOUND"
+msgstr "LÖYTYI"
+
+msgid "NOT FOUND"
+msgstr "EI LÖYTYNYT"
+
+msgid "ERRORS"
+msgstr "VIRHEET"
+
+msgid "MEDIA FILES"
+msgstr "MEDIATIEDOSTOT"
+
+msgid "READING GAME LISTS"
+msgstr "LUETAAN PELILUETTELOITA"
+
+msgid "STOPPING"
+msgstr "PYSÄYTETÄÄN"
+
+msgid "SECONDS"
+msgstr "SEKUNTIA"
+
+msgid "WAITING"
+msgstr "ODOTETAAN"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "PYSÄYTETTY. TEHTY TYÖ ON TALLENNETTU"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "EI HAETTAVIA PELEJÄ NÄILLÄ SUODATTIMILLA"
+
+msgid "GAMES"
+msgstr "PELIT"
+
+msgid "PROBLEMS"
+msgstr "ONGELMAT"
+
+msgid "MEDIA MISSING"
+msgstr "MEDIA PUUTTUU"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "KYTKIMET JA LIUKUSÄÄTIMET"
+
+msgid "The clock shows in the top right corner."
+msgstr "Kello näkyy oikeassa yläkulmassa."
+
+msgid "ON-SCREEN HELP"
+msgstr "NÄYTÖLLÄ OLEVA OHJE"
+
+msgid "Volume saved"
+msgstr "Äänenvoimakkuus tallennettu"
+
+msgid "LISTS AND TEXT"
+msgstr "LUETTELOT JA TEKSTI"
+
+msgid "TEXT"
+msgstr "TEKSTI"
+
+msgid "WI-FI PASSWORD"
+msgstr "WI-FI-SALASANA"
+
+msgid "SHOW A TOAST"
+msgstr "NÄYTÄ ILMOITUS"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi yhdistetty: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "NÄYTÄ ÄÄNENVOIMAKKUUSPALKKI"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "NÄYTÄ KIRKKAUSPALKKI"
+
+msgid "ASK A QUESTION"
+msgstr "ESITÄ KYSYMYS"
+
+msgid "Delete all saved states of this game?"
+msgstr "Poistetaanko kaikki tämän pelin tallennetut tilat?"
+
+msgid "SHOW A MESSAGE"
+msgstr "NÄYTÄ VIESTI"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Päivitys asennettiin. Käynnistä konsoli uudelleen ottaaksesi sen käyttöön."
+
+msgid "Restart the system now?"
+msgstr "Käynnistetäänkö järjestelmä nyt uudelleen?"
+
+msgid "Restarting..."
+msgstr "Käynnistetään uudelleen..."
+
+msgid "DISABLED ENTRY"
+msgstr "POISTETTU KÄYTÖSTÄ OLEVA KOHTA"
+
+msgid "SELECTOR STYLE"
+msgstr "VALITSIMEN TYYLI"
+
+msgid "TITLE ALIGNMENT"
+msgstr "OTSIKON TASAUS"
+
+msgid "LIST TEXT CASE"
+msgstr "LUETTELON KIRJAINKOKO"
+
+msgid "TEXT SIZE"
+msgstr "TEKSTIN KOKO"
+
+msgid "HIGH CONTRAST"
+msgstr "KORKEA KONTRASTI"
+
+msgid "options"
+msgstr "valintaa"
+
+msgid "ENABLE NAVIGATION SOUNDS"
+msgstr "OTA KÄYTTÖÖN NAVIGOINTIÄÄNET"
+
+msgid "AUDIO"
+msgstr "ÄÄNI"
+
+msgid "SHOW OVERLAY WHEN VOLUME CHANGES"
+msgstr "NÄYTÄ KUVAKE ÄÄNENVOIMAKKUUTTA MUUTETTAESSA"
+
+msgid "Could not change the audio output"
+msgstr "Äänilähtöä ei voitu vaihtaa"
+
+msgid "BATTERY WARNING"
+msgstr "AKUN VAROITUS"
+
+msgid "SOUNDS"
+msgstr "ÄÄNET"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "OTA KÄYTTÖÖN KUULUVA AKUN VAROITUS"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "AKUN VAROITUSRAJA"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Käynnistää tämän pelin, kun konsoli käynnistyy, ennen valikoita, kerran käynnistystä kohti."
+
+msgid "Reboot now"
+msgstr "Käynnistä uudelleen nyt"
+
+msgid "Later"
+msgstr "Myöhemmin"
+
+msgid "Default"
+msgstr "Oletus"
+
+msgid "Arm (official)"
+msgstr "Arm (virallinen)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Avoin lähdekoodi (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "AIKAA JÄLJELLÄ TÄNÄÄN"
+
+msgid "UPTIME"
+msgstr "KÄYNNISSÄOLOAIKA"
+
+msgid "No information available"
+msgstr "Tietoja ei saatavilla"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "JÄRJESTELMÄN HALLINTA JA NOLLAUS"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr ""
+"OLETKO VARMA?\n"
+"\n"
+"TÄTÄ EI VOI PERUA."
+
+msgid "DATA MANAGEMENT"
+msgstr "TIETOJEN HALLINTA"
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "VARMUUSKOPIOI MÄÄRITYKSET"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr ""
+"VAROITUS: TÄMÄ KÄYNNISTÄÄ KÄYTTÖLIITTYMÄN UUDELLEEN!\n"
+"\n"
+"KUN KOMENTOSARJA ON VALMIS, MUISTA KOPIOIDA TIEDOSTO /storage/roms/backup/ROCKNIX_BACKUP.zip TURVALLISEEN PAIKKAAN, MUUTEN SE POISTETAAN SEURAAVASSA UUDELLEENKÄYNNISTYKSESSÄ!\n"
+"\n"
+"VARMUUSKOPIOIDAANKO NYKYINEN MÄÄRITYS JA KÄYNNISTETÄÄNKÖ UUDELLEEN?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "PALAUTA VARMUUSKOPIOSTA"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr ""
+"VAROITUS: TÄMÄ KÄYNNISTÄÄ LAITTEEN UUDELLEEN!\n"
+"\n"
+"NYKYINEN MÄÄRITYKSESI KORVATAAN!\n"
+"\n"
+"PALAUTETAANKO VARMUUSKOPIOSTA JA KÄYNNISTETÄÄNKÖ UUDELLEEN?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "EMULAATTORIEN HALLINTA"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "PALAUTA RETROARCHIN MÄÄRITYS OLETUKSIIN"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr ""
+"VAROITUS: RETROARCHIN MÄÄRITYS PALAUTETAAN OLETUKSIIN\n"
+"\n"
+"YDINKOHTAISIIN MÄÄRITYKSIIN EI KOSKETA, EIKÄ VARMUUSKOPIOTA TEHDÄ!\n"
+"\n"
+"PALAUTETAANKO RETROARCHIN MÄÄRITYS OLETUKSIIN?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "NOLLAA PÄÄLLYSTEET (YDIMET, HUIJAUKSET, OHJAIMET JNE.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr ""
+"VAROITUS: KAIKKI MUKAUTETUT RETROARCH-PÄÄLLYSTEET POISTETAAN\n"
+"\n"
+"MUKAUTETUT YDIMET, OHJAIMET, HUIJAUKSET JNE. VARMUUSKOPIOTA EI TEHDÄ!\n"
+"\n"
+"PALAUTETAANKO RETROARCH-PÄÄLLYSTEET OLETUKSIIN?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "NOLLAA RETROARCH TÄYSIN"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr ""
+"VAROITUS: RETROARCH JA KAIKKI KÄYTTÄJÄN TALLENTAMAT MÄÄRITYKSET PALAUTETAAN OLETUKSIIN\n"
+"\n"
+"YDINKOHTAISET MÄÄRITYKSET POISTETAAN EIKÄ VARMUUSKOPIOTA TEHDÄ!\n"
+"\n"
+"NOLLATAANKO RETROARCH?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "PALAUTA MEDNAFENIN MÄÄRITYS OLETUKSIIN"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr ""
+"VAROITUS: MEDNAFENIN MÄÄRITYS PALAUTETAAN OLETUKSIIN\n"
+"\n"
+"VARMUUSKOPIOTA EI TEHDÄ!\n"
+"\n"
+"PALAUTETAANKO MEDNAFENIN MÄÄRITYS OLETUKSIIN?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "PALAUTA ERILLISTEN EMULAATTORIEN MÄÄRITYKSET OLETUKSIIN"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr ""
+"VAROITUS: ERILLISTEN EMULAATTORIEN MÄÄRITYKSET PALAUTETAAN OLETUKSIIN\n"
+"\n"
+"VARMUUSKOPIOTA EI TEHDÄ!\n"
+"\n"
+"PALAUTETAANKO ERILLISTEN EMULAATTORIEN MÄÄRITYKSET OLETUKSIIN?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "NOLLAA PORTMASTER TÄYSIN"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr ""
+"VAROITUS: PORTMASTER PALAUTETAAN OLETUKSIIN\n"
+"\n"
+"VARMUUSKOPIOTA EI TEHDÄ!\n"
+"\n"
+"PALAUTETAANKO PORTMASTER OLETUKSIIN?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "JÄRJESTELMÄN HALLINTA"
+
+msgid "AUDIO RESET"
+msgstr "ÄÄNEN NOLLAUS"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr ""
+"VAROITUS: ÄÄNIASETUKSET PALAUTETAAN OLETUKSIIN JA JÄRJESTELMÄ KÄYNNISTYY UUDELLEEN!\n"
+"\n"
+"NOLLATAANKO ÄÄNI JA KÄYNNISTETÄÄNKÖ UUDELLEEN?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "NOLLAA AKUN VARAUSMITTARI"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr ""
+"VAROITUS: PMIC-VARAUSMITTARI NOLLATAAN JA JÄRJESTELMÄ SAMMUU!\n"
+"\n"
+"JÄTÄ LATURI IRTI JA KYTKE LAITE PÄÄLLE UUDESTAAN MUUTAMAN SEKUNNIN KULUTTUA. AKUN TASO ARVIOIDAAN UUDELLEEN LEPOJÄNNITTEEN PERUSTEELLA JA TARKENTUU TÄYDEN LATAUKSEN JÄLKEEN.\n"
+"\n"
+"NOLLATAANKO VARAUSMITTARI JA SAMMUTETAANKO LAITE?"
+
+msgid "FACTORY RESET"
+msgstr "TEHDASASETUSTEN PALAUTUS"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr ""
+"VAROITUS: TIETOSI JA KAIKKI MUUT MÄÄRITYKSET PALAUTETAAN OLETUKSIIN!\n"
+"\n"
+"JOS HALUAT SÄILYTTÄÄ ASETUKSESI, TEE VARMUUSKOPIO JA TALLENNA SE ULKOISELLE ASEMALLE ENNEN TÄMÄN VALINNAN SUORITTAMISTA!\n"
+"\n"
+"IRROTA PELIKORTTI ENNEN JATKAMISTA!\n"
+"\n"
+"PALAUTETAANKO JÄRJESTELMÄ JA KÄYNNISTETÄÄNKÖ UUDELLEEN?"
+
+msgid "KEYBOARD LAYOUT"
+msgstr "NÄPPÄIMISTÖASETTELU"
+
+msgid "KEYBOARD VARIANT"
+msgstr "NÄPPÄIMISTÖVARIANTTI"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Valitse valitun asettelun näppäimistövariantti (esimerkiksi kuolleet näppäimet tai vaihtoehtoinen näppäinsijoittelu)."
+
+msgid "TIMEZONE"
+msgstr "AIKAVYÖHYKE"
+
+msgid "Run welcome again"
+msgstr "Suorita tervetulotoiminto uudelleen"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Näyttää ensikäynnistyksen tervetulonäkymän uudelleen: kieli, WiFi ja aikavyöhyke."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "OTA MANGOHUD-PÄÄLLYS KÄYTTÖÖN"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "OTA KOSKETUSNÄYTÖN NÄPPÄIMISTÖ KÄYTTÖÖN"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "OTA ROCKNIXIN KUVAKAAPPAUS KÄYTTÖÖN"
+
+msgid "SCREEN"
+msgstr "NÄYTTÖ"
+
+msgid "CONTRAST"
+msgstr "KONTRASTI"
+
+msgid "GAMMA"
+msgstr "GAMMA"
+
+msgid "HUE"
+msgstr "SÄVY"
+
+msgid "SATURATION"
+msgstr "KYLLÄISYYS"
+
+msgid "LEDS"
+msgstr "LEDIT"
+
+msgid "DISABLE POWER LED"
+msgstr "POISTA VIRTA-LED KÄYTÖSTÄ"
+
+msgid "LED COLOR"
+msgstr "LEDIN VÄRI"
+
+msgid "JOYSTICK LED"
+msgstr "OHJAUSSAUVAN LED"
+
+msgid "LED BRIGHTNESS"
+msgstr "LEDIN KIRKKAUS"
+
+msgid "MAX"
+msgstr "MAKS"
+
+msgid "MID"
+msgstr "KESKI"
+
+msgid "MIN"
+msgstr "MIN"
+
+msgid "DEVICE"
+msgstr "LAITE"
+
+msgid "THIS DEVICE IS"
+msgstr "TÄMÄ LAITE ON"
+
+msgid "Device will be switched on next reboot"
+msgstr "Laite vaihdetaan seuraavassa uudelleenkäynnistyksessä"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "HAVAITSE PELIKORTTI AUTOMAATTISESTI"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "OTA YHDISTETTY TALLENNUSTILA KÄYTTÖÖN"
+
+msgid "EXTERNAL"
+msgstr "ULKOINEN"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "YHDISTETYN TALLENNUSTILAN ENSISIJAINEN KORTTI"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "VAROITUS: ENSISIJAISEN KORTIN VAIHTAMINEN VOI KATKAISTA PELIEN SAATAVUUDEN, JOLLOIN TARVITAAN KÄSIN KORJAUSTA. JATKETAANKO?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "IRROTA MICROSD-KORTTI"
+
+msgid "You may now remove the card."
+msgstr "Voit nyt poistaa kortin."
+
+msgid "PERFORMANCE"
+msgstr "SUORITUSKYKY"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "OLETUSSKAALAUSOHJAIN"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "GPU:N OLETUSSKAALAUSOHJAIN"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "OTA CPU:N YLIKELLOTUS KÄYTTÖÖN"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "OTA GPU:N YLIKELLOTUS KÄYTTÖÖN"
+
+msgid "GPU DRIVER"
+msgstr "GPU-OHJAIN"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "GPU-ohjain vaihdetaan seuraavassa uudelleenkäynnistyksessä"
+
+msgid "Restarting to apply the theme"
+msgstr "Käynnistetään uudelleen teeman käyttöönottoa varten"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Käyttöliittymä käynnistyy uudelleen teeman käyttöönottoa varten"
+
+msgid "Dark"
+msgstr "Tumma"
+
+msgid "Light"
+msgstr "Vaalea"
+
+msgid "MODE"
+msgstr "TILA"
+
+msgid "Theme default"
+msgstr "Teeman oletus"
+
+msgid "Filled"
+msgstr "Täytetty"
+
+msgid "Outline"
+msgstr "Ääriviiva"
+
+msgid "Side bar"
+msgstr "Sivupalkki"
+
+msgid "Underline"
+msgstr "Alleviivaus"
+
+msgid "Centered"
+msgstr "Keskitetty"
+
+msgid "Left"
+msgstr "Vasen"
+
+msgid "Lowercase"
+msgstr "Pienet kirjaimet"
+
+msgid "Uppercase"
+msgstr "Isot kirjaimet"
+
+msgid "EXTRA LARGE"
+msgstr "ERITTÄIN SUURI"
+
+msgid "LARGE"
+msgstr "SUURI"
+
+msgid "SMALL"
+msgstr "PIENI"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Tekstin koko valikoissa, dialogeissa ja ohjepalkeissa"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Puhtaan valkoinen tai musta teksti, umpinaiset paneelit ja paksumpi valitsin"
+
+msgid "CONTROL OPTIONS"
+msgstr "OHJAUSVALINNAT"
+
+msgid "DISPLAY OPTIONS"
+msgstr "NÄYTTÖVALINNAT"
+
+msgid "TOP BAR"
+msgstr "YLÄPALKKI"
+
+msgid "NAVIGATION"
+msgstr "NAVIGOINTI"
+
+msgid "QUICK SYSTEM SELECT"
+msgstr "PIKAJÄRJESTELMÄVALINTA"
+
+msgid "BEDSIDE CLOCK"
+msgstr "YÖPÖYTÄKELLO"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Kun laturi on kytketty, näyttää suuren kellon tämän ajan kuluttua siitä, kun konsoliin ei ole koskettu, näytönsäästäjän sijaan. Mikä tahansa painike sulkee sen. Ei koskaan pelin ollessa auki."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "LATAUKSEN PERUUTTAMINEN EI ONNISTUNUT"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "LATAUS PERUUTETTU"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "PÄIVITYSTÄ EI VOITU LADATA. TARKISTA YHTEYS JA YRITÄ UUDELLEEN."
+
+msgid "No update source available"
+msgstr "Päivityslähdettä ei saatavilla"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "PAKOTA SEURAAVA PÄIVITYS"
+
+msgid "UPDATING"
+msgstr "PÄIVITETÄÄN"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "PERUUTA LATAUS"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "PERUUTETAANKO LATAUS? OSITTAINEN TIEDOSTO POISTETAAN."
+
+msgid "Checking..."
+msgstr "Tarkistetaan..."
+
+msgid "available"
+msgstr "saatavilla"
+
+msgid "SKIP ALL"
+msgstr "OHITA KAIKKI"
+
+msgid "Welcome"
+msgstr "Tervetuloa"
+
+msgid "of"
+msgstr "/"
+
+msgid "Choose your language"
+msgstr "Valitse kieli"
+
+msgid "Language"
+msgstr "Kieli"
+
+msgid "You can change it later in System."
+msgstr "Voit vaihtaa sen myöhemmin kohdassa Järjestelmä."
+
+msgid "Connect to WiFi"
+msgstr "Yhdistä WiFiin"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Kello, päivitykset ja tiedostonsiirto."
+
+msgid "Continue"
+msgstr "Jatka"
+
+msgid "Not now"
+msgstr "Ei nyt"
+
+msgid "Choose a network"
+msgstr "Valitse verkko"
+
+msgid "Choose another network"
+msgstr "Valitse toinen verkko"
+
+msgid "Where are you?"
+msgstr "Missä olet?"
+
+msgid "Time zone"
+msgstr "Aikavyöhyke"
+
+msgid "Sets your local time."
+msgstr "Asettaa paikallisen ajan."
+
+msgid "Keep UTC"
+msgstr "Käytä UTC:tä"
+
+msgid "LOADING..."
+msgstr "LADATAAN..."
+
+msgid "All set"
+msgstr "Kaikki valmista"
+
+msgid "Add games from your phone"
+msgstr "Lisää pelejä puhelimestasi"
+
+msgid "Network"
+msgstr "Verkko"
+
+msgid "Start opens the menu"
+msgstr "Start avaa valikon"
+
+msgid "anywhere"
+msgstr "missä tahansa"
+
+msgid "Screen looks wrong?"
+msgstr "Näyttö näyttää oudolta?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Aloita pelaaminen"
+
+msgid "PLAY THEME MUSIC"
+msgstr "SOITA TEEMAMUSIIKKIA"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "EI VERKKOYHTEYTTÄ"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "AKUN KÄYTTÖ (TÄYSI LATAUS)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "PELATTU AIKA YHTEENSÄ"
+
+msgid "LAST FIVE WEEKS"
+msgstr "VIIMEISET VIISI VIIKKOA"
+
+msgid "2 WEEKS AGO"
+msgstr "2 VIIKKOA SITTEN"
+
+msgid "3 WEEKS AGO"
+msgstr "3 VIIKKOA SITTEN"
+
+msgid "4 WEEKS AGO"
+msgstr "4 VIIKKOA SITTEN"
+
+msgid "THIS WEEK"
+msgstr "TÄMÄ VIIKKO"
+
+msgid "MOST PLAYED GAMES"
+msgstr "PELATUIMMAT PELIT"
+
+msgid "TIME PER SYSTEM"
+msgstr "AIKA JÄRJESTELMITTÄIN"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "MITÄÄN EI OLE VIELÄ PELATTU. PELAA PELIÄ, NIIN SE NÄKYY TÄÄLLÄ."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Vain %d minuutti peliaikaa jäljellä tänään"
+msgstr[1] "Vain %d minuuttia peliaikaa jäljellä tänään"
+
+msgid "Power saver on"
+msgstr "Virransäästö päällä"
+
+msgid "A valid account is required. Please register an account on https://retroachievements.org"
+msgstr "Tarvitaan kelvollinen tili. Rekisteröi tili osoitteessa https://retroachievements.org"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "ODOTTAMATON VASTAUS RETROACHIEVEMENTSILTA"
+
+msgid "UNABLE TO ACTIVATE RETROACHIEVEMENTS:"
+msgstr "RETROACHIEVEMENTSIN KÄYTTÖÖNOTTO EI ONNISTUNUT:"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "EI SAATAVILLA TÄSSÄ VERSIOSSA"
+
+msgid "%i min ago"
+msgstr "%i min sitten"
+
+msgid "%i h ago"
+msgstr "%i t sitten"
+
+msgid "%i d ago"
+msgstr "%i pv sitten"
+
+msgid "%i GAME"
+msgid_plural "%i GAMES"
+msgstr[0] "%i PELI"
+msgstr[1] "%i PELIÄ"
+
+msgid "CONTINUE PLAYING"
+msgstr "JATKA PELAAMISTA"
+
+msgid "START NOW"
+msgstr "ALOITA NYT"
+
+msgid "RESUMING"
+msgstr "JATKETAAN"
+
+msgid "STARTING IN %i"
+msgstr "ALKAA %i:N KULUTTUA"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacks"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Pystysuuntainen"
+
+msgid "recently added"
+msgstr "äskettäin lisätyt"
+
+msgid "unfinished"
+msgstr "keskeneräiset"
+
+msgid "most played this week"
+msgstr "pelatuimmat tällä viikolla"
+
+msgid "BOOKS"
+msgstr "KIRJAT"
+
+msgid "screenshots"
+msgstr "kuvakaappaukset"
+
+msgid "media player"
+msgstr "mediasoitin"
+
+msgid "NETWORK ERROR"
+msgstr "VERKKOVIRHE"
+
+msgid "SERVER BUSY"
+msgstr "PALVELIN ON KUORMITETTU"
+
+msgid "SERVER ERROR"
+msgstr "PALVELINVIRHE"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "PELILUETTELOA EI VOI KIRJOITTAA"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "KIRJAUTUMINEN EPÄONNISTUI. TARKISTA KÄYTTÄJÄNIMI JA SALASANA"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER ON TÄLLÄ TILILLÄ NYT SULJETTU"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER ON HUOLLOSSA"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "SCREENSCRAPER ON ESTÄNYT TÄMÄN OHJELMISTON"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "PÄIVITTÄINEN HAKUKIINTIÖ TÄYNNÄ. YRITÄ HUOMENNA UUDELLEEN"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "LIIAN MONTA TUNNISTAMATONTA ROM-TIEDOSTOA TÄNÄÄN. YRITÄ HUOMENNA UUDELLEEN"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "KORTILLA EI OLE TILAA"
+
+msgid "INVALID CREDENTIALS"
+msgstr "VIRHEELLISET TUNNISTETIEDOT"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "KIRJOITA IGDB:N ASIAKASTUNNUS JA -SALAISUUS ENSIN KOHTAAN TILI"
+
+msgid "SCRAPING STOPPED"
+msgstr "HAKU PYSÄYTETTY"
+
+msgid "SCRAPING FINISHED"
+msgstr "HAKU VALMIS"
+
+msgid "GAME NOT FOUND"
+msgstr "PELIÄ EI LÖYTYNYT"
+
+msgid "NO OTHER GAME"
+msgstr "EI MUITA PELEJÄ"
+
+msgid "%s connected"
+msgstr "%s yhdistetty"
+
+msgid "%s disconnected"
+msgstr "%s irrotettu"
+
+msgid "Time is up for today"
+msgstr "Päivän aika on loppu"
+
+msgid "start & end"
+msgstr "alku ja loppu"
+
+msgid "SHOW DATE TIME"
+msgstr "NÄYTÄ PÄIVÄMÄÄRÄ JA AIKA"
+
+msgid "DATE FORMAT"
+msgstr "PÄIVÄMÄÄRÄN MUOTO"
+
+msgid "TIME FORMAT"
+msgstr "AJAN MUOTO"
+
+msgid "USE MARQUEE AS GAME INFO"
+msgstr "KÄYTÄ MARQUEETA PELIN TIETONA"
+
+msgid "ACCENTS"
+msgstr "AKSENTIT"
+
+msgid "SHIFT"
+msgstr "VAIHTO"
+
+msgid "SPACE"
+msgstr "VÄLILYÖNTI"
+
+msgid "SHOW"
+msgstr "NÄYTÄ"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "NÄYTÄ VIDEOESIKATSELUT"
+
+msgid "Device paired"
+msgstr "Laite paritettu"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "SALLITAANKO TÄMÄ LAITE?"
+
+msgid "RECEIVED"
+msgstr "VASTAANOTETTU"
+
+msgid "QR CODE"
+msgstr "QR-KOODI"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "JUURI NYT"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d MINUUTTI SITTEN"
+msgstr[1] "%d MINUUTTIA SITTEN"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d TUNTI SITTEN"
+msgstr[1] "%d TUNTIA SITTEN"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d PÄIVÄ SITTEN"
+msgstr[1] "%d PÄIVÄÄ SITTEN"
+
+msgid "NO PAIRED DEVICES"
+msgstr "EI PARITETTUJA LAITTEITA"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "UNOHDETAANKO TÄMÄ LAITE?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "UNOHDA KAIKKI LAITTEET"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "UNOHDETAANKO KAIKKI LAITTEET?"
+
+msgid "PAIRED DEVICES"
+msgstr "PARITETUT LAITTEET"
+
+msgid "SHOW QR CODE"
+msgstr "NÄYTÄ QR-KOODI"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Skannaa se puhelimen kameralla: sivu aukeaa ja tietää PIN-koodin."
+
+msgid "Phones that need no PIN."
+msgstr "Puhelimet, jotka eivät tarvitse PIN-koodia."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "PALAUTETAANKO TALLENNUKSET WEBISTÄ?"
+
+msgid "BUILD ID"
+msgstr "VERSIOTUNNUS"
+
+msgid "KERNEL"
+msgstr "YDIN"
+
+msgid "OPERATING SYSTEM"
+msgstr "KÄYTTÖJÄRJESTELMÄ"
+
+msgid "SYSTEM INFORMATION"
+msgstr "JÄRJESTELMÄTIEDOT"
+
+msgid "BATTERY INFORMATION"
+msgstr "AKUN TIEDOT"
+
+msgid "DISK SPACE"
+msgstr "LEVYTILA"
+
+msgid "HOST NAME"
+msgstr "ISÄNTÄNIMI"
+
+msgid "NETWORK INFORMATION"
+msgstr "VERKKOTIEDOT"
+
+msgid "BATTERY HEALTH"
+msgstr "AKUN KUNTO"
+
+msgid "BATTERY REMAINING"
+msgstr "AKKUA JÄLJELLÄ"
+
+msgid "BATTERY STATE"
+msgstr "AKUN TILA"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "CPU:N TIEDOT"
+
+msgid "CPU TEMPERATURE"
+msgstr "CPU:N LÄMPÖTILA"
+
+msgid "CPU FAN"
+msgstr "CPU:N TUULETIN"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "GPU:N NYKYINEN TAAJUUS"
+
+msgid "GPU INFORMATION"
+msgstr "GPU:N TIEDOT"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "GPU:N MAKSIMITAAJUUS"
+
+msgid "GPU TEMPERATURE"
+msgstr "GPU:N LÄMPÖTILA"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM VAPAANA"
+
+msgid "RAM CAPACITY"
+msgstr "RAM-MUISTIN KOKO"
+
+msgid "RAM INFORMATION"
+msgstr "RAM-MUISTIN TIEDOT"
+
+msgid "CURRENT FREQUENCY"
+msgstr "NYKYINEN TAAJUUS"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "SUURIN TAAJUUS"
+
+msgid "DISCHARGING"
+msgstr "PURKAUTUU"
+
+msgid "NOT CHARGING"
+msgstr "EI LATAA"
+
+msgid "Follows the language until you choose one here."
+msgstr "Seuraa kieltä, kunnes valitset sen tässä."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Ei verkkoa. Laita microSD-kortti tietokoneeseen ja kopioi jokainen peli järjestelmänsä kansioon roms-kansion sisällä (esimerkiksi roms/snes). Tai yhdistä WiFiin ja palaa tänne lisäämään pelejä puhelimesta."
+
+msgid "Add games"
+msgstr "Lisää pelejä"
+
+msgid "left, in the menus"
+msgstr "jäljellä, valikoissa"
+
+msgid "From your phone or microSD"
+msgstr "Puhelimesta tai microSD-kortilta"
+
+msgid "Web transfer turned off"
+msgstr "Verkkosiirto sammutettu"

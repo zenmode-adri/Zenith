@@ -149,10 +149,6 @@ msgid "Set its filters afterwards in Custom game collections."
 msgstr "Define sus filtros después en Colecciones de juegos personalizadas."
 
 #: src/menu_collections.cpp
-msgid "NEVER"
-msgstr "Nunca"
-
-#: src/menu_collections.cpp
 msgid "Restart the front-end to apply the changes."
 msgstr "Reinicia la interfaz para aplicar los cambios."
 
@@ -532,18 +528,6 @@ msgid "CLOUD SERVICES"
 msgstr "Servicios en la nube"
 
 #: src/menu_network.cpp
-msgid "ENABLE SYNCTHING"
-msgstr "Activar Syncthing"
-
-#: src/menu_network.cpp
-msgid "Syncthing is off"
-msgstr "Syncthing desactivado"
-
-#: src/menu_network.cpp
-msgid "Syncthing is on"
-msgstr "Syncthing activado"
-
-#: src/menu_network.cpp
 msgid "MOUNT CLOUD DRIVE"
 msgstr "Montar unidad en la nube"
 
@@ -602,22 +586,6 @@ msgstr "Inicio de sesión de Tailscale"
 #: src/menu_network.cpp
 msgid "TAILSCALE REAUTHENTICATE:"
 msgstr "Reautenticar Tailscale:"
-
-#: src/menu_network.cpp
-msgid "ZeroTier One"
-msgstr "ZeroTier One"
-
-#: src/menu_network.cpp
-msgid "ZeroTier could not connect"
-msgstr "ZeroTier no pudo conectar"
-
-#: src/menu_network.cpp
-msgid "ZeroTier is off"
-msgstr "ZeroTier desactivado"
-
-#: src/menu_network.cpp
-msgid "ZeroTier is on"
-msgstr "ZeroTier activado"
 
 #: src/menu_network.cpp
 msgid "Connecting to"
@@ -1439,7 +1407,7 @@ msgstr "Gobernador de frecuencia predeterminado"
 
 #: src/menu_system_main.cpp
 msgid "DEFAULT GPU SCALING GOVERNOR"
-msgstr "Gobernador de frecuencia de GPU predeterminado"
+msgstr "Gobernador de GPU predeterminado"
 
 #: src/menu_system_main.cpp
 msgid "ENABLE CPU OVERCLOCK"
@@ -1456,14 +1424,6 @@ msgstr "Controlador de la GPU"
 #: src/menu_system_main.cpp
 msgid "GPU driver will be switched on next reboot"
 msgstr "El controlador de la GPU cambiará en el próximo reinicio"
-
-#: src/menu_system_main.cpp
-msgid "SUSPEND"
-msgstr "Suspensión"
-
-#: src/menu_system_main.cpp
-msgid "DEVICE SUSPEND MODE"
-msgstr "Modo de suspensión"
 
 #: src/menu_ui.cpp
 msgid "Could not save the settings"
@@ -1658,10 +1618,6 @@ msgid "Centered"
 msgstr "Centrado"
 
 #: src/menu_ui.cpp
-msgid "CAROUSEL CARDS"
-msgstr "TARJETAS DEL CARRUSEL"
-
-#: src/menu_ui.cpp
 msgid "LIST TEXT CASE"
 msgstr "MAYÚSCULAS EN LISTAS"
 
@@ -1702,10 +1658,6 @@ msgid "Vertical"
 msgstr "Vertical"
 
 #: src/battery_screen.cpp
-msgid "Battery and power"
-msgstr "Batería y consumo"
-
-#: src/battery_screen.cpp
 msgid "What used the most"
 msgstr "Lo que más ha consumido"
 
@@ -1738,10 +1690,6 @@ msgid "About"
 msgstr "Unas"
 
 #: src/battery_screen.cpp
-msgid "left, at this rate"
-msgstr "restantes, a este ritmo"
-
-#: src/battery_screen.cpp
 msgid "Using now"
 msgstr "Consumo ahora"
 
@@ -1772,10 +1720,6 @@ msgstr "Modo ahorro activado"
 #: src/battery_screen.cpp
 msgid "Turn on by itself at"
 msgstr "Activar solo al llegar a"
-
-#: src/battery_screen.cpp
-msgid "Screen off after"
-msgstr "Apagar pantalla tras"
 
 #: src/battery_screen.cpp
 msgid "More settings"
@@ -1975,6 +1919,9 @@ msgstr "LA COPIA ESTÁ DAÑADA O NO EXISTE"
 msgid "BACKUP DONE"
 msgstr "COPIA HECHA"
 
+msgid "RECEIVED"
+msgstr "RECIBIDO"
+
 msgid "RESTORE SAVES FROM THE WEB?"
 msgstr "¿RESTAURAR PARTIDAS DESDE LA WEB?"
 
@@ -2076,6 +2023,23 @@ msgstr "COLECCIONES INTELIGENTES"
 
 msgid "PERFORMANCE SUGGESTIONS"
 msgstr "SUGERENCIAS DE RENDIMIENTO"
+
+msgid "PLAY TIME LIMIT"
+msgstr "LÍMITE DE TIEMPO DE JUEGO"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Tiempo para jugar cada día. Un aviso llega 5 minutos antes del final (dentro del juego solo con los comandos de red de RetroArch activados) y después se cierra el juego. El tiempo empieza a contar al activarlo."
+
+msgid "TIME LEFT TODAY"
+msgstr "TIEMPO RESTANTE HOY"
+
+msgid "Time is up for today"
+msgstr "Se acabó el tiempo por hoy"
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Solo queda %d minuto de juego hoy"
+msgstr[1] "Solo quedan %d minutos de juego hoy"
 
 msgid "HOME MENU DURING GAMES"
 msgstr "MENÚ DE INICIO DURANTE LOS JUEGOS"
@@ -2343,3 +2307,523 @@ msgstr "AÚN NO HAS JUGADO. JUEGA A ALGO Y APARECERÁ AQUÍ."
 
 msgid "QR CODE"
 msgstr "CÓDIGO QR"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "Dark"
+msgstr "Oscuro"
+
+msgid "Light"
+msgstr "Claro"
+
+msgid "items"
+msgstr "elementos"
+
+msgid "options"
+msgstr "opciones"
+
+msgid "That folder is protected"
+msgstr "Esa carpeta está protegida"
+
+msgid "Outside the allowed folders"
+msgstr "Fuera de las carpetas permitidas"
+
+msgid "Not enough free space"
+msgstr "No hay espacio libre suficiente"
+
+msgid "That name already exists"
+msgstr "Ese nombre ya existe"
+
+msgid "Cancelled"
+msgstr "Cancelado"
+
+msgid "A folder cannot go into itself"
+msgstr "Una carpeta no puede ir dentro de sí misma"
+
+msgid "That name is not valid"
+msgstr "Ese nombre no es válido"
+
+msgid "Not found"
+msgstr "No encontrado"
+
+msgid "An error occurred"
+msgstr "Ha ocurrido un error"
+
+msgid "item"
+msgstr "elemento"
+
+msgid "Files"
+msgstr "Archivos"
+
+msgid "selected"
+msgstr "seleccionados"
+
+msgid "This folder is empty"
+msgstr "Esta carpeta está vacía"
+
+msgid "free"
+msgstr "libres"
+
+msgid "File"
+msgstr "Archivo"
+
+msgid "Folder"
+msgstr "Carpeta"
+
+msgid "Link"
+msgstr "Enlace"
+
+msgid "Properties"
+msgstr "Propiedades"
+
+msgid "Copy"
+msgstr "Copiar"
+
+msgid "Move"
+msgstr "Mover"
+
+msgid "Paste here"
+msgstr "Pegar aquí"
+
+msgid "Rename"
+msgstr "Renombrar"
+
+msgid "New folder"
+msgstr "Nueva carpeta"
+
+msgid "Delete"
+msgstr "Borrar"
+
+msgid "Select all"
+msgstr "Seleccionar todo"
+
+msgid "Clear selection"
+msgstr "Quitar selección"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Size"
+msgstr "Tamaño"
+
+msgid "Sort by"
+msgstr "Ordenar por"
+
+msgid "Hide hidden files"
+msgstr "Ocultar archivos ocultos"
+
+msgid "Show hidden files"
+msgstr "Mostrar archivos ocultos"
+
+msgid "Actions"
+msgstr "Acciones"
+
+msgid "Home"
+msgstr "Inicio"
+
+msgid "Games"
+msgstr "Juegos"
+
+msgid "Game card"
+msgstr "Tarjeta de juegos"
+
+msgid "USB drive"
+msgstr "Unidad USB"
+
+msgid "Screenshots"
+msgstr "Capturas"
+
+msgid "Go to"
+msgstr "Ir a"
+
+msgid "Ready to copy"
+msgstr "Listo para copiar"
+
+msgid "Ready to move"
+msgstr "Listo para mover"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "This can't be undone."
+msgstr "No se puede deshacer."
+
+msgid "Wait for the other job"
+msgstr "Espera a que acabe la otra tarea"
+
+msgid "Copied"
+msgstr "Copiados"
+
+msgid "Deleted"
+msgstr "Borrados"
+
+msgid "Moved"
+msgstr "Movidos"
+
+msgid "Copying"
+msgstr "Copiando"
+
+msgid "Deleting"
+msgstr "Borrando"
+
+msgid "Moving"
+msgstr "Moviendo"
+
+msgid "Back"
+msgstr "Atrás"
+
+msgid "Mark"
+msgstr "Marcar"
+
+msgid "Open"
+msgstr "Abrir"
+
+msgid "Screensaver after"
+msgstr "Salvapantallas tras"
+
+msgid "MONITORING"
+msgstr "MEDIDORES"
+
+msgid "PLAY THEME MUSIC"
+msgstr "REPRODUCIR MÚSICA DEL TEMA"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Archivo de más de 4 GB: esta tarjeta no puede guardarlo"
+
+msgid "This card does not accept that name"
+msgstr "Esta tarjeta no acepta ese nombre"
+
+msgid "This location is read-only"
+msgstr "Esta ubicación es de solo lectura"
+
+msgid "%s of %s done"
+msgstr "%s de %s hechos"
+
+msgid "link skipped"
+msgstr "enlace omitido"
+
+msgid "links skipped"
+msgstr "enlaces omitidos"
+
+msgid "Cannot read this folder"
+msgstr "No se puede leer esta carpeta"
+
+msgid "Warning"
+msgstr "Aviso"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Es un archivo del sistema. Cambiarle el nombre puede estropear la consola."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Es un archivo del sistema. Borrarlo puede estropear la consola."
+
+msgid "originals kept"
+msgstr "originales conservados"
+
+msgid "Calculating..."
+msgstr "Calculando..."
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Page"
+msgstr "Página"
+
+msgid "Not set"
+msgstr "Sin configurar"
+
+msgid "DATE & TIME"
+msgstr "FECHA Y HORA"
+
+msgid "MONTH"
+msgstr "MES"
+
+msgid "DAY"
+msgstr "DÍA"
+
+msgid "HOUR"
+msgstr "HORA"
+
+msgid "MINUTE"
+msgstr "MINUTO"
+
+msgid "SET DATE & TIME"
+msgstr "GUARDAR FECHA Y HORA"
+
+msgid "Date and time set"
+msgstr "Fecha y hora guardadas"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Con Wi-Fi la hora se ajusta sola."
+
+msgid "Run welcome again"
+msgstr "Ver la bienvenida otra vez"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Vuelve a mostrar la bienvenida del primer arranque: idioma, WiFi y zona horaria."
+
+msgid "SKIP ALL"
+msgstr "SALTAR TODO"
+
+msgid "Welcome"
+msgstr "Bienvenida"
+
+msgid "of"
+msgstr "de"
+
+msgid "Choose your language"
+msgstr "Elige tu idioma"
+
+msgid "You can change it later in System."
+msgstr "Puedes cambiarlo después en Sistema."
+
+msgid "Connect to WiFi"
+msgstr "Conéctate al WiFi"
+
+msgid "Choose a network"
+msgstr "Elegir una red"
+
+msgid "Choose another network"
+msgstr "Elegir otra red"
+
+msgid "Continue"
+msgstr "Continuar"
+
+msgid "Not now"
+msgstr "Ahora no"
+
+msgid "Where are you?"
+msgstr "¿Dónde estás?"
+
+msgid "LOADING..."
+msgstr "CARGANDO..."
+
+msgid "Keep UTC"
+msgstr "Dejar UTC"
+
+msgid "All set"
+msgstr "Todo listo"
+
+msgid "Add games from your phone"
+msgstr "Añade juegos desde el móvil"
+
+msgid "Network"
+msgstr "Red"
+
+msgid "Start opens the menu"
+msgstr "Start abre el menú"
+
+msgid "anywhere"
+msgstr "en cualquier sitio"
+
+msgid "Start playing"
+msgstr "Empezar a jugar"
+
+msgid "Clock, updates and file transfer."
+msgstr "Hora, actualizaciones y archivos."
+
+msgid "Sets your local time."
+msgstr "Pone tu hora local."
+
+msgid "Screen looks wrong?"
+msgstr "¿Pantalla rara?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Language"
+msgstr "Idioma"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Time zone"
+msgstr "Zona horaria"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Lun"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Dom"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Mar"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "Mié"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Vie"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "Sáb"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "Jue"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Abr"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Feb"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Ene"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Jun"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Mar"
+
+msgctxt "date"
+msgid "May"
+msgstr "May"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Ago"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Dic"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Jul"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Nov"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Oct"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Sep"
+
+msgid "BEDSIDE CLOCK"
+msgstr "RELOJ DE MESILLA"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Con el cargador enchufado, muestra un reloj grande tras este tiempo sin tocar la consola, en lugar del salvapantallas. Cualquier botón lo cierra. Nunca con un juego abierto."
+
+msgid "Arm (official)"
+msgstr "Arm (oficial)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Abierto (Panfrost / PanVK)"
+
+msgid "Default"
+msgstr "Predeterminado"
+
+msgid "BUILD ID"
+msgstr "ID DE COMPILACIÓN"
+
+msgid "KERNEL"
+msgstr "KERNEL"
+
+msgid "OPERATING SYSTEM"
+msgstr "SISTEMA OPERATIVO"
+
+msgid "SYSTEM INFORMATION"
+msgstr "INFORMACIÓN DEL SISTEMA"
+
+msgid "BATTERY INFORMATION"
+msgstr "INFORMACIÓN DE LA BATERÍA"
+
+msgid "DISK SPACE"
+msgstr "ESPACIO EN DISCO"
+
+msgid "HOST NAME"
+msgstr "NOMBRE DEL EQUIPO"
+
+msgid "NETWORK INFORMATION"
+msgstr "INFORMACIÓN DE RED"
+
+msgid "BATTERY HEALTH"
+msgstr "SALUD DE LA BATERÍA"
+
+msgid "BATTERY REMAINING"
+msgstr "BATERÍA RESTANTE"
+
+msgid "BATTERY STATE"
+msgstr "ESTADO DE LA BATERÍA"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "INFORMACIÓN DE LA CPU"
+
+msgid "CPU TEMPERATURE"
+msgstr "TEMPERATURA DE LA CPU"
+
+msgid "CPU FAN"
+msgstr "VENTILADOR DE LA CPU"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "FRECUENCIA ACTUAL DE LA GPU"
+
+msgid "GPU INFORMATION"
+msgstr "INFORMACIÓN DE LA GPU"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "FRECUENCIA MÁXIMA DE LA GPU"
+
+msgid "GPU TEMPERATURE"
+msgstr "TEMPERATURA DE LA GPU"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM DISPONIBLE"
+
+msgid "RAM CAPACITY"
+msgstr "CAPACIDAD DE RAM"
+
+msgid "RAM INFORMATION"
+msgstr "INFORMACIÓN DE LA RAM"
+
+msgid "CURRENT FREQUENCY"
+msgstr "FRECUENCIA ACTUAL"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "FRECUENCIA MÁXIMA"
+
+msgid "DISCHARGING"
+msgstr "DESCARGANDO"
+
+msgid "NOT CHARGING"
+msgstr "SIN CARGA"
+
+msgid "Follows the language until you choose one here."
+msgstr "Sigue al idioma hasta que elijas una aquí."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Sin red. Pon la tarjeta microSD en un PC y copia cada juego en la carpeta de su sistema, dentro de roms (por ejemplo roms/snes). O conéctate al WiFi y vuelve aquí para añadir juegos desde el móvil."
+
+msgid "Add games"
+msgstr "Añade juegos"
+
+msgid "left, in the menus"
+msgstr "restantes, en los menús"
+
+msgid "From your phone or microSD"
+msgstr "Desde el móvil o la microSD"
+
+msgid "Web transfer turned off"
+msgstr "Transferencia web apagada"

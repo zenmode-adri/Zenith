@@ -19,6 +19,8 @@ namespace zf {
 
 /// `SystemItem::sys` value meaning "the system at the same position in `Ctx::systems`" (the harness and the tests build items 1:1).
 constexpr size_t kItemIsSystem = size_t(-1);
+/// `SystemItem::sys` of the "Add games" card: not a system (addgames.hpp). Only on a console with no game at all, first in the carousel.
+constexpr size_t kItemAddGames = size_t(-2);
 
 struct SystemItem {
   /// Value of `{system:theme}`: picks `assets/logos/<theme>.webp`.

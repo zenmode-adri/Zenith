@@ -115,6 +115,15 @@ if [ "${WIFI_TYPE}" = "1" ]; then
   PSK="deadbeef"
 fi
 
+# SSID o clave con salto de linea / retorno de carro: se rechazan al conectar (rompen ficheros de iwd y ordenes)
+case "${1}" in
+  connect|reconnect)
+    case "${SSID}${PSK}" in
+      *$'\n'*|*$'\r'*) exit 1 ;;
+    esac
+    ;;
+esac
+
 ADHOC_CHAN=$(get_setting wifi.adhoc.channel)
 if [ -z "${ADHOC_CHAN}" ]; then
   ADHOC_CHAN="${DEFAULT_CHAN}"
@@ -214,6 +223,51 @@ list_wifi() {
   /usr/bin/iwd_get-networks
 }
 
+# iwd: el dispositivo esta en modo estacion cuando existe Station.Scanning/`station show` (en modo AP iwctl dice "No station on device")
+iwd_has_device() {
+  iwctl device list 2>/dev/null | grep -q "${WIFI_DEV}"
+}
+
+iwd_is_station() {
+  iwctl station "${WIFI_DEV}" show >/dev/null 2>&1
+}
+
+iwd_is_ap_mode() {
+  iwctl device "${WIFI_DEV}" show 2>/dev/null | grep -Eq 'Mode[^a-z]*ap([^a-z-]|$)'
+}
+
+# Vuelve a modo estacion de forma robusta (sale del modo AP del juego local): para el AP, enciende el dispositivo y pone
+# Mode station REINTENTANDO, porque justo tras `rfkill unblock` iwd aun esta encendiendo el chip y el primer intento
+# falla en silencio. A partir del 4.o intento prueba tambien el ciclo Powered off -> Mode station -> Powered on.
+# Devuelve 0 cuando iwd ya tiene estacion. Sin iwd (connman + wpa_supplicant) no hace nada y devuelve 0.
+leave_ap_mode() {
+  local i
+  iwd_has_device || return 0
+  iwctl ap "${WIFI_DEV}" stop >/dev/null 2>&1
+  for i in $(seq 1 ${STATION_TRIES:-10}); do
+    iwd_is_station && return 0
+    iwctl device "${WIFI_DEV}" set-property Powered on >/dev/null 2>&1
+    if [ "${i}" -ge 4 ] && [ $((i % 2)) -eq 0 ]; then
+      iwctl device "${WIFI_DEV}" set-property Powered off >/dev/null 2>&1
+      iwctl device "${WIFI_DEV}" set-property Mode station >/dev/null 2>&1
+      iwctl device "${WIFI_DEV}" set-property Powered on >/dev/null 2>&1
+    else
+      iwctl device "${WIFI_DEV}" set-property Mode station >/dev/null 2>&1
+    fi
+    iwd_is_station && return 0
+    sleep 1
+  done
+  return 1
+}
+
+# Ultimo recurso MANUAL (`wifictl reset_radio`, nunca se llama solo: matarlo a medias dejaria el chip desvinculado):
+# repite lo que hace la suspension con la RK915 (parar iwd, descargar el modulo, desvincular SDIO, volver a vincular,
+# recargar, arrancar iwd).
+reset_radio() {
+  lsmod | grep -q '^rk915 ' || return 1
+  QUIRK_ONLY='*rk915*' quirks pre && QUIRK_ONLY='*rk915*' quirks post
+}
+
 connect_wifi() {
   wait_for_wifi
 
@@ -231,18 +285,30 @@ connect_wifi() {
       SERVICE="$(connman_wifi_service)"
     fi
     [ -z "${SERVICE}" ] && return 1
+    leave_ap_mode || true
     connman_write_service_config "${SERVICE}"
     timeout 30 connmanctl connect "${SERVICE}" >/dev/null 2>&1
     return
   fi
 
-  iwctl device ${WIFI_DEV} set-property Mode station
-  iwctl --passphrase "${PSK}" station ${WIFI_DEV} connect "${SSID}" 2>/dev/null
+  # sale del modo AP (juego local) antes de conectar; si no hay estacion, conectar es inutil
+  leave_ap_mode || return 1
+  # clave vacia (red ya guardada en iwd: zfront deja wifi.key vacio): sin --passphrase, iwd usa la que tiene
+  if [ -n "${PSK}" ]; then
+    iwctl --passphrase "${PSK}" -- station ${WIFI_DEV} connect "${SSID}" 2>/dev/null
+  else
+    iwctl -- station ${WIFI_DEV} connect "${SSID}" 2>/dev/null </dev/null
+  fi
 }
 
 create_adhoc() {
+  # el SSID da nombre a un fichero: sin barras
+  case "${SSID}" in
+    */*) return 1 ;;
+  esac
   wait_for_wifi
 
+  mkdir -p "${IWD_AP_CFG_DIR}"
   # Create an iwd AP profile file
   cat <<EOF >"${IWD_AP_CFG_DIR}/${SSID}.ap"
 [General]
@@ -263,8 +329,15 @@ EOF
 }
 
 destroy_adhoc() {
+  # parar el AP SIEMPRE (el SSID de casa con "/" no debe saltarse este paso)
   iwctl ap ${WIFI_DEV} stop 2>/dev/null
+  # el perfil del AP se llama como el SSID de juego local (NETPLAY_AP), no como el de casa: se borran los dos nombres
+  rm -f "${IWD_AP_CFG_DIR}/NETPLAY_AP.ap" 2>/dev/null
+  case "${SSID}" in
+    */*) return 0 ;;
+  esac
   rm -f "${IWD_AP_CFG_DIR}/${SSID}.ap" 2>/dev/null
+  return 0
 }
 
 has_ap_mode() {
@@ -291,6 +364,9 @@ case "${1}" in
     rfkill unblock wifi
     if [ "${USE_CONNMAN_WIFI}" = "yes" ]; then
       connmanctl enable wifi >/dev/null 2>&1
+    elif [ "${WIFI_TYPE}" != "1" ] && iwd_is_ap_mode; then
+      # el chip quedo en modo AP (juego local) y el usuario ya no lo quiere: volver a estacion (iwd autoconecta solo)
+      leave_ap_mode >/dev/null 2>&1
     fi
     ;;
   disable)
@@ -311,7 +387,6 @@ case "${1}" in
   disconnect)
     if [ "${WIFI_TYPE}" = "1" ]; then
       destroy_adhoc >/dev/null 2>&1
-      iwctl ap ${WIFI_DEV} stop 2>/dev/null
     elif [ "${USE_CONNMAN_WIFI}" = "yes" ]; then
       connmanctl disconnect >/dev/null 2>&1
     else
@@ -327,6 +402,9 @@ case "${1}" in
     ;;
   channels)
     iw list | awk '/[0-9] MHz \[/ && ! /disabled|radar|no IR/ { gsub(/^.*\[/,""); gsub(/\].*$/,""); print}'
+    ;;
+  reset_radio)
+    reset_radio
     ;;
   has_ap_mode)
     ( has_ap_mode ); _rc=$?

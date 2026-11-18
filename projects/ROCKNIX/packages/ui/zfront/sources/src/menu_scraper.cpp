@@ -428,7 +428,7 @@ class RunScreen : public Screen {
   Color tone_color(Tone t) const {
     switch (t) {
       case Tone::Dim: return st_.dim;
-      case Tone::Accent: return st_.cyan_dark;
+      case Tone::Accent: return st_.dark ? st_.cyan : st_.cyan_dark;
       case Tone::Danger: return st_.danger;
       default: return st_.txt;
     }

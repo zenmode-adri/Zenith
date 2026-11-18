@@ -1,0 +1,186 @@
+--- a/UI/MainScreen.cpp
++++ b/UI/MainScreen.cpp
+@@ -1455,7 +1455,7 @@
+ 		// no space for a fullscreen button!
+ 	} else {
+ 		const Margins actionMenuMargins(0, 10, 10, 0);
+-		ViewGroup *rightColumn = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(std::clamp(0.34f * g_display.dp_xres, 220.0f, 320.0f), FILL_PARENT, actionMenuMargins));
++		ViewGroup *rightColumn = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(320, FILL_PARENT, actionMenuMargins));
+ 		LinearLayout *rightColumnItems = new LinearLayout(ORIENT_VERTICAL, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT));
+ 		rightColumnItems->SetSpacing(0.0f);
+ 		ViewGroup *logo = new LogoView(false, new LinearLayoutParams(FILL_PARENT, 80.0f));
+--- a/UI/PauseScreen.cpp
++++ b/UI/PauseScreen.cpp
+@@ -234,26 +234,33 @@
+ 	std::string number = StringFromFormat("%d", slot + 1);
+ 	Add(new Spacer(5));
+ 
++	// Small screens: the pause menu leaves dp_xres - 399 dp for this view (298 dp at 640x480, 385 dp at 720x720),
++	// but the normal layout needs ~440 dp. Use a narrower number column, a smaller thumbnail (100x57) and stack the
++	// Save/Load buttons. At >= 960 dp wide everything stays as before.
++	const bool compact = g_display.dp_xres < 960.0f;
++	const float availW = g_display.dp_xres - 399.0f;
++	const bool smallThumb = compact && availW < 360.0f;
++
+ 	// TEMP HACK: use some other view, like a Choice, themed differently to enable keyboard access to selection.
+-	ClickableTextView *numberView = Add(new ClickableTextView(number, new LinearLayoutParams(40.0f, WRAP_CONTENT, 0.0f, Gravity::G_VCENTER)));
++	ClickableTextView *numberView = Add(new ClickableTextView(number, new LinearLayoutParams(compact ? 32.0f : 40.0f, WRAP_CONTENT, 0.0f, Gravity::G_VCENTER)));
+ 	numberView->SetBig(true);
+ 	numberView->OnClick.Add([this](UI::EventParams &e) {
+ 		e.v = this;
+ 		OnSelected.Trigger(e);
+ 	});
+ 
+-	AsyncImageFileView *fv = Add(new AsyncImageFileView(screenshotFilename_, IS_DEFAULT, new UI::LayoutParams(82 * 2, 47 * 2)));
++	AsyncImageFileView *fv = Add(new AsyncImageFileView(screenshotFilename_, IS_DEFAULT, new UI::LayoutParams(smallThumb ? 100.0f : 82 * 2, smallThumb ? 57.0f : 47 * 2)));
+ 
+ 	auto pa = GetI18NCategory(I18NCat::PAUSE);
+ 	auto sy = GetI18NCategory(I18NCat::SYSTEM);
+ 
+-	LinearLayout *lines = new LinearLayout(ORIENT_VERTICAL, new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT));
++	LinearLayout *lines = new LinearLayout(ORIENT_VERTICAL, compact ? new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT, 1.0f) : new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+ 	lines->SetSpacing(2.0f);
+ 
+ 	Add(lines);
+ 
+-	LinearLayout *buttons = new LinearLayout(ORIENT_HORIZONTAL, new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+-	buttons->SetSpacing(10.0f);
++	LinearLayout *buttons = new LinearLayout(compact ? ORIENT_VERTICAL : ORIENT_HORIZONTAL, new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT));
++	buttons->SetSpacing(compact ? 4.0f : 10.0f);
+ 
+ 	lines->Add(buttons);
+ 
+@@ -278,7 +285,8 @@
+ 		}
+ 
+ 		if (!dateStr.empty()) {
+-			TextView *dateView = new TextView(dateStr, new LinearLayoutParams(0.0, Gravity::G_VCENTER));
++			// In compact mode the date may be wider than what is left of the row: let it wrap.
++			TextView *dateView = compact ? new TextView(dateStr, FLAG_WRAP_TEXT, true, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT, 0.0, Gravity::G_VCENTER)) : new TextView(dateStr, new LinearLayoutParams(0.0, Gravity::G_VCENTER));
+ 			dateView->SetSmall(true);
+ 			lines->Add(dateView)->SetShadow(true);
+ 		}
+@@ -409,16 +417,25 @@
+ 
+ 	*extraRow = nullptr;
+ 
+-	LinearLayout *buttonRow = new LinearLayout(ORIENT_HORIZONTAL, new LinearLayoutParams(Margins(10, 0, 0, 10)));
++	// On small screens the Undo/Rewind row (3 icon buttons, ~470 dp) is wider than the left pane (298 dp at
++	// 640x480) and ran under the right-hand buttons. Stack the buttons full width at the end of the slot list instead.
++	const bool compact = g_display.dp_xres < 960.0f;
++	LinearLayout *buttonRow = compact ?
++		new LinearLayout(ORIENT_VERTICAL, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT, Margins(0, 5, 0, 5))) :
++		new LinearLayout(ORIENT_HORIZONTAL, new LinearLayoutParams(Margins(10, 0, 0, 10)));
++	if (compact) {
++		buttonRow->SetSpacing(5.0f);
++	}
++	auto undoParams = [compact]() { return new LinearLayoutParams(compact ? FILL_PARENT : WRAP_CONTENT, WRAP_CONTENT); };
+ 	if (g_Config.bEnableStateUndo && !Achievements::HardcoreModeActive() && NetworkAllowSaveState()) {
+-		UI::Choice *saveUndoButton = buttonRow->Add(new Choice(pa->T("Undo last save"), ImageID("I_NAVIGATE_BACK"), new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT)));
++		UI::Choice *saveUndoButton = buttonRow->Add(new Choice(pa->T("Undo last save"), ImageID("I_NAVIGATE_BACK"), undoParams()));
+ 		saveUndoButton->SetEnabled(SaveState::HasUndoLastSave(saveStatePrefix_));
+ 		saveUndoButton->OnClick.Add([this](UI::EventParams &e) {
+ 			SaveState::UndoLastSave(saveStatePrefix_);
+ 			RecreateViews();
+ 		});
+ 
+-		UI::Choice *loadUndoButton = buttonRow->Add(new Choice(pa->T("Undo last load"), ImageID("I_NAVIGATE_BACK"), new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT)));
++		UI::Choice *loadUndoButton = buttonRow->Add(new Choice(pa->T("Undo last load"), ImageID("I_NAVIGATE_BACK"), undoParams()));
+ 		loadUndoButton->SetEnabled(SaveState::HasUndoLoad(saveStatePrefix_));
+ 		loadUndoButton->OnClick.Add([this](UI::EventParams &e) {
+ 			SaveState::UndoLoad(saveStatePrefix_, &AfterSaveStateAction);
+@@ -427,7 +444,7 @@
+ 	}
+ 
+ 	if (g_Config.iRewindSnapshotInterval > 0 && !Achievements::HardcoreModeActive() && NetworkAllowSaveState()) {
+-		UI::Choice *rewindButton = buttonRow->Add(new Choice(pa->T("Rewind"), ImageID("I_REWIND"), new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT)));
++		UI::Choice *rewindButton = buttonRow->Add(new Choice(pa->T("Rewind"), ImageID("I_REWIND"), undoParams()));
+ 		rewindButton->SetEnabled(SaveState::CanRewind());
+ 		rewindButton->OnClick.Add([this](UI::EventParams &e) {
+ 			SaveState::Rewind(&AfterSaveStateAction);
+@@ -437,6 +454,8 @@
+ 
+ 	if (buttonRow->GetNumSubviews() == 0) {
+ 		delete buttonRow;
++	} else if (compact) {
++		leftColumnItems->Add(buttonRow);
+ 	} else {
+ 		*extraRow = buttonRow;
+ 	}
+@@ -603,7 +622,7 @@
+ 		root_->Add(middleColumn);
+ 		middleColumn->SetSpacing(0.0f);
+ 
+-		ViewGroup *buttonColumnScroll = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(std::clamp(0.34f * g_display.dp_xres, 220.0f, 320.0f), FILL_PARENT, actionMenuMargins));
++		ViewGroup *buttonColumnScroll = new ScrollView(ORIENT_VERTICAL, new LinearLayoutParams(320, FILL_PARENT, actionMenuMargins));
+ 		buttonColumn = new LinearLayout(ORIENT_VERTICAL, new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+ 		buttonColumnScroll->Add(buttonColumn);
+ 		root_->Add(buttonColumnScroll);
+--- a/UI/ControlMappingScreen.cpp
++++ b/UI/ControlMappingScreen.cpp
+@@ -34,6 +34,7 @@
+ #include "Common/Input/InputState.h"
+ #include "Common/StringUtils.h"
+ #include "Common/System/System.h"
++#include "Common/System/Display.h"
+ #include "Common/System/Request.h"
+ #include "Common/TimeUtil.h"
+ #include "Core/KeyMap.h"
+@@ -98,7 +99,10 @@
+ 
+ 	float itemH = 55.0f;
+ 
+-	float leftColumnWidth = 200;
++	// On small screens (< 960 dp wide) the fixed 200 + 350 columns are wider than the content area
++	// (e.g. ~480 dp at 640x480), so shrink the label column and let the mapping column take what is left.
++	const bool compact = g_display.dp_xres < 960.0f;
++	float leftColumnWidth = compact ? 130 : 200;
+ 	float rightColumnWidth = 350;
+ 
+ 	LinearLayout *root = Add(new LinearLayout(ORIENT_HORIZONTAL, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT)));
+@@ -122,7 +126,7 @@
+ 		p->OnClick.Handle(this, &SingleControlMapper::OnAddMouse);
+ 	}
+ 
+-	LinearLayout *rightColumn = root->Add(new LinearLayout(ORIENT_VERTICAL, portrait_ ? new LinearLayoutParams(1.0f) : new LinearLayoutParams(rightColumnWidth, WRAP_CONTENT)));
++	LinearLayout *rightColumn = root->Add(new LinearLayout(ORIENT_VERTICAL, (portrait_ || compact) ? new LinearLayoutParams(1.0f) : new LinearLayoutParams(rightColumnWidth, WRAP_CONTENT)));
+ 	rightColumn->SetSpacing(2.0f);
+ 	std::vector<MultiInputMapping> mappings;
+ 	KeyMap::InputMappingsFromPspButton(pspKey_, &mappings, false);
+@@ -247,6 +251,14 @@
+ 	parent->Add(new CheckBox(&g_Config.bStrictComboOrder, km->T("Strict combo input order")));
+ }
+ 
++float ControlMappingScreen::SettingsWidth() const {
++	// Narrower side pane on small screens, so the mapping rows have room (350 dp is kept from 960 dp up).
++	if (g_display.dp_xres >= 960.0f)
++		return 350.0f;
++	// Contents need ~130 (names) + 60 (+) + ~226 (mapping + trash) + margins = ~430 dp.
++	return std::clamp(g_display.dp_xres - 430.0f, 220.0f, 350.0f);
++}
++
+ std::string_view ControlMappingScreen::GetTitle() const {
+ 	auto co = GetI18NCategory(I18NCat::CONTROLS);
+ 	return co->T("Control mapping");
+--- a/UI/ControlMappingScreen.h
++++ b/UI/ControlMappingScreen.h
+@@ -53,6 +53,7 @@
+ 	void update() override;
+ 
+ 	std::string_view GetTitle() const override;
++	float SettingsWidth() const override;
+ 
+ private:
+ 	void OnAutoConfigure(UI::EventParams &params);
+--- a/Common/UI/PopupScreens.cpp
++++ b/Common/UI/PopupScreens.cpp
+@@ -245,7 +245,8 @@
+ 	using namespace UI;
+ 
+ 	listView_ = parent->Add(new ListView(&adaptor_, hidden_, icons_)); //, new LinearLayoutParams(1.0)));
+-	listView_->SetMaxHeight(screenManager()->getUIContext()->GetBounds().h - 140);
++	// Small screens (< 600 dp tall): 6 rows of ITEM_HEIGHT (64) = 384 dp did not fit in h - 140 (382 dp at 522 dp tall), clipping the last row.
++	listView_->SetMaxHeight(screenManager()->getUIContext()->GetBounds().h - (g_display.dp_yres < 600.0f ? 130.0f : 140.0f));
+ 	listView_->OnChoice.Handle(this, &ListPopupScreen::OnListChoice);
+ }
+ 

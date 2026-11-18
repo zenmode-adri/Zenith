@@ -13,6 +13,7 @@
 #include <ctime>
 #include <map>
 
+#include "addgames.hpp"
 #include "collections.hpp"
 #include "colsys.hpp"
 #include "covers.hpp"
@@ -23,6 +24,7 @@
 #include "launchcheck.hpp"
 #include "remake.hpp"
 #include "oscontract.hpp"
+#include "menu_files.hpp"
 #include "savestates.hpp"
 #include "sound.hpp"
 #include "scene.hpp"
@@ -255,13 +257,14 @@ Transition CarouselScreen::handle(Action a, Ctx& cx) {
     case Action::A:
       if (n > 0 && std::fabs(float(target_) - cam_) < kGlideAcceptA) {
         size_t idx = size_t(((target_ % n) + n) % n);
+        if (cx.items[idx].sys == kItemAddGames) return addgames::open(cx);  // the phone page (QR), or how to copy games without network
         recent_for_ = -1;
         announced_ = -1;  // coming back announces the system again, as ES does when it returns to the system view
         return Transition::push(std::make_unique<ListScreen>(cx.system_of(idx), cx));
       }
       break;
-    case Action::X:  // ES: a random system
-      if (n > 1) {
+    case Action::X:  // ES: a random system (none on a console with no games: the "Add games" card is there)
+      if (n > 1 && cx.items[0].sys != kItemAddGames) {
         const int cur = int(system_cursor(cx));
         int pick = std::uniform_int_distribution<int>(0, n - 2)(rng_);
         if (pick >= cur) ++pick;
@@ -661,7 +664,9 @@ Transition ListScreen::handle(Action a, Ctx& cx) {
     const size_t n = cx.items.empty() ? cx.sys_total() : cx.items.size();
     const long at = shown_item(cx);
     if (n < 2 || at < 0) return Transition::none();
-    const size_t to = (size_t(at) + (a == Action::Right ? 1 : n - 1)) % n;
+    size_t to = (size_t(at) + (a == Action::Right ? 1 : n - 1)) % n;
+    if (to < cx.items.size() && cx.items[to].sys == kItemAddGames) to = (to + (a == Action::Right ? 1 : n - 1)) % n;  // not a list: skipped
+    if (to == size_t(at)) return Transition::none();
     sound::play(cx, sound::Cue::Scroll);
     save_cursor(cx);
     return Transition::replace(std::make_unique<ListScreen>(cx.system_of(to), cx));  // L / R keep paging
@@ -703,6 +708,7 @@ Transition ListScreen::handle(Action a, Ctx& cx) {
           cx.sv->toasts.push(tr("GAME NOT FOUND"), 2500);
           break;
         }
+        if (is_file_manager_script(cx.systems[r.sys].games[r.game].path)) return Transition::open("menu.files");  // our own file manager, not the program of the image
         if (Transition m = savestates::launch_request(cx, r.sys, r.game); m.kind != Transition::None) return m;  // HOOK menu-collections: savestate manager first
         Transition t = Transition::launch(command(cx));
         t.sys = int(r.sys);
@@ -771,6 +777,7 @@ std::string ListScreen::command(Ctx& cx, bool open) {
 
 std::string ListScreen::launch_target(Ctx& cx) {
   sync_games(cx);
+  if (cur_ < names_.size() && cur_ < rows_.size() && rows_[cur_] < cx.sys_at(si_).games.size() && is_file_manager_script(cx.sys_at(si_).games[rows_[cur_]].path)) return std::string();
   return cur_ < names_.size() ? command(cx, false) : std::string();  // idle time: never reads a gamelist for a collection's game
 }
 

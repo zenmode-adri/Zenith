@@ -152,8 +152,8 @@ struct Rig {
   string shots;
 
   explicit Rig(http::ServerLimits lim = http::ServerLimits()) {
-    char t[] = "/tmp/zf-webtransfer-XXXXXX";
-    root = ::mkdtemp(t);
+    std::string t = zt::tmp_base() + "/zf-webtransfer-XXXXXX";
+    root = ::mkdtemp(&t[0]);
     gb = root + "/gb";
     ::mkdir(gb.c_str(), 0755);
     webtransfer::reset_for_test(kPin);
@@ -251,6 +251,10 @@ void test_page_and_systems() {
   CHECK(ok.find("\"name\":\"gb\"") != string::npos && ok.find("\"fullname\":\"Game Boy\"") != string::npos);
   CHECK(ok.find(".GBC") != string::npos && ok.find("\"count\":7") != string::npos && ok.find(r.gb) != string::npos);
   CHECK_EQ(status_of(get(r.port(), "/files/other", kPin)), 404);
+  // the free space of the card that holds each ROM folder (the Upload tab shows it)
+  r.use_fake = true;
+  r.fake_free = 123456789;
+  CHECK(get(r.port(), "/files/systems", kPin).find("\"free\":123456789") != string::npos);
   // the PIN the console makes is 4 digits (the rig's fixed one is dropped: this is the last check of the test)
   webtransfer::reset_for_test("");
   string p = webtransfer::pin();
@@ -298,7 +302,33 @@ void test_empty_systems() {
   CHECK_EQ(upload_status(r.port(), "system=snes&name=Third.sfc", "abc"), 400);
 }
 
+// The "Add games" card turns the transfer on for a while: off after 20 min with no request; any request keeps it on; stored = never.
+void test_temporary() {
+  webtransfer::reset_for_test(kPin);
+  webtransfer::set_enabled(true);
+  webtransfer::set_temporary(true);
+  webtransfer::touch(1000);
+  CHECK(!webtransfer::idle_expired(1000 + webtransfer::kTemporaryIdleMs - 1));
+  webtransfer::touch(500000);  // the phone asked something
+  CHECK(!webtransfer::idle_expired(1000 + webtransfer::kTemporaryIdleMs));
+  CHECK(webtransfer::idle_expired(500000 + webtransfer::kTemporaryIdleMs));
+  CHECK(!webtransfer::idle_expired(500000 + 2 * webtransfer::kTemporaryIdleMs));  // once
+  webtransfer::set_temporary(false);  // stored (TRANSFER FILES): never off by itself
+  webtransfer::touch(0);
+  CHECK(!webtransfer::idle_expired(10 * webtransfer::kTemporaryIdleMs));
+  webtransfer::set_temporary(true);
+  webtransfer::set_enabled(false);  // turned off: the temporary mark goes too
+  CHECK(!webtransfer::temporary());
+  webtransfer::reset_for_test(kPin);
+}
+
 void test_pin_lockout() {
+  // each lock-out after the first is twice as long, up to 5 min
+  CHECK_EQ(webtransfer::lock_ms(0), 30000LL);
+  CHECK_EQ(webtransfer::lock_ms(1), 60000LL);
+  CHECK_EQ(webtransfer::lock_ms(3), 240000LL);
+  CHECK_EQ(webtransfer::lock_ms(4), 300000LL);
+  CHECK_EQ(webtransfer::lock_ms(30), 300000LL);
   Rig r;
   webtransfer::set_enabled(true);
   CHECK_EQ(upload_status(r.port(), "system=gb&name=a.gb", "abc", "1111"), 403);
@@ -326,9 +356,14 @@ void test_names() {
   CHECK(valid_name("Pokemon Red (USA).gb"));
   CHECK(valid_name("a.b.gb"));
   CHECK(valid_name("ñandú.gb"));
-  for (const char* bad : {"", ".hidden.gb", "..", "a/b.gb", "a\\b.gb", "x..gb", "a\x01.gb", "a\x7f.gb", "a\nb.gb", "/etc/passwd"})
+  for (const char* bad : {"", ".", "..", ".hidden.gb", "../x", "a/../b", "a/b.gb", "a\\b.gb", "a\x01.gb", "a\x7f.gb", "a\nb.gb", "/etc/passwd"})
     CHECK(!valid_name(bad));
-  CHECK(!valid_name(string(201, 'a') + ".gb"));
+  // only a component that IS "." or ".." is dangerous: dots inside a real name are fine ("Foo... (USA).nes")
+  for (const char* good : {"a..b.nes", "Foo... (USA).nes", "x..gb", "name..", "a.b.c.gb"})
+    CHECK(valid_name(good));
+  // the limit is the 255 bytes of a file name on ext4 / exFAT
+  CHECK(valid_name(string(252, 'a') + ".gb"));    // 255 bytes
+  CHECK(!valid_name(string(253, 'a') + ".gb"));   // 256 bytes
   CHECK(ext_allowed("a.gb", {".gb"}));
   CHECK(ext_allowed("A.GB", {".gb"}));
   CHECK(ext_allowed("a.gbc", {".GBC"}));
@@ -353,6 +388,19 @@ void test_names() {
   CHECK(list(r.gb).empty());
   CHECK(list(r.root) == (std::vector<string>{"gb", "shots"}));        // nothing escaped the ROM folder (shots: the rig's screenshots)
   CHECK_EQ(r.reloads.load(), 0);
+}
+
+// a name over 255 bytes is refused with a message that says so; one of exactly 255 bytes is stored (its hidden partial gets a short name)
+void test_long_name() {
+  Rig r;
+  webtransfer::set_enabled(true);
+  const string too_long = talk(r.port(), upload_head("system=gb&name=" + string(253, 'a') + ".gb", 3) + "abc");
+  CHECK_EQ(status_of(too_long), 400);
+  CHECK(too_long.find("name too long") != string::npos);
+  const string name = string(252, 'b') + ".gb";
+  CHECK_EQ(upload_status(r.port(), "system=gb&name=" + name, "abc"), 200);
+  CHECK(slurp(r.gb + "/" + name) == "abc");
+  CHECK(list(r.gb) == std::vector<string>{name});
 }
 
 void test_streamed_upload() {
@@ -437,44 +485,71 @@ void test_space() {
   CHECK(slurp(r.gb + "/big.gb") == body);
 }
 
+// Reads until `what` has arrived (or `ms` passes): the sync point of a test that must know the server has taken the request.
+bool wait_for_text(int fd, const string& what, int ms = 15000) {
+  string got;
+  auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds(ms);
+  for (;;) {
+    int left = int(std::chrono::duration_cast<std::chrono::milliseconds>(end - std::chrono::steady_clock::now()).count());
+    if (left <= 0) return false;
+    pollfd pf{fd, POLLIN, 0};
+    if (::poll(&pf, 1, left) <= 0) return false;
+    char b[256];
+    ssize_t n = ::recv(fd, b, sizeof b, 0);
+    if (n <= 0) return false;
+    got.append(b, size_t(n));
+    if (got.find(what) != string::npos) return true;
+  }
+}
+
+// An upload sent the moment the previous one was answered is not "another upload is running", however long the worker takes to let go
+// (on a loaded machine that can be a long while: here it is made to take 600 ms after the answer is out).
 void test_one_at_a_time_and_stalls() {
+  const string data = pattern(100000);
+  {
+    // A starts and pauses; B is told to wait; A can still finish. The request is held with "Expect: 100-continue": the "100" is the
+    // proof that the server has taken A (no sleeping and hoping); the idle limit is the default, so A cannot be cut off by a slow machine
+    Rig r;
+    webtransfer::set_enabled(true);
+    int a = connect_to(r.port());
+    send_str(a, upload_head("system=gb&name=a.gb", data.size(), kPin, true));
+    CHECK(wait_for_text(a, "100 Continue"));
+    send_str(a, data.substr(0, 1000));
+    CHECK_EQ(upload_status(r.port(), "system=gb&name=b.gb", "bbb"), 409);
+    CHECK(!exists(r.gb + "/b.gb"));
+    send_str(a, data.substr(1000));
+    CHECK_EQ(status_of(read_all(a, 15000)), 200);
+    ::close(a);
+    CHECK(slurp(r.gb + "/a.gb") == data);
+  }
   http::ServerLimits lim;
   lim.stream_idle_ms = 400;
   Rig r(lim);
   webtransfer::set_enabled(true);
-  const string data = pattern(100000);
-  // A starts and pauses (but within the idle limit); B is told to wait; A can still finish
-  int a = connect_to(r.port());
-  send_str(a, upload_head("system=gb&name=a.gb", data.size()));
-  send_str(a, data.substr(0, 1000));
-  std::this_thread::sleep_for(std::chrono::milliseconds(150));
-  CHECK_EQ(upload_status(r.port(), "system=gb&name=b.gb", "bbb"), 409);
-  CHECK(!exists(r.gb + "/b.gb"));
-  send_str(a, data.substr(1000));
-  CHECK_EQ(status_of(read_all(a)), 200);
-  ::close(a);
-  CHECK(slurp(r.gb + "/a.gb") == data);
   // the control routes are not blocked by a slow upload
   int c = connect_to(r.port());
-  send_str(c, upload_head("system=gb&name=c.gb", data.size()));
+  send_str(c, upload_head("system=gb&name=c.gb", data.size(), kPin, true));
+  CHECK(wait_for_text(c, "100 Continue"));
   send_str(c, data.substr(0, 10));
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
   CHECK_EQ(status_of(get(r.port(), "/files")), 200);
   // C went silent: the idle limit answers 408 and removes the partial file
-  string resp = read_all(c, 3000);
+  string resp = read_all(c, 15000);
   ::close(c);
   CHECK_EQ(status_of(resp), 408);
   CHECK(!exists(r.gb + "/c.gb") && !exists(r.gb + "/c.gb.part"));
   // a client that leaves half way: nothing is left behind and the next upload works
   int d = connect_to(r.port());
-  send_str(d, upload_head("system=gb&name=d.gb", data.size()));
+  send_str(d, upload_head("system=gb&name=d.gb", data.size(), kPin, true));
+  CHECK(wait_for_text(d, "100 Continue"));
   send_str(d, data.substr(0, 5000));
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  // wait for what can be seen: the partial file exists (the worker is reading D), then it is gone (the worker has seen D leave)
+  for (int i = 0; i < 1500 && !exists(r.gb + "/d.gb.part"); ++i) std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  CHECK(exists(r.gb + "/d.gb.part"));
   ::close(d);
-  std::this_thread::sleep_for(std::chrono::milliseconds(300));
-  CHECK(!exists(r.gb + "/d.gb") && !exists(r.gb + "/d.gb.part"));
+  for (int i = 0; i < 1500 && exists(r.gb + "/d.gb.part"); ++i) std::this_thread::sleep_for(std::chrono::milliseconds(10));
   CHECK_EQ(upload_status(r.port(), "system=gb&name=e.gb", "eee"), 200);
-  CHECK(list(r.gb) == (std::vector<string>{"a.gb", "e.gb"}));
+  CHECK(!exists(r.gb + "/d.gb") && !exists(r.gb + "/d.gb.part"));
+  CHECK(list(r.gb) == (std::vector<string>{"e.gb"}));
 }
 
 void test_stop_with_upload_running() {
@@ -911,6 +986,14 @@ void test_remote_page() {
   CHECK(html.find("enc($(\"sys\").value)") == string::npos);
   CHECK(html.find("sysn=$(\"sys\").value") != string::npos && html.find("it.s=sysn") != string::npos);
   CHECK(html.find("enc(it.s)") != string::npos);
+  // big uploads: ask the console what it already has before the first slice, remember which file the partial belongs to, forget the
+  // retry count after every slice, empty the pickers when a batch ends, a Cancel button, the free space, a stale Games list
+  for (const char* want : {"function resume(", "zf_up:", "tries=0;setoff(end)", "$(\"files\").value=\"\"", "$(\"dir\").value=\"\"", "id=\"ucancel\"",
+                           "$(\"ucancel\").onclick", "curx.abort()", "id=\"ofree\"", "gdirty", "onleave", "min-height:44px"})
+    if (html.find(want) == string::npos) {
+      std::fprintf(stderr, "test_webtransfer: the page lacks %s\n", want);
+      CHECK(false);
+    }
   // Enter in the PIN box is "Continue"
   CHECK(html.find("$(\"pin\").onkeydown") != string::npos);
   // no way to delete a single game outright from the page or the routes: games go to the trash (webmanage), which can be restored;
@@ -928,10 +1011,12 @@ void test_remote_page() {
 int main() {
   test_parser();
   test_names();
+  test_long_name();
   test_off();
   test_page_and_systems();
   test_modules();
   test_empty_systems();
+  test_temporary();
   test_pin_lockout();
   test_streamed_upload();
   test_no_overwrite();

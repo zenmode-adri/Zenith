@@ -11,6 +11,12 @@ typedef enum { R_CPU_GOV, R_CPU_MAX, R_TURBO, R_GPU_MODE, R_GPU_MAX, R_RAM_GOV, 
 static long long read_list(const char *path, long long *out, int max) {
     char b[500], *t[MAXV];
     sys_read(path, b, sizeof(b));
+    /* With Turbo on, the kernel keeps 1416 and 1512 MHz in their own list: without them the limit stops at 1296 */
+    if (!strcmp(path, CPU_POLICY "/scaling_available_frequencies") && sys_int(BOOST_FILE) == 1) {
+        char more[200];
+        if (!sys_read(CPU_POLICY "/scaling_boost_frequencies", more, sizeof(more)))
+            snprintf(b + strlen(b), sizeof(b) - strlen(b), " %s", more);
+    }
     int n = sys_split(b, t, max < MAXV ? max : MAXV);
     for (int i = 0; i < n; i++) out[i] = atoll(t[i]);
     for (int i = 0; i < n - 1; i++)

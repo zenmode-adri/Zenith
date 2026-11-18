@@ -104,8 +104,8 @@ struct Rig {
   long long now = 1000000;
 
   Rig() {
-    char t[] = "/tmp/zf-webpair-XXXXXX";
-    root = ::mkdtemp(t);
+    std::string t = zt::tmp_base() + "/zf-webpair-XXXXXX";
+    root = ::mkdtemp(&t[0]);
     file = root + "/cfg/webdevices";
     ::setenv("ZF_WEBDEVICES", file.c_str(), 1);
     webtransfer::reset_for_test(kPin);

@@ -18,12 +18,18 @@ namespace zf::boot {
 /// absolute path (tests). zfront has a single theme, Zenith, so a ThemeSet that is not Zenith is shown as Zenith (light unless the name says dark).
 ///   Zenith set named in ThemeSet -> that folder in the user themes dir, then /usr/share/themes (the OS package builds both
 ///   `es-theme-zenith` and `es-theme-zenith-dark`), otherwise /usr/share/zfront/theme-{dark,light}, otherwise the OS package.
-/// "dark" in the name -> dark; anything else, no setting included, -> light (the image ships `ThemeSet=es-theme-zenith`, the light one).
+/// No setting -> `es-theme-zenith-next-dark` (the image's default since v0.3.0), and its dark fallbacks when it is missing.
+/// "dark" in the name -> dark; anything else -> light.
 /// Returns "" when no folder with a layout.xml exists.
 std::string resolve_theme(std::string_view theme_set, const std::string& root = {});
+/// The image's theme when ThemeSet is not set (the fork writes the same value on a new console).
+inline constexpr const char* kDefaultThemeSet = "es-theme-zenith-next-dark";
 
 /// Puts the user's choices (`zfront.sel_style`, ...) over the loaded theme; `get(key)` returns the stored value or "". Unknown values are ignored.
 void apply_user_theme(Theme& th, const std::function<std::string(const std::string&)>& get);
+/// One choice of the user, live: `value` over the theme's variable of `key` (a key of `user_theme_keys`), or "" to give the theme's own
+/// back. A value that is not on the list of the key changes nothing.
+void set_user_theme(Theme& th, const std::string& key, const std::string& value);
 
 /// The user's own appearance choices (system.cfg `zfront.*`), applied over the loaded theme. `var` is the theme variable,
 /// `values` the accepted ones (anything else is ignored: the theme's own value stays).
@@ -44,6 +50,20 @@ struct ThemeChoice {
 /// /usr/share/themes and the user themes dir, and the variants zfront ships in /usr/share/zfront/theme-<name> (`theme-light` is
 /// `es-theme-zenith`; the others are stored as `es-theme-zenith-<name>`, which `resolve_theme` maps back).
 std::vector<ThemeChoice> list_theme_sets(const std::string& root = {});
+
+/// The light and dark modes of a theme are two sets that differ by the ending "-dark" (`es-theme-zenith` / `es-theme-zenith-dark`).
+/// `theme_family` is the ThemeSet without that ending, `theme_is_dark` says whether it has it.
+std::string theme_family(std::string_view set);
+bool theme_is_dark(std::string_view set);
+/// The choices of THEME SET with each "-dark" set folded into its light sibling (only when that sibling is in the list; a dark theme that
+/// has no light one stays as it is), and " Dark" taken off the name.
+std::vector<ThemeChoice> theme_families(const std::vector<ThemeChoice>& sets);
+/// Themes zfront draws itself on top of Iconic's pictures (its logos, controllers and illustrations): the ThemeSet is `zf-<name>`, there
+/// is no folder of that name, and the carousel of the home screen is the one `<name>` says (remake.cpp). They have the colour scheme of
+/// Iconic (light/dark). `virtual_carousel` is `<name>` for such a ThemeSet, "" for any other.
+std::string virtual_carousel(std::string_view set);
+/// The ThemeSet of `family` in the wanted mode, or "" when that set is not in `sets`.
+std::string theme_in_mode(std::string_view family, bool dark, const std::vector<ThemeChoice>& sets);
 
 /// Folder of the EmulationStation-style theme (a `theme.xml` and no Zenith `layout.xml`) that ThemeSet names, searched in the user themes
 /// dir, /usr/share/themes and /etc/emulationstation/themes; "" when ThemeSet is not one (Zenith themes included).

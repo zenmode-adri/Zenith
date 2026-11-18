@@ -5,6 +5,163 @@ Zenith is an unofficial fork of [AURKNIX](https://github.com/AveyondFly/distribu
 **RK3326** handhelds. Numbers below were measured on a **R36 Ultra** (some GPU numbers on an **R36S**).
 Every release so far is a **beta**. Dates are the build dates.
 
+## v0.3.0 — 2026-11-18 (beta)
+
+Third public release. Its release tag is the build date, `20261118`, which is what the built-in updater looks for.
+
+> [!WARNING]
+> **Beta.** Tested on the **R36 Ultra** and, much less, the **R36S** (it boots, the interface and PPSSPP start, and 10 PSP games
+> were measured in one scene each). I am one person, so bugs can slip through: if you find one, please
+> [open an issue](https://github.com/zenmode-adri/Zenith/issues). Other RK3326 models use the same image but have not been tried.
+> Each item says what was and was not checked; what nobody has seen on a console is listed at the end.
+
+### Highlights
+
+- **Vulkan for PSP games (experimental, off by default).** Vulkan 1.3 from Arm or PanVK, chosen in PPSSPP's own menu.
+  Measured on an R36S, God of War: Chains of Olympus runs about 50 % faster than on OpenGL and Ghost of Sparta about 17 %.
+- **Fixed: PSP games drew only 1 frame out of 4.**
+- **PPSSPP keeps its shader cache**, so a game stutters less the next time it starts.
+- **A new battery meter** whose percentage does not jump (seen on one R36S, including one full discharge).
+- **The battery gauge now learns the real capacity of your battery after a full cycle** (measured on an R36S: 3000 → 3300 mAh), so the percentage and the time estimates get more accurate. It needs a full cycle from empty, charging with the console on; it does not learn yet when charging with the console off, and it is not validated on the R36 Ultra.
+- **An "Add games" card** when the library is empty, with a QR code for the phone file transfer (or the microSD way if there is no network).
+- **In-game Home menu**, **34 interface languages**, a file manager, a Cloud tab with Syncthing and three polished themes.
+- **A lighter image** and **no more usage statistics sent to a ROCKNIX server.**
+
+### PSP and Vulkan
+
+- **Vulkan 1.3 from Arm** (with `GPU DRIVER > Arm (official)`, the default) and **PanVK** (Mesa 26.0.4 with Zenith patches, with
+  `Open source (Panfrost / PanVK)`; Vulkan 1.0, not conformant). **PPSSPP still starts on OpenGL**: turn Vulkan on in PPSSPP's
+  `Settings > Graphics > Backend` (PPSSPP restarts at its own menu; the choice is kept). The GPU driver is chosen in the system
+  menu and needs a reboot. Only PPSSPP sees Vulkan; the rest of the system does not change.
+- **Safety net:** if PPSSPP closes twice in a row before drawing its first frames, or crashes once on Vulkan, the launcher
+  switches it back to OpenGL by itself (the reason goes to the system log, `journalctl -t start_ppsspp`; it is not shown on screen).
+- **What was measured:** R36S, 10 PSP games, one saved scene each, factory launcher and governors (nothing fixed), 1x, no frame
+  skip, 30 s window, 2 runs per game (PanVK: 2 in the five games that separate the engines, 1 in the others). New frames per second,
+  target 30 (Tekken 60). The other five games (Assassin's Creed: Bloodlines, GTA: Vice City Stories, Daxter, Castlevania: Dracula X
+  Chronicles, Tenchu: Shadow Assassins) sit at the game's 30 fps cap with all three.
+
+  | Game | OpenGL (Arm) | Vulkan (Arm) | PanVK | Stalls OpenGL / Vulkan Arm / PanVK |
+  |---|---:|---:|---:|---|
+  | God of War: Chains of Olympus | 18.2 | 27.5 | 27.8 | 1089 / 75 / 42 |
+  | God of War: Ghost of Sparta | 25.8 | 30.3 | 30.3 | 179 / 23 / 33 |
+  | F1 2009 | 29.7 | 36.7 | **39.5** | 15 / 6 / 3 |
+  | Tekken: Dark Resurrection (60) | 55.3 | 59.7 | 59.7 | 9 / 3 / 2 |
+  | FlatOut: Head On | 28.1 | 29.2 | 28.9 | 63 / 27 / 26 |
+
+  "Stalls" are intervals of 45 ms or more per minute (fewer is smoother). In these scenes the two Vulkan drivers are on par
+  (within 1 fps in 9 of 10 games; PanVK is ahead in F1 2009) and both are well above OpenGL. Limits: one scene per game, no key
+  presses, one R36S with a fan (stock units run hotter), the Arm and PanVK columns taken on two different pre-release test builds, no
+  warm-up pass. On the R36 Ultra, Ghost of Sparta in combat with the game's 30 fps hack: Vulkan from Arm 29.9, PanVK 30.05, Panfrost
+  OpenGL 29.4, libmali OpenGL 20.6-22.9. Tables and method: [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md). Eight small PSN games were only
+  checked for starting on Vulkan.
+- **Vulkan tearing fixed.** With the Arm driver the picture could show blocks of a frame that was still being drawn. The Zenith layer
+  between the game and the compositor now waits for the GPU before presenting. On an R36S, Ghost of Sparta in combat went from 28.5 to
+  29.4 fps (3 runs each): no cost. The tearing itself was checked by eye on the R36 Ultra.
+- **Frame skipping fixed.** The old PPSSPP config had a fixed `FrameSkip = 3`, so games drew 1 frame out of every 4. It is now 0; the
+  update changes an existing config once, and after that your own choice is respected.
+- **PPSSPP saves its shader cache** when you leave a game (it used to be killed abruptly). Leaving a PSP game now takes about 1-2
+  seconds instead of being instant; if PPSSPP does not exit in 7 seconds it is closed abruptly as before. On an R36S the next start
+  showed 0-1 stalls in the first 15 seconds instead of 3-8 (one run each). With OpenGL on libmali PPSSPP writes no shader cache, so
+  there is no gain there.
+- **GPU driver patch 007 (Mali kernel driver):** with little free memory and Vulkan from Arm the kernel log could fill with
+  `Failed to map memory on GPU` (hundreds of lines per second). The warning is rate-limited and the reserved address zone is bigger.
+  On the R36 Ultra with 44-78 MB free: 3 runs out of 3 with no failures (before, about 500 in 3 seconds). Heavier pressure, long
+  sessions and OpenGL were not tested.
+- **CPU governor for PSP is automatic by default** on new installs: same fps in Ghost of Sparta and the only setup where the kernel
+  never throttled in 10 minutes on an R36 Ultra (at maximum CPU it throttled after about 5 minutes). A governor you already chose is
+  never changed.
+- **God of War: Ghost of Sparta** gets the 30 fps hack automatically (only if you have no `compat.ini` of your own).
+- **PPSSPP menus fit small screens** (640x480 and 720x720). The pause menu was seen on an R36S; the rest only in PC captures.
+
+### Interface
+
+- **In-game Home menu** (experimental, off by default; `GAME SETTINGS > HOME MENU DURING GAMES`): hold START + R1 (or R2 / L2)
+  for a second to pause the game and open a panel with battery, brightness, volume, **Resume** and **Quit game**. Seen on an R36S
+  with PPSSPP; the panel takes 1-2 seconds to draw. Save/Load state are not offered on RK3326.
+- **34 languages, ready to use at once:** all the language data is built into the image, so choosing a language no longer waits ~22 s on the next start (first frame in about 2 s; R36S: 24.7 s before, 1.8 s now). English and Spanish are reviewed; the other 32 are **machine translations, not reviewed by native speakers**
+  (corrections welcome; Catalan, Occitan, Welsh and Nynorsk are the doubtful ones). No Arabic or Hebrew yet. Non-Latin scripts were
+  not seen on a console.
+- **"Add games" card in the carousel when the library is empty:** the console starts with it selected; A opens the web transfer
+  with a QR code (without a network it explains how to copy games with a microSD card). The carousel's help bar is shorter:
+  Choose / Select / Menu. The Zenith themes have an `addgames` logo for it.
+- **Web transfer opened from that card or from the welcome is temporary:** it is not saved and turns itself off after about 20
+  minutes without requests (measured: closed after 21.5 min). Opened from `Network > Transfer files` it stays on, as before
+  (that path was not tried on a console in this version).
+- **The PIN lock-out grows:** after wrong PINs the first lock is 30 s and each next one doubles, up to 5 min (measured 29 s and
+  62 s; the 5-minute cap was not tried).
+- **Interface polish**: long lists no longer hide their last row behind the help bar; the battery page title matches its menu entry; Zenith Minimal with very few systems no longer repeats a card; the first letter after "¿" or "¡" is capitalised correctly.
+- **First-boot welcome** (language, Wi-Fi, time zone); updating by OTA does not show it, and `System > Language & time > Run welcome
+  again` brings it back. **New `DATE & TIME`** to set the clock by hand without Wi-Fi.
+- **Play time limit** (off by default) for children: when the daily time is up the game is closed and no other starts that day.
+  There is **no warning beforehand** on RK3326. **Bedside clock while charging** (off by default) and a **Charging** pill.
+- **New file manager** (copy, move, rename, delete with confirmation, free space, cancellable progress) and a **Cloud** tab in the phone
+  page (WebDAV, SFTP, FTP, Google Drive, Dropbox) with **Syncthing** inside it. The Syncthing panel listens only on `127.0.0.1`.
+  The cloud features were tried with fakes only, not real services.
+- **File transfer from the phone:** resumable large uploads, cancel button, free space on screen, the game list refreshes after an
+  upload, title-only edits, names like "Foo... (USA).nes" accepted.
+- **Themes:** Aurora, Swiss and Industrial (light and dark) polished, with readable text at every size (rows of 16-20 px at 640x480
+  instead of about 12). Selector style, title alignment and list text case now apply to all themes. Fixed an unreadable selected row in
+  dark Iconic. Drum, Deck, Mosaic, Magazine, Hero and Cinema were dropped.
+- **Menus cleaned up:** seven options that did nothing removed, "GAMES" is now "GAME SETTINGS", one screensaver setting, duplicates
+  removed, `GPU DRIVER` reads "Arm (official)" / "Open source (Panfrost / PanVK)", the power LED colour is kept across reboots, the
+  Bluetooth icon is correct.
+
+### System
+
+- **Audio through native PipeWire** for every SDL program (interface sounds, PPSSPP, standalone Mupen64Plus, DraStic), with PulseAudio
+  as fallback. Measured on the R36 Ultra: the sound system's CPU use goes from 19-42 % to 1-4 % of one core, with no new audio gaps
+  in the recordings. **Nobody has listened to it yet** (all tests were silent). PortMaster ports keep `pulseaudio`; no real port was tested.
+- **Telemetry removed:** the image no longer sends usage statistics to a ROCKNIX server. v0.2.0 and v0.2.1 still do.
+- **Time zone:** new installs default to **UTC**. If you update by OTA from v0.2.x you keep the one already saved (New York in v0.2.0).
+- Settings and the Wi-Fi key are written atomically (a power cut no longer leaves empty files); the games card is synced on shutdown.
+- **Switching to EmulationStation keeps a working theme:** if the theme chosen in zfront does not exist for EmulationStation
+  (the Aurora, Swiss and Industrial skins), EmulationStation starts with Zenith light or dark, according to the skin's mode, and
+  zfront gets its skin back when you return to it. Measured on an R36S with the installed image: EmulationStation starts and draws
+  with the factory theme. Opening a game from EmulationStation in this version was not tried.
+- Tools: Duckstation and EKA2L1 visible; Drastic keeps a copy of its config before a reset; Offline Upgrade and scan scripts fixed.
+
+### Battery
+
+- **New RK817 battery meter:** the percentage moves at most 1 % per 8 seconds, never against the charge direction, stays at 99 % until
+  a real full, learns the pack's capacity, and recognises charging by current on boards whose chip cannot see the charger. On one R36S
+  it showed "Charging" and "Full" correctly. On that R36S a full discharge (about 2 h 48 min of demanding play at maximum brightness, from 97 %)
+  went down smoothly, about 1 % every 100 s, never jumping or rising. The meter starts by assuming 3000 mAh and that battery gave about
+  3.27 Ah, so it was pessimistic and held 1 % for the last ~14 minutes; the safety power-off acted at 3.2 V.
+- **It learns the real capacity** (measured on 18 Nov on that R36S): after discharging until the console powered off, plugging in,
+  switching on and charging **with the console on** up to Full without rebooting, the capacity went from 3000 to 3300 mAh (the
+  counter reached 3361) and it was kept after a reboot. Each learning step is limited to +10 %, so a second cycle refines it.
+  Limits: it only learns if the console starts from empty and charges switched on in that same boot; **charging with the console off
+  does not teach it yet**. Not validated on the R36 Ultra; not seen with other chargers; with a worn pack or in the cold the figure may be wrong.
+- **Time left:** the battery screen shows an estimate "left, in the menus"; inside a game, the Home panel (START + R1) shows the time
+  left "with this game", from the session's average use, after 3 minutes of play and never while charging (the panel estimate was not
+  tried on a console).
+- The safety power-off now needs the voltage below 3.5 V (three readings in a row) when the meter says 0 %; a 0 % with a normal voltage
+  never powers off. The old rule (below 3.2 V) stays.
+
+### Removed (lighter image)
+
+Wine, Box86, Box64 and the Windows system; MAME (current) and MAME 2015 (MAME 2010, FinalBurn Neo and MAME 2003 Plus stay); old PUAE
+and Amiberry (Amiga keeps PUAE 2021 and UAE4ARM); BaiduPCS; ZeroTier (Tailscale and WireGuard stay); a few Tools scripts. The compressed
+image is about 314 MB smaller. Not seen on a console after the removals: a PortMaster port (Mono, Java), arcade and Amiga games.
+
+### Known issues
+
+- Vulkan is experimental and was measured in one scene per game. It was only tried on the R36 Ultra and the R36S.
+- The charging icon of the R36S can flicker when the battery is almost full (the percentage is not affected).
+- The battery meter does not learn the capacity while charging with the console off, and the "with this game" estimate needs 3 minutes of play.
+- The notice "Web transfer turned off" (after the 20-minute timeout) lasts 3.5 s, so it is rarely seen: the screen is usually off by then.
+- Updating from v0.2.x by the built-in updater needs about 3.5 GB free on the system storage (the updater only asks for 2 GB); with
+  less, the update fails at reboot and the console starts v0.2 again, with nothing lost. Checked by reading the code, not on a real v0.2 console.
+- EmulationStation: the theme guard was checked on an R36S, but opening a game from EmulationStation was not tried in this version.
+- Some PPSSPP options are set by the launcher at every start from the game options of zfront (internal resolution, VSync, skip buffer
+  effects, FPS counter, automatic frame skip): change them there. The graphics engine is not one of them.
+- Seen only with tests or PC screenshots, not on a console: the Charging pill, `DATE & TIME`, copying and deleting in the file manager,
+  the new transfer features, the polished themes in motion, non-Latin scripts, Cloud and Syncthing with real services, and the physical
+  R36S buttons for the Home menu.
+- The cover scraper (ScreenScraper) does not work: no developer credentials are built in.
+- Wi-Fi, SSH, Samba and the phone file transfer are off by default; the root password is `rocknix`: change it before turning SSH or Samba on.
+- Untested: DuckStation, PPSSPP 2021, standalone Yabasanshiro, ScummVM, OpenBOR.
+
 ## v0.2.1 — 2026-11-12 (beta)
 
 Small update on v0.2.0. Its release tag is the build date, `20261112`, which is what the built-in updater looks for.
@@ -15,7 +172,7 @@ Small update on v0.2.0. Its release tag is the build date, `20261112`, which is 
 
 ### Changes
 
-- The image includes a **new version of R36 Tuner Next that is not released yet** (the public repository is still at
+- The image includes a **new version of R36 Tuner Next that was unreleased at the time** (the public repository is still at
   v2.0; the interface was rewritten since). The Tuner screenshots in the README are from this build.
 - **Appearance options** (selector style, title alignment, list text case) apply as soon as you pick one, without
   restarting the front-end.
@@ -45,7 +202,7 @@ what the built-in updater looks for.
   by itself.
 - **Performance mode** (GPU and RAM at full speed while a game runs) is in the image, **off by default**.
 - **RAM at 786 MHz** on the models that have that step (R36 Ultra and the boards listed below).
-- **R36 Tuner Next** built in, in a **new version that is not released yet** (the public repository is at v2.0), with
+- **R36 Tuner Next** built in, in a **new version that was unreleased at the time** (the public repository is at v2.0), with
   undervolt.
 - **Send files from your phone** through a web page (off by default, 4-digit PIN, QR code to scan).
 - **Zenith DTB Selector** to pick the right screen/device tree for your console from Windows, Linux or macOS.
@@ -145,9 +302,12 @@ It does **not** make games faster: in God of War (the only game measured) the fr
 - **At real speed the two drivers are close** (R36S, vsync and audio sync on, default clocks, one run per game, so under
   5 % may be noise): from -7 % (Mario Tennis) to +15 % (Wave Race 64) in five N64 games. God of War (PSP, PPSSPP with its
   default frame skipping): 7.8 fps with libmali, 8.2 with stock Panfrost and 8.4 with patched Panfrost; it is limited by
-  the CPU.
+  the CPU. Those numbers were taken with the frame skipping stuck at 3 (one frame drawn in four), a fault fixed in
+  v0.3.0; they are not comparable with the v0.3.0 table in [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 - Not measured: battery use, and input latency (Panfrost keeps up to three frames in flight, which can add up to two
   frames of delay).
+
+> **Note:** these figures (including the God of War one above) predate the Vulkan work in v0.3.0 and, for PSP, are superseded by [docs/PERFORMANCE.md](docs/PERFORMANCE.md). N64 and the other emulators were not measured again.
 
 **Performance mode (off by default)**
 - Pins the GPU at 600 MHz and the RAM at its top step (786 MHz where the model has it, 666 MHz on the rest) **while a game
@@ -165,11 +325,11 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   God of War sessions: that is why it is off by default.
 
 **RAM at 786 MHz**
-- A new top step of the memory table (was 666 MHz), at 1.1 V, on the same boards that dArkOSen enables it on (original
+- A new top step of the memory table (was 666 MHz), at 1.1 V, on the boards known to take it (original
   R36S V12/V20/V21/V22/Y02, R36S Plus, R36H, R45H, R46H, the R36S Sauce) and on the R36 Ultra. Clones, R36 Ultra V2 / X and
   every other model stay at 666 MHz. The boot loader still starts the RAM at 666 MHz; the step is used only at run time.
 - `memtester` over 300 MB ran 6 full passes in 57 minutes at 786 MHz with no errors (65 C at most) on an R36 Ultra.
-  The other boards follow dArkOSen. On top of fixed GPU/RAM it adds little (Mario
+  The other boards were not stress-tested by us. On top of fixed GPU/RAM it adds little (Mario
   Tennis +6 %, GoldenEye +2 %, Wave Race 64 +1 %, one run). In R36 Tuner it is marked experimental.
 
 **GPU clock freezes fixed**
@@ -193,6 +353,7 @@ It does **not** make games faster: in God of War (the only game measured) the fr
   to about 40, with byte-identical files (compared on 14 systems). Whole launch averaged over 7 games: 3.54 s -> 3.33 s.
 - **PSP:** PPSSPP 1.20.2 is now the default on RK3326 (the 2021 build stays selectable). Measured on an R36 Ultra with God
   of War only: with the same settings both run the same; with buffer effects skipped 1.20.2 is faster (25.7 vs 21.9 fps).
+  > **Note:** these figures predate the Vulkan work and the frame-skip fix in v0.3.0 and are superseded by [docs/PERFORMANCE.md](docs/PERFORMANCE.md).
 
 ### System: boot, suspend, battery, updates, volume, controllers
 

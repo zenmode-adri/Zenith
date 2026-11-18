@@ -390,6 +390,11 @@ bool target_of(const http::Request& req, const Env& env, Target& t, http::Respon
     deny = err(400, "this game cannot be changed from here");
     return false;
   }
+  struct stat sb;
+  if (::lstat(t.f.path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode)) {  // ScummVM, ports: the console manages those
+    deny = err(400, "this game is a folder: manage it from the console");
+    return false;
+  }
   if (!is_file_nolink(t.f.path)) {
     deny = err(404, "the file is not there");
     return false;
@@ -652,13 +657,26 @@ http::Response rename_route(const http::Request& req, const Env& env) {
   std::string name, title;
   param(req, "name", name);
   const bool has_title = param(req, "title", title);
-  if (!valid_name(name)) return err(400, "invalid file name");
+  if (!valid_name(name)) return bad_name(name);
   const std::string old_file = base_of(t.rel);
-  if (name == old_file) return err(400, "that is the current name");
-  if (ext_of(name) != ext_of(old_file) || ext_of(name).empty()) return err(400, "the file extension cannot change");
+  const bool same_name = name == old_file;
+  if (same_name && !has_title) return err(400, "that is the current name");  // nothing to change
+  if (!same_name && (ext_of(name) != ext_of(old_file) || ext_of(name).empty())) return err(400, "the file extension cannot change");
+  // saves, save states and pictures are named after the new name ("<name>.state.auto", "<name>-image.webp"): they must still fit in 255 bytes
+  if (!same_name && stem_of(name).size() + 24 > kMaxFileNameBytes) return err(400, "name too long");
   if (has_title && (title.empty() || title.size() > 200 || !control_free(title))) return err(400, "invalid title");
   std::lock_guard<std::mutex> lk(g_mutex);
   const FoundGame& f = t.f;
+  if (same_name) {  // the page always sends the name: with the same name only the title changes
+    Edit te;
+    te.sys = f.system;
+    te.rom_key = f.path;
+    te.old_path = f.path;  // new_path stays empty: the file does not move
+    te.title = title;
+    te.fields.emplace_back("name", title);
+    run_edit(env, te);
+    return reply(202, "{\"ok\":true,\"moved\":0}");
+  }
   const std::string dir = dir_of(f.path), new_path = dir + "/" + name;
   const std::string old_stem = stem_of(old_file), new_stem = stem_of(name);
   const std::string new_rel = dir_of(t.rel).empty() ? name : dir_of(t.rel) + "/" + name;
@@ -883,7 +901,7 @@ function rename(g){Z.call("GET","/files/game/info?id="+g.id,function(x){
  if(!x)return;if(x.status!==200){Z.say(Z.why(x),true);return}
  var i={};try{i=JSON.parse(x.responseText)}catch(_){}
  sheet("Rename",function(c){
-  c.appendChild(el("label","","File name"));var f=el("input");f.value=i.file||"";f.maxLength=200;f.setAttribute("autocomplete","off");c.appendChild(f);
+  c.appendChild(el("label","","File name"));var f=el("input");f.value=i.file||"";f.maxLength=255;f.setAttribute("autocomplete","off");c.appendChild(f);
   c.appendChild(el("label","","Title shown in the lists"));var t=el("input");t.value=i.title||"";t.maxLength=200;t.setAttribute("autocomplete","off");c.appendChild(t);
   c.appendChild(el("p","hint","The extension cannot change. Saves and save states follow the new file name."));
   c.appendChild(btn("Save","",function(){
@@ -927,7 +945,7 @@ function sure(n){sheet("Empty the trash?",function(c){
  c.appendChild(btn("Cancel","alt",trash))})}
 
 var tb=btn("Trash","alt",trash);tb.id="mgtb";$("p-ga").insertBefore(tb,$("quit"));
-Z.onrow=function(g,li){var b=btn("…","mgmore",function(e){e.stopPropagation();menu(g)});
+Z.onrow=function(g,li){if(g.dir)return;var b=btn("…","mgmore",function(e){e.stopPropagation();menu(g)});
  b.setAttribute("aria-label","Actions for "+g.name);li.appendChild(b)};
 )JS";
 

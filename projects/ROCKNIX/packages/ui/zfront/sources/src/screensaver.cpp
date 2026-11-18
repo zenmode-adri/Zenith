@@ -22,7 +22,7 @@ Mode mode_for_behavior(std::string_view behavior) {
 }
 
 void draw(const Ctx& cx, std::vector<Op>& out) {
-  if (g_mode == Mode::Off || g_mode == Mode::Media) return;  // Media draws its own frame (ssmedia)
+  if (g_mode == Mode::Off || g_mode == Mode::Media || g_mode == Mode::Clock) return;  // Media draws its own frame (ssmedia), Clock too (dock_screen)
   out.push_back(Op::rect(0, 0, cx.w, cx.h, {0, 0, 0, g_mode == Mode::Dim ? kDimAlpha : uint8_t(255)}));
 }
 

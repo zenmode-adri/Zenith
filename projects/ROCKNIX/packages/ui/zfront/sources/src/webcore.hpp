@@ -81,6 +81,10 @@ bool authorize_pin(const http::Request& req, http::Response& deny);
 http::Response reply(int status, std::string body, const char* type = "application/json");
 /// {"error":"<msg>"} with `status` (`msg` is a literal: not escaped).
 http::Response err(int status, const char* msg);
+/// The longest file name the card takes (ext4 / exFAT): 255 bytes.
+constexpr size_t kMaxFileNameBytes = 255;
+/// The 400 for a name that failed `valid_name`: "name too long" when that is the reason, else "invalid file name".
+http::Response bad_name(const std::string& name);
 long long now_ms();
 std::string lower(std::string s);
 /// A copy of one system of the snapshot.

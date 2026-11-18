@@ -45,6 +45,7 @@ class Font {
     int max_h = 0;
     float cap_top = 0;
     int letter_h = 0;
+    float baseline = 0;  ///< where `render` puts the baseline in its max_h-tall image
   };
   const SizeInfo& size_info(int px);
   void set_px(int px);

@@ -1,6 +1,11 @@
 #!/bin/bash
 
 . /etc/profile
+set -u
+
+for cmd in unzip sed grep cp; do
+  command -v "${cmd}" >/dev/null 2>&1 || { echo "Error: required command '${cmd}' not found." >&2; exit 1; }
+done
 
 ROM_DIR="/storage/roms"
 TARGET_RES="1920x1080 1080x1920 1024x768 1280x720 720x1280 960x720 720x960 854x480 480x854 544x960 960x544 720x720 480x640 640x480 480x320 320x480"
@@ -95,14 +100,14 @@ for arg in "$@"; do
 done
 
 if [ "${FORCE_INSTALL}" -eq 0 ] && { [ -e "/roms/bezels/gba" ] || [ -e "${ROM_DIR}/bezels/gba" ]; }; then
-  echo "Bezels already installed, skip" >/dev/tty0
+  echo "Bezels are already installed; nothing to do."
   exit 0
 fi
 
 detected_res="$(detect_resolution "${RESOLUTION_ARG}")"
 
 if [ -z "${detected_res}" ]; then
-  echo "Unable to detect bezel resolution, skip" >/dev/tty0
+  echo "Error: could not detect the screen resolution; bezels not installed." >&2
   exit 1
 fi
 
@@ -112,8 +117,13 @@ target_zip="/storage/bezels/bezels_${detected_res}.zip"
 
 if [ -f "${target_zip}" ]; then
   mkdir -p "${ROM_DIR}/bezels"
-  unzip -oq "${target_zip}" -d "${ROM_DIR}/bezels/" || echo "Bezels file broken!" >/dev/tty0
+  if unzip -oq "${target_zip}" -d "${ROM_DIR}/bezels/"; then
+    echo "Bezels for ${detected_res} installed in ${ROM_DIR}/bezels."
+  else
+    echo "Error: the bezels archive is damaged: ${target_zip}" >&2
+    exit 1
+  fi
 else
-  echo "Bezels not found for ${detected_res}, skip" >/dev/tty0
+  echo "Error: no bezels archive for ${detected_res} in /storage/bezels." >&2
   exit 1
 fi

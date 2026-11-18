@@ -22,6 +22,22 @@ namespace zf {
 // minute it rounds to (at least 1) and shows in seconds.
 long saver_time_minutes(long ms) { return ms <= 0 ? 0 : std::max(1L, (ms + 30000) / 60000); }
 
+// The step a Left / Right press goes to from `cur` minutes (0 = never, the last step). A value that is not a step (7 or 45, set with
+// the old slider) goes to the nearest step in the pressed direction; past either end it wraps.
+long saver_step_minutes(long cur, int d) {
+  static const long kVals[] = {1, 2, 5, 10, 30, 0};
+  const long key = cur <= 0 ? 1000000L : cur;
+  if (d > 0) {
+    for (long v : kVals)
+      if (v != 0 && v > key) return v;
+    return key < 1000000L ? 0L : kVals[0];  // above 30: never; from never: round to the first step
+  }
+  if (key >= 1000000L) return kVals[4];
+  for (int k = 4; k >= 0; --k)
+    if (kVals[k] < key) return kVals[k];
+  return 0L;  // below the first step: wrap to never
+}
+
 std::string saver_time_label(long ms) {
   if (ms <= 0) return tr("Never");
   if (ms < 60000) return std::to_string((ms + 500) / 1000) + " s";
@@ -61,6 +77,18 @@ std::string duration(float hours) {
 }
 
 Color card_of(const ui::Style& st) { return st.dark ? Color{255, 255, 255, 12} : Color{255, 255, 255, 255}; }
+
+// Cells of a box that holds one line of `px` text: the line is about 1.3 px tall and the box adds 0.3 px of air (1.6 px in all).
+int cells_for(const Grid& g, float px) { return std::max(1, int(std::ceil(px * 1.6f / float(g.u) - 0.01f))); }
+// Cells that a bare line of `px` text takes (no air).
+int line_cells(const Grid& g, float px) { return std::max(1, int(std::ceil(px * 1.3f / float(g.u) - 0.01f))); }
+
+// The bottom of the area for content: the help row grows with TEXT SIZE (as in the menus), so the last row stays above it.
+float content_bottom(Ctx& cx, const Grid& g) {
+  float t = float(g.help_top());
+  if (ui::access().scale() > 1.0f) t = std::min(t, ui::help_pill_top(cx.assets, cx.th, ui::Metrics::from(cx.th, g.w, g.h)) - float(g.U(2)));
+  return t;
+}
 
 void head(Ctx& cx, const ui::Style& st, const Grid& g, std::string_view title, std::vector<Op>& ops) {
   ops.push_back(Op::rect(0, 0, g.w, g.h, st.bg));
@@ -106,17 +134,19 @@ class UsageScreen : public Screen {
     Assets& a = cx.assets;
     head(cx, st, g, tr("What used the most"), ops);
     const float m = g.col(0), R = m + g.span(12), w = R - m;
-    const int npx = g.F(13, 11), bpx = g.F(16, 13);
-    const float note_h = float(g.U(int(std::ceil(float(npx) * 1.3f / float(g.u)))));
+    const int npx = ui::level_px(ui::Level::Foot, g.w, g.h), bpx = ui::level_px(ui::Level::Row, g.w, g.h);
+    const float note_h = float(g.U(line_cells(g, float(npx))));
     const float note_cy = float(g.content_top()) + note_h / 2.0f;
     label(a, ops, tr("Since the last full charge. Estimated."), m, note_cy, npx, st.dim, w);  // under the title
     const float y0 = float(g.content_top()) + note_h + g.gutter();
     if (!sum_.valid) {
       label(a, ops, tr("Nothing measured yet. It fills in as you play."), m, g.h * 0.45f, bpx, st.dim, w);
     } else {
-      const int pc_cells = std::max(g.snap(58.0f * g.s, 8) / g.u, int(std::ceil(float(bpx + npx) * 1.3f / float(g.u))) + 3);
+      // A row: a cell of air, the line (name, time, percent), a cell, the bar, a cell, and the gap to the next row.
+      const int lc = std::max(line_cells(g, float(bpx)), line_cells(g, float(npx)));
+      const int pc_cells = std::max(g.snap(58.0f * g.s, 8) / g.u, lc + 5);
       const float pitch = float(g.U(pc_cells)), rh = pitch - float(g.U(1));
-      const int rows = std::max(1, int((float(g.help_top()) - y0) / pitch));
+      const int rows = std::max(1, int((content_bottom(cx, g) - y0) / pitch));
       const int n = int(sum_.rows.size());
       const int start = std::clamp(cur_ - rows / 2, 0, std::max(0, n - rows));
       const float top = sum_.rows.empty() ? 1.0f : std::max(sum_.rows[0].pct, 1.0f);
@@ -141,14 +171,14 @@ class UsageScreen : public Screen {
         const std::string name = r.kind == power::Row::Game ? r.name : r.kind == power::Row::Screen ? std::string(tr("Screen")) : r.kind == power::Row::Menus ? std::string(tr("Menus and system")) : std::string(tr("Asleep"));
         char pc[16];
         std::snprintf(pc, sizeof pc, "%d %%", int(std::lround(r.pct)));
-        const float l1 = y + rh * 0.30f;
+        const float l1 = y + float(g.U(1)) + float(g.U(lc)) / 2.0f;
         label(a, ops, pc, right, l1, bpx, col, 0, true);
         const std::string t = duration(float(r.secs) / 3600.0f);
         const float t_right = back(g, right, a.measure(pc, float(bpx)) + float(g.U(2)));
         const float time_w = a.measure(t, float(npx));
         label(a, ops, t, t_right, l1, npx, on ? col : st.dim, 0, true);
         label(a, ops, name, tx, l1, bpx, col, t_right - time_w - float(g.U(2)) - tx);
-        const float bw = right - tx, bh = float(g.U(1)), by = y + float(g.U(int(std::lround(float(pc_cells - 1) * 0.64f))));
+        const float bw = right - tx, bh = float(g.U(1)), by = y + float(g.U(lc + 2));
         g_sh.pill(a, ops, tx, by, bw, bh, ui::with_alpha(st.dim, 0.18f));
         box(tx, by, bw, bh, "pastilla");
         g_sh.pill(a, ops, tx, by, std::max(bh, bw * r.pct / top), bh, on ? col : st.dark ? st.cyan : st.cyan_dark);
@@ -222,12 +252,28 @@ class BatteryScreen : public Screen {
     const Grid g(cx.w, cx.h);
     const ui::Style st = ui::Style::from(cx.th);
     Assets& a = cx.assets;
-    head(cx, st, g, tr("Battery and power"), ops);
+    // the same words as its entry in the main menu (BATTERY & PERFORMANCE), in sentence case; made once per language, not per frame
+    if (title_gen_ != i18n::generation()) {
+      title_gen_ = i18n::generation();
+      title_ = i18n::sentence_case(tr("BATTERY & PERFORMANCE"));
+    }
+    head(cx, st, g, title_, ops);
     const bool saver = power::saver_on(cx);
     const Color green = {0x35, 0xB8, 0x6B, 255};
     const Color acc = saver ? green : (st.dark ? st.cyan : st.cyan_dark);
     const float m = g.col(0), R = m + g.span(12), gap = g.gutter(), pad = float(g.U(2));
-    const float top = float(g.content_top()), ch = float(g.snap(104.0f * g.s, 12));
+    // Text levels (one table for every screen, TEXT SIZE included). The big numbers keep their own size, never under the title's.
+    const int rowpx = ui::level_px(ui::Level::Row, g.w, g.h), smallpx = ui::level_px(ui::Level::Small, g.w, g.h);
+    const int footpx = ui::level_px(ui::Level::Foot, g.w, g.h), titlepx = ui::level_px(ui::Level::Title, g.w, g.h);
+    const int big = std::max(g.F(44, 26), titlepx), disp = std::max(g.F(28, 18), titlepx);
+    const float lrow = 1.3f * float(rowpx), lsm = 1.3f * float(smallpx), lbig = 1.3f * float(big), air = float(g.U(1));
+    // The cards are as tall as their text needs (never under the design's 104): level card = pad, "About", air, "left..." and, under, the
+    // bar (pad + bar + pad); the big number must clear the bar too. Now card = three lines (small, number, small) with a cell of air between.
+    const float lmid = std::max(1.3f * float(disp), lrow);
+    const float need1 = std::max(float(g.U(2)) + lrow + air + lsm, float(g.U(2)) + lbig) + air + float(g.U(4));
+    const float need2 = 2.0f * lsm + lmid + 4.0f * air;
+    const float top = float(g.content_top());
+    const float ch = std::max(float(g.snap(104.0f * g.s, 12)), float(g.U(int(std::ceil(std::max(need1, need2) / float(g.u) - 0.01f)))));
     const float cw = g.span(6);
     const int rad = g.U(2);
     // ---- level
@@ -235,16 +281,17 @@ class BatteryScreen : public Screen {
     box(m, top, cw, ch, "tarjeta", true);
     char pc[16];
     std::snprintf(pc, sizeof pc, "%d%%", now_.percent);
-    const int big = g.F(44, 26);
-    label(a, ops, pc, m + pad, top + ch * 0.32f, big, st.txt);
+    const float big_cy = top + std::max(ch * 0.32f, float(g.U(2)) + lbig / 2.0f);
+    label(a, ops, pc, m + pad, big_cy, big, st.txt);
     const float tx = up(g, m, pad + a.measure(pc, float(big)) + float(g.U(2)));
     const float tmax = m + cw - pad - tx;
     const float left = power::hours_left(now_);
     if (now_.charging) {
-      label(a, ops, tr("Charging"), tx, top + ch * 0.32f, g.F(15), st.txt, tmax);
+      label(a, ops, tr("Charging"), tx, big_cy, rowpx, st.txt, tmax);
     } else if (left != power::kNoHours) {
-      label(a, ops, tr("About") + std::string(" ") + duration(left), tx, top + ch * 0.22f, g.F(15), st.txt, tmax);
-      label(a, ops, tr("left, at this rate"), tx, top + ch * 0.44f, g.F(13, 11), st.dim, tmax);
+      // two stacked lines from the top pad: "About ..." then a cell of air and the small hint
+      label(a, ops, tr("About") + std::string(" ") + duration(left), tx, top + float(g.U(2)) + lrow / 2.0f, rowpx, st.txt, tmax);
+      label(a, ops, tr("left, in the menus"), tx, top + float(g.U(2)) + lrow + air + lsm / 2.0f, smallpx, st.dim, tmax);
     }
     const float bx = m + pad, bw = cw - 2 * pad, bh = float(g.U(2)), by = top + ch - pad - bh;
     g_sh.pill(a, ops, bx, by, bw, bh, ui::with_alpha(st.dim, 0.25f));
@@ -254,7 +301,6 @@ class BatteryScreen : public Screen {
     const float c2 = g.col(6), r2 = c2 + cw - pad;
     g_sh.rrect(a, ops, c2, top, cw, ch, rad, card_of(st));
     box(c2, top, cw, ch, "tarjeta", true);
-    label(a, ops, tr("Using now"), c2 + pad, top + ch * 0.19f, g.F(13, 11), st.dim, cw * 0.6f);
     char w[48], vi[64];
     if (now_.watts > 0.01f) {
       std::snprintf(w, sizeof w, "%.1f W", double(now_.watts));
@@ -263,35 +309,64 @@ class BatteryScreen : public Screen {
       std::snprintf(w, sizeof w, "--");
       std::snprintf(vi, sizeof vi, "%.2f V", double(now_.volts));
     }
-    label(a, ops, w, c2 + pad, top + ch * 0.48f, g.F(28, 18), st.txt);
-    label(a, ops, vi, c2 + pad, top + ch * 0.79f, g.F(13, 11), st.dim, cw * 0.62f);
+    // Three lines spread evenly (an equal gap above, between and under them); on each, the left text and the right one share the width.
+    const float cgap = (ch - 2.0f * lsm - lmid) / 4.0f;
+    const float cy_a = top + cgap + lsm / 2.0f, cy_b = top + 2.0f * cgap + lsm + lmid / 2.0f, cy_c = top + 3.0f * cgap + lsm + lmid + lsm / 2.0f;
+    const float inner = cw - 2.0f * pad;
+    auto duo = [&](const std::string& l, int lpx, Color lc, const std::string& r, int rpx, Color rc, float cy) {
+      const float rw = r.empty() ? 0.0f : a.measure(r, float(rpx)), lw = l.empty() ? 0.0f : a.measure(l, float(lpx));
+      const float rmax = r.empty() ? 0.0f : std::min(rw + 1.0f, std::max(inner * 0.35f, inner - lw - float(g.U(2))));
+      const float lmax = inner - (r.empty() ? 0.0f : rmax + float(g.U(2)));
+      label(a, ops, l, c2 + pad, cy, lpx, lc, lmax);
+      label(a, ops, r, r2, cy, rpx, rc, rmax, true);
+    };
+    std::string since, dur, used;
     if (sum_.awake_secs > 0) {
-      label(a, ops, tr("Since full"), r2, top + ch * 0.19f, g.F(13, 11), st.dim, cw * 0.36f, true);
-      label(a, ops, duration(float(sum_.awake_secs) / 3600.0f), r2, top + ch * 0.48f, g.F(15, 12), st.txt, cw * 0.4f, true);
+      since = tr("Since full"), dur = duration(float(sum_.awake_secs) / 3600.0f);
       char u[32];
       std::snprintf(u, sizeof u, "%d %%", sum_.used_pct);
-      label(a, ops, u, r2, top + ch * 0.79f, g.F(13, 11), st.dim, 0, true);
+      used = u;
     }
+    duo(tr("Using now"), smallpx, st.dim, since, smallpx, st.dim, cy_a);
+    duo(w, disp, st.txt, dur, rowpx, st.txt, cy_b);
+    duo(vi, smallpx, st.dim, used, smallpx, st.dim, cy_c);
     // ---- settings, from the bottom up: what is left is for the graph
-    const int rc = std::max(g.snap(std::max(36.0f * g.s, float(g.F(16, 13)) + 12.0f * g.s), 5) / g.u, 5);
+    // a row is never under the design's height, and never under a line of text with its air (1.6 times the text)
+    int rc = std::max({g.snap(std::max(36.0f * g.s, float(rowpx) + 12.0f * g.s), 5) / g.u, cells_for(g, float(rowpx)), 5});
+    // The graph card: a header zone (one line of small text with a cell of air), the graph, and a zone under it for the "ago" / "Now" labels.
+    const int hz = cells_for(g, float(smallpx)) + 1, fz = std::max(4, cells_for(g, float(footpx)));
+    // the help row grows with the text size (as in the menus): the last row stays above it
+    const float help_top = content_bottom(cx, g);
+    const float gy = top + ch + gap;
+    // On a short screen with big text the rows give up their air (never under a bare line of text) so the card keeps its header, the first row.
+    const int rc_min = std::max(5, line_cells(g, float(rowpx)));
+    while (rc > rc_min && help_top - float(g.U(rc)) * float(kRows - 1) - gap - gy < float(g.U(hz))) --rc;
     const float row_h = float(g.U(rc));
     const float rows_h = row_h * float(kRows - 1);
-    const float rows_top = float(g.help_top()) - rows_h;
-    const float gy = top + ch + gap, gh = rows_top - gy - gap;
+    const float rows_top = help_top - rows_h;
+    const float gh = rows_top - gy - gap;
     const float gw = R - m;
     // ---- graph: the first row, A shows what used the most
-    if (cur_ == kUsage) {
-      g_sh.rrect(a, ops, m, gy, gw, gh, rad, acc);
-      g_sh.rrect(a, ops, m + 2, gy + 2, gw - 4, gh - 4, rad - 1, st.dark ? st.bg : Color{255, 255, 255, 255});
-    } else {
-      g_sh.rrect(a, ops, m, gy, gw, gh, rad, st.dark ? card_of(st) : Color{255, 255, 255, 255});
+    const bool card_ok = gh >= float(g.U(hz));  // a card that cannot even hold its header is not drawn (nor measured)
+    if (card_ok) {
+      if (cur_ == kUsage) {
+        g_sh.rrect(a, ops, m, gy, gw, gh, rad, acc);
+        g_sh.rrect(a, ops, m + 2, gy + 2, gw - 4, gh - 4, rad - 1, st.dark ? st.bg : Color{255, 255, 255, 255});
+      } else {
+        g_sh.rrect(a, ops, m, gy, gw, gh, rad, st.dark ? card_of(st) : Color{255, 255, 255, 255});
+      }
+      box(m, gy, gw, gh, "tarjeta", true);
     }
-    box(m, gy, gw, gh, "tarjeta", true);
-    const float isz = float(g.U(2));
-    label(a, ops, tr("Last hours"), m + pad, gy + float(g.U(3)), g.F(13, 11), st.dim, g.w * 0.3f);
-    label(a, ops, tr("What used the most"), R - pad - isz - float(g.U(1)), gy + float(g.U(3)), g.F(13, 11), cur_ == kUsage ? st.txt : st.dim, g.w * 0.45f, true);
-    g_sh.icon(a, ops, ui::Icon::ChevronRight, R - pad - isz, gy + float(g.U(2)), int(isz), cur_ == kUsage ? st.txt : st.dim);
-    const float px = m + pad, pw = gw - 2 * pad, py = gy + float(g.U(5)), ph = gh - float(g.U(5)) - float(g.U(4));
+    const float isz = float(g.snap(float(smallpx) * 0.8f, 2));  // the chevron follows the small text (two cells at least)
+    const float hcy = gy + float(g.U(hz)) / 2.0f;
+    if (card_ok) {
+      const float rtxt = std::min(a.measure(tr("What used the most"), float(smallpx)) + 1.0f, g.w * 0.45f);
+      const float ltxt = (gw - 2.0f * pad) - isz - float(g.U(1)) - rtxt - float(g.U(2));  // what "Last hours" may take beside the right-hand label
+      label(a, ops, tr("Last hours"), m + pad, hcy, smallpx, st.dim, std::min(g.w * 0.3f, std::max(ltxt, 1.0f)));
+      label(a, ops, tr("What used the most"), R - pad - isz - float(g.U(1)), hcy, smallpx, cur_ == kUsage ? st.txt : st.dim, rtxt, true);
+      g_sh.icon(a, ops, ui::Icon::ChevronRight, R - pad - isz, hcy - isz / 2.0f, int(isz), cur_ == kUsage ? st.txt : st.dim);
+    }
+    const float px = m + pad, pw = gw - 2 * pad, py = gy + float(g.U(hz)), ph = gh - float(g.U(hz)) - float(g.U(fz));
     if (ph >= float(g.U(4))) {
       if (sum_.curve.size() >= 2 && sum_.span_hours > 0) for (const float f : {0.0f, 0.5f, 1.0f}) ops.push_back(Op::rect(px, std::round(py + ph * f), pw, 1, ui::with_alpha(st.dim, 0.14f)));
       if (sum_.curve.size() >= 2 && sum_.span_hours > 0) {
@@ -313,10 +388,11 @@ class BatteryScreen : public Screen {
         }
         char ago[32];
         std::snprintf(ago, sizeof ago, "%s", duration(sum_.span_hours).c_str());
-        label(a, ops, ago, px, py + ph + float(g.U(2)), g.F(12, 11), st.dim);
-        label(a, ops, tr("Now"), px + pw, py + ph + float(g.U(2)), g.F(12, 11), st.dim, 0, true);
+        const float fcy = py + ph + float(g.U(fz)) / 2.0f;  // centred in the zone under the graph
+        label(a, ops, ago, px, fcy, footpx, st.dim, pw * 0.6f);
+        label(a, ops, tr("Now"), px + pw, fcy, footpx, st.dim, 0, true);
       } else {
-        label(a, ops, tr("Nothing measured yet. It fills in as you play."), px, py + ph / 2.0f, g.F(13, 11), st.dim, pw);
+        label(a, ops, tr("Nothing measured yet. It fills in as you play."), px, py + ph / 2.0f, smallpx, st.dim, pw);
       }
     }
     // ---- rows
@@ -326,8 +402,8 @@ class BatteryScreen : public Screen {
       int id;
       const char* t;
       std::string v;
-    } rows[] = {{kSaver, tr("Power saver"), ""}, {kAuto, tr("Turn on by itself at"), auto_v}, {kScreen, tr("Screen off after"), ss_v}, {kMore, tr("More settings"), ""}};
-    const int fs = g.F(16, 13);
+    } rows[] = {{kSaver, tr("Power saver"), ""}, {kAuto, tr("Turn on by itself at"), auto_v}, {kScreen, tr("Screensaver after"), ss_v}, {kMore, tr("More settings"), ""}};
+    const int fs = rowpx;
     int idx = 0;
     for (const Line& r : rows) {
       const float y = rows_top + float(idx) * row_h, cy = y + row_h / 2.0f;
@@ -337,16 +413,19 @@ class BatteryScreen : public Screen {
         box(m, y, gw, row_h, "tarjeta", true);
       }
       const Color col = on && !(saver && r.id == kSaver) ? st.cyan_dark : st.txt;
-      label(a, ops, r.t, m + pad, cy, fs, col, gw * 0.6f);
+      // the label may take what the right-hand element (switch, value, chevron) leaves
+      const bool chev = r.id == kMore;
+      const int shc = (rc % 2 == 0 ? 4 : 3) + (rc >= 11 ? 2 : 0);  // switch height in cells: same parity as the row, so it is centred
+      const float sw = float(g.U(2 * shc));
+      const float right_x = r.id == kSaver ? R - pad - sw : (chev ? R - pad - isz - float(g.U(1)) : R - pad) - (r.v.empty() ? 0.0f : a.measure(r.v, float(rowpx)));
+      label(a, ops, r.t, m + pad, cy, fs, col, std::max(right_x - float(g.U(2)) - (m + pad), 1.0f));
       if (r.id == kSaver) {
-        const int shc = rc % 2 == 0 ? 4 : 3;
-        const float sw = float(g.U(2 * shc)), shh = float(g.U(shc)), sx = R - pad - sw, sy = y + float(g.U((rc - shc) / 2));
+        const float shh = float(g.U(shc)), sx = R - pad - sw, sy = y + float(g.U((rc - shc) / 2));
         g_sh.pill(a, ops, sx, sy, sw, shh, saver ? green : ui::with_alpha(st.dim, 0.45f));
         box(sx, sy, sw, shh, "pastilla");
         g_sh.disc(a, ops, saver ? sx + sw - shh + 2 : sx + 2, sy + 2, int(shh) - 4, Color{255, 255, 255, 255});
       } else {
-        const bool chev = r.id == kMore;
-        label(a, ops, r.v, chev ? R - pad - isz - float(g.U(1)) : R - pad, cy, g.F(15, 13), on ? col : st.dim, 0, true);
+        label(a, ops, r.v, chev ? R - pad - isz - float(g.U(1)) : R - pad, cy, rowpx, on ? col : st.dim, 0, true);
         if (chev) g_sh.icon(a, ops, ui::Icon::ChevronRight, R - pad - isz, cy - isz / 2.0f, int(isz), on ? col : st.dim);
       }
       ++idx;
@@ -356,6 +435,8 @@ class BatteryScreen : public Screen {
 
  private:
   enum { kUsage, kSaver, kAuto, kScreen, kMore, kRows };
+  std::string title_;              // the page title in the current language (draw)
+  unsigned title_gen_ = ~0u;
   // Left / Right change the switch and the two steppers: the help says so on those rows only
   static const HelpPrompts& help_prompts(bool adjust) {
     static HelpPrompts p;
@@ -381,12 +462,7 @@ class BatteryScreen : public Screen {
     power::set_saver_auto(cx, kVals[(i + 4 + d) % 4]);
   }
   void step_screen(Ctx& cx, int d) {
-    static const long kVals[] = {1, 2, 5, 10, 30, 0};
-    const long cur = saver_time_minutes(cx.es.get_int("ScreenSaverTime", 300000));
-    int i = 2;
-    for (int k = 0; k < 6; ++k)
-      if (kVals[k] == cur) i = k;
-    cx.es.set_int("ScreenSaverTime", kVals[(i + 6 + d) % 6] * 60000);
+    cx.es.set_int("ScreenSaverTime", saver_step_minutes(saver_time_minutes(cx.es.get_int("ScreenSaverTime", 300000)), d) * 60000);
     cx.es.save();
   }
   power::Now now_;

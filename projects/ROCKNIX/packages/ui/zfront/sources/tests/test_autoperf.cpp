@@ -153,8 +153,8 @@ int find(const Menu& m, const std::string& label) {
 }  // namespace
 
 int main() {
-  char tmpl[] = "/tmp/zf-test-autoperf-XXXXXX";
-  const char* dp = mkdtemp(tmpl);
+  std::string tmpl = zt::tmp_base() + "/zf-test-autoperf-XXXXXX";
+  const char* dp = mkdtemp(&tmpl[0]);
   CHECK(dp != nullptr);
   if (!dp) return 1;
   const std::string dir = dp;

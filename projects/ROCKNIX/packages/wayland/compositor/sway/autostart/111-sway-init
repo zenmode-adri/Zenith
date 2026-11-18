@@ -123,7 +123,15 @@ else
         fi
     fi
 fi
-echo "${output} bg #000000 solid_color" >> $SWAY_HOME/config
+# Zenith: keep the boot logo (zenith-boot, painted by the initramfs) on screen until zfront draws.
+# Same pixels as the fb0 dump: image of exactly the panel size, unrotated, scale 1. No matching
+# PNG (other resolutions, HDMI) or rotated panel -> plain black as before.
+BOOTBG="/usr/lib/autostart/firstboot/zenith-boot-$(fbwidth)x$(fbheight).png"
+if [ "${angle}" = "0" ] && [ -f "${BOOTBG}" ]; then
+    echo "${output} bg ${BOOTBG} stretch #26262a" >> $SWAY_HOME/config
+else
+    echo "${output} bg #000000 solid_color" >> $SWAY_HOME/config
+fi
 echo "${output} allow_tearing yes" >> $SWAY_HOME/config
 echo "${output} max_render_time off" >> $SWAY_HOME/config
 

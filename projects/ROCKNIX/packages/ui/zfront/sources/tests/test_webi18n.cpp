@@ -48,7 +48,8 @@ int main() {
                         "the offset does not match what the console has", "the console cannot ask now", "too many wrong PINs, wait a little",
                         "no picture", "invalid id", "invalid game id", "method not allowed", "offset and length go past the total",
                         "offset and total are required", "system and name are required", "system and path are required", "file is required",
-                        "too long", "could not make a token"})
+                        "too long", "could not make a token", "name too long", "path too long", "this game is a folder: manage it from the console",
+                        "the file name must look like saves-YYYYMMDD-HHMM.tar.gz", "Saved. Testing...", "cancelled", "Checking…"})
     CHECK(has_entry(html, e));
   std::printf("test_webi18n: %d texts of the markup have their Spanish\n", checked);
   return zt::done();

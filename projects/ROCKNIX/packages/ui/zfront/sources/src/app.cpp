@@ -1,4 +1,5 @@
 #include "app.hpp"
+#include "addgames.hpp"  // the card's name, again in a new language
 
 #include "power.hpp"
 
@@ -7,7 +8,9 @@
 #include <cstdio>
 
 #include "collections.hpp"
+#include "i18n.hpp"
 #include "colsys.hpp"
+#include "dock_screen.hpp"
 #include "motion.hpp"
 #include "music.hpp"
 #include "oscontract.hpp"
@@ -181,8 +184,9 @@ Outcome App::apply(Transition t) {
       enter_.active = false;
       leave_.screens.clear();
       // the screens the game was started from (savestate manager, confirmation dialog) close first: when the game ends the user
-      // is back on the list with the same cursor, as in ES
-      while (stack_.size() > 1 && (stack_.back()->is_menu() || stack_.back()->closes_on_launch())) {
+      // is back on the list with the same cursor, as in ES. A tool opened from a menu (`keep_menus`) leaves them: back on that menu.
+      menus_kept_ = t.keep_menus;
+      while (!t.keep_menus && stack_.size() > 1 && (stack_.back()->is_menu() || stack_.back()->closes_on_launch())) {
         if (stack_.back()->is_menu()) stack_.back()->on_dismiss(cx);
         stack_.pop_back();
       }
@@ -191,6 +195,13 @@ Outcome App::apply(Transition t) {
       return Outcome{Outcome::Quit, {}, -1, -1};
   }
   return {};
+}
+
+void App::after_launch() {
+  if (!menus_kept_) return;
+  menus_kept_ = false;
+  if (!cx.conf.path().empty()) cx.conf = SystemConf::load(cx.conf.path());  // the tool may have changed settings behind our back
+  stack_.back()->on_back_from_launch(cx);
 }
 
 std::optional<TimePoint> App::screen_deadline() const {
@@ -205,6 +216,13 @@ std::optional<TimePoint> App::screen_deadline() const {
 }
 
 bool App::tick(float dt) {
+  if (items_gen_ != i18n::generation()) {  // the systems named by a caption (Tools, Screenshots, Music...) take it in the language now loaded
+    items_gen_ = i18n::generation();
+    for (SystemItem& it : cx.items)
+      if (it.sys == kItemAddGames) it.full_name = addgames::card_label();
+      else if (it.sys < cx.systems.size())
+        if (const char* label = system_icon_label(cx.systems[it.sys].theme)) it.full_name = label;
+  }
   music::on_system(cx, stack_[0]->system_cursor(cx));  // audio.persystem: another track when the system changes
   bool moving = stack_.back()->tick(dt, cx);
   const float mdt = std::min(dt, 0.05f);  // the first tick after a long sleep must not swallow the whole entry
@@ -248,7 +266,39 @@ bool App::charge_anim() const {
 std::optional<TimePoint> App::status_deadline() const {
   std::optional<TimePoint> t = status_->next_deadline();
   if (charge_anim() && (!t || charge_next_ < *t)) t = charge_next_;
+  if (const std::optional<dock::Ms> d = dock_.next_deadline(dock_clock(Clock::now()))) {  // a plug waiting to be confirmed, a frame of the notice
+    const TimePoint dt = TimePoint(std::chrono::milliseconds(*d));
+    if (!t || dt < *t) t = dt;
+  }
   return t;
+}
+
+dock::Clock App::dock_clock(TimePoint now) {
+  const auto wall = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+  return dock::Clock{std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count(), wall.count()};
+}
+
+// The plug-in filter and the notice (dock.hpp). True when a frame of the notice is due (or it just ended).
+bool App::poll_dock(const dock::Clock& dk, TimePoint now) {
+  const unsigned reads = status_->battery_reads();
+  if (reads != dock_reads_) {  // a real reading of the kernel since the last call
+    dock_reads_ = reads;
+    dock_sample_ms_ = reads == 0 ? -1 : dk.mono_ms;
+  }
+  dock::Config dc;
+  dc.motion = cx.ui_motion;
+  dock_.configure(dc);
+  const Status& rs = status_->status();  // the raw status: the preferences that hide the battery from the bar do not hide the charger
+  const bool quiet = oscontract::game_running() || oscontract::idle().active();
+  const bool redraw = dock_.update(dk, dock::Env{rs.battery && rs.battery->plugged, quiet, dock_sample_ms_, rs.battery && rs.battery->from_charger});
+  if (dock_.take_plug_event()) oscontract::input(now);  // a plug is activity: the clock comes its minutes AFTER it, and the notice is seen
+  const std::string* bc = cx.es.get("BedsideClock");
+  oscontract::set_bedside(dock_.plugged() ? dock::parse_minutes(bc ? std::string_view(*bc) : std::string_view()) : 0);
+  dock::PillState& ps = dock::pill_state();
+  ps.on = !quiet && dock_.anim_active(dk);
+  ps.t = dock_.anim_t(dk);
+  ps.motion = cx.ui_motion;
+  return redraw && !oscontract::idle().active();
 }
 
 bool App::snapshot_eligible() const {
@@ -256,11 +306,25 @@ bool App::snapshot_eligible() const {
          stack_[0]->snapshot_ok(cx);
 }
 
+namespace {
+long long webtransfer_now_ms() {
+  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+}
+}  // namespace
+
 bool App::poll_status(TimePoint now) {
   power::tick(cx);
+  if (webtransfer::idle_expired(webtransfer_now_ms())) {  // the temporary transfer of "Add games": 20 min with no phone
+    webtransfer::apply(false);
+    cx.sv->toasts.push(tr("Web transfer turned off"), 3500);
+  }
   if (oscontract::take_resumed()) status_->invalidate();  // back from a suspend: clock, battery, WiFi and Bluetooth are old
+  if (take_status_refresh()) status_->invalidate();       // the Bluetooth switch: a service starts or stops, no kernel event says so
   const bool ss = ssmedia::poll(cx, now);  // slideshow / random video screensaver: starts, swaps, fades (one comparison when off)
+  const dock::Clock dk = dock_clock(now);
+  if (dock_.wants_fresh_sample(dk)) status_->reread();  // a plug / unplug waits for a fresh reading to be confirmed
   bool changed = status_->poll(now);
+  const bool dr = poll_dock(dk, now);
   const int8_t was = charge_frame_;
   if (!charge_anim()) {
     charge_frame_ = -1;
@@ -268,7 +332,7 @@ bool App::poll_status(TimePoint now) {
     charge_frame_ = int8_t((charge_frame_ + 1) % 4);  // empty, one, two, three, empty...
     charge_next_ = now + kChargeStep;
   }
-  if (!changed && charge_frame_ == was) return ss;
+  if (!changed && charge_frame_ == was) return ss || dr;
   Status s = status_->status();
   if (s.charge_frame < 0) s.charge_frame = charge_frame_;
   ui_prefs::on_status(cx, s);
@@ -446,9 +510,9 @@ bool App::maybe_apply_collections() {
   // the cards of the real systems stay as they are (their counts may still be arriving); the collection cards are made again
   std::vector<SystemItem> items;
   for (const SystemItem& it : cx.items)
-    if (it.sys == kItemIsSystem || it.sys < cx.systems.size()) items.push_back(it);
+    if (it.sys == kItemIsSystem || it.sys == kItemAddGames || it.sys < cx.systems.size()) items.push_back(it);  // the card stays first
   for (SystemItem& it : make_items(cx.systems, cx.es, cx.cols))
-    if (it.sys != kItemIsSystem && it.sys >= cx.systems.size()) items.push_back(std::move(it));
+    if (it.sys != kItemIsSystem && it.sys != kItemAddGames && it.sys >= cx.systems.size()) items.push_back(std::move(it));
   cx.items = std::move(items);
   const std::vector<std::string> new_names = item_names(cx.systems, cx.items, cx.cols);
   if (old_cursor >= 0 && (old_names.size() != new_names.size() || old_names != new_names)) {
@@ -482,6 +546,13 @@ const std::vector<Op>& App::render() {
   if (screensaver::mode() == screensaver::Mode::Media) {  // slideshow / random video: its own frame, nothing of the UI
     vpreview::end_frame(true);
     ssmedia::draw(cx, ops_);
+    cx.assets.end_frame(ops_, kAssetBudget);
+    return ops_;
+  }
+  if (screensaver::mode() == screensaver::Mode::Clock) {  // the bedside clock: its own frame, nothing of the UI, no toasts
+    vpreview::end_frame(true);
+    const int64_t minute = int64_t(std::time(nullptr)) / 60;
+    dock::draw_clock(cx, dock::burn_in_offset(minute), minute, ops_);
     cx.assets.end_frame(ops_, kAssetBudget);
     return ops_;
   }

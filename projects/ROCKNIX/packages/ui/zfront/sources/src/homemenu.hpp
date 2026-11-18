@@ -170,7 +170,36 @@ const char* stopped_file_path();
 void set_panel_args(std::string exe, std::vector<std::string> args);
 bool panel_args_set();
 /// Runs `zfront --home-panel` and waits for it (polling `term_requested` meanwhile; kills it then). Failed when it cannot start.
+/// First it takes a picture of the paused game (`capture_shot`) and hands it to the child with the game and system names (`panel_args_tail`);
+/// the picture is deleted when the child ends, whatever the way. No picture (no grim, too slow): the child draws a plain dark background.
 PanelResult run_panel_child(bool with_states, const std::function<bool()>& term_requested);
+
+/// What the panel shows around its rows: the picture of the game (a PNG file, may be empty), the game's name and the system's full name (may be empty).
+struct PanelInfo {
+  std::string shot, title, sub;
+  int left_min = -1;  // minutes of battery left with this game at its own mean rate (power::game_minutes_left); -1: not shown
+};
+constexpr const char* kShotPath = "/run/zfront/home-shot.png";
+constexpr int kShotWaitMs = 1500;  // grim gets this long; then it is killed and the panel has no picture
+/// Parent: names of the game that runs (set when it starts; the panel child gets them as arguments).
+void set_game_info(std::string title, std::string sub);
+/// Child: what `--home-shot` / `--home-title` / `--home-sub` said (main.cpp), read by `menu.home`.
+void set_panel_info(PanelInfo info);
+const PanelInfo& panel_info();
+/// Pure: the arguments the child gets after the fixed ones: `--home-panel [--home-states] [--home-shot F] [--home-title T] [--home-sub S] [--home-left MIN]`
+/// (empty ones left out).
+std::vector<std::string> panel_args_tail(bool with_states, const PanelInfo& info);
+/// Pure: the command that takes the picture of the screen (`grim -l 0 FILE`, compression level 0 for speed).
+std::vector<std::string> grim_argv(const std::string& tool, const std::string& file);
+/// Runs the capture command and waits at most `wait_ms` (killed after that, or when `term_requested`). True when `file` exists and is not empty; otherwise it is removed.
+bool capture_shot(const std::string& tool, const std::string& file, int wait_ms, const std::function<bool()>& term_requested);
+/// Tests: another capture command and file (defaults `grim`, `kShotPath`).
+void set_capture_for_test(std::string tool, std::string file);
+
+/// The rows of the panel, top to bottom. Pure (the order is the design: RESUME first, the cursor starts on it; SAVE / LOAD STATE only with `states`;
+/// the brightness slider only when there is a backlight; QUIT GAME last and apart).
+enum class RowId : uint8_t { Resume, SaveState, LoadState, Separator, Brightness, Volume, Quit };
+std::vector<RowId> panel_rows(bool states, bool backlight);
 /// In the child: what `menu.home` answers (read by main.cpp for the exit code).
 void set_panel_result(PanelResult r);
 /// True in the `--home-panel` process (the loop must not announce itself as the frontend: no ready file, no `start` event).

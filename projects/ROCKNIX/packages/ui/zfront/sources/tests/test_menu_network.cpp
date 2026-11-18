@@ -1,4 +1,4 @@
-// menu.network: parsers (fed with the real formats of wifictl / iwd / tailscale / zerotier) and the three screens, driven
+// menu.network: parsers (fed with the real formats of wifictl / iwd / tailscale) and the three screens, driven
 // through the registry on a fake machine (`ZF_NET_ROOT`) with the command runner in dry-run: the tests check the
 // commands that would run and the values written to system.cfg / es_settings.cfg.
 #include <arpa/inet.h>
@@ -69,7 +69,7 @@ struct Machine {
   void full_image() {  // everything the real image has
     wifi();
     for (const char* p : {"/usr/sbin/sshd", "/usr/sbin/smbd", "/usr/lib/systemd/system/simple-http-server.service", "/usr/bin/usbgadget", "/usr/bin/syncthing",
-                          "/usr/bin/rclonectl", "/usr/sbin/tailscale", "/usr/sbin/zerotier-cli"})
+                          "/usr/bin/rclonectl", "/usr/sbin/tailscale"})
       touch(p);
     put(root + "/sys/class/udc/ff300000.usb/function", "mtp\n");
   }
@@ -222,10 +222,6 @@ void test_parsers() {
   t = parse_tailscale_status("100.64.0.7      zenith     adri@  linux   -\n100.64.0.9      pc         adri@  windows idle\n");
   CHECK(!t.logged_out && t.url.empty());
   CHECK(!parse_tailscale_status("").logged_out);  // ES: silence counts as up
-  // zerotier info
-  CHECK(zerotier_running("200 info 8a93de7f12 1.14.0 ONLINE\n"));
-  CHECK(!zerotier_running("zerotier-cli: Error connecting to the ZeroTier service: Connection refused\n\nPlease check that the service is running and that TCP port 9993 is not blocked.\n"));
-  CHECK(!zerotier_running(""));
 
   CHECK(valid_hostname("zenith"));
   CHECK(valid_hostname("zenith-2"));
@@ -249,7 +245,8 @@ void test_main_screen() {
     make_ctx(cx, mc, "wifi.enabled=1\n");
     auto s = open(cx, "menu.network");
     Menu& m = *menu_of(s);
-    CHECK(has(m, "IP ADDRESS") && has(m, "INTERNET STATUS") && has(m, "SHOW NETWORK INDICATOR") && has(m, "TRANSFER FILES"));
+    CHECK(has(m, "IP ADDRESS") && has(m, "INTERNET STATUS") && has(m, "TRANSFER FILES"));
+    CHECK(!has(m, "SHOW NETWORK INDICATOR"));  // it lives in APPEARANCE > TOP BAR
     CHECK(has(m, "SERVICES") && !has(m, "HOSTNAME"));  // the SERVICES row always (the console's name is in it), the name not here
     CHECK(!has(m, "ENABLE WI-FI"));
     CHECK(!has(m, "WI-FI NETWORKS"));
@@ -272,16 +269,16 @@ void test_main_screen() {
     CHECK(!has(m0, "WI-FI NETWORKS") && !has(m0, "WI-FI COUNTRY"));
     // new order: Wi-Fi, TRANSFER FILES, state, services (the services themselves are one screen away)
     CHECK(find(m0, "ENABLE WI-FI") < find(m0, "TRANSFER FILES") && find(m0, "TRANSFER FILES") < find(m0, "IP ADDRESS"));
-    CHECK(find(m0, "IP ADDRESS") < find(m0, "INTERNET STATUS") && find(m0, "INTERNET STATUS") < find(m0, "SHOW NETWORK INDICATOR"));
-    CHECK(find(m0, "SHOW NETWORK INDICATOR") < find(m0, "SERVICES"));
-    for (const char* l : {"ENABLE SSH", "ENABLE SIMPLE HTTP SERVER", "USB GADGET FUNCTION", "ENABLE SYNCTHING", "MOUNT CLOUD DRIVE", "TAILSCALE VPN", "ZeroTier One", "HOSTNAME"})
+    CHECK(find(m0, "IP ADDRESS") < find(m0, "INTERNET STATUS") && find(m0, "INTERNET STATUS") < find(m0, "SERVICES"));
+    for (const char* l : {"ENABLE SSH", "ENABLE SIMPLE HTTP SERVER", "USB GADGET FUNCTION", "MOUNT CLOUD DRIVE", "TAILSCALE VPN", "HOSTNAME"})
       CHECK(!has(m0, l));  // none of them on the main screen any more
     auto s = open(cx, "menu.network.services");
     Menu& m = *menu_of(s);
-    for (const char* l : {"ENABLE SSH", "ENABLE SIMPLE HTTP SERVER", "USB GADGET FUNCTION", "ENABLE SYNCTHING", "MOUNT CLOUD DRIVE", "TAILSCALE VPN", "ZeroTier One", "HOSTNAME"})
+    for (const char* l : {"ENABLE SSH", "ENABLE SIMPLE HTTP SERVER", "USB GADGET FUNCTION", "MOUNT CLOUD DRIVE", "TAILSCALE VPN", "HOSTNAME"})
       CHECK(has(m, l));
+    CHECK(!has(m, "ENABLE SYNCTHING"));  // Syncthing moved to the Cloud tab of the web page
     CHECK(!has(m, "WIREGUARD VPN"));  // no wg0.conf
-    CHECK(find(m, "ENABLE SSH") < find(m, "ENABLE SYNCTHING") && find(m, "ENABLE SYNCTHING") < find(m, "TAILSCALE VPN"));
+    CHECK(find(m, "ENABLE SSH") < find(m, "MOUNT CLOUD DRIVE") && find(m, "MOUNT CLOUD DRIVE") < find(m, "TAILSCALE VPN"));
     CHECK_EQ(m0.entry(size_t(find(m0, "IP ADDRESS"))).value_text, std::string("192.168.1.42"));
     CHECK_EQ(m0.entry(size_t(find(m0, "INTERNET STATUS"))).value_text, std::string("CONNECTED"));
     CHECK_EQ(m.entry(size_t(find(m, "HOSTNAME"))).kind, EntryKind::Text);
@@ -395,15 +392,6 @@ void test_main_screen() {
     pump(cx, &m);
     CHECK_EQ(cx.sv->cmd.log, std::vector<std::string>{"systemctl enable --now simple-http-server"});
     CHECK(slurp(mc.cfg()).find("simplehttp.enabled=1") != std::string::npos);
-    cx.sv->cmd.log.clear();
-    CHECK(focus(m, cx, "ENABLE SYNCTHING"));
-    m.handle(Action::A, cx);
-    pump(cx, &m);
-    CHECK_EQ(cx.sv->cmd.log, std::vector<std::string>{"systemctl start syncthing"});
-    m.handle(Action::A, cx);
-    pump(cx, &m);
-    CHECK(log_has(cx, "systemctl stop syncthing"));
-    CHECK(slurp(mc.cfg()).find("syncthing.enabled=0") != std::string::npos);
   }
 
   // ---- hostname: stored for the next boot; a name the boot script cannot use is refused
@@ -420,20 +408,6 @@ void test_main_screen() {
     h.set_s("  zenith-2 ");
     CHECK(slurp(mc.cfg()).find("system.hostname=zenith-2\n") != std::string::npos);
     CHECK(!log_prefix(cx, ""));  // no command at all: ES also only stores it
-  }
-
-  // ---- ES setting
-  {
-    Machine mc;
-    Ctx cx;
-    make_ctx(cx, mc, "");
-    auto s = open(cx, "menu.network");
-    Menu& m = *menu_of(s);
-    CHECK(m.entry(size_t(find(m, "SHOW NETWORK INDICATOR"))).get_b());  // ES default true
-    CHECK(focus(m, cx, "SHOW NETWORK INDICATOR"));
-    m.handle(Action::A, cx);
-    CHECK(slurp(mc.root + "/es_settings.cfg").find("ShowNetworkIndicator") != std::string::npos);
-    CHECK(!cx.es.get_bool("ShowNetworkIndicator", true));
   }
 
   // ---- USB gadget: network mode asks for the address and says it
@@ -466,7 +440,6 @@ void test_main_screen() {
     mc.full_image();
     mc.touch("/storage/.config/wireguard/wg0.conf");
     mc.fixture("tailscale.txt", "Logged out.\n\nLog in at: https://login.tailscale.com/a/1234abcd5678\n");
-    mc.fixture("zerotier.txt", "200 info 8a93de7f12 1.14.0 ONLINE\n");
     Ctx cx;
     make_ctx(cx, mc, "");
     auto s = open(cx, "menu.network.services");
@@ -492,19 +465,6 @@ void test_main_screen() {
     pump(cx, &m);
     CHECK_EQ(cx.sv->cmd.log, (std::vector<std::string>{"tailscale down", "systemctl stop tailscaled"}));
     CHECK(slurp(mc.cfg()).find("tailscale.up=0") != std::string::npos);
-
-    cx.sv->cmd.log.clear();
-    CHECK(focus(m, cx, "ZeroTier One"));
-    m.handle(Action::A, cx);
-    pump(cx, &m);
-    CHECK_EQ(cx.sv->cmd.log, (std::vector<std::string>{"systemctl start zerotier-one", "zerotier-cli -D/storage/.config/zerotier/ info"}));
-    CHECK(slurp(mc.cfg()).find("zerotier.up=1") != std::string::npos);
-    mc.fixture("zerotier.txt", "zerotier-cli: Error connecting to the ZeroTier service: Connection refused\n");
-    m.handle(Action::A, cx);  // off
-    pump(cx, &m);
-    m.handle(Action::A, cx);  // on again, the daemon does not answer
-    pump(cx, &m);
-    CHECK(slurp(mc.cfg()).find("zerotier.up=0") != std::string::npos);
 
     cx.sv->cmd.log.clear();
     CHECK(focus(m, cx, "WIREGUARD VPN"));
@@ -572,6 +532,9 @@ void test_wifi_toggle_and_country() {
   CHECK_EQ(m.entry(size_t(find(m, "WI-FI COUNTRY"))).value_text, std::string("Spain"));
 
   // local play: ES's keys, radio restarted in the new mode, networks list replaced by the ID
+  cx.conf.persist("global.netplay.host", "10.0.0.5");  // the user's own netplay host, to be put back
+  cx.conf.persist_remove("global.netplay.port");
+  cx.conf.persist_remove("global.netplay.relay");
   cx.sv->cmd.log.clear();
   CHECK(focus(m, cx, "LOCAL PLAY MODE"));
   m.handle(Action::A, cx);
@@ -586,6 +549,17 @@ void test_wifi_toggle_and_country() {
   CHECK(!has(m, "WI-FI NETWORKS") && !has(m, "WI-FI COUNTRY") && has(m, "LOCAL PLAY ID"));
   m.entry(size_t(find(m, "LOCAL PLAY ID"))).set_s("3");
   CHECK(slurp(mc.cfg()).find("wifi.adhoc.id=3") != std::string::npos);
+
+  // local play off: the netplay keys are the user's again (ES left 192.168.80.1 for good)
+  CHECK(focus(m, cx, "LOCAL PLAY MODE"));
+  m.handle(Action::A, cx);
+  pump(cx, &m);
+  c = slurp(mc.cfg());
+  CHECK(c.find("wifi.adhoc.enabled=0") != std::string::npos);
+  CHECK(c.find("global.netplay.host=10.0.0.5") != std::string::npos);
+  CHECK(c.find("global.netplay.port=") == std::string::npos);
+  CHECK(c.find("global.netplay.relay=") == std::string::npos);
+  CHECK(c.find("zfront.localplay.") == std::string::npos);
 
   // off
   cx.sv->cmd.log.clear();

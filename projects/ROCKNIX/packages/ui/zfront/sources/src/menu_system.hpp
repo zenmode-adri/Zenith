@@ -67,10 +67,26 @@ CmdResult query(Services& sv, const std::string& cmd, int timeout_ms = 10000);
 void put(Ctx& cx, const std::string& key, const std::string& value, bool keep_default = false);
 void put_bool(Ctx& cx, const std::string& key, bool v);
 std::string get(Ctx& cx, const std::string& key, const std::string& def = {});
+/// SYSTEM > TIMEZONE: ES's `ln -sf /usr/share/zoneinfo/<zone> $(readlink /etc/localtime)` and the `system.timezone` key.
+void set_timezone(Ctx& cx, const std::string& zone);
 bool get_bool(Ctx& cx, const std::string& key, bool def);
+
+/// KEYBOARD LAYOUT that goes with a `system.language` code ("es_ES" -> "es", "pt_BR" -> "br"). "us" when there is none, and for
+/// the layouts that only type another script (Russian, Ukrainian, Greek: no Latin letters without a toggle key) or change the
+/// number row (Vietnamese).
+std::string keyboard_for_language(const std::string& lang);
+/// A new language moves the keyboard layout with it (`rocknix-keyboard set`, applied at once by the OS with swaymsg), unless the
+/// user chose one in KEYBOARD LAYOUT (`zfront.kblayout_manual`). Nothing when the console has no `rocknix-keyboard`.
+void keyboard_follow_language(Ctx& cx, const std::string& lang);
 
 /// Writes a sysfs/dev file: `os_path(abs)` content `text`. In dry-run only a line `sysfs: <abs> <- <text>` in `cmd.log`.
 bool sysfs_write(Ctx& cx, const std::string& abs, const std::string& text);
+
+/// POWER LED COLOR: `on` / `off` written to the R36 power LED (the one place that knows the path).
+bool set_power_led(Ctx& cx, const std::string& on_or_off);
+/// Nothing in the OS puts the chosen colour back after a reboot: zfront reapplies `option_powerled` once at start (only when the
+/// key is set and this console has that LED).
+void restore_power_led(Ctx& cx);
 
 /// "Reboot now" / "Later" question (ES: GuiMsgBox with `quitES(REBOOT)`).
 Transition reboot_prompt(const std::string& message);
@@ -89,8 +105,16 @@ struct LazyList {
   std::vector<Option> opts;
   bool loaded = false;
 };
+/// Shown name of a raw value of a system.cfg list: "default" (governors, suspend mode, LED colour) is translated; the rest as is.
+std::string value_label(const std::string& value);
+/// Same list with the raw `default` option relabelled by value_label() (the stored value does not change).
+std::vector<Option> label_values(std::vector<Option> v);
 /// The options to show: the loaded ones, or only `current` (never an empty popup).
 std::vector<Option> options_or_current(const LazyList& l, const std::string& current);
+/// GPU DRIVER: human name of a `gpudriver` value (libmali, panfrost); an unknown value is shown as is.
+std::string gpu_driver_label(const std::string& value);
+/// Like options_or_current, but each option keeps the raw `gpudriver` value and shows gpu_driver_label().
+std::vector<Option> gpu_driver_options(const LazyList& l, const std::string& current);
 
 }  // namespace msys
 }  // namespace zf

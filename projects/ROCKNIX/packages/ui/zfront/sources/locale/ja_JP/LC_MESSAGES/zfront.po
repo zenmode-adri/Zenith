@@ -1,0 +1,2366 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: ja_JP\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "ゲームリストが破損しています"
+
+msgid "Not available yet"
+msgstr "まだ利用できません"
+
+msgid "Game lists updated"
+msgstr "ゲームリストを更新しました"
+
+msgid "COVERS ADDED"
+msgstr "カバー画像を追加しました"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "このゲームはパフォーマンスモードで改善する可能性があります"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "このゲームはパフォーマンスモードで快適になる可能性があります"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "このゲームのパフォーマンスモードをオンにする"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "このゲームはパフォーマンスモードがオンです"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "このゲームはパフォーマンスモードでより快適に動作する可能性があります。プレイ中はGPUとメモリが全速で動作します。"
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "パフォーマンスモードを提案しない"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "このゲームにはパフォーマンスモードを二度と提案しません。"
+
+msgid "BATTERY"
+msgstr "バッテリー"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "データがまだ足りません"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "バッテリー駆動でこのゲームを5分以上プレイすると、ここに目安が表示されます。"
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "現在の残量で、このゲームの直近のプレイでの消費ペースの場合。"
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "現在の残量で。このゲームのプレイ記録がないため、システムの平均を使用しています。"
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "現在の残量で。このシステムのプレイ記録がないため、全ゲームの平均を使用しています。"
+
+msgid "Never"
+msgstr "なし"
+
+msgid "What used the most"
+msgstr "消費が多いもの"
+
+msgid "Since the last full charge. Estimated."
+msgstr "前回の満充電以降。推定値です。"
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "まだ計測データがありません。プレイすると表示されます。"
+
+msgid "Asleep"
+msgstr "スリープ中"
+
+msgid "Menus and system"
+msgstr "メニューとシステム"
+
+msgid "Screen"
+msgstr "画面"
+
+msgid "Charging"
+msgstr "充電中"
+
+msgid "About"
+msgstr "約"
+
+msgid "Since full"
+msgstr "満充電から"
+
+msgid "Using now"
+msgstr "現在の消費"
+
+msgid "Last hours"
+msgstr "直近の時間"
+
+msgid "Now"
+msgstr "現在"
+
+msgid "More settings"
+msgstr "その他の設定"
+
+msgid "Power saver"
+msgstr "省電力"
+
+msgid "Screensaver after"
+msgstr "スクリーンセーバーまで"
+
+msgid "Turn on by itself at"
+msgstr "自動でオンにする残量"
+
+msgid "ADJUST"
+msgstr "調整"
+
+msgid "Action"
+msgstr "アクション"
+
+msgid "Adult"
+msgstr "アダルト"
+
+msgid "Adventure"
+msgstr "アドベンチャー"
+
+msgid "Beat'em Up"
+msgstr "ベルトスクロールアクション"
+
+msgid "Casino"
+msgstr "カジノ"
+
+msgid "Casual Game"
+msgstr "カジュアルゲーム"
+
+msgid "Hunting and Fishing"
+msgstr "狩猟・釣り"
+
+msgid "Fight"
+msgstr "対戦格闘"
+
+msgid "Race, Driving"
+msgstr "レース・ドライブ"
+
+msgid "Demo"
+msgstr "デモ"
+
+msgid "Pinball"
+msgstr "ピンボール"
+
+msgid "Playing cards"
+msgstr "トランプ"
+
+msgid "Role playing games"
+msgstr "ロールプレイング"
+
+msgid "Asiatic board game"
+msgstr "アジアのボードゲーム"
+
+msgid "Educational"
+msgstr "教育"
+
+msgid "Music and Dance"
+msgstr "音楽・ダンス"
+
+msgid "Platform"
+msgstr "プラットフォーム"
+
+msgid "Puzzle-Game"
+msgstr "パズル"
+
+msgid "Quiz"
+msgstr "クイズ"
+
+msgid "Reflection"
+msgstr "思考"
+
+msgid "Shoot'em Up"
+msgstr "シューティング(STG)"
+
+msgid "Simulation"
+msgstr "シミュレーション"
+
+msgid "Sports"
+msgstr "スポーツ"
+
+msgid "Sports with Animals"
+msgstr "動物スポーツ"
+
+msgid "Strategy"
+msgstr "ストラテジー"
+
+msgid "Shooter"
+msgstr "シューター"
+
+msgid "Not set"
+msgstr "未設定"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "月"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "日"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "火"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "水"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "金"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "土"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "木"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "4月"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "2月"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "1月"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "6月"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "3月"
+
+msgctxt "date"
+msgid "May"
+msgstr "5月"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "8月"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "12月"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "7月"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "11月"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "10月"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "9月"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "ゲームデータを保存できませんでした"
+
+msgid "Could not save the settings"
+msgstr "設定を保存できませんでした"
+
+msgid "FILTER BY"
+msgstr "絞り込み条件"
+
+msgid "FAVORITES ONLY"
+msgstr "お気に入りのみ"
+
+msgid "LIST"
+msgstr "リスト"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "選択したテーマを読み込めません。Zenithを使用します"
+
+msgid "PAGE"
+msgstr "ページ"
+
+msgid "Could not show this page"
+msgstr "このページを表示できません"
+
+msgid "INSTALLED"
+msgstr "インストール済み"
+
+msgid "SMART COLLECTIONS"
+msgstr "スマートコレクション"
+
+msgid "EDIT FILTERS"
+msgstr "フィルタを編集"
+
+msgid "NO OPTIONS"
+msgstr "オプションなし"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "'%s'を削除してもよろしいですか?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "フィルタは後でカスタムゲームコレクションで設定してください。"
+
+msgid "Restart the front-end to apply the changes."
+msgstr "変更を反映するにはフロントエンドを再起動してください。"
+
+msgid "Could not save the setting"
+msgstr "設定を保存できませんでした"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "コントローラーをプレイヤーに割り当て"
+
+msgid "Could not start Bluetooth"
+msgstr "Bluetoothを開始できませんでした"
+
+msgid "Searching..."
+msgstr "検索中..."
+
+msgid "CONTROLLERS"
+msgstr "コントローラー"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "決定とキャンセルのボタンを入れ替え"
+
+msgid "ENABLE RUMBLE"
+msgstr "振動を有効にする"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "RetroArchのホットキーを自動設定"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "接続中のコントローラー"
+
+msgid "Not configured"
+msgstr "未設定"
+
+msgid "Unknown controller"
+msgstr "不明なコントローラー"
+
+msgid "PAIRED"
+msgstr "ペアリング済み"
+
+msgid "Could not pair"
+msgstr "ペアリングできませんでした"
+
+msgid "Connected"
+msgstr "接続済み"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "すべてのBluetoothデバイスを削除しますか?"
+
+msgid "Could not disconnect"
+msgstr "切断できませんでした"
+
+msgid "Could not connect"
+msgstr "接続できませんでした"
+
+msgid "Could not remove"
+msgstr "削除できませんでした"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "Aボタン / 東"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "Bボタン / 南"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "Xボタン / 北"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "Yボタン / 西"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "左スティック押し込み"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "右スティック押し込み"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "ホットキー有効化"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "内蔵コントローラー"
+
+msgid "GAMEPAD DETECTED"
+msgstr "ゲームパッドを検出しました"
+
+msgid "GAMEPADS DETECTED"
+msgstr "ゲームパッドを検出しました"
+
+msgid "PRESS B TO CANCEL."
+msgstr "Bボタンでキャンセル。"
+
+msgid "Could not save the controller configuration"
+msgstr "コントローラーの設定を保存できませんでした"
+
+msgid "Controller configuration saved"
+msgstr "コントローラーの設定を保存しました"
+
+msgid "Controller configuration cancelled"
+msgstr "コントローラーの設定をキャンセルしました"
+
+msgid "Controller disconnected"
+msgstr "コントローラーが切断されました"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "そのまま押し続けるとキャンセル"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "いずれかのボタンを3秒間押し続けるとキャンセルします。"
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "ボタンを押し続けるとスキップ、さらに押し続けるとキャンセルします。"
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "すべてのボタンの設定が完了しました"
+
+msgid "set"
+msgstr "設定済み"
+
+msgid "skipped"
+msgstr "スキップ"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "ホットキーボタンが割り当てられていません。コントローラーでゲームを終了するために必要です。"
+
+msgid "DATE & TIME"
+msgstr "日付と時刻"
+
+msgid "MONTH"
+msgstr "月"
+
+msgid "DAY"
+msgstr "日"
+
+msgid "HOUR"
+msgstr "時"
+
+msgid "MINUTE"
+msgstr "分"
+
+msgid "SET DATE & TIME"
+msgstr "日付と時刻を設定"
+
+msgid "Date and time set"
+msgstr "日付と時刻を設定しました"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Wi-Fiに接続すると時刻は自動で設定されます。"
+
+msgid "That folder is protected"
+msgstr "そのフォルダは保護されています"
+
+msgid "Outside the allowed folders"
+msgstr "許可されたフォルダの外です"
+
+msgid "Not enough free space"
+msgstr "空き容量が足りません"
+
+msgid "That name already exists"
+msgstr "その名前はすでに存在します"
+
+msgid "Cancelled"
+msgstr "キャンセルしました"
+
+msgid "A folder cannot go into itself"
+msgstr "フォルダを自身の中には入れられません"
+
+msgid "That name is not valid"
+msgstr "その名前は使用できません"
+
+msgid "Not found"
+msgstr "見つかりません"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "4 GBを超えるファイルはこのカードに保存できません"
+
+msgid "This card does not accept that name"
+msgstr "このカードではその名前は使用できません"
+
+msgid "This location is read-only"
+msgstr "この場所は読み取り専用です"
+
+msgid "An error occurred"
+msgstr "エラーが発生しました"
+
+msgid "%s of %s done"
+msgstr "%s / %s 完了"
+
+msgid "item"
+msgstr "件"
+
+msgid "items"
+msgstr "件"
+
+msgid "link skipped"
+msgstr "リンクをスキップ"
+
+msgid "links skipped"
+msgstr "リンクをスキップ"
+
+msgid "This can't be undone."
+msgstr "この操作は元に戻せません。"
+
+msgid "Files"
+msgstr "ファイル"
+
+msgid "selected"
+msgstr "選択中"
+
+msgid "Cannot read this folder"
+msgstr "このフォルダを読み取れません"
+
+msgid "This folder is empty"
+msgstr "このフォルダは空です"
+
+msgid "free"
+msgstr "空き"
+
+msgid "File"
+msgstr "ファイル"
+
+msgid "Folder"
+msgstr "フォルダ"
+
+msgid "Link"
+msgstr "リンク"
+
+msgid "Properties"
+msgstr "プロパティ"
+
+msgid "Copy"
+msgstr "コピー"
+
+msgid "Move"
+msgstr "移動"
+
+msgid "Paste here"
+msgstr "ここに貼り付け"
+
+msgid "Rename"
+msgstr "名前を変更"
+
+msgid "New folder"
+msgstr "新規フォルダ"
+
+msgid "Delete"
+msgstr "削除"
+
+msgid "Select all"
+msgstr "すべて選択"
+
+msgid "Clear selection"
+msgstr "選択を解除"
+
+msgid "Date"
+msgstr "日付"
+
+msgid "Size"
+msgstr "サイズ"
+
+msgid "Sort by"
+msgstr "並び替え"
+
+msgid "Hide hidden files"
+msgstr "隠しファイルを非表示"
+
+msgid "Show hidden files"
+msgstr "隠しファイルを表示"
+
+msgid "Actions"
+msgstr "操作"
+
+msgid "Home"
+msgstr "ホーム"
+
+msgid "Games"
+msgstr "ゲーム"
+
+msgid "Game card"
+msgstr "ゲームカード"
+
+msgid "USB drive"
+msgstr "USBドライブ"
+
+msgid "Screenshots"
+msgstr "スクリーンショット"
+
+msgid "Go to"
+msgstr "移動先"
+
+msgid "Ready to copy"
+msgstr "コピーの準備完了"
+
+msgid "Ready to move"
+msgstr "移動の準備完了"
+
+msgid "Warning"
+msgstr "警告"
+
+msgid "Cancel"
+msgstr "キャンセル"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "これはシステムファイルです。名前を変更すると本体が動作しなくなる可能性があります。"
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "これはシステムファイルです。削除すると本体が動作しなくなる可能性があります。"
+
+msgid "Wait for the other job"
+msgstr "他の処理が終わるまでお待ちください"
+
+msgid "Copied"
+msgstr "コピーしました"
+
+msgid "Deleted"
+msgstr "削除しました"
+
+msgid "Moved"
+msgstr "移動しました"
+
+msgid "originals kept"
+msgstr "元のファイルは保持"
+
+msgid "Copying"
+msgstr "コピー中"
+
+msgid "Deleting"
+msgstr "削除中"
+
+msgid "Moving"
+msgstr "移動中"
+
+msgid "Calculating..."
+msgstr "計算中..."
+
+msgid "Back"
+msgstr "戻る"
+
+msgid "Close"
+msgstr "閉じる"
+
+msgid "Mark"
+msgstr "選択"
+
+msgid "Open"
+msgstr "開く"
+
+msgid "Page"
+msgstr "ページ"
+
+msgid "WHILE PLAYING"
+msgstr "プレイ中"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "起動時に前回のゲームを再開"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "起動時に前回のゲームをオートセーブから開始します。Bでキャンセル。"
+
+msgid "HOME MENU DURING GAMES"
+msgstr "ゲーム中のホームメニュー"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "試験的機能です。ゲーム中にSTARTと選択したショルダーボタンを1秒間押し続けると、ゲームを一時停止してバッテリー、輝度、音量、再開、ゲーム終了のパネルを開きます(ステートセーブとステートロードはRetroArchのネットワークコマンドがオンの場合のみ)。"
+
+msgid "HOME MENU BUTTONS"
+msgstr "ホームメニューのボタン"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "STARTと同時に押してホームメニューを開くボタンです。セレクトを使う組み合わせはRetroArchが使用します。"
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "パフォーマンスの提案"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "GPUガバナーが性能を抑えているゲームにパフォーマンスモードを提案します。"
+
+msgid "PLAY TIME LIMIT"
+msgstr "プレイ時間の制限"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "1日にプレイできる時間です。終了の5分前にメッセージが表示され(ゲーム内ではRetroArchのネットワークコマンドがオンの場合のみ)、その後ゲームが終了します。この設定をオンにした時点から計測を開始します。"
+
+msgid "SAVED GAMES"
+msgstr "セーブデータ"
+
+msgid "PICTURE AND CONTROL"
+msgstr "映像と操作"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "MOONLIGHTゲームストリーミング"
+
+msgid "MORE"
+msgstr "その他"
+
+msgid "PLAY STATISTICS"
+msgstr "プレイ統計"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "システム別オプション"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "パフォーマンスモード"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "プレイ中はGPUとメモリを全速で動作"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "不明なシステム"
+
+msgid "EMULATOR"
+msgstr "エミュレーター"
+
+msgid "The emulator and core that run this."
+msgstr "これを実行するエミュレーターとコアです。"
+
+msgid "SYSTEM OPTIONS"
+msgstr "システムオプション"
+
+msgid "DISPLAY"
+msgstr "表示"
+
+msgid "GAMEPLAY"
+msgstr "ゲームプレイ"
+
+msgid "ACTIONS"
+msgstr "操作"
+
+msgid "RANDOM GAME"
+msgstr "ランダムゲーム"
+
+msgid "COOLING PROFILE"
+msgstr "冷却プロファイル"
+
+msgid "AGGRESSIVE"
+msgstr "積極的"
+
+msgid "MODERATE"
+msgstr "標準"
+
+msgid "QUIET"
+msgstr "静音"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "CPUスケーリングガバナー"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GPUスケーリングガバナー"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "MangoHudオーバーレイ"
+
+msgid "UNKNOWN GAME"
+msgstr "不明なゲーム"
+
+msgid "INVALID DATE"
+msgstr "無効な日付"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "ゲームを削除できませんでした"
+
+msgid "CONFIG"
+msgstr "設定"
+
+msgid "CORE PROVIDED"
+msgstr "コア指定"
+
+msgid "FULL"
+msgstr "全画面"
+
+msgid "SQUARE PIXEL"
+msgstr "スクエアピクセル"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "パネル調整"
+
+msgid "SCREEN & SOUND"
+msgstr "画面とサウンド"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "待機中"
+
+msgid "MONITORING"
+msgstr "モニタリング"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "オーバークロックとモニタリング"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "バッテリーとパフォーマンス"
+
+msgid "LIBRARY"
+msgstr "ライブラリ"
+
+msgid "CHECK LIBRARY"
+msgstr "ライブラリを確認"
+
+msgid "SAVE BACKUPS"
+msgstr "セーブのバックアップ"
+
+msgid "LANGUAGE & TIME"
+msgstr "言語と時刻"
+
+msgid "HOME MENU"
+msgstr "ホームメニュー"
+
+msgid "CHARGING"
+msgstr "充電中"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "画面の輝度"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "ステートセーブを上書きしますか?"
+
+msgid "LOAD STATE"
+msgstr "ステートロード"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "ステートセーブを読み込みますか?未保存の進行状況は失われます。"
+
+msgid "RESUME"
+msgstr "再開"
+
+msgid "QUIT GAME"
+msgstr "ゲームを終了"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "本当にゲームを終了しますか?"
+
+msgid "AND MORE"
+msgstr "ほか"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "問題は見つかりませんでした"
+
+msgid "PROBLEMS FOUND"
+msgstr "問題が見つかりました"
+
+msgid "MISSING BIOS"
+msgstr "BIOSがありません"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "破損の可能性があるファイル"
+
+msgid "DUPLICATES"
+msgstr "重複"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "画像のないゲーム"
+
+msgid "NETWORK"
+msgstr "ネットワーク"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "コントローラーとBluetooth"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "開発専用:メニューフレームワークのすべてのウィジェット。"
+
+msgid "WIDGET DEMO"
+msgstr "ウィジェットデモ"
+
+msgid "Unable to connect to server"
+msgstr "サーバーに接続できません"
+
+msgid "Succesfully paired with server"
+msgstr "サーバーとのペアリングに成功しました"
+
+msgid "QUIT CURRENT GAME"
+msgstr "現在のゲームを終了"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "MOONLIGHTのゲームを更新"
+
+msgid "PAIR WITH SERVER"
+msgstr "サーバーとペアリング"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "サーバーとのペアリングを解除"
+
+msgid "Unpaired and settings cleared"
+msgstr "ペアリングを解除し、設定を消去しました"
+
+msgid "Unpaired from server"
+msgstr "サーバーとのペアリングを解除しました"
+
+msgid "SERVER IP"
+msgstr "サーバーIP"
+
+msgid "PAIRING PIN"
+msgstr "ペアリングPIN"
+
+msgid "HOST"
+msgstr "ホスト"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "ネットプレイに参加"
+
+msgid "NETPLAY NICKNAME"
+msgstr "ネットプレイのニックネーム"
+
+msgid "NETPLAY HOST"
+msgstr "ネットプレイのホスト"
+
+msgid "NETPLAY PORT"
+msgstr "ネットプレイのポート"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Wi-Fiをオンにしています..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Wi-Fiの設定エラー"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fiはオンです"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fiはオフです"
+
+msgid "Wi-Fi region updated"
+msgstr "Wi-Fiの地域を更新しました"
+
+msgid "Please wait..."
+msgstr "お待ちください..."
+
+msgid "Local play mode updated"
+msgstr "ローカルプレイモードを更新しました"
+
+msgid "The service did not answer"
+msgstr "サービスから応答がありません"
+
+msgid "WI-FI"
+msgstr "Wi-Fi"
+
+msgid "WI-FI NETWORKS"
+msgstr "Wi-Fiネットワーク"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "電波法規を設定します。使用できるチャンネルが決まります。"
+
+msgid "TRANSFER FILES"
+msgstr "ファイル転送"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "このネットワーク上のスマートフォンやパソコンから本体にゲームを送信します。"
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "利用可能なIPアドレス:"
+
+msgid "LOCAL PLAY"
+msgstr "ローカルプレイ"
+
+msgid "LOCAL PLAY MODE"
+msgstr "ローカルプレイモード"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "他の本体とのネットプレイ用にアクセスポイントを開設します。"
+
+msgid "1 (HOST)"
+msgstr "1(ホスト)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2(クライアント1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3(クライアント2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4(クライアント3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ローカルプレイID"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH、USB、クラウド、VPN、本体の名前。"
+
+msgid "NETWORK SERVICES"
+msgstr "ネットワークサービス"
+
+msgid "ENABLE SSH"
+msgstr "SSHを有効にする"
+
+msgid "SSH is off"
+msgstr "SSHはオフです"
+
+msgid "SSH is on"
+msgstr "SSHはオンです"
+
+msgid "Remote access to the console over the network."
+msgstr "ネットワーク経由で本体にリモートアクセスします。"
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "簡易HTTPサーバーを有効にする"
+
+msgid "HTTP server is off"
+msgstr "HTTPサーバーはオフです"
+
+msgid "HTTP server is on"
+msgstr "HTTPサーバーはオンです"
+
+msgid "FILE TRANSFER"
+msgstr "ファイル転送"
+
+msgid "USB GADGET FUNCTION"
+msgstr "USBガジェット機能"
+
+msgid "USB networking is on. The console is at"
+msgstr "USBネットワークはオンです。本体のアドレス:"
+
+msgid "What the console offers on its USB-C port."
+msgstr "本体のUSB-Cポートで提供する機能です。"
+
+msgid "CLOUD SERVICES"
+msgstr "クラウドサービス"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "クラウドドライブをマウント"
+
+msgid "Cloud drive mounted"
+msgstr "クラウドドライブをマウントしました"
+
+msgid "Cloud drive unmounted"
+msgstr "クラウドドライブをアンマウントしました"
+
+msgid "VPN SERVICES"
+msgstr "VPNサービス"
+
+msgid "WIREGUARD VPN"
+msgstr "WireGuard VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuardはオフです"
+
+msgid "WireGuard is on"
+msgstr "WireGuardはオンです"
+
+msgid "TAILSCALE VPN"
+msgstr "Tailscale VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscaleはオフです"
+
+msgid "Tailscale is on"
+msgstr "Tailscaleはオンです"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscaleに接続できませんでした"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscaleにログインが必要です"
+
+msgid "SHOW LINK"
+msgstr "リンクを表示"
+
+msgid "TAILSCALE LOGIN"
+msgstr "Tailscaleログイン"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "Tailscale再認証:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "英字、数字、ハイフンのみ使用できます"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "ホスト名を保存しました。次回の起動時に反映されます"
+
+msgid "The new name is used at the next boot."
+msgstr "新しい名前は次回の起動時から使われます。"
+
+msgid "WEB FILE TRANSFER"
+msgstr "Webファイル転送"
+
+msgid "Could not start the web transfer"
+msgstr "Web転送を開始できませんでした"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "このネットワーク上のスマートフォンやパソコンから本体にゲームを送信できます。"
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "開始できません(ポートが使用中?)"
+
+msgid "WEB ADDRESS"
+msgstr "Webアドレス"
+
+msgid "WEB PIN"
+msgstr "Web PIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "ネットワークドライブ(Samba)"
+
+msgid "ENABLE SAMBA"
+msgstr "Sambaを有効にする"
+
+msgid "Samba is off"
+msgstr "Sambaはオフです"
+
+msgid "Samba is on"
+msgstr "Sambaはオンです"
+
+msgid "Shares the games folder with other computers."
+msgstr "ゲームフォルダを他のパソコンと共有します。"
+
+msgid "SAMBA ADDRESS"
+msgstr "Sambaアドレス"
+
+msgid "SAMBA USER"
+msgstr "Sambaユーザー"
+
+msgid "SAMBA PASSWORD"
+msgstr "Sambaパスワード"
+
+msgid "Connecting to"
+msgstr "接続中:"
+
+msgid "Connected successfully"
+msgstr "接続しました"
+
+msgid "Failed to connect"
+msgstr "接続に失敗しました"
+
+msgid "SAVED"
+msgstr "保存済み"
+
+msgid "ENTERPRISE"
+msgstr "エンタープライズ"
+
+msgid "SECURED"
+msgstr "保護あり"
+
+msgid "Enterprise networks are not supported"
+msgstr "エンタープライズネットワークには対応していません"
+
+msgid "Network forgotten"
+msgstr "ネットワークを削除しました"
+
+msgid "WI-FI KEY FOR "
+msgstr "Wi-Fiキー: "
+
+msgid "CONNECTING..."
+msgstr "接続中..."
+
+msgid "WI-FI SSID"
+msgstr "Wi-Fi SSID"
+
+msgid "WI-FI KEY"
+msgstr "Wi-Fiキー"
+
+msgid "REALLY SUSPEND ?"
+msgstr "本当にスリープしますか?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "本当にシャットダウンしますか?"
+
+msgid "REALLY RESTART?"
+msgstr "本当に再起動しますか?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "本当にフロントエンドを再起動しますか?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "フロントエンドを再起動"
+
+msgid "TEST ACCOUNT"
+msgstr "アカウントをテスト"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "ユーザー名とパスワードをretroachievements.orgで確認します。"
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "RETROACHIEVEMENTSに接続中"
+
+msgid "LOGGED IN"
+msgstr "ログイン済み"
+
+msgid "LED NOTIFICATIONS"
+msgstr "LED通知"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "メインメニューにRetroAchievementsの項目を表示します。"
+
+msgid "NO SAVES FOUND"
+msgstr "セーブデータが見つかりません"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "空き容量が足りません"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "この1分以内のバックアップがすでにあります"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "バックアップが破損しているか見つかりません"
+
+msgid "BACKUP DONE"
+msgstr "バックアップが完了しました"
+
+msgid "SAVES RESTORED"
+msgstr "セーブデータを復元しました"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "クラウドバックアップが完了しました"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "クラウドバックアップに失敗しました"
+
+msgid "BEFORE A RESTORE"
+msgstr "復元前"
+
+msgid "BACK UP SAVES NOW"
+msgstr "今すぐセーブをバックアップ"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "セーブデータ、ステートセーブ、PSPのセーブ(ROMとメディアは含みません)"
+
+msgid "CLOUD BACKUP"
+msgstr "クラウドバックアップ"
+
+msgid "BACKUPS"
+msgstr "バックアップ"
+
+msgid "NO BACKUPS YET"
+msgstr "バックアップはまだありません"
+
+msgid "BACKUP DELETED"
+msgstr "バックアップを削除しました"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "現在のセーブデータを%sのものに置き換えます。その前に現在のセーブデータのバックアップを作成します。"
+
+msgid "RESTORE"
+msgstr "復元"
+
+msgid "DELETE BACKUP"
+msgstr "バックアップを削除"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "このバックアップを削除しますか?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "このビルドではScreenScraperに接続できません"
+
+msgid "ALL GAMES"
+msgstr "すべてのゲーム"
+
+msgid "GAMES TO SCRAPE"
+msgstr "スクレイプ対象のゲーム"
+
+msgid "WITH MISSING MEDIA"
+msgstr "メディア不足のもの"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "メディアなしのもの"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "選択したシステムのどのゲームを検索するかを指定します。"
+
+msgid "1 DAY"
+msgstr "1日"
+
+msgid "1 MONTH"
+msgstr "1か月"
+
+msgid "1 WEEK"
+msgstr "1週間"
+
+msgid "1 YEAR"
+msgstr "1年"
+
+msgid "15 DAYS"
+msgstr "15日"
+
+msgid "3 MONTHS"
+msgstr "3か月"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "この期間内にスクレイプしたゲームはスキップされ、リクエストを節約できます。"
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "不足メディアを自動取得"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "待機中にバックグラウンドで不足しているカバーをダウンロードします。"
+
+msgid "SCRAPER SETTINGS"
+msgstr "スクレイパー設定"
+
+msgid "ACCOUNT"
+msgstr "アカウント"
+
+msgid "Choose at least one system."
+msgstr "システムを1つ以上選択してください。"
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "ScreenScraperでゲームを検索します。"
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "ScreenScraperが認識するゲームのあるシステムがありません"
+
+msgid "PICTURES"
+msgstr "画像"
+
+msgid "IMAGE"
+msgstr "イメージ画像"
+
+msgid "BOX FRONT"
+msgstr "ボックス前面"
+
+msgid "TITLE SCREEN"
+msgstr "タイトル画面"
+
+msgid "The main picture of each game."
+msgstr "各ゲームのメイン画像です。"
+
+msgid "THUMBNAIL"
+msgstr "サムネイル"
+
+msgid "The small picture of each game."
+msgstr "各ゲームの小さな画像です。"
+
+msgid "LOGO"
+msgstr "ロゴ"
+
+msgid "The logo of each game."
+msgstr "各ゲームのロゴです。"
+
+msgid "WHEEL HD"
+msgstr "ホイールHD"
+
+msgid "FULL SIZE"
+msgstr "フルサイズ"
+
+msgid "IMAGE SIZE"
+msgstr "画像サイズ"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraperは画像を縮小して送信します。高速で軽量です。"
+
+msgid "AUTOMATIC"
+msgstr "自動"
+
+msgid "BRAZIL"
+msgstr "ブラジル"
+
+msgid "EUROPE"
+msgstr "ヨーロッパ"
+
+msgid "FRANCE"
+msgstr "フランス"
+
+msgid "GERMANY"
+msgstr "ドイツ"
+
+msgid "ITALY"
+msgstr "イタリア"
+
+msgid "JAPAN"
+msgstr "日本"
+
+msgid "SPAIN"
+msgstr "スペイン"
+
+msgid "USA"
+msgstr "アメリカ"
+
+msgid "WORLD"
+msgstr "世界"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "名前、日付、画像で優先する地域です。"
+
+msgid "NAMES"
+msgstr "名前"
+
+msgid "Replace the names of the games."
+msgstr "ゲームの名前を置き換えます。"
+
+msgid "DESCRIPTIONS"
+msgstr "説明"
+
+msgid "Replace the descriptions."
+msgstr "説明を置き換えます。"
+
+msgid "Download the rating of each game."
+msgstr "各ゲームの評価をダウンロードします。"
+
+msgid "RATINGS"
+msgstr "評価"
+
+msgid "EXTRA MEDIA"
+msgstr "追加メディア"
+
+msgid "VIDEOS"
+msgstr "動画"
+
+msgid "Videos are big and take longer to download."
+msgstr "動画はサイズが大きく、ダウンロードに時間がかかります。"
+
+msgid "MANUALS"
+msgstr "マニュアル"
+
+msgid "PDF manuals."
+msgstr "PDFマニュアル。"
+
+msgid "MAPS"
+msgstr "マップ"
+
+msgid "Maps of the game."
+msgstr "ゲームのマップ。"
+
+msgid "Background pictures."
+msgstr "背景画像。"
+
+msgid "FANART"
+msgstr "ファンアート"
+
+msgid "BOX BACK"
+msgstr "ボックス背面"
+
+msgid "The back of the box."
+msgstr "ボックスの背面。"
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "「すべてのゲーム」の場合のみ:すでにある画像も再ダウンロードします。"
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "既存のメディアを置き換え"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "任意です。アカウントなしではScreenScraperのリクエスト数が非常に少なくなります。"
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDBにアカウントは不要です。"
+
+msgid "Asks IGDB for an access token."
+msgstr "IGDBにアクセストークンを要求します。"
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "ScreenScraperに利用上限を問い合わせます。"
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "SCREENSCRAPERに接続中"
+
+msgid "ANONYMOUS"
+msgstr "匿名"
+
+msgid "LOGIN"
+msgstr "ログイン"
+
+msgid "REQUESTS TODAY"
+msgstr "本日のリクエスト数"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "毎分のリクエスト数"
+
+msgid "STOP"
+msgstr "停止"
+
+msgid "SCROLL"
+msgstr "スクロール"
+
+msgid "SCRAPE COMPLETE"
+msgstr "スクレイプ完了"
+
+msgid "SCRAPE STOPPED"
+msgstr "スクレイプを停止しました"
+
+msgid "FOUND"
+msgstr "見つかった数"
+
+msgid "NOT FOUND"
+msgstr "見つからなかった数"
+
+msgid "ERRORS"
+msgstr "エラー"
+
+msgid "MEDIA FILES"
+msgstr "メディアファイル"
+
+msgid "READING GAME LISTS"
+msgstr "ゲームリストを読み込み中"
+
+msgid "STOPPING"
+msgstr "停止中"
+
+msgid "SECONDS"
+msgstr "秒"
+
+msgid "WAITING"
+msgstr "待機中"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "停止しました。処理済みの内容は保存されています"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "この条件ではスクレイプ対象のゲームがありません"
+
+msgid "GAMES"
+msgstr "ゲーム"
+
+msgid "PROBLEMS"
+msgstr "問題"
+
+msgid "MEDIA MISSING"
+msgstr "メディア不足"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "スイッチとスライダー"
+
+msgid "The clock shows in the top right corner."
+msgstr "時計は右上に表示されます。"
+
+msgid "Volume saved"
+msgstr "音量を保存しました"
+
+msgid "LISTS AND TEXT"
+msgstr "リストとテキスト"
+
+msgid "TEXT"
+msgstr "テキスト"
+
+msgid "WI-FI PASSWORD"
+msgstr "Wi-Fiパスワード"
+
+msgid "SHOW A TOAST"
+msgstr "トースト通知を表示"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fiに接続しました: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "音量バーを表示"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "輝度バーを表示"
+
+msgid "ASK A QUESTION"
+msgstr "質問を表示"
+
+msgid "Delete all saved states of this game?"
+msgstr "このゲームのステートセーブをすべて削除しますか?"
+
+msgid "SHOW A MESSAGE"
+msgstr "メッセージを表示"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "アップデートをインストールしました。使用するには本体を再起動してください。"
+
+msgid "Restart the system now?"
+msgstr "今すぐシステムを再起動しますか?"
+
+msgid "Restarting..."
+msgstr "再起動中..."
+
+msgid "DISABLED ENTRY"
+msgstr "無効な項目"
+
+msgid "SELECTOR STYLE"
+msgstr "セレクターのスタイル"
+
+msgid "TITLE ALIGNMENT"
+msgstr "タイトルの配置"
+
+msgid "LIST TEXT CASE"
+msgstr "リストの文字種"
+
+msgid "TEXT SIZE"
+msgstr "文字サイズ"
+
+msgid "HIGH CONTRAST"
+msgstr "ハイコントラスト"
+
+msgid "options"
+msgstr "オプション"
+
+msgid "AUDIO"
+msgstr "オーディオ"
+
+msgid "Could not change the audio output"
+msgstr "音声出力を変更できませんでした"
+
+msgid "BATTERY WARNING"
+msgstr "バッテリー警告"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "バッテリー警告音を有効にする"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "バッテリー警告のしきい値"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "本体の起動時、メニューより先にこのゲームを開始します。起動ごとに1回のみです。"
+
+msgid "Reboot now"
+msgstr "今すぐ再起動"
+
+msgid "Later"
+msgstr "あとで"
+
+msgid "Default"
+msgstr "標準"
+
+msgid "Arm (official)"
+msgstr "Arm(公式)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "オープンソース(Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "本日の残り時間"
+
+msgid "UPTIME"
+msgstr "稼働時間"
+
+msgid "No information available"
+msgstr "情報がありません"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "システム管理とリセット"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr "よろしいですか?\n\nこの操作は元に戻せません。"
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "設定をバックアップ"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr "警告:フロントエンドが再起動されます!\n\nスクリプトの完了後、ファイル /storage/roms/backup/ROCKNIX_BACKUP.zip を安全な場所にコピーしてください。コピーしないと次回の再起動時に削除されます!\n\n現在の設定をバックアップして再起動しますか?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "バックアップから復元"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr "警告:本体が再起動されます!\n\n現在の設定は上書きされます!\n\nバックアップから復元して再起動しますか?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "エミュレーター管理"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "RetroArchの設定を初期化"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr "警告:RetroArchの設定が初期状態に戻ります\n\nコアごとの設定は影響を受けず、バックアップは作成されません!\n\nRetroArchの設定を初期化しますか?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "オーバーレイを初期化(コア、チート、ジョイパッドなど)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr "警告:RetroArchのカスタムオーバーレイがすべて削除されます\n\nカスタムのコア、ジョイスティック、チートなども対象で、バックアップは作成されません!\n\nRetroArchのオーバーレイを初期化しますか?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "RetroArchを完全に初期化"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr "警告:RetroArchとユーザーが保存したすべての設定が初期状態に戻ります\n\nコアごとの設定も削除され、バックアップは作成されません!\n\nRetroArchを初期化しますか?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "Mednafenの設定を初期化"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr "警告:Mednafenの設定が初期状態に戻ります\n\nバックアップは作成されません!\n\nMednafenの設定を初期化しますか?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "単体エミュレーターの設定を初期化"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr "警告:単体エミュレーターの設定が初期状態に戻ります\n\nバックアップは作成されません!\n\n単体エミュレーターの設定を初期化しますか?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "PortMasterを完全に初期化"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr "警告:PortMasterが初期状態に戻ります\n\nバックアップは作成されません!\n\nPortMasterを初期化しますか?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "システム管理"
+
+msgid "AUDIO RESET"
+msgstr "オーディオをリセット"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr "警告:オーディオ設定が初期状態に戻り、システムが再起動されます!\n\nオーディオをリセットして再起動しますか?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "バッテリー残量計をリセット"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr "警告:PMICの残量計がリセットされ、システムの電源が切れます!\n\n充電器は接続せず、数秒後に本体の電源を入れ直してください。バッテリー残量は無負荷時の電圧から再推定され、満充電後に再び正確になります。\n\n残量計をリセットして電源を切りますか?"
+
+msgid "FACTORY RESET"
+msgstr "初期化(工場出荷状態)"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr "警告:データとその他すべての設定が初期状態に戻ります!\n\n設定を残したい場合は、この操作の前にバックアップを作成して外部ドライブに保存してください!\n\n続行する前にゲームカードを取り出してください!\n\nシステムを初期化して再起動しますか?"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "選択したレイアウトのキーボードバリアントを選びます(例:デッドキー、代替キー配列)。"
+
+msgid "TIMEZONE"
+msgstr "タイムゾーン"
+
+msgid "Run welcome again"
+msgstr "ウェルカム画面をもう一度表示"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "初回起動時のウェルカム画面(言語、Wi-Fi、タイムゾーン)をもう一度表示します。"
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "MangoHudオーバーレイを有効にする"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "タッチスクリーンキーボードを有効にする"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "ROCKNIXスクリーンショットを有効にする"
+
+msgid "SCREEN"
+msgstr "画面"
+
+msgid "CONTRAST"
+msgstr "コントラスト"
+
+msgid "GAMMA"
+msgstr "ガンマ"
+
+msgid "HUE"
+msgstr "色相"
+
+msgid "SATURATION"
+msgstr "彩度"
+
+msgid "LEDS"
+msgstr "LED"
+
+msgid "DISABLE POWER LED"
+msgstr "電源LEDを無効にする"
+
+msgid "LED COLOR"
+msgstr "LEDの色"
+
+msgid "JOYSTICK LED"
+msgstr "ジョイスティックLED"
+
+msgid "MAX"
+msgstr "最大"
+
+msgid "MID"
+msgstr "中"
+
+msgid "MIN"
+msgstr "最小"
+
+msgid "THIS DEVICE IS"
+msgstr "この本体は"
+
+msgid "Device will be switched on next reboot"
+msgstr "デバイスは次回の再起動時に切り替わります"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "ゲームカードを自動検出"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "ストレージ統合を有効にする"
+
+msgid "EXTERNAL"
+msgstr "外部"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "統合ストレージのプライマリカード"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "警告:プライマリカードを変更するとゲームにアクセスできなくなり、手動での修復が必要になる場合があります。続行しますか?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "microSDカードを取り出し"
+
+msgid "You may now remove the card."
+msgstr "カードを取り外しても大丈夫です。"
+
+msgid "PERFORMANCE"
+msgstr "パフォーマンス"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "標準のスケーリングガバナー"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "標準のGPUスケーリングガバナー"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "CPUオーバークロックを有効にする"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "GPUオーバークロックを有効にする"
+
+msgid "GPU DRIVER"
+msgstr "GPUドライバー"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "GPUドライバーは次回の再起動時に切り替わります"
+
+msgid "Restarting to apply the theme"
+msgstr "テーマを反映するため再起動中"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "テーマを反映するためフロントエンドが再起動します"
+
+msgid "Dark"
+msgstr "ダーク"
+
+msgid "Light"
+msgstr "ライト"
+
+msgid "Theme default"
+msgstr "テーマの標準"
+
+msgid "Filled"
+msgstr "塗りつぶし"
+
+msgid "Outline"
+msgstr "アウトライン"
+
+msgid "Side bar"
+msgstr "サイドバー"
+
+msgid "Underline"
+msgstr "下線"
+
+msgid "Centered"
+msgstr "中央"
+
+msgid "Left"
+msgstr "左"
+
+msgid "Lowercase"
+msgstr "小文字"
+
+msgid "Uppercase"
+msgstr "大文字"
+
+msgid "EXTRA LARGE"
+msgstr "特大"
+
+msgid "LARGE"
+msgstr "大"
+
+msgid "SMALL"
+msgstr "小"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "メニュー、ダイアログ、ヘルプバーの文字サイズ"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "純白または純黒の文字、不透明なパネル、太いセレクター"
+
+msgid "CONTROL OPTIONS"
+msgstr "操作オプション"
+
+msgid "TOP BAR"
+msgstr "トップバー"
+
+msgid "BEDSIDE CLOCK"
+msgstr "枕元の時計"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "充電器を接続中に本体を操作しない状態がこの時間続くと、スクリーンセーバーの代わりに大きな時計を表示します。いずれかのボタンで閉じます。ゲーム中は表示されません。"
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "ダウンロードをキャンセルできませんでした"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "ダウンロードをキャンセルしました"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "アップデートをダウンロードできませんでした。接続を確認して、もう一度お試しください。"
+
+msgid "No update source available"
+msgstr "利用可能なアップデート元がありません"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "次回のアップデートを強制"
+
+msgid "UPDATING"
+msgstr "アップデート中"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "ダウンロードをキャンセル"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "ダウンロードをキャンセルしますか?途中までのファイルは削除されます。"
+
+msgid "Checking..."
+msgstr "確認中..."
+
+msgid "available"
+msgstr "利用可能"
+
+msgid "SKIP ALL"
+msgstr "すべてスキップ"
+
+msgid "Welcome"
+msgstr "ようこそ"
+
+msgid "of"
+msgstr "/"
+
+msgid "Choose your language"
+msgstr "言語を選択してください"
+
+msgid "Language"
+msgstr "言語"
+
+msgid "You can change it later in System."
+msgstr "あとでシステム設定から変更できます。"
+
+msgid "Connect to WiFi"
+msgstr "Wi-Fiに接続"
+
+msgid "WiFi"
+msgstr "Wi-Fi"
+
+msgid "Clock, updates and file transfer."
+msgstr "時計、アップデート、ファイル転送。"
+
+msgid "Continue"
+msgstr "続ける"
+
+msgid "Not now"
+msgstr "今はしない"
+
+msgid "Choose a network"
+msgstr "ネットワークを選択"
+
+msgid "Choose another network"
+msgstr "別のネットワークを選択"
+
+msgid "Where are you?"
+msgstr "お住まいの地域は?"
+
+msgid "Time zone"
+msgstr "タイムゾーン"
+
+msgid "Sets your local time."
+msgstr "現地時刻を設定します。"
+
+msgid "Keep UTC"
+msgstr "UTCのままにする"
+
+msgid "LOADING..."
+msgstr "読み込み中..."
+
+msgid "All set"
+msgstr "準備完了"
+
+msgid "Add games from your phone"
+msgstr "スマートフォンからゲームを追加"
+
+msgid "Network"
+msgstr "ネットワーク"
+
+msgid "Start opens the menu"
+msgstr "STARTでメニューを開く"
+
+msgid "anywhere"
+msgstr "どこでも"
+
+msgid "Screen looks wrong?"
+msgstr "画面の表示がおかしい?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "プレイ開始"
+
+msgid "PLAY THEME MUSIC"
+msgstr "テーマ音楽を再生"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "ネットワークに接続されていません"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "バッテリー使用量(満充電から)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "合計プレイ時間"
+
+msgid "LAST FIVE WEEKS"
+msgstr "直近5週間"
+
+msgid "2 WEEKS AGO"
+msgstr "2週間前"
+
+msgid "3 WEEKS AGO"
+msgstr "3週間前"
+
+msgid "4 WEEKS AGO"
+msgstr "4週間前"
+
+msgid "THIS WEEK"
+msgstr "今週"
+
+msgid "MOST PLAYED GAMES"
+msgstr "よくプレイしたゲーム"
+
+msgid "TIME PER SYSTEM"
+msgstr "システム別の時間"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "まだプレイ記録がありません。ゲームをプレイするとここに表示されます。"
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "本日のプレイ時間は残り%d分です"
+
+msgid "Power saver on"
+msgstr "省電力オン"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "RETROACHIEVEMENTSから予期しない応答がありました"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "このビルドでは利用できません"
+
+msgid "%i min ago"
+msgstr "%i分前"
+
+msgid "%i h ago"
+msgstr "%i時間前"
+
+msgid "%i d ago"
+msgstr "%i日前"
+
+msgid "CONTINUE PLAYING"
+msgstr "続きからプレイ"
+
+msgid "START NOW"
+msgstr "今すぐ開始"
+
+msgid "RESUMING"
+msgstr "再開中"
+
+msgid "STARTING IN %i"
+msgstr "%i秒後に開始"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "ハック"
+
+msgid "Homebrew"
+msgstr "自作ソフト"
+
+msgid "Minis"
+msgstr "ミニ"
+
+msgid "Vertical"
+msgstr "縦画面"
+
+msgid "recently added"
+msgstr "最近追加"
+
+msgid "unfinished"
+msgstr "未クリア"
+
+msgid "most played this week"
+msgstr "今週のよくプレイ"
+
+msgid "BOOKS"
+msgstr "書籍"
+
+msgid "screenshots"
+msgstr "スクリーンショット"
+
+msgid "media player"
+msgstr "メディアプレイヤー"
+
+msgid "NETWORK ERROR"
+msgstr "ネットワークエラー"
+
+msgid "SERVER BUSY"
+msgstr "サーバーが混雑しています"
+
+msgid "SERVER ERROR"
+msgstr "サーバーエラー"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "ゲームリストを書き込めません"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "ログインに失敗しました。ユーザー名とパスワードを確認してください"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "現在このアカウントはScreenScraperを利用できません"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "ScreenScraperはメンテナンス中です"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "このソフトウェアはScreenScraperにブロックされています"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "本日のスクレイプ上限に達しました。明日もう一度お試しください"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "本日、認識できないROMが多すぎます。明日もう一度お試しください"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "カードに空き容量がありません"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "先にアカウントでIGDBのクライアントIDとシークレットを入力してください"
+
+msgid "SCRAPING STOPPED"
+msgstr "スクレイプを停止しました"
+
+msgid "GAME NOT FOUND"
+msgstr "ゲームが見つかりません"
+
+msgid "NO OTHER GAME"
+msgstr "ほかのゲームはありません"
+
+msgid "Time is up for today"
+msgstr "本日の時間は終了しました"
+
+msgid "ACCENTS"
+msgstr "アクセント"
+
+msgid "SHOW"
+msgstr "表示"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "動画プレビューを表示"
+
+msgid "Device paired"
+msgstr "デバイスをペアリングしました"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "このデバイスを許可しますか?"
+
+msgid "RECEIVED"
+msgstr "受信済み"
+
+msgid "QR CODE"
+msgstr "QRコード"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "たった今"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d分前"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d時間前"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d日前"
+
+msgid "NO PAIRED DEVICES"
+msgstr "ペアリング済みのデバイスはありません"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "このデバイスを削除しますか?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "すべてのデバイスを削除"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "すべてのデバイスを削除しますか?"
+
+msgid "PAIRED DEVICES"
+msgstr "ペアリング済みのデバイス"
+
+msgid "SHOW QR CODE"
+msgstr "QRコードを表示"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "スマートフォンのカメラで読み取ると、ページが開きPINも自動で入力されます。"
+
+msgid "Phones that need no PIN."
+msgstr "PINが不要なスマートフォン。"
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "Webからセーブデータを復元しますか?"
+
+msgid "BUILD ID"
+msgstr "ビルドID"
+
+msgid "KERNEL"
+msgstr "カーネル"
+
+msgid "OPERATING SYSTEM"
+msgstr "オペレーティングシステム"
+
+msgid "SYSTEM INFORMATION"
+msgstr "システム情報"
+
+msgid "BATTERY INFORMATION"
+msgstr "バッテリー情報"
+
+msgid "DISK SPACE"
+msgstr "ディスク容量"
+
+msgid "HOST NAME"
+msgstr "ホスト名"
+
+msgid "NETWORK INFORMATION"
+msgstr "ネットワーク情報"
+
+msgid "BATTERY HEALTH"
+msgstr "バッテリーの状態"
+
+msgid "BATTERY REMAINING"
+msgstr "バッテリー残量"
+
+msgid "BATTERY STATE"
+msgstr "充電状態"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "CPU情報"
+
+msgid "CPU TEMPERATURE"
+msgstr "CPU温度"
+
+msgid "CPU FAN"
+msgstr "CPUファン"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "GPU現在の周波数"
+
+msgid "GPU INFORMATION"
+msgstr "GPU情報"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "GPU最大周波数"
+
+msgid "GPU TEMPERATURE"
+msgstr "GPU温度"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM空き容量"
+
+msgid "RAM CAPACITY"
+msgstr "RAM容量"
+
+msgid "RAM INFORMATION"
+msgstr "RAM情報"
+
+msgid "CURRENT FREQUENCY"
+msgstr "現在の周波数"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "最大周波数"
+
+msgid "DISCHARGING"
+msgstr "放電中"
+
+msgid "NOT CHARGING"
+msgstr "充電していません"
+
+msgid "Follows the language until you choose one here."
+msgstr "ここで選ぶまでは言語に合わせて変わります。"
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "ネットワークがありません。microSDカードをPCに挿し、各ゲームをroms内のそのシステムのフォルダー（例: roms/snes）にコピーしてください。またはWiFiに接続してここに戻り、スマートフォンからゲームを追加してください。"
+
+msgid "Add games"
+msgstr "ゲームを追加"
+
+msgid "left, in the menus"
+msgstr "残り(メニュー表示中の場合)"
+
+msgid "From your phone or microSD"
+msgstr "スマホまたはmicroSDから"
+
+msgid "Web transfer turned off"
+msgstr "Web転送をオフにしました"

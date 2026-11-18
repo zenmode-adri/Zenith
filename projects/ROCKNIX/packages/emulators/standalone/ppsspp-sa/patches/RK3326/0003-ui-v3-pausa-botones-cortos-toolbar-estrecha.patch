@@ -1,0 +1,83 @@
+--- a/UI/PauseScreen.cpp
++++ b/UI/PauseScreen.cpp
+@@ -253,6 +253,10 @@
+ 
+ 	auto pa = GetI18NCategory(I18NCat::PAUSE);
+ 	auto sy = GetI18NCategory(I18NCat::SYSTEM);
++	auto di = GetI18NCategory(I18NCat::DIALOG);
++	// With the small thumbnail only ~115 dp are left for the buttons at 640x480, and "Save State"/"Load State" need ~148 dp
++	// (the Button does not shrink its text, so it was clipped on both sides). The translated Dialog "Save"/"Load" need ~70 dp.
++	const bool shortLabels = smallThumb;
+ 
+ 	LinearLayout *lines = new LinearLayout(ORIENT_VERTICAL, compact ? new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT, 1.0f) : new LinearLayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+ 	lines->SetSpacing(2.0f);
+@@ -264,7 +268,7 @@
+ 
+ 	lines->Add(buttons);
+ 
+-	saveStateButton_ = buttons->Add(new Button(pa->T("Save State"), new LinearLayoutParams(0.0, Gravity::G_VCENTER)));
++	saveStateButton_ = buttons->Add(new Button(shortLabels ? di->T("Save") : pa->T("Save State"), new LinearLayoutParams(0.0, Gravity::G_VCENTER)));
+ 	saveStateButton_->OnClick.Handle(this, &SaveSlotView::OnSaveState);
+ 
+ 	fv->OnClick.Add([this](UI::EventParams &e) {
+@@ -274,7 +278,7 @@
+ 
+ 	if (SaveState::HasSaveInSlot(saveStatePrefix_, slot_)) {
+ 		if (!Achievements::HardcoreModeActive()) {
+-			loadStateButton_ = buttons->Add(new Button(pa->T("Load State"), new LinearLayoutParams(0.0, Gravity::G_VCENTER)));
++			loadStateButton_ = buttons->Add(new Button(shortLabels ? di->T("Load") : pa->T("Load State"), new LinearLayoutParams(0.0, Gravity::G_VCENTER)));
+ 			loadStateButton_->OnClick.Handle(this, &SaveSlotView::OnLoadState);
+ 		}
+ 
+@@ -392,7 +396,8 @@
+ 
+ 	using namespace UI;
+ 
+-	leftColumnItems->SetSpacing(10.0);
++	// Short screens (< 600 dp tall, 522 dp at 640x480): tighter rows so more of the list (and the Undo/Rewind buttons) is visible.
++	leftColumnItems->SetSpacing(g_display.dp_xres < 960.0f && g_display.dp_yres < 600.0f ? 4.0 : 10.0);
+ 	for (int i = 0; i < g_Config.iSaveStateSlotCount; i++) {
+ 		SaveSlotView *slot = leftColumnItems->Add(new SaveSlotView(saveStatePrefix_, i, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT, Gravity::G_HCENTER, Margins(0,0,0,0))));
+ 		slot->OnStateLoaded.Handle(this, &GamePauseScreen::OnState);
+@@ -424,7 +429,7 @@
+ 		new LinearLayout(ORIENT_VERTICAL, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT, Margins(0, 5, 0, 5))) :
+ 		new LinearLayout(ORIENT_HORIZONTAL, new LinearLayoutParams(Margins(10, 0, 0, 10)));
+ 	if (compact) {
+-		buttonRow->SetSpacing(5.0f);
++		buttonRow->SetSpacing(g_display.dp_yres < 600.0f ? 2.0f : 5.0f);
+ 	}
+ 	auto undoParams = [compact]() { return new LinearLayoutParams(compact ? FILL_PARENT : WRAP_CONTENT, WRAP_CONTENT); };
+ 	if (g_Config.bEnableStateUndo && !Achievements::HardcoreModeActive() && NetworkAllowSaveState()) {
+--- a/UI/MainScreen.cpp
++++ b/UI/MainScreen.cpp
+@@ -851,7 +851,15 @@
+ 	gameList_ = nullptr;
+ 
+ 	if (DisplayTopBar()) {
+-		LinearLayout *topBar = new LinearLayout(ORIENT_HORIZONTAL, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT, Margins(8, 0, 8, 0)));
++		// Narrow screens (< 740 dp wide, 697 dp at 640x480): the left pane is ~360 dp but the toolbar (home, upload, grid/list,
++		// refresh, gear) needs ~433 dp with 10 dp gaps, 64 dp buttons and 8 dp margins, so the gear fell off the screen.
++		// Tighter gaps (2), margins (4) and 48 dp refresh/gear buttons give ~340 dp.
++		const bool narrowBar = g_display.dp_xres < 740.0f;
++		const float barBtnW = narrowBar ? 48.0f : 64.0f;
++		LinearLayout *topBar = new LinearLayout(ORIENT_HORIZONTAL, new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT, narrowBar ? Margins(4, 0, 4, 0) : Margins(8, 0, 8, 0)));
++		if (narrowBar) {
++			topBar->SetSpacing(2.0f);
++		}
+ 		Add(topBar);
+ 
+ 		const bool pathOnSeparateLine = g_display.dp_xres < 1050 || portrait_;
+@@ -912,11 +920,11 @@
+ 		layoutChoice->AddChoice(ImageID("I_LINES"));
+ 		layoutChoice->SetSelection(*gridStyle_ ? 0 : 1, false);
+ 		layoutChoice->OnChoice.Handle(this, &GameBrowser::LayoutChange);
+-		topBar->Add(new Choice(ImageID("I_ROTATE_LEFT"), new LayoutParams(64.0f, 64.0f)))->OnClick.Add([=](UI::EventParams &e) {
++		topBar->Add(new Choice(ImageID("I_ROTATE_LEFT"), new LayoutParams(barBtnW, 64.0f)))->OnClick.Add([=](UI::EventParams &e) {
+ 			path_.Refresh();
+ 			Refresh();
+ 		});
+-		topBar->Add(new Choice(ImageID("I_GEAR"), new LayoutParams(64.0f, 64.0f)))->OnClick.Handle(this, &GameBrowser::GridSettingsClick);
++		topBar->Add(new Choice(ImageID("I_GEAR"), new LayoutParams(barBtnW, 64.0f)))->OnClick.Handle(this, &GameBrowser::GridSettingsClick);
+ 
+ 		if (*gridStyle_) {
+ 			gameList_ = new UI::GridLayoutList(UI::GridLayoutSettings(150*g_Config.fGameGridScale, 85*g_Config.fGameGridScale), new LinearLayoutParams(FILL_PARENT, WRAP_CONTENT, Margins(10, 0, 6, 0)));

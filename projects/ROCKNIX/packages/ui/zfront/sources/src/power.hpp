@@ -66,6 +66,12 @@ Session make_session(const Now& a, const Now& b, uint64_t secs);
 /// The session of the game that just ended (readings taken in game_started / game_ended); the next call returns an invalid one.
 Session take_session(uint64_t secs);
 
+/// Minutes left at the mean rate between two readings `secs` apart (charge used / time), from `b`'s charge. -1 under 3 min, on the charger,
+/// without a charge counter, or when the charge did not go down. The current of the moment is no use: in the HOME panel the game is paused.
+int minutes_left_at_mean(const Now& a, const Now& b, double secs);
+/// The same for the game that runs now: from `game_started` to this reading (the HOME panel shows it). -1 outside a game.
+int game_minutes_left();
+
 /// A game starts / ended (the frontend keeps waiting meanwhile, so these two lines are what measures it).
 void game_started(const std::string& name);
 void game_ended();

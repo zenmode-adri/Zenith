@@ -9,6 +9,7 @@
 #include "menu_game_int.hpp"
 #include "menu_startup.hpp"
 #include "netplay.hpp"
+#include "playtime.hpp"
 #include "registry.hpp"
 #include "homemenu.hpp"
 #include "resume_last.hpp"
@@ -21,8 +22,8 @@ using namespace detail;
 
 std::unique_ptr<Screen> make_game() {
   MenuSpec spec;
-  spec.title = tr("GAMES");
-  spec.title_key = N_("GAMES");
+  spec.title = tr("GAME SETTINGS");
+  spec.title_key = N_("GAME SETTINGS");
   spec.build = [](MenuBuilder& m, Ctx& cx) {
     const FeatureDb& db = features();
     startup_stop_entry(m, cx);  // ES: STOP LAUNCHING THIS GAME AT STARTUP, only while one is set
@@ -33,12 +34,23 @@ std::unique_ptr<Screen> make_game() {
     conf_switch(s.b(), cx, tr("RESUME LAST GAME AT STARTUP"), resume::kKey, "1", "")
         .hint(tr("Starts your last game from its autosave at boot. B cancels."));
     // EXPERIMENTAL (homemenu.hpp): off by default
-    conf_switch(s.b(), cx, tr("HOME MENU DURING GAMES"), homemenu::kKeyEnable, "1", "")
+    Refresh rf = m.refresh;
+    Ctx* cp = &cx;
+    s.b().toggle(tr("HOME MENU DURING GAMES"), [cp] { return conf_get(*cp, homemenu::kKeyEnable) == "1"; },
+                 [cp, rf](bool on) {
+                   conf_put(*cp, homemenu::kKeyEnable, on ? "1" : "");
+                   if (rf) rf();  // HOME MENU BUTTONS comes and goes with it
+                 })
         .hint(tr("Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."));
-    conf_choice(s.b(), cx, tr("HOME MENU BUTTONS"), homemenu::kKeyCombo, {{"r1", "START + R1"}, {"r2", "START + R2"}, {"l2", "START + L2"}}, "r1")
-        .hint(tr("The buttons held with START to open the home menu. Select based chords are used by RetroArch."));
+    if (conf_get(cx, homemenu::kKeyEnable) == "1")
+      conf_choice(s.b(), cx, tr("HOME MENU BUTTONS"), homemenu::kKeyCombo, {{"r1", "START + R1"}, {"r2", "START + R2"}, {"l2", "START + L2"}}, "r1")
+          .hint(tr("The buttons held with START to open the home menu. Select based chords are used by RetroArch."));
     conf_switch(s.b(), cx, tr("PERFORMANCE SUGGESTIONS"), autoperf::kKey, "", "0")
         .hint(tr("Suggests performance mode for games the GPU governor holds back."));
+    // PLAY TIME LIMIT (playtime.hpp): per day, for children. This screen is not reachable in Kid or Kiosk mode.
+    conf_choice(s.b(), cx, tr("PLAY TIME LIMIT"), playtime::kKey,
+                {{"", tr("OFF")}, {"15", "15 min"}, {"30", "30 min"}, {"45", "45 min"}, {"60", "60 min"}, {"90", "90 min"}, {"120", "120 min"}}, "")
+        .hint(tr("Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."));
 
     // savestates
     s.header(tr("SAVED GAMES"));
@@ -161,6 +173,7 @@ struct BiosSystem {
 struct BiosState {
   bool done = false;
   std::string raw;  // written by the job, read after `done`
+  bool failed = false;  // rocknix-systems did not run well: "no missing files" would be a lie
   std::vector<BiosSystem> systems;
 };
 
@@ -208,7 +221,7 @@ std::unique_ptr<Screen> make_bios() {
         any = true;
       }
     }
-    if (!any) m.info(tr("NO MISSING BIOS FILES"), std::string());
+    if (!any) m.info(st->failed ? tr("AN ERROR OCCURRED") : tr("NO MISSING BIOS FILES"), std::string());
   };
   spec.on_open = [st](Ctx& cx, const Refresh& refresh) {
     if (cx.sv->cmd.dry_run) {  // deterministic: tests and the preview harness do not run the script; a sample output can stand in
@@ -220,7 +233,11 @@ std::unique_ptr<Screen> make_bios() {
     }
     std::shared_ptr<Services> sv = cx.sv;
     cx.sv->jobs.post_slow(
-        [st, sv] { st->raw = sv->cmd.run("rocknix-systems", 120000).out; },
+        [st, sv] {
+          const auto r = sv->cmd.run("rocknix-systems", 120000);
+          st->raw = r.out;
+          st->failed = r.exit_code != 0;
+        },
         [st, refresh] {
           st->systems = parse_bios(st->raw);
           st->done = true;

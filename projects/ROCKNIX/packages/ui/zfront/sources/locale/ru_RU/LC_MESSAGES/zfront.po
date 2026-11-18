@@ -1,0 +1,2371 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: ru_RU\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "ПОВРЕЖДЁННЫЙ СПИСОК ИГР"
+
+msgid "Not available yet"
+msgstr "Пока недоступно"
+
+msgid "Game lists updated"
+msgstr "Списки игр обновлены"
+
+msgid "COVERS ADDED"
+msgstr "ОБЛОЖКИ ДОБАВЛЕНЫ"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "РЕЖИМ ПРОИЗВОДИТЕЛЬНОСТИ МОЖЕТ ПОМОЧЬ ЭТОЙ ИГРЕ"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "ЭТА ИГРА МОЖЕТ РАБОТАТЬ ЛУЧШЕ В РЕЖИМЕ ПРОИЗВОДИТЕЛЬНОСТИ"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "ВКЛЮЧИТЬ РЕЖИМ ПРОИЗВОДИТЕЛЬНОСТИ ДЛЯ ЭТОЙ ИГРЫ"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "РЕЖИМ ПРОИЗВОДИТЕЛЬНОСТИ ВКЛЮЧЁН ДЛЯ ЭТОЙ ИГРЫ"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Эта игра может работать лучше в режиме производительности: GPU и память работают на полной скорости во время игры."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "БОЛЬШЕ НЕ ПРЕДЛАГАТЬ РЕЖИМ ПРОИЗВОДИТЕЛЬНОСТИ"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Больше не предлагать режим производительности для этой игры."
+
+msgid "BATTERY"
+msgstr "БАТАРЕЯ"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "ПОКА НЕДОСТАТОЧНО ДАННЫХ"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Поиграйте в эту игру пять минут или больше от батареи, и оценка появится здесь."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "При текущем заряде, с расходом последних сеансов этой игры."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "При текущем заряде. Сеансов этой игры ещё нет: берётся среднее по её системе."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "При текущем заряде. Сеансов этой системы ещё нет: берётся среднее по всем играм."
+
+msgid "Never"
+msgstr "Никогда"
+
+msgid "What used the most"
+msgstr "Что расходовало больше всего"
+
+msgid "Since the last full charge. Estimated."
+msgstr "С момента последней полной зарядки. Оценка."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Пока ничего не измерено. Данные накапливаются по мере игры."
+
+msgid "Asleep"
+msgstr "Сон"
+
+msgid "Menus and system"
+msgstr "Меню и система"
+
+msgid "Screen"
+msgstr "Экран"
+
+msgid "Charging"
+msgstr "Зарядка"
+
+msgid "About"
+msgstr "О системе"
+
+msgid "Since full"
+msgstr "С полной зарядки"
+
+msgid "Using now"
+msgstr "Сейчас расходуется"
+
+msgid "Last hours"
+msgstr "Последние часы"
+
+msgid "Now"
+msgstr "Сейчас"
+
+msgid "More settings"
+msgstr "Другие настройки"
+
+msgid "Power saver"
+msgstr "Энергосбережение"
+
+msgid "Screensaver after"
+msgstr "Заставка через"
+
+msgid "Turn on by itself at"
+msgstr "Включаться самостоятельно в"
+
+msgid "ADJUST"
+msgstr "РЕГУЛИРОВКА"
+
+msgid "Action"
+msgstr "Экшен"
+
+msgid "Adult"
+msgstr "Для взрослых"
+
+msgid "Adventure"
+msgstr "Приключения"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Казино"
+
+msgid "Casual Game"
+msgstr "Казуальная игра"
+
+msgid "Hunting and Fishing"
+msgstr "Охота и рыбалка"
+
+msgid "Fight"
+msgstr "Файтинг"
+
+msgid "Race, Driving"
+msgstr "Гонки, вождение"
+
+msgid "Demo"
+msgstr "Демо"
+
+msgid "Pinball"
+msgstr "Пинбол"
+
+msgid "Playing cards"
+msgstr "Игральные карты"
+
+msgid "Role playing games"
+msgstr "Ролевые игры"
+
+msgid "Asiatic board game"
+msgstr "Азиатская настольная игра"
+
+msgid "Educational"
+msgstr "Обучающая"
+
+msgid "Music and Dance"
+msgstr "Музыка и танцы"
+
+msgid "Platform"
+msgstr "Платформер"
+
+msgid "Puzzle-Game"
+msgstr "Головоломка"
+
+msgid "Quiz"
+msgstr "Викторина"
+
+msgid "Reflection"
+msgstr "Логическая игра"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Симулятор"
+
+msgid "Sports"
+msgstr "Спорт"
+
+msgid "Sports with Animals"
+msgstr "Спорт с животными"
+
+msgid "Strategy"
+msgstr "Стратегия"
+
+msgid "Shooter"
+msgstr "Шутер"
+
+msgid "Not set"
+msgstr "Не задано"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Пн"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Вс"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Вт"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "Ср"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Пт"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "Сб"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "Чт"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Апр"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Фев"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Янв"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Июн"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Мар"
+
+msgctxt "date"
+msgid "May"
+msgstr "Май"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Авг"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Дек"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Июл"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Ноя"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Окт"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Сен"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "НЕ УДАЛОСЬ СОХРАНИТЬ ДАННЫЕ ИГРЫ"
+
+msgid "Could not save the settings"
+msgstr "Не удалось сохранить настройки"
+
+msgid "FILTER BY"
+msgstr "ФИЛЬТР"
+
+msgid "FAVORITES ONLY"
+msgstr "ТОЛЬКО ИЗБРАННОЕ"
+
+msgid "LIST"
+msgstr "СПИСОК"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Выбранную тему не удалось загрузить: используется Zenith"
+
+msgid "PAGE"
+msgstr "СТРАНИЦА"
+
+msgid "Could not show this page"
+msgstr "Не удалось показать эту страницу"
+
+msgid "INSTALLED"
+msgstr "УСТАНОВЛЕНО"
+
+msgid "SMART COLLECTIONS"
+msgstr "УМНЫЕ КОЛЛЕКЦИИ"
+
+msgid "EDIT FILTERS"
+msgstr "ИЗМЕНИТЬ ФИЛЬТРЫ"
+
+msgid "NO OPTIONS"
+msgstr "НЕТ ПАРАМЕТРОВ"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Удалить «%s»?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Задайте её фильтры позже в пользовательских коллекциях игр."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Перезапустите интерфейс, чтобы применить изменения."
+
+msgid "Could not save the setting"
+msgstr "Не удалось сохранить настройку"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "НАЗНАЧИТЬ КОНТРОЛЛЕРЫ ИГРОКАМ"
+
+msgid "Could not start Bluetooth"
+msgstr "Не удалось запустить Bluetooth"
+
+msgid "Searching..."
+msgstr "Поиск..."
+
+msgid "CONTROLLERS"
+msgstr "КОНТРОЛЛЕРЫ"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "ПОМЕНЯТЬ МЕСТАМИ КНОПКИ ПОДТВЕРЖДЕНИЯ И ОТМЕНЫ"
+
+msgid "ENABLE RUMBLE"
+msgstr "ВКЛЮЧИТЬ ВИБРАЦИЮ"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "АВТОНАСТРОЙКА ГОРЯЧИХ КЛАВИШ RETROARCH"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "ПОДКЛЮЧЁННЫЕ КОНТРОЛЛЕРЫ"
+
+msgid "Not configured"
+msgstr "Не настроен"
+
+msgid "Unknown controller"
+msgstr "Неизвестный контроллер"
+
+msgid "PAIRED"
+msgstr "СОПРЯЖЁН"
+
+msgid "Could not pair"
+msgstr "Не удалось выполнить сопряжение"
+
+msgid "Connected"
+msgstr "Подключено"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Удалить все устройства Bluetooth?"
+
+msgid "Could not disconnect"
+msgstr "Не удалось отключить"
+
+msgid "Could not connect"
+msgstr "Не удалось подключить"
+
+msgid "Could not remove"
+msgstr "Не удалось удалить"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "КНОПКА A / ВОСТОК"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "КНОПКА B / ЮГ"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "КНОПКА X / СЕВЕР"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "КНОПКА Y / ЗАПАД"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "ЛЕВЫЙ СТИК"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "ПРАВЫЙ СТИК"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "ВКЛЮЧЕНИЕ ГОРЯЧИХ КЛАВИШ"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "ВСТРОЕННЫЙ КОНТРОЛЛЕР"
+
+msgid "GAMEPAD DETECTED"
+msgstr "ОБНАРУЖЕН ГЕЙМПАД"
+
+msgid "GAMEPADS DETECTED"
+msgstr "ОБНАРУЖЕНО ГЕЙМПАДОВ"
+
+msgid "PRESS B TO CANCEL."
+msgstr "НАЖМИТЕ B ДЛЯ ОТМЕНЫ."
+
+msgid "Could not save the controller configuration"
+msgstr "Не удалось сохранить настройку контроллера"
+
+msgid "Controller configuration saved"
+msgstr "Настройка контроллера сохранена"
+
+msgid "Controller configuration cancelled"
+msgstr "Настройка контроллера отменена"
+
+msgid "Controller disconnected"
+msgstr "Контроллер отключён"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "ПРОДОЛЖАЙТЕ УДЕРЖИВАТЬ ДЛЯ ОТМЕНЫ"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "УДЕРЖИВАЙТЕ ЛЮБУЮ КНОПКУ 3 СЕКУНДЫ ДЛЯ ОТМЕНЫ."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "УДЕРЖИВАЙТЕ ЛЮБУЮ КНОПКУ, ЧТОБЫ ПРОПУСТИТЬ. ПРОДОЛЖАЙТЕ УДЕРЖИВАТЬ ДЛЯ ОТМЕНЫ."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "ВСЕ КНОПКИ НАСТРОЕНЫ"
+
+msgid "set"
+msgstr "задана"
+
+msgid "skipped"
+msgstr "пропущена"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "КНОПКА ГОРЯЧЕЙ КЛАВИШИ НЕ НАЗНАЧЕНА. ОНА НУЖНА ДЛЯ ВЫХОДА ИЗ ИГР С ПОМОЩЬЮ КОНТРОЛЛЕРА."
+
+msgid "DATE & TIME"
+msgstr "ДАТА И ВРЕМЯ"
+
+msgid "MONTH"
+msgstr "МЕСЯЦ"
+
+msgid "DAY"
+msgstr "ДЕНЬ"
+
+msgid "HOUR"
+msgstr "ЧАС"
+
+msgid "MINUTE"
+msgstr "МИНУТА"
+
+msgid "SET DATE & TIME"
+msgstr "УСТАНОВИТЬ ДАТУ И ВРЕМЯ"
+
+msgid "Date and time set"
+msgstr "Дата и время установлены"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "При подключении к Wi-Fi время устанавливается автоматически."
+
+msgid "That folder is protected"
+msgstr "Эта папка защищена"
+
+msgid "Outside the allowed folders"
+msgstr "За пределами разрешённых папок"
+
+msgid "Not enough free space"
+msgstr "Недостаточно свободного места"
+
+msgid "That name already exists"
+msgstr "Такое имя уже существует"
+
+msgid "Cancelled"
+msgstr "Отменено"
+
+msgid "A folder cannot go into itself"
+msgstr "Нельзя поместить папку в саму себя"
+
+msgid "That name is not valid"
+msgstr "Недопустимое имя"
+
+msgid "Not found"
+msgstr "Не найдено"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Файл больше 4 ГБ: эта карта не может его вместить"
+
+msgid "This card does not accept that name"
+msgstr "Эта карта не принимает такое имя"
+
+msgid "This location is read-only"
+msgstr "Это место доступно только для чтения"
+
+msgid "An error occurred"
+msgstr "Произошла ошибка"
+
+msgid "%s of %s done"
+msgstr "Выполнено %s из %s"
+
+msgid "item"
+msgstr "элемент"
+
+msgid "items"
+msgstr "элементов"
+
+msgid "link skipped"
+msgstr "ссылка пропущена"
+
+msgid "links skipped"
+msgstr "ссылок пропущено"
+
+msgid "This can't be undone."
+msgstr "Это нельзя отменить."
+
+msgid "Files"
+msgstr "Файлы"
+
+msgid "selected"
+msgstr "выбрано"
+
+msgid "Cannot read this folder"
+msgstr "Не удаётся прочитать эту папку"
+
+msgid "This folder is empty"
+msgstr "Эта папка пуста"
+
+msgid "free"
+msgstr "свободно"
+
+msgid "File"
+msgstr "Файл"
+
+msgid "Folder"
+msgstr "Папка"
+
+msgid "Link"
+msgstr "Ссылка"
+
+msgid "Properties"
+msgstr "Свойства"
+
+msgid "Copy"
+msgstr "Копировать"
+
+msgid "Move"
+msgstr "Переместить"
+
+msgid "Paste here"
+msgstr "Вставить сюда"
+
+msgid "Rename"
+msgstr "Переименовать"
+
+msgid "New folder"
+msgstr "Новая папка"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Select all"
+msgstr "Выбрать все"
+
+msgid "Clear selection"
+msgstr "Снять выбор"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Sort by"
+msgstr "Сортировка"
+
+msgid "Hide hidden files"
+msgstr "Скрыть скрытые файлы"
+
+msgid "Show hidden files"
+msgstr "Показать скрытые файлы"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Home"
+msgstr "Домой"
+
+msgid "Games"
+msgstr "Игры"
+
+msgid "Game card"
+msgstr "Карта с играми"
+
+msgid "USB drive"
+msgstr "USB-накопитель"
+
+msgid "Screenshots"
+msgstr "Скриншоты"
+
+msgid "Go to"
+msgstr "Перейти"
+
+msgid "Ready to copy"
+msgstr "Готово к копированию"
+
+msgid "Ready to move"
+msgstr "Готово к перемещению"
+
+msgid "Warning"
+msgstr "Внимание"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Это системный файл. Его переименование может нарушить работу консоли."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Это системный файл. Его удаление может нарушить работу консоли."
+
+msgid "Wait for the other job"
+msgstr "Дождитесь окончания другой задачи"
+
+msgid "Copied"
+msgstr "Скопировано"
+
+msgid "Deleted"
+msgstr "Удалено"
+
+msgid "Moved"
+msgstr "Перемещено"
+
+msgid "originals kept"
+msgstr "оригиналы сохранены"
+
+msgid "Copying"
+msgstr "Копирование"
+
+msgid "Deleting"
+msgstr "Удаление"
+
+msgid "Moving"
+msgstr "Перемещение"
+
+msgid "Calculating..."
+msgstr "Вычисление..."
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "Mark"
+msgstr "Отметить"
+
+msgid "Open"
+msgstr "Открыть"
+
+msgid "Page"
+msgstr "Страница"
+
+msgid "WHILE PLAYING"
+msgstr "ВО ВРЕМЯ ИГРЫ"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "ПРОДОЛЖИТЬ ПОСЛЕДНЮЮ ИГРУ ПРИ ЗАПУСКЕ"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "При загрузке запускает последнюю игру с автосохранения. B отменяет."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "ДОМАШНЕЕ МЕНЮ В ИГРАХ"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Экспериментально. Во время игры удерживайте START и выбранную кнопку-бампер одну секунду: игра встанет на паузу и откроется панель с батареей, яркостью, громкостью, ПРОДОЛЖИТЬ и ВЫЙТИ ИЗ ИГРЫ (СОХРАНИТЬ СОСТОЯНИЕ и ЗАГРУЗИТЬ СОСТОЯНИЕ только при включённых сетевых командах RetroArch)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "КНОПКИ ДОМАШНЕГО МЕНЮ"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Кнопки, которые удерживаются вместе со START для открытия домашнего меню. Сочетания с Select использует RetroArch."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "ПОДСКАЗКИ ПО ПРОИЗВОДИТЕЛЬНОСТИ"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Предлагает режим производительности для игр, которые сдерживает регулятор GPU."
+
+msgid "PLAY TIME LIMIT"
+msgstr "ЛИМИТ ВРЕМЕНИ ИГРЫ"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Время игры на каждый день. За 5 минут до конца появится сообщение (внутри игры только при включённых сетевых командах RetroArch), после чего игра будет закрыта. Отсчёт времени начинается с включения этой функции."
+
+msgid "SAVED GAMES"
+msgstr "СОХРАНЁННЫЕ ИГРЫ"
+
+msgid "PICTURE AND CONTROL"
+msgstr "ИЗОБРАЖЕНИЕ И УПРАВЛЕНИЕ"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "ИГРОВОЙ СТРИМИНГ MOONLIGHT"
+
+msgid "MORE"
+msgstr "ЕЩЁ"
+
+msgid "PLAY STATISTICS"
+msgstr "СТАТИСТИКА ИГРЫ"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "ПАРАМЕТРЫ ПО СИСТЕМАМ"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "режим производительности"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU и память на полной скорости во время игры"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "НЕИЗВЕСТНАЯ СИСТЕМА"
+
+msgid "EMULATOR"
+msgstr "ЭМУЛЯТОР"
+
+msgid "The emulator and core that run this."
+msgstr "Эмулятор и ядро, которые это запускают."
+
+msgid "SYSTEM OPTIONS"
+msgstr "ПАРАМЕТРЫ СИСТЕМЫ"
+
+msgid "DISPLAY"
+msgstr "ЭКРАН"
+
+msgid "GAMEPLAY"
+msgstr "ИГРОВОЙ ПРОЦЕСС"
+
+msgid "ACTIONS"
+msgstr "ДЕЙСТВИЯ"
+
+msgid "RANDOM GAME"
+msgstr "СЛУЧАЙНАЯ ИГРА"
+
+msgid "COOLING PROFILE"
+msgstr "ПРОФИЛЬ ОХЛАЖДЕНИЯ"
+
+msgid "AGGRESSIVE"
+msgstr "АГРЕССИВНЫЙ"
+
+msgid "MODERATE"
+msgstr "УМЕРЕННЫЙ"
+
+msgid "QUIET"
+msgstr "ТИХИЙ"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "РЕГУЛЯТОР ЧАСТОТЫ CPU"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "РЕГУЛЯТОР ЧАСТОТЫ GPU"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "ОВЕРЛЕЙ MANGOHUD"
+
+msgid "UNKNOWN GAME"
+msgstr "НЕИЗВЕСТНАЯ ИГРА"
+
+msgid "INVALID DATE"
+msgstr "НЕВЕРНАЯ ДАТА"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "НЕ УДАЛОСЬ УДАЛИТЬ ИГРУ"
+
+msgid "CONFIG"
+msgstr "КОНФИГУРАЦИЯ"
+
+msgid "CORE PROVIDED"
+msgstr "ПРЕДОСТАВЛЕНО ЯДРОМ"
+
+msgid "FULL"
+msgstr "ПОЛНЫЙ"
+
+msgid "SQUARE PIXEL"
+msgstr "КВАДРАТНЫЙ ПИКСЕЛЬ"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "НАСТРОЙКА ПАНЕЛИ"
+
+msgid "SCREEN & SOUND"
+msgstr "ЭКРАН И ЗВУК"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "ПРОСТОЙ"
+
+msgid "MONITORING"
+msgstr "МОНИТОРИНГ"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "РАЗГОН И МОНИТОРИНГ"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "БАТАРЕЯ И ПРОИЗВОДИТЕЛЬНОСТЬ"
+
+msgid "LIBRARY"
+msgstr "БИБЛИОТЕКА"
+
+msgid "CHECK LIBRARY"
+msgstr "ПРОВЕРИТЬ БИБЛИОТЕКУ"
+
+msgid "SAVE BACKUPS"
+msgstr "РЕЗЕРВНЫЕ КОПИИ СОХРАНЕНИЙ"
+
+msgid "LANGUAGE & TIME"
+msgstr "ЯЗЫК И ВРЕМЯ"
+
+msgid "HOME MENU"
+msgstr "ДОМАШНЕЕ МЕНЮ"
+
+msgid "CHARGING"
+msgstr "ЗАРЯДКА"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "ЯРКОСТЬ ЭКРАНА"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "ПЕРЕЗАПИСАТЬ СОХРАНЕНИЕ?"
+
+msgid "LOAD STATE"
+msgstr "ЗАГРУЗИТЬ СОХРАНЕНИЕ"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "ЗАГРУЗИТЬ СОХРАНЕНИЕ? НЕСОХРАНЁННЫЙ ПРОГРЕСС БУДЕТ ПОТЕРЯН."
+
+msgid "RESUME"
+msgstr "ПРОДОЛЖИТЬ"
+
+msgid "QUIT GAME"
+msgstr "ВЫЙТИ ИЗ ИГРЫ"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "ТОЧНО ВЫЙТИ ИЗ ИГРЫ?"
+
+msgid "AND MORE"
+msgstr "И ЕЩЁ"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "ПРОБЛЕМ НЕ НАЙДЕНО"
+
+msgid "PROBLEMS FOUND"
+msgstr "НАЙДЕНЫ ПРОБЛЕМЫ"
+
+msgid "MISSING BIOS"
+msgstr "ОТСУТСТВУЕТ BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "ВОЗМОЖНО, ПОВРЕЖДЁННЫЕ ФАЙЛЫ"
+
+msgid "DUPLICATES"
+msgstr "ДУБЛИКАТЫ"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "ИГРЫ БЕЗ КАРТИНКИ"
+
+msgid "NETWORK"
+msgstr "СЕТЬ"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "КОНТРОЛЛЕР И BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Только для разработки: все виджеты меню."
+
+msgid "WIDGET DEMO"
+msgstr "ДЕМО ВИДЖЕТОВ"
+
+msgid "Unable to connect to server"
+msgstr "Не удалось подключиться к серверу"
+
+msgid "Succesfully paired with server"
+msgstr "Сопряжение с сервером выполнено"
+
+msgid "QUIT CURRENT GAME"
+msgstr "ЗАВЕРШИТЬ ТЕКУЩУЮ ИГРУ"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "ОБНОВИТЬ ИГРЫ MOONLIGHT"
+
+msgid "PAIR WITH SERVER"
+msgstr "СОПРЯЧЬ С СЕРВЕРОМ"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "РАЗОРВАТЬ СОПРЯЖЕНИЕ С СЕРВЕРОМ"
+
+msgid "Unpaired and settings cleared"
+msgstr "Сопряжение разорвано, настройки очищены"
+
+msgid "Unpaired from server"
+msgstr "Сопряжение с сервером разорвано"
+
+msgid "SERVER IP"
+msgstr "IP СЕРВЕРА"
+
+msgid "PAIRING PIN"
+msgstr "PIN СОПРЯЖЕНИЯ"
+
+msgid "HOST"
+msgstr "ХОСТ"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "ПРИСОЕДИНИТЬСЯ К ИГРЕ NETPLAY"
+
+msgid "NETPLAY NICKNAME"
+msgstr "НИК ДЛЯ NETPLAY"
+
+msgid "NETPLAY HOST"
+msgstr "ХОСТ NETPLAY"
+
+msgid "NETPLAY PORT"
+msgstr "ПОРТ NETPLAY"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Включение Wi-Fi..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Ошибка настройки Wi-Fi"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi включён"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi выключен"
+
+msgid "Wi-Fi region updated"
+msgstr "Регион Wi-Fi обновлён"
+
+msgid "Please wait..."
+msgstr "Подождите..."
+
+msgid "Local play mode updated"
+msgstr "Режим локальной игры обновлён"
+
+msgid "The service did not answer"
+msgstr "Служба не ответила"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "СЕТИ WI-FI"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Задаёт радиорегламент: каналы, которые можно использовать."
+
+msgid "TRANSFER FILES"
+msgstr "ПЕРЕДАЧА ФАЙЛОВ"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Отправляйте игры на консоль с телефона или компьютера в этой сети."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "ДОСТУПНЫЕ IP-АДРЕСА:"
+
+msgid "LOCAL PLAY"
+msgstr "ЛОКАЛЬНАЯ ИГРА"
+
+msgid "LOCAL PLAY MODE"
+msgstr "РЕЖИМ ЛОКАЛЬНОЙ ИГРЫ"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Создаёт точку доступа для игры по сети с другими консолями."
+
+msgid "1 (HOST)"
+msgstr "1 (ХОСТ)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (КЛИЕНТ 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (КЛИЕНТ 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (КЛИЕНТ 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ID ЛОКАЛЬНОЙ ИГРЫ"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, облако, VPN и имя консоли."
+
+msgid "NETWORK SERVICES"
+msgstr "СЕТЕВЫЕ СЛУЖБЫ"
+
+msgid "ENABLE SSH"
+msgstr "ВКЛЮЧИТЬ SSH"
+
+msgid "SSH is off"
+msgstr "SSH выключен"
+
+msgid "SSH is on"
+msgstr "SSH включён"
+
+msgid "Remote access to the console over the network."
+msgstr "Удалённый доступ к консоли по сети."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "ВКЛЮЧИТЬ ПРОСТОЙ HTTP-СЕРВЕР"
+
+msgid "HTTP server is off"
+msgstr "HTTP-сервер выключен"
+
+msgid "HTTP server is on"
+msgstr "HTTP-сервер включён"
+
+msgid "FILE TRANSFER"
+msgstr "ПЕРЕДАЧА ФАЙЛОВ"
+
+msgid "USB GADGET FUNCTION"
+msgstr "РЕЖИМ USB-ГАДЖЕТА"
+
+msgid "USB networking is on. The console is at"
+msgstr "USB-сеть включена. Адрес консоли:"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Что консоль предлагает через порт USB-C."
+
+msgid "CLOUD SERVICES"
+msgstr "ОБЛАЧНЫЕ СЛУЖБЫ"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "ПОДКЛЮЧИТЬ ОБЛАЧНЫЙ ДИСК"
+
+msgid "Cloud drive mounted"
+msgstr "Облачный диск подключён"
+
+msgid "Cloud drive unmounted"
+msgstr "Облачный диск отключён"
+
+msgid "VPN SERVICES"
+msgstr "СЛУЖБЫ VPN"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuard выключен"
+
+msgid "WireGuard is on"
+msgstr "WireGuard включён"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscale выключен"
+
+msgid "Tailscale is on"
+msgstr "Tailscale включён"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale не удалось подключиться"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale требует входа в систему"
+
+msgid "SHOW LINK"
+msgstr "ПОКАЗАТЬ ССЫЛКУ"
+
+msgid "TAILSCALE LOGIN"
+msgstr "ВХОД В TAILSCALE"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "ПОВТОРНАЯ АВТОРИЗАЦИЯ TAILSCALE:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Только буквы, цифры и дефисы"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Имя хоста сохранено. Оно применится при следующей загрузке"
+
+msgid "The new name is used at the next boot."
+msgstr "Новое имя будет использовано при следующей загрузке."
+
+msgid "WEB FILE TRANSFER"
+msgstr "ВЕБ-ПЕРЕДАЧА ФАЙЛОВ"
+
+msgid "Could not start the web transfer"
+msgstr "Не удалось запустить веб-передачу"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Позволяет телефону или компьютеру в этой сети отправлять игры на консоль."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "НЕ УДАЛОСЬ ЗАПУСТИТЬ (ПОРТ ЗАНЯТ?)"
+
+msgid "WEB ADDRESS"
+msgstr "ВЕБ-АДРЕС"
+
+msgid "WEB PIN"
+msgstr "ВЕБ-PIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "СЕТЕВОЙ ДИСК (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "ВКЛЮЧИТЬ SAMBA"
+
+msgid "Samba is off"
+msgstr "Samba выключена"
+
+msgid "Samba is on"
+msgstr "Samba включена"
+
+msgid "Shares the games folder with other computers."
+msgstr "Открывает папку с играми для других компьютеров."
+
+msgid "SAMBA ADDRESS"
+msgstr "АДРЕС SAMBA"
+
+msgid "SAMBA USER"
+msgstr "ПОЛЬЗОВАТЕЛЬ SAMBA"
+
+msgid "SAMBA PASSWORD"
+msgstr "ПАРОЛЬ SAMBA"
+
+msgid "Connecting to"
+msgstr "Подключение к"
+
+msgid "Connected successfully"
+msgstr "Подключено успешно"
+
+msgid "Failed to connect"
+msgstr "Не удалось подключиться"
+
+msgid "SAVED"
+msgstr "СОХРАНЕНА"
+
+msgid "ENTERPRISE"
+msgstr "КОРПОРАТИВНАЯ"
+
+msgid "SECURED"
+msgstr "ЗАЩИЩЕНА"
+
+msgid "Enterprise networks are not supported"
+msgstr "Корпоративные сети не поддерживаются"
+
+msgid "Network forgotten"
+msgstr "Сеть забыта"
+
+msgid "WI-FI KEY FOR "
+msgstr "КЛЮЧ WI-FI ДЛЯ "
+
+msgid "CONNECTING..."
+msgstr "ПОДКЛЮЧЕНИЕ..."
+
+msgid "WI-FI SSID"
+msgstr "SSID WI-FI"
+
+msgid "WI-FI KEY"
+msgstr "КЛЮЧ WI-FI"
+
+msgid "REALLY SUSPEND ?"
+msgstr "ТОЧНО ПЕРЕЙТИ В СПЯЩИЙ РЕЖИМ?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "ТОЧНО ВЫКЛЮЧИТЬ?"
+
+msgid "REALLY RESTART?"
+msgstr "ТОЧНО ПЕРЕЗАГРУЗИТЬ?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "ТОЧНО ПЕРЕЗАПУСТИТЬ ИНТЕРФЕЙС?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "ПЕРЕЗАПУСТИТЬ ИНТЕРФЕЙС"
+
+msgid "TEST ACCOUNT"
+msgstr "ПРОВЕРИТЬ УЧЁТНУЮ ЗАПИСЬ"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Проверяет имя пользователя и пароль на retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "ПОДКЛЮЧЕНИЕ К RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "ВХОД ВЫПОЛНЕН"
+
+msgid "LED NOTIFICATIONS"
+msgstr "УВЕДОМЛЕНИЯ СВЕТОДИОДОМ"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Показывать строку RetroAchievements в главном меню."
+
+msgid "NO SAVES FOUND"
+msgstr "СОХРАНЕНИЯ НЕ НАЙДЕНЫ"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "НЕДОСТАТОЧНО СВОБОДНОГО МЕСТА"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "РЕЗЕРВНАЯ КОПИЯ ЗА ЭТУ МИНУТУ УЖЕ СУЩЕСТВУЕТ"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "РЕЗЕРВНАЯ КОПИЯ ПОВРЕЖДЕНА ИЛИ ОТСУТСТВУЕТ"
+
+msgid "BACKUP DONE"
+msgstr "РЕЗЕРВНАЯ КОПИЯ СОЗДАНА"
+
+msgid "SAVES RESTORED"
+msgstr "СОХРАНЕНИЯ ВОССТАНОВЛЕНЫ"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "ОБЛАЧНАЯ КОПИЯ СОЗДАНА"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "НЕ УДАЛОСЬ СОЗДАТЬ ОБЛАЧНУЮ КОПИЮ"
+
+msgid "BEFORE A RESTORE"
+msgstr "ПЕРЕД ВОССТАНОВЛЕНИЕМ"
+
+msgid "BACK UP SAVES NOW"
+msgstr "СОЗДАТЬ КОПИЮ СОХРАНЕНИЙ СЕЙЧАС"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "СОХРАНЕНИЯ ИГР, СОСТОЯНИЯ И СОХРАНЕНИЯ PSP, БЕЗ ROM И МЕДИА"
+
+msgid "CLOUD BACKUP"
+msgstr "ОБЛАЧНАЯ КОПИЯ"
+
+msgid "BACKUPS"
+msgstr "РЕЗЕРВНЫЕ КОПИИ"
+
+msgid "NO BACKUPS YET"
+msgstr "РЕЗЕРВНЫХ КОПИЙ ПОКА НЕТ"
+
+msgid "BACKUP DELETED"
+msgstr "РЕЗЕРВНАЯ КОПИЯ УДАЛЕНА"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "ТЕКУЩИЕ СОХРАНЕНИЯ БУДУТ ЗАМЕНЕНЫ СОХРАНЕНИЯМИ ИЗ %s. СНАЧАЛА БУДЕТ СОЗДАНА КОПИЯ ТЕКУЩИХ СОХРАНЕНИЙ."
+
+msgid "RESTORE"
+msgstr "ВОССТАНОВИТЬ"
+
+msgid "DELETE BACKUP"
+msgstr "УДАЛИТЬ РЕЗЕРВНУЮ КОПИЮ"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "УДАЛИТЬ ЭТУ РЕЗЕРВНУЮ КОПИЮ?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "ЭТА СБОРКА НЕ МОЖЕТ ПОДКЛЮЧИТЬСЯ К SCREENSCRAPER"
+
+msgid "ALL GAMES"
+msgstr "ВСЕ ИГРЫ"
+
+msgid "GAMES TO SCRAPE"
+msgstr "ИГРЫ ДЛЯ СКРЕЙПИНГА"
+
+msgid "WITH MISSING MEDIA"
+msgstr "С НЕДОСТАЮЩИМИ МЕДИА"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "БЕЗ КАКИХ-ЛИБО МЕДИА"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Какие игры выбранных систем искать."
+
+msgid "1 DAY"
+msgstr "1 ДЕНЬ"
+
+msgid "1 MONTH"
+msgstr "1 МЕСЯЦ"
+
+msgid "1 WEEK"
+msgstr "1 НЕДЕЛЯ"
+
+msgid "1 YEAR"
+msgstr "1 ГОД"
+
+msgid "15 DAYS"
+msgstr "15 ДНЕЙ"
+
+msgid "3 MONTHS"
+msgstr "3 МЕСЯЦА"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Игры, обработанные за это время, пропускаются, что экономит запросы."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "АВТОМАТИЧЕСКИ ЗАГРУЖАТЬ НЕДОСТАЮЩИЕ МЕДИА"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Загружает недостающие обложки в фоне, когда консоль простаивает."
+
+msgid "SCRAPER SETTINGS"
+msgstr "НАСТРОЙКИ СКРЕЙПЕРА"
+
+msgid "ACCOUNT"
+msgstr "УЧЁТНАЯ ЗАПИСЬ"
+
+msgid "Choose at least one system."
+msgstr "Выберите хотя бы одну систему."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Ищет игры на ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "НЕТ СИСТЕМ С ИГРАМИ, ИЗВЕСТНЫМИ SCREENSCRAPER"
+
+msgid "PICTURES"
+msgstr "КАРТИНКИ"
+
+msgid "IMAGE"
+msgstr "ИЗОБРАЖЕНИЕ"
+
+msgid "BOX FRONT"
+msgstr "ПЕРЕДНЯЯ СТОРОНА КОРОБКИ"
+
+msgid "TITLE SCREEN"
+msgstr "ЗАСТАВКА"
+
+msgid "The main picture of each game."
+msgstr "Главная картинка каждой игры."
+
+msgid "THUMBNAIL"
+msgstr "МИНИАТЮРА"
+
+msgid "The small picture of each game."
+msgstr "Маленькая картинка каждой игры."
+
+msgid "LOGO"
+msgstr "ЛОГОТИП"
+
+msgid "The logo of each game."
+msgstr "Логотип каждой игры."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "ПОЛНЫЙ РАЗМЕР"
+
+msgid "IMAGE SIZE"
+msgstr "РАЗМЕР ИЗОБРАЖЕНИЯ"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper уменьшает картинки перед отправкой: быстрее и легче."
+
+msgid "AUTOMATIC"
+msgstr "АВТОМАТИЧЕСКИ"
+
+msgid "BRAZIL"
+msgstr "БРАЗИЛИЯ"
+
+msgid "EUROPE"
+msgstr "ЕВРОПА"
+
+msgid "FRANCE"
+msgstr "ФРАНЦИЯ"
+
+msgid "GERMANY"
+msgstr "ГЕРМАНИЯ"
+
+msgid "ITALY"
+msgstr "ИТАЛИЯ"
+
+msgid "JAPAN"
+msgstr "ЯПОНИЯ"
+
+msgid "SPAIN"
+msgstr "ИСПАНИЯ"
+
+msgid "USA"
+msgstr "США"
+
+msgid "WORLD"
+msgstr "МИР"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Предпочитаемый регион для названий, дат и картинок."
+
+msgid "NAMES"
+msgstr "НАЗВАНИЯ"
+
+msgid "Replace the names of the games."
+msgstr "Заменять названия игр."
+
+msgid "DESCRIPTIONS"
+msgstr "ОПИСАНИЯ"
+
+msgid "Replace the descriptions."
+msgstr "Заменять описания."
+
+msgid "Download the rating of each game."
+msgstr "Загружать рейтинг каждой игры."
+
+msgid "RATINGS"
+msgstr "РЕЙТИНГИ"
+
+msgid "EXTRA MEDIA"
+msgstr "ДОПОЛНИТЕЛЬНЫЕ МЕДИА"
+
+msgid "VIDEOS"
+msgstr "ВИДЕО"
+
+msgid "Videos are big and take longer to download."
+msgstr "Видео большие и загружаются дольше."
+
+msgid "MANUALS"
+msgstr "РУКОВОДСТВА"
+
+msgid "PDF manuals."
+msgstr "Руководства в формате PDF."
+
+msgid "MAPS"
+msgstr "КАРТЫ"
+
+msgid "Maps of the game."
+msgstr "Карты игры."
+
+msgid "Background pictures."
+msgstr "Фоновые картинки."
+
+msgid "FANART"
+msgstr "ФАНАРТ"
+
+msgid "BOX BACK"
+msgstr "ЗАДНЯЯ СТОРОНА КОРОБКИ"
+
+msgid "The back of the box."
+msgstr "Задняя сторона коробки."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Только для «Все игры»: уже имеющиеся картинки загружаются заново."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "ЗАМЕНЯТЬ СУЩЕСТВУЮЩИЕ МЕДИА"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Необязательно. Без учётной записи ScreenScraper разрешает очень мало запросов."
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB не требует учётной записи."
+
+msgid "Asks IGDB for an access token."
+msgstr "Запрашивает у IGDB токен доступа."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Запрашивает у ScreenScraper ваши лимиты."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "ПОДКЛЮЧЕНИЕ К SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "АНОНИМНО"
+
+msgid "LOGIN"
+msgstr "ЛОГИН"
+
+msgid "REQUESTS TODAY"
+msgstr "ЗАПРОСОВ СЕГОДНЯ"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "ЗАПРОСОВ В МИНУТУ"
+
+msgid "STOP"
+msgstr "СТОП"
+
+msgid "SCROLL"
+msgstr "ПРОКРУТКА"
+
+msgid "SCRAPE COMPLETE"
+msgstr "СКРЕЙПИНГ ЗАВЕРШЁН"
+
+msgid "SCRAPE STOPPED"
+msgstr "СКРЕЙПИНГ ОСТАНОВЛЕН"
+
+msgid "FOUND"
+msgstr "НАЙДЕНО"
+
+msgid "NOT FOUND"
+msgstr "НЕ НАЙДЕНО"
+
+msgid "ERRORS"
+msgstr "ОШИБКИ"
+
+msgid "MEDIA FILES"
+msgstr "МЕДИАФАЙЛЫ"
+
+msgid "READING GAME LISTS"
+msgstr "ЧТЕНИЕ СПИСКОВ ИГР"
+
+msgid "STOPPING"
+msgstr "ОСТАНОВКА"
+
+msgid "SECONDS"
+msgstr "СЕКУНД"
+
+msgid "WAITING"
+msgstr "ОЖИДАНИЕ"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "ОСТАНОВЛЕНО. СДЕЛАННОЕ СОХРАНЕНО"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "НЕТ ИГР ДЛЯ СКРЕЙПИНГА С ЭТИМИ ФИЛЬТРАМИ"
+
+msgid "GAMES"
+msgstr "ИГРЫ"
+
+msgid "PROBLEMS"
+msgstr "ПРОБЛЕМЫ"
+
+msgid "MEDIA MISSING"
+msgstr "МЕДИА ОТСУТСТВУЮТ"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "ПЕРЕКЛЮЧАТЕЛИ И ПОЛЗУНКИ"
+
+msgid "The clock shows in the top right corner."
+msgstr "Часы отображаются в правом верхнем углу."
+
+msgid "Volume saved"
+msgstr "Громкость сохранена"
+
+msgid "LISTS AND TEXT"
+msgstr "СПИСКИ И ТЕКСТ"
+
+msgid "TEXT"
+msgstr "ТЕКСТ"
+
+msgid "WI-FI PASSWORD"
+msgstr "ПАРОЛЬ WI-FI"
+
+msgid "SHOW A TOAST"
+msgstr "ПОКАЗАТЬ УВЕДОМЛЕНИЕ"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi подключён: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "ПОКАЗАТЬ ПОЛОСУ ГРОМКОСТИ"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "ПОКАЗАТЬ ПОЛОСУ ЯРКОСТИ"
+
+msgid "ASK A QUESTION"
+msgstr "ЗАДАТЬ ВОПРОС"
+
+msgid "Delete all saved states of this game?"
+msgstr "Удалить все сохранённые состояния этой игры?"
+
+msgid "SHOW A MESSAGE"
+msgstr "ПОКАЗАТЬ СООБЩЕНИЕ"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Обновление установлено. Перезагрузите консоль, чтобы начать его использовать."
+
+msgid "Restart the system now?"
+msgstr "Перезагрузить систему сейчас?"
+
+msgid "Restarting..."
+msgstr "Перезагрузка..."
+
+msgid "DISABLED ENTRY"
+msgstr "ОТКЛЮЧЁННЫЙ ПУНКТ"
+
+msgid "SELECTOR STYLE"
+msgstr "СТИЛЬ ВЫДЕЛЕНИЯ"
+
+msgid "TITLE ALIGNMENT"
+msgstr "ВЫРАВНИВАНИЕ ЗАГОЛОВКА"
+
+msgid "LIST TEXT CASE"
+msgstr "РЕГИСТР ТЕКСТА В СПИСКЕ"
+
+msgid "TEXT SIZE"
+msgstr "РАЗМЕР ТЕКСТА"
+
+msgid "HIGH CONTRAST"
+msgstr "ВЫСОКАЯ КОНТРАСТНОСТЬ"
+
+msgid "options"
+msgstr "параметры"
+
+msgid "AUDIO"
+msgstr "АУДИО"
+
+msgid "Could not change the audio output"
+msgstr "Не удалось изменить аудиовыход"
+
+msgid "BATTERY WARNING"
+msgstr "ПРЕДУПРЕЖДЕНИЕ О БАТАРЕЕ"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "ВКЛЮЧИТЬ ЗВУКОВОЕ ПРЕДУПРЕЖДЕНИЕ О БАТАРЕЕ"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "ПОРОГ ПРЕДУПРЕЖДЕНИЯ О БАТАРЕЕ"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Запускает эту игру при включении консоли, до меню, один раз за загрузку."
+
+msgid "Reboot now"
+msgstr "Перезагрузить сейчас"
+
+msgid "Later"
+msgstr "Позже"
+
+msgid "Default"
+msgstr "По умолчанию"
+
+msgid "Arm (official)"
+msgstr "Arm (официальный)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Открытый код (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "ОСТАЛОСЬ СЕГОДНЯ"
+
+msgid "UPTIME"
+msgstr "ВРЕМЯ РАБОТЫ"
+
+msgid "No information available"
+msgstr "Информация недоступна"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "УПРАВЛЕНИЕ СИСТЕМОЙ И СБРОС"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr "ВЫ УВЕРЕНЫ?\n\nЭТО НЕЛЬЗЯ ОТМЕНИТЬ."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "РЕЗЕРВНАЯ КОПИЯ НАСТРОЕК"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr "ВНИМАНИЕ: ИНТЕРФЕЙС БУДЕТ ПЕРЕЗАПУЩЕН!\n\nПОСЛЕ ЗАВЕРШЕНИЯ СКРИПТА НЕ ЗАБУДЬТЕ СКОПИРОВАТЬ ФАЙЛ /storage/roms/backup/ROCKNIX_BACKUP.zip В БЕЗОПАСНОЕ МЕСТО, ИНАЧЕ ОН БУДЕТ УДАЛЁН ПРИ СЛЕДУЮЩЕЙ ПЕРЕЗАГРУЗКЕ!\n\nСОЗДАТЬ КОПИЮ ТЕКУЩИХ НАСТРОЕК И ПЕРЕЗАПУСТИТЬ?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "ВОССТАНОВИТЬ ИЗ РЕЗЕРВНОЙ КОПИИ"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr "ВНИМАНИЕ: УСТРОЙСТВО БУДЕТ ПЕРЕЗАГРУЖЕНО!\n\nТЕКУЩИЕ НАСТРОЙКИ БУДУТ ПЕРЕЗАПИСАНЫ!\n\nВОССТАНОВИТЬ ИЗ КОПИИ И ПЕРЕЗАГРУЗИТЬ?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "УПРАВЛЕНИЕ ЭМУЛЯТОРАМИ"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "СБРОСИТЬ НАСТРОЙКИ RETROARCH ПО УМОЛЧАНИЮ"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr "ВНИМАНИЕ: НАСТРОЙКИ RETROARCH БУДУТ СБРОШЕНЫ ПО УМОЛЧАНИЮ\n\nНАСТРОЙКИ ОТДЕЛЬНЫХ ЯДЕР НЕ ЗАТРОНУТЫ, РЕЗЕРВНАЯ КОПИЯ СОЗДАНА НЕ БУДЕТ!\n\nСБРОСИТЬ НАСТРОЙКИ RETROARCH?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "СБРОСИТЬ ОВЕРЛЕИ (ЯДРА, ЧИТЫ, ДЖОЙПАДЫ И ДР.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr "ВНИМАНИЕ: ВСЕ ПОЛЬЗОВАТЕЛЬСКИЕ ОВЕРЛЕИ RETROARCH БУДУТ УДАЛЕНЫ\n\nПОЛЬЗОВАТЕЛЬСКИЕ ЯДРА, ДЖОЙСТИКИ, ЧИТЫ И Т. Д. РЕЗЕРВНАЯ КОПИЯ СОЗДАНА НЕ БУДЕТ!\n\nСБРОСИТЬ ОВЕРЛЕИ RETROARCH?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "ПОЛНЫЙ СБРОС RETROARCH"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr "ВНИМАНИЕ: RETROARCH И ВСЕ СОХРАНЁННЫЕ НАСТРОЙКИ ПОЛЬЗОВАТЕЛЯ БУДУТ СБРОШЕНЫ ПО УМОЛЧАНИЮ\n\nНАСТРОЙКИ ОТДЕЛЬНЫХ ЯДЕР БУДУТ УДАЛЕНЫ, РЕЗЕРВНАЯ КОПИЯ СОЗДАНА НЕ БУДЕТ!\n\nСБРОСИТЬ RETROARCH?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "СБРОСИТЬ НАСТРОЙКИ MEDNAFEN ПО УМОЛЧАНИЮ"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr "ВНИМАНИЕ: НАСТРОЙКИ MEDNAFEN БУДУТ СБРОШЕНЫ ПО УМОЛЧАНИЮ\n\nРЕЗЕРВНАЯ КОПИЯ СОЗДАНА НЕ БУДЕТ!\n\nСБРОСИТЬ НАСТРОЙКИ MEDNAFEN?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "СБРОСИТЬ НАСТРОЙКИ ОТДЕЛЬНЫХ ЭМУЛЯТОРОВ ПО УМОЛЧАНИЮ"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr "ВНИМАНИЕ: НАСТРОЙКИ ОТДЕЛЬНЫХ ЭМУЛЯТОРОВ БУДУТ СБРОШЕНЫ ПО УМОЛЧАНИЮ\n\nРЕЗЕРВНАЯ КОПИЯ СОЗДАНА НЕ БУДЕТ!\n\nСБРОСИТЬ НАСТРОЙКИ ОТДЕЛЬНЫХ ЭМУЛЯТОРОВ?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "ПОЛНЫЙ СБРОС PORTMASTER"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr "ВНИМАНИЕ: PORTMASTER БУДЕТ СБРОШЕН ПО УМОЛЧАНИЮ\n\nРЕЗЕРВНАЯ КОПИЯ СОЗДАНА НЕ БУДЕТ!\n\nСБРОСИТЬ PORTMASTER?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "УПРАВЛЕНИЕ СИСТЕМОЙ"
+
+msgid "AUDIO RESET"
+msgstr "СБРОС АУДИО"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr "ВНИМАНИЕ: НАСТРОЙКИ АУДИО БУДУТ СБРОШЕНЫ ПО УМОЛЧАНИЮ, А СИСТЕМА ПЕРЕЗАГРУЗИТСЯ!\n\nСБРОСИТЬ АУДИО И ПЕРЕЗАГРУЗИТЬ?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "СБРОСИТЬ ИНДИКАТОР ЗАРЯДА БАТАРЕИ"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr "ВНИМАНИЕ: ИНДИКАТОР ЗАРЯДА PMIC БУДЕТ СБРОШЕН, А СИСТЕМА ВЫКЛЮЧИТСЯ!\n\nНЕ ПОДКЛЮЧАЙТЕ ЗАРЯДНОЕ УСТРОЙСТВО И ЧЕРЕЗ НЕСКОЛЬКО СЕКУНД СНОВА ВКЛЮЧИТЕ УСТРОЙСТВО. УРОВЕНЬ ЗАРЯДА ОЦЕНИВАЕТСЯ ЗАНОВО ПО НАПРЯЖЕНИЮ БАТАРЕИ В ПОКОЕ И СТАНОВИТСЯ ТОЧНЫМ ПОСЛЕ ПОЛНОЙ ЗАРЯДКИ.\n\nСБРОСИТЬ ИНДИКАТОР И ВЫКЛЮЧИТЬ?"
+
+msgid "FACTORY RESET"
+msgstr "СБРОС К ЗАВОДСКИМ НАСТРОЙКАМ"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr "ВНИМАНИЕ: ВАШИ ДАННЫЕ И ВСЕ ОСТАЛЬНЫЕ НАСТРОЙКИ БУДУТ СБРОШЕНЫ ПО УМОЛЧАНИЮ!\n\nЕСЛИ ХОТИТЕ СОХРАНИТЬ НАСТРОЙКИ, СДЕЛАЙТЕ РЕЗЕРВНУЮ КОПИЮ И СОХРАНИТЕ ЕЁ НА ВНЕШНЕМ НОСИТЕЛЕ ПЕРЕД ВЫПОЛНЕНИЕМ ЭТОГО ДЕЙСТВИЯ!\n\nИЗВЛЕКИТЕ КАРТУ С ИГРАМИ ПЕРЕД ПРОДОЛЖЕНИЕМ!\n\nСБРОСИТЬ СИСТЕМУ И ПЕРЕЗАГРУЗИТЬ?"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Выберите вариант раскладки клавиатуры для выбранной раскладки (например, мёртвые клавиши или альтернативное расположение клавиш)."
+
+msgid "Run welcome again"
+msgstr "Запустить приветствие снова"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Снова показывает приветствие первой загрузки: язык, WiFi и часовой пояс."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "ВКЛЮЧИТЬ ОВЕРЛЕЙ MANGOHUD"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "ВКЛЮЧИТЬ СЕНСОРНУЮ КЛАВИАТУРУ"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "ВКЛЮЧИТЬ СКРИНШОТЫ ROCKNIX"
+
+msgid "SCREEN"
+msgstr "ЭКРАН"
+
+msgid "CONTRAST"
+msgstr "КОНТРАСТНОСТЬ"
+
+msgid "GAMMA"
+msgstr "ГАММА"
+
+msgid "HUE"
+msgstr "ОТТЕНОК"
+
+msgid "SATURATION"
+msgstr "НАСЫЩЕННОСТЬ"
+
+msgid "LEDS"
+msgstr "СВЕТОДИОДЫ"
+
+msgid "DISABLE POWER LED"
+msgstr "ОТКЛЮЧИТЬ СВЕТОДИОД ПИТАНИЯ"
+
+msgid "LED COLOR"
+msgstr "ЦВЕТ СВЕТОДИОДА"
+
+msgid "JOYSTICK LED"
+msgstr "СВЕТОДИОД ДЖОЙСТИКА"
+
+msgid "MAX"
+msgstr "МАКС"
+
+msgid "MID"
+msgstr "СРЕД"
+
+msgid "MIN"
+msgstr "МИН"
+
+msgid "THIS DEVICE IS"
+msgstr "ЭТО УСТРОЙСТВО"
+
+msgid "Device will be switched on next reboot"
+msgstr "Устройство будет переключено при следующей перезагрузке"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "АВТООПРЕДЕЛЕНИЕ КАРТЫ С ИГРАМИ"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "ВКЛЮЧИТЬ ОБЪЕДИНЁННОЕ ХРАНИЛИЩЕ"
+
+msgid "EXTERNAL"
+msgstr "ВНЕШНЯЯ"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "ОСНОВНАЯ КАРТА ОБЪЕДИНЁННОГО ХРАНИЛИЩА"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "ВНИМАНИЕ: СМЕНА ОСНОВНОЙ КАРТЫ МОЖЕТ ПРИВЕСТИ К ПОТЕРЕ ДОСТУПА К ИГРАМ, И ПОТРЕБУЕТСЯ РУЧНОЕ ИСПРАВЛЕНИЕ. ПРОДОЛЖИТЬ?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "ИЗВЛЕЧЬ КАРТУ MICROSD"
+
+msgid "You may now remove the card."
+msgstr "Теперь карту можно вынуть."
+
+msgid "PERFORMANCE"
+msgstr "ПРОИЗВОДИТЕЛЬНОСТЬ"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "РЕГУЛЯТОР ЧАСТОТЫ ПО УМОЛЧАНИЮ"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "РЕГУЛЯТОР ЧАСТОТЫ GPU ПО УМОЛЧАНИЮ"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "ВКЛЮЧИТЬ РАЗГОН CPU"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "ВКЛЮЧИТЬ РАЗГОН GPU"
+
+msgid "GPU DRIVER"
+msgstr "ДРАЙВЕР GPU"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "Драйвер GPU будет переключён при следующей перезагрузке"
+
+msgid "Restarting to apply the theme"
+msgstr "Перезапуск для применения темы"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Интерфейс перезапустится для применения темы"
+
+msgid "Dark"
+msgstr "Тёмная"
+
+msgid "Light"
+msgstr "Светлая"
+
+msgid "Theme default"
+msgstr "Как в теме"
+
+msgid "Filled"
+msgstr "Заливка"
+
+msgid "Outline"
+msgstr "Контур"
+
+msgid "Side bar"
+msgstr "Боковая полоса"
+
+msgid "Underline"
+msgstr "Подчёркивание"
+
+msgid "Centered"
+msgstr "По центру"
+
+msgid "Left"
+msgstr "Слева"
+
+msgid "Lowercase"
+msgstr "Строчные"
+
+msgid "Uppercase"
+msgstr "Прописные"
+
+msgid "EXTRA LARGE"
+msgstr "ОЧЕНЬ БОЛЬШОЙ"
+
+msgid "LARGE"
+msgstr "БОЛЬШОЙ"
+
+msgid "SMALL"
+msgstr "МАЛЕНЬКИЙ"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Размер текста в меню, диалогах и панелях подсказок"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Чисто белый или чёрный текст, сплошные панели и более толстое выделение"
+
+msgid "CONTROL OPTIONS"
+msgstr "ПАРАМЕТРЫ УПРАВЛЕНИЯ"
+
+msgid "TOP BAR"
+msgstr "ВЕРХНЯЯ ПАНЕЛЬ"
+
+msgid "BEDSIDE CLOCK"
+msgstr "ПРИКРОВАТНЫЕ ЧАСЫ"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Если подключено зарядное устройство, через указанное время без нажатий вместо заставки показываются большие часы. Любая кнопка закрывает их. Никогда не включаются, пока открыта игра."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "НЕ УДАЛОСЬ ОТМЕНИТЬ ЗАГРУЗКУ"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "ЗАГРУЗКА ОТМЕНЕНА"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "НЕ УДАЛОСЬ ЗАГРУЗИТЬ ОБНОВЛЕНИЕ. ПРОВЕРЬТЕ СОЕДИНЕНИЕ И ПОВТОРИТЕ ПОПЫТКУ."
+
+msgid "No update source available"
+msgstr "Источник обновлений недоступен"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "ПРИНУДИТЕЛЬНО СЛЕДУЮЩЕЕ ОБНОВЛЕНИЕ"
+
+msgid "UPDATING"
+msgstr "ОБНОВЛЕНИЕ"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "ОТМЕНИТЬ ЗАГРУЗКУ"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "ОТМЕНИТЬ ЗАГРУЗКУ? НЕПОЛНЫЙ ФАЙЛ БУДЕТ УДАЛЁН."
+
+msgid "Checking..."
+msgstr "Проверка..."
+
+msgid "available"
+msgstr "доступно"
+
+msgid "SKIP ALL"
+msgstr "ПРОПУСТИТЬ ВСЁ"
+
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+msgid "of"
+msgstr "из"
+
+msgid "Choose your language"
+msgstr "Выберите язык"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "You can change it later in System."
+msgstr "Его можно изменить позже в разделе «Система»."
+
+msgid "Connect to WiFi"
+msgstr "Подключиться к WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Часы, обновления и передача файлов."
+
+msgid "Continue"
+msgstr "Продолжить"
+
+msgid "Not now"
+msgstr "Не сейчас"
+
+msgid "Choose a network"
+msgstr "Выберите сеть"
+
+msgid "Choose another network"
+msgstr "Выбрать другую сеть"
+
+msgid "Where are you?"
+msgstr "Где вы находитесь?"
+
+msgid "Time zone"
+msgstr "Часовой пояс"
+
+msgid "Sets your local time."
+msgstr "Задаёт ваше местное время."
+
+msgid "Keep UTC"
+msgstr "Оставить UTC"
+
+msgid "LOADING..."
+msgstr "ЗАГРУЗКА..."
+
+msgid "All set"
+msgstr "Всё готово"
+
+msgid "Add games from your phone"
+msgstr "Добавляйте игры с телефона"
+
+msgid "Network"
+msgstr "Сеть"
+
+msgid "Start opens the menu"
+msgstr "Start открывает меню"
+
+msgid "anywhere"
+msgstr "везде"
+
+msgid "Screen looks wrong?"
+msgstr "Экран выглядит неправильно?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Начать игру"
+
+msgid "PLAY THEME MUSIC"
+msgstr "ВОСПРОИЗВОДИТЬ МУЗЫКУ ТЕМЫ"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "НЕТ ПОДКЛЮЧЕНИЯ К СЕТИ"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "РАСХОД БАТАРЕИ (ПОЛНАЯ ЗАРЯДКА)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "ОБЩЕЕ ВРЕМЯ В ИГРЕ"
+
+msgid "LAST FIVE WEEKS"
+msgstr "ПОСЛЕДНИЕ ПЯТЬ НЕДЕЛЬ"
+
+msgid "2 WEEKS AGO"
+msgstr "2 НЕДЕЛИ НАЗАД"
+
+msgid "3 WEEKS AGO"
+msgstr "3 НЕДЕЛИ НАЗАД"
+
+msgid "4 WEEKS AGO"
+msgstr "4 НЕДЕЛИ НАЗАД"
+
+msgid "THIS WEEK"
+msgstr "НА ЭТОЙ НЕДЕЛЕ"
+
+msgid "MOST PLAYED GAMES"
+msgstr "САМЫЕ ПОПУЛЯРНЫЕ ИГРЫ"
+
+msgid "TIME PER SYSTEM"
+msgstr "ВРЕМЯ ПО СИСТЕМАМ"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "ПОКА НИ ВО ЧТО НЕ ИГРАЛИ. СЫГРАЙТЕ В ИГРУ, И ОНА ПОЯВИТСЯ ЗДЕСЬ."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Сегодня осталась всего %d минута игрового времени"
+msgstr[1] "Сегодня осталось всего %d минуты игрового времени"
+msgstr[2] "Сегодня осталось всего %d минут игрового времени"
+
+msgid "Power saver on"
+msgstr "Энергосбережение включено"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "НЕОЖИДАННЫЙ ОТВЕТ ОТ RETROACHIEVEMENTS"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "НЕДОСТУПНО В ЭТОЙ СБОРКЕ"
+
+msgid "%i min ago"
+msgstr "%i мин назад"
+
+msgid "%i h ago"
+msgstr "%i ч назад"
+
+msgid "%i d ago"
+msgstr "%i д назад"
+
+msgid "CONTINUE PLAYING"
+msgstr "ПРОДОЛЖИТЬ ИГРУ"
+
+msgid "START NOW"
+msgstr "НАЧАТЬ СЕЙЧАС"
+
+msgid "RESUMING"
+msgstr "ПРОДОЛЖЕНИЕ"
+
+msgid "STARTING IN %i"
+msgstr "ЗАПУСК ЧЕРЕЗ %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Хаки"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Вертикальные"
+
+msgid "recently added"
+msgstr "недавно добавленные"
+
+msgid "unfinished"
+msgstr "незавершённые"
+
+msgid "most played this week"
+msgstr "самые популярные на этой неделе"
+
+msgid "BOOKS"
+msgstr "КНИГИ"
+
+msgid "screenshots"
+msgstr "скриншоты"
+
+msgid "media player"
+msgstr "медиаплеер"
+
+msgid "NETWORK ERROR"
+msgstr "ОШИБКА СЕТИ"
+
+msgid "SERVER BUSY"
+msgstr "СЕРВЕР ЗАНЯТ"
+
+msgid "SERVER ERROR"
+msgstr "ОШИБКА СЕРВЕРА"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "НЕ УДАЁТСЯ ЗАПИСАТЬ GAMELIST"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "НЕ УДАЛОСЬ ВОЙТИ. ПРОВЕРЬТЕ ИМЯ ПОЛЬЗОВАТЕЛЯ И ПАРОЛЬ"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER СЕЙЧАС ЗАКРЫТ ДЛЯ ЭТОЙ УЧЁТНОЙ ЗАПИСИ"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER НА ТЕХНИЧЕСКОМ ОБСЛУЖИВАНИИ"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "ЭТО ПО ЗАБЛОКИРОВАНО SCREENSCRAPER"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "ДНЕВНАЯ КВОТА СКРЕЙПИНГА ИСЧЕРПАНА. ПОПРОБУЙТЕ ЗАВТРА"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "СЕГОДНЯ СЛИШКОМ МНОГО НЕРАСПОЗНАННЫХ ROM. ПОПРОБУЙТЕ ЗАВТРА"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "НА КАРТЕ НЕ ОСТАЛОСЬ МЕСТА"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "СНАЧАЛА ВВЕДИТЕ IGDB CLIENT ID И SECRET В РАЗДЕЛЕ УЧЁТНАЯ ЗАПИСЬ"
+
+msgid "SCRAPING STOPPED"
+msgstr "СКРЕЙПИНГ ОСТАНОВЛЕН"
+
+msgid "GAME NOT FOUND"
+msgstr "ИГРА НЕ НАЙДЕНА"
+
+msgid "NO OTHER GAME"
+msgstr "БОЛЬШЕ НЕТ ИГР"
+
+msgid "Time is up for today"
+msgstr "Время на сегодня вышло"
+
+msgid "ACCENTS"
+msgstr "АКЦЕНТЫ"
+
+msgid "SHOW"
+msgstr "ПОКАЗЫВАТЬ"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "ПОКАЗЫВАТЬ ВИДЕОПРЕВЬЮ"
+
+msgid "Device paired"
+msgstr "Устройство сопряжено"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "РАЗРЕШИТЬ ЭТО УСТРОЙСТВО?"
+
+msgid "RECEIVED"
+msgstr "ПОЛУЧЕНО"
+
+msgid "QR CODE"
+msgstr "QR-КОД"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "ТОЛЬКО ЧТО"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d МИНУТУ НАЗАД"
+msgstr[1] "%d МИНУТЫ НАЗАД"
+msgstr[2] "%d МИНУТ НАЗАД"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d ЧАС НАЗАД"
+msgstr[1] "%d ЧАСА НАЗАД"
+msgstr[2] "%d ЧАСОВ НАЗАД"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d ДЕНЬ НАЗАД"
+msgstr[1] "%d ДНЯ НАЗАД"
+msgstr[2] "%d ДНЕЙ НАЗАД"
+
+msgid "NO PAIRED DEVICES"
+msgstr "НЕТ СОПРЯЖЁННЫХ УСТРОЙСТВ"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "ЗАБЫТЬ ЭТО УСТРОЙСТВО?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "ЗАБЫТЬ ВСЕ УСТРОЙСТВА"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "ЗАБЫТЬ ВСЕ УСТРОЙСТВА?"
+
+msgid "PAIRED DEVICES"
+msgstr "СОПРЯЖЁННЫЕ УСТРОЙСТВА"
+
+msgid "SHOW QR CODE"
+msgstr "ПОКАЗАТЬ QR-КОД"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Отсканируйте камерой телефона: страница откроется уже с PIN."
+
+msgid "Phones that need no PIN."
+msgstr "Телефоны, которым PIN не нужен."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "ВОССТАНОВИТЬ СОХРАНЕНИЯ ИЗ ВЕБА?"
+
+msgid "BUILD ID"
+msgstr "ID СБОРКИ"
+
+msgid "KERNEL"
+msgstr "ЯДРО"
+
+msgid "OPERATING SYSTEM"
+msgstr "ОПЕРАЦИОННАЯ СИСТЕМА"
+
+msgid "SYSTEM INFORMATION"
+msgstr "СВЕДЕНИЯ О СИСТЕМЕ"
+
+msgid "BATTERY INFORMATION"
+msgstr "СВЕДЕНИЯ О БАТАРЕЕ"
+
+msgid "DISK SPACE"
+msgstr "МЕСТО НА ДИСКЕ"
+
+msgid "HOST NAME"
+msgstr "ИМЯ ХОСТА"
+
+msgid "NETWORK INFORMATION"
+msgstr "СВЕДЕНИЯ О СЕТИ"
+
+msgid "BATTERY HEALTH"
+msgstr "СОСТОЯНИЕ БАТАРЕИ"
+
+msgid "BATTERY REMAINING"
+msgstr "ОСТАЛОСЬ ЗАРЯДА"
+
+msgid "BATTERY STATE"
+msgstr "СТАТУС БАТАРЕИ"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "СВЕДЕНИЯ О CPU"
+
+msgid "CPU TEMPERATURE"
+msgstr "ТЕМПЕРАТУРА CPU"
+
+msgid "CPU FAN"
+msgstr "ВЕНТИЛЯТОР CPU"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "ТЕКУЩАЯ ЧАСТОТА GPU"
+
+msgid "GPU INFORMATION"
+msgstr "СВЕДЕНИЯ О GPU"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "МАКС. ЧАСТОТА GPU"
+
+msgid "GPU TEMPERATURE"
+msgstr "ТЕМПЕРАТУРА GPU"
+
+msgid "RAM AVAILABLE"
+msgstr "СВОБОДНО RAM"
+
+msgid "RAM CAPACITY"
+msgstr "ОБЪЁМ RAM"
+
+msgid "RAM INFORMATION"
+msgstr "СВЕДЕНИЯ О RAM"
+
+msgid "CURRENT FREQUENCY"
+msgstr "ТЕКУЩАЯ ЧАСТОТА"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "МАКСИМАЛЬНАЯ ЧАСТОТА"
+
+msgid "DISCHARGING"
+msgstr "РАЗРЯДКА"
+
+msgid "NOT CHARGING"
+msgstr "НЕ ЗАРЯЖАЕТСЯ"
+
+msgid "Follows the language until you choose one here."
+msgstr "Следует за языком, пока вы не выберете раскладку здесь."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Нет сети. Вставьте карту microSD в ПК и скопируйте каждую игру в папку её системы внутри roms (например, roms/snes). Или подключитесь к WiFi и вернитесь сюда, чтобы добавить игры с телефона."
+
+msgid "Add games"
+msgstr "Добавить игры"
+
+msgid "left, in the menus"
+msgstr "осталось, в меню"
+
+msgid "From your phone or microSD"
+msgstr "С телефона или с microSD"
+
+msgid "Web transfer turned off"
+msgstr "Веб-передача выключена"

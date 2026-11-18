@@ -2,5 +2,29 @@
 # SPDX-License-Identifier: GPL-2.0
 # Copyright (C) 2023 JELOS (https://github.com/JustEnoughLinuxOS)
 
+. /etc/profile.d/001-functions
+
+### Zenith: PSP runs with the CPU governor on automatic (ondemand) by default. Measured on the R36 Ultra: same fps as
+### "performance" in Ghost of Sparta, and the only setup where the kernel never throttled in 10 min of play.
+### Only filled in when empty: a value the user already has (any governor) is never touched.
+if [ -z "$(get_setting psp.cpugovernor)" ]
+then
+  set_setting psp.cpugovernor ondemand
+fi
+
+### Zenith: the "device suspend mode" menu is gone; suspend always uses the factory mode (mem, see sleep.conf).
+### One-time migration: a console left in another mode (freeze/standby/off/...) by the old menu goes back to "default".
+### The marker keeps it one-time, so an advanced user who sets a mode by hand over SSH later is respected.
+SUSPEND_MARK=/storage/.config/.zenith-suspendmode-migrated
+if [ -w /storage/.config ] && [ ! -e "${SUSPEND_MARK}" ]
+then
+  SUSPEND_CUR="$(get_setting system.suspendmode)"
+  if [ -n "${SUSPEND_CUR}" ] && [ "${SUSPEND_CUR}" != "default" ]
+  then
+    /usr/bin/suspendmode default
+  fi
+  touch "${SUSPEND_MARK}"
+fi
+
 # Need to set RA video driver to GL for libmali driver.
 sed -i '/video_driver =/c\video_driver = "gl"' /storage/.config/retroarch/retroarch.cfg

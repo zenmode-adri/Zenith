@@ -193,6 +193,74 @@ int main() {
     CHECK_EQ(slurp(d + "/bl/a/bl_power"), string("0\n"));
   }
 
+  // ---- bedside clock: plugged in, it replaces the screensaver (its own time, its own mode, the light stays on)
+  {
+    auto sv = fresh();
+    EsSettings es = cfg("black", 600000);  // the screensaver would come after 10 minutes, and black
+    TimePoint t0 = Clock::now();
+    input(t0);
+    CHECK_EQ(bedside(), 0);
+    auto dl = idle_deadline(es);
+    CHECK(dl && *dl == t0 + seconds(600));  // unplugged: as always
+    set_bedside(1);                          // plugged in, the clock after 1 minute
+    dl = idle_deadline(es);
+    CHECK(dl && *dl == t0 + seconds(60));    // the clock's time INSTEAD of ScreenSaverTime
+    before_acts(es, t0 + seconds(59), none);
+    CHECK(!idle().active());
+    before_acts(es, t0 + seconds(60), none);
+    CHECK(idle().active() && screensaver::mode() == screensaver::Mode::Clock);
+    CHECK_EQ(slurp(d + "/bl/a/bl_power"), string("0\n"));  // the panel stays lit (black would write 4)
+    CHECK(take_redraw());
+    {  // a frame: nothing of the screensaver's own overlay
+      Ctx cx;
+      cx.w = 480;
+      cx.h = 320;
+      std::vector<Op> ops;
+      screensaver::draw(cx, ops);
+      CHECK(ops.empty());
+    }
+    TimePoint now = Clock::now();
+    auto sd = saver_deadline(es, now);
+    CHECK(sd && *sd > now && *sd <= now + milliseconds(60020));  // one wake-up per minute, even with SHOW CLOCK off
+    CHECK(saver_deadline(cfg("black", 600000, false), now));
+    // the first key closes it and is not acted upon
+    vector<Action> acts = {Action::A};
+    before_acts(es, t0 + seconds(100), acts);
+    CHECK(acts.empty() && !idle().active() && screensaver::mode() == screensaver::Mode::Off);
+    CHECK_EQ(slurp(d + "/bl/a/bl_power"), string("0\n"));
+    // an unmapped button closes it too
+    before_acts(es, t0 + seconds(160), none);
+    CHECK(screensaver::mode() == screensaver::Mode::Clock);
+    before_acts(es, t0 + seconds(161), none, true);
+    CHECK(!idle().active());
+    // the clock Off while plugged in (0 minutes): the screensaver of the settings, with its own time
+    set_bedside(0);
+    dl = idle_deadline(es);
+    CHECK(dl && *dl == t0 + seconds(761));
+    // behaviour "suspend" does not turn the clock into a suspend
+    write_text(d + "/pm-suspend", "");
+    set_bedside(5);
+    EsSettings es2 = cfg("suspend", 600000);
+    input(t0 + seconds(1000));
+    before_acts(es2, t0 + seconds(1300), none);
+    CHECK(idle().active() && screensaver::mode() == screensaver::Mode::Clock);
+    CHECK(!log_has(*sv, "systemctl suspend"));
+    // unplugged (confirmed) while the clock shows: it ends, WITHOUT counting as input; the screensaver of the settings takes over only when due
+    set_bedside(0);
+    before_acts(es2, t0 + seconds(1301), none);
+    CHECK(!idle().active() && screensaver::mode() == screensaver::Mode::Off);
+    CHECK_EQ(slurp(d + "/bl/a/bl_power"), string("0\n"));
+    // a game or a job holds the clock off like the screensaver
+    set_bedside(1);
+    input(t0 + seconds(2000));
+    game_started("/r/x.gb", "X");
+    before_acts(es, t0 + seconds(2100), none);
+    CHECK(!idle().active());
+    game_ended();
+    set_bedside(0);
+    sh("rm -f " + d + "/pm-suspend");
+  }
+
   // ---- an unmapped button is activity: it postpones the start and wakes an active screensaver
   {
     auto sv = fresh();

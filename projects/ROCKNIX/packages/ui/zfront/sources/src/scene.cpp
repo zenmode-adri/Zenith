@@ -1,3 +1,4 @@
+#include "addgames.hpp"  // the "Add games" card's line under the carousel
 #include "scene.hpp"
 
 #include "scan.hpp"
@@ -247,7 +248,9 @@ const HelpPrompts& help_for(HelpCache& c, HelpKeys keys) {
 
 const HelpPrompts& system_help() {
   static HelpCache c;
-  return help_for(c, {{"leftright", N_("CHOOSE")}, {"A", N_("SELECT")}, {"X", N_("RANDOM")}, {"start", N_("MENU")}});
+  // Only what everyone needs on the home screen. X (random system) and Select (quick access: screensaver and the QUIT entries, all
+  // also under Start) still work; they are shortcuts, not shown, so the bar stays clean.
+  return help_for(c, {{"leftright", N_("CHOOSE")}, {"A", N_("SELECT")}, {"start", N_("MENU")}});
 }
 const HelpPrompts& recent_help() {
   static HelpCache c;
@@ -710,6 +713,9 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
   for (const auto& [i, sel] : order) {
     const SystemItem& it = items[size_t(rem_euclid(i, n))];
     float dist = float(i) - cam;
+    // with few systems the ring wraps inside the view: a system lives in one window `n` tiles wide around the camera, so no card is drawn twice
+    // (a lone system keeps its three tiles)
+    if (n > 1 && (dist < -float(n) / 2.0f || dist >= float(n) / 2.0f)) continue;
     float scale = std::min(std::max(1.0f + (car.scale - 1.0f) * (1.0f - std::fabs(dist)), 1.0f), car.scale);
     float cont = nominal * scale / car.scale;  // container size in px
     float k = cont / nominal;                   // text/children scale
@@ -759,7 +765,7 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
   // Under the carousel: the system's name with a flat bar in its colour, the game count on the right, one hairline.
   // (nothing while the background count is pending: no "0 JUEGOS" flash, no layout shift)
   const SystemItem& cur = items[size_t(fade.item >= 0 && fade.item < n ? fade.item : cursor)];
-  if (cur.games == kCountPending) return;
+  if (cur.games == kCountPending && cur.sys != kItemAddGames) return;  // the "Add games" card has a line instead of a count
   const size_t info_from = ops.size();
   const ui::Style st = ui::Style::from(th);
   const remake::Grid grid(w, h);
@@ -768,7 +774,7 @@ void system_view(const Theme& th, Assets& a, const Common& c, float w, float h, 
   float cy = ig.cy;
   float bar_w = std::max(2.0f, float(grid.u / 2));
   const float gap = float(grid.u) * 2.0f, name_x = car.bar ? mx + gap : mx;  // sysBar 0: no bar, the name starts at the margin
-  ImgId info = a.text(games_text(cur.games), th.f("fSys") * h * car.type, th.color("dim"));
+  ImgId info = a.text(cur.sys == kItemAddGames ? addgames::card_hint() : games_text(cur.games), th.f("fSys") * h * car.type, th.color("dim"));
   float iw = float(a.img(info).w), ih = float(a.img(info).h);
   // a long name ends in an ellipsis before the game count (same gap as after the bar); a name that fits is drawn as before
   ImgId name = a.text_ellipsis(cur.full_name, std::round(th.f("fSys") * h * 1.75f * car.type), th.color("txt"), (w - mx - iw) - gap - name_x);
@@ -835,7 +841,7 @@ void list_view(const Theme& th, Assets& a, const Common& c, float w, float h, co
   for (size_t idx = rw.first; idx < rw.end; ++idx) {
     float top = ly + (float(idx) - rw.start) * row_h;
     bool sel = idx == rw.lit;
-    Color col = sel ? th.color("cyanDark") : th.color("dimDark");
+    Color col = sel ? (lst.sel_style == ui::SelStyle::Fill ? th.color("cyanDark") : lst.sel_ink) : th.color("dimDark");
     // "12 min ago" on the right of the row (only for games played recently); the name gives up that much room
     float room = lw - 2.0f * margin;
     if (marks && idx < marks->size() && !(*marks)[idx].empty()) {

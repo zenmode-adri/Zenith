@@ -474,7 +474,7 @@ int main() {
     std::unique_ptr<Screen> s = Registry::instance().make("menu.game", cx, "");
     Menu* m = as_menu(s);
     m->rebuild(cx);
-    CHECK_EQ(m->title(), std::string("GAMES"));
+    CHECK_EQ(m->title(), std::string("GAME SETTINGS"));
     int as = find(*m, "AUTO SAVE/LOAD");
     CHECK(as >= 0);
     // order: WHILE PLAYING, SAVED GAMES, PICTURE AND CONTROL, then the links (statistics, per system last)

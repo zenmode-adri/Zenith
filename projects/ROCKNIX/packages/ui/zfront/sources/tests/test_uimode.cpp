@@ -196,7 +196,7 @@ int main() {
     m = open_menu(h, cx, "menu.main");
     CHECK(m != nullptr);
     if (m) {
-      CHECK(has(*m, "GAMES"));
+      CHECK(has(*m, "GAME SETTINGS"));
       CHECK(has(*m, "SYSTEM"));
       CHECK(!has(*m, "UNLOCK USER INTERFACE MODE"));
     }

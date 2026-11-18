@@ -42,6 +42,18 @@ void box(float x, float y, float w, float h, const char* tag, bool cols = false)
 // Cells that hold `px` of text: a line of text takes 1.3 times its size.
 int cells_of(const Grid& g, float px) { return int(std::ceil(px * 1.3f / float(g.u) - 0.01f)); }
 
+// Text levels of the screen (one table for every screen, TEXT SIZE included): rows and values, section headers, the big number of the card.
+int row_px(const Grid& g) { return ui::level_px(ui::Level::Row, g.w, g.h); }
+int small_px(const Grid& g) { return ui::level_px(ui::Level::Small, g.w, g.h); }
+int total_px(const Grid& g) { return std::max(g.F(24, 16), ui::level_px(ui::Level::Title, g.w, g.h)); }  // the big number keeps its own size
+
+// The bottom of the area for content: the help row grows with TEXT SIZE (as in the menus), so the last row stays above it.
+float content_bottom(Ctx& cx, const Grid& g) {
+  float t = float(g.help_top());
+  if (ui::access().scale() > 1.0f) t = std::min(t, ui::help_pill_top(cx.assets, cx.th, ui::Metrics::from(cx.th, g.w, g.h)) - float(g.U(2)));
+  return t;
+}
+
 void head(Ctx& cx, const ui::Style& st, const Grid& g, std::string_view title, std::vector<Op>& ops) {
   ops.push_back(Op::rect(0, 0, g.w, g.h, st.bg));
   remake::menu_backdrop(cx.th, cx.assets, g.w, g.h, ops);
@@ -141,9 +153,11 @@ class StatsScreen : public Screen {
     switch (a) {
       case Action::B: return Transition::pop();
       case Action::Start: return Transition::close_menus();
-      case Action::Down:
-        if (top_ + 1 < rows_.size() && !fits_from(top_, Grid(cx.w, cx.h))) ++top_;
+      case Action::Down: {
+        const Grid g(cx.w, cx.h);
+        if (top_ + 1 < rows_.size() && !fits_from(top_, g, content_bottom(cx, g))) ++top_;
         break;
+      }
       case Action::Up:
         if (top_ > 0) --top_;
         break;
@@ -160,16 +174,17 @@ class StatsScreen : public Screen {
     const float m = g.col(0), w = g.span(12);
     const Color acc = st.dark ? st.cyan : st.cyan_dark;
     if (loading_) {
-      label(a, ops, sc("PLEASE WAIT"), m, g.h * 0.45f, g.F(16, 13), st.dim, w);
+      label(a, ops, sc("PLEASE WAIT"), m, g.h * 0.45f, ui::level_px(ui::Level::Title, g.w, g.h), st.dim, w);
     } else if (rows_.empty()) {
-      label(a, ops, sc("NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."), m, g.h * 0.45f, g.F(16, 13), st.dim, w);
+      label(a, ops, sc("NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."), m, g.h * 0.45f, row_px(g), st.dim, w);  // a sentence: row size, it must fit
     } else {
-      float y = float(g.content_top());
-      const float limit = float(g.help_top());
+      float y = top_y(g);
+      const float limit = content_bottom(cx, g);
       for (size_t i = top_; i < rows_.size(); ++i) {
         const Row& r = rows_[i];
         const float h = height(r, g);
         if (y + h > limit + 0.5f) break;
+        if (r.kind == Row::Head && i + 1 < rows_.size() && y + h + height(rows_[i + 1], g) > limit + 0.5f) break;  // a heading never ends the page alone
         draw_row(a, ops, st, g, r, y, h, m, w, acc);
         y += h;
       }
@@ -192,32 +207,48 @@ class StatsScreen : public Screen {
     read_file(playstats::log_path(), t);
     return t;
   }
+  // the first row lies a cell under the bar, as the rows of the other menus do (not stuck to the header)
+  static float top_y(const Grid& g) { return float(g.content_top() + g.U(1)); }
   static float height(const Row& r, const Grid& g) {
-    const int p1 = g.F(15, 12), p2 = g.F(12, 11);
+    const int p1 = row_px(g), p2 = small_px(g);
+    const float u = float(g.u);
     switch (r.kind) {
-      case Row::Total: return float(g.U(cells_of(g, float(g.F(13, 11) + g.F(24, 16))) + 3));  // the card (two lines, a cell above, under and between) and a cell of air
+      case Row::Total: {
+        // the card (a cell above, the small line, a cell between, the big line, a cell under) and a cell of air under the card
+        const int c = int(std::ceil((1.3f * float(p2 + total_px(g)) + u) / u - 0.01f));
+        return float(g.U(c + 3));
+      }
       case Row::Head: return float(g.U(cells_of(g, float(p2)) + 2));
-      default: return float(g.U(std::max(cells_of(g, float(p1 + p2)) + 1, cells_of(g, float(p1)) + 3)));
+      default: {
+        // two lines (the second one with 0.3 of its size in air above it) and a cell under; a bar row: the line, a cell, the bar, a cell
+        // (a Bar row has one line: only a Game row keeps the two-line height)
+        const int bar = cells_of(g, float(p1)) + 3;
+        if (r.kind != Row::Game) return float(g.U(bar));
+        const int two = int(std::ceil((1.3f * float(p1) + 1.6f * float(p2)) / u - 0.01f)) + 1;
+        return float(g.U(std::max(two, bar)));
+      }
     }
   }
-  // Is the end of the list on screen when it starts at row `from`?
-  bool fits_from(size_t from, const Grid& g) const {
-    float y = float(g.content_top());
+  // Is the end of the list on screen when it starts at row `from` (the content ends at `limit`)?
+  bool fits_from(size_t from, const Grid& g, float limit) const {
+    float y = top_y(g);
     for (size_t i = from; i < rows_.size(); ++i) {
       y += height(rows_[i], g);
-      if (y > float(g.help_top()) + 0.5f) return false;
+      if (y > limit + 0.5f) return false;
     }
     return true;
   }
   void draw_row(Assets& a, std::vector<Op>& ops, const ui::Style& st, const Grid& g, const Row& r, float y, float h, float m, float w, Color acc) const {
+    const int p1 = row_px(g), p2 = small_px(g);
+    const float card_x = m, card_w = w, in = float(g.U(2));  // the card has the width of a menu row; the text, its inset
+    if (r.kind != Row::Total) m += in, w -= 2 * in;
     const float right = m + w;
-    const int p1 = g.F(15, 12), p2 = g.F(12, 11);
     switch (r.kind) {
       case Row::Total: {
-        const float hc = h - float(g.U(1)), q1 = float(g.F(13, 11)), q2 = float(g.F(24, 16));
-        g_sh.rrect(a, ops, m, y, w, hc, g.U(2), st.dark ? Color{255, 255, 255, 12} : Color{255, 255, 255, 255});
-        box(m, y, w, hc, "tarjeta", true);
-        const float px = m + float(g.U(2)), cy2 = y + hc - float(g.U(1)) - q2 * 0.65f;
+        const float hc = h - float(g.U(1)), q1 = float(p2), q2 = float(total_px(g));  // small caption over the big number
+        g_sh.rrect(a, ops, card_x, y, card_w, hc, g.U(2), st.dark ? Color{255, 255, 255, 12} : Color{255, 255, 255, 255});
+        box(card_x, y, card_w, hc, "tarjeta", true);
+        const float px = card_x + in, cy2 = y + hc - float(g.U(1)) - q2 * 0.65f;
         label(a, ops, r.text, px, y + float(g.U(1)) + q1 * 0.65f, int(q1), st.dim, w * 0.7f);
         label(a, ops, r.value, px, cy2, int(q2), st.txt, w * 0.7f);
         label(a, ops, r.sub, right - float(g.U(2)), cy2, p1, st.dim, w * 0.25f, true);
@@ -227,7 +258,7 @@ class StatsScreen : public Screen {
         label(a, ops, r.text, m, y + h - float(g.U(1)) - float(p2) * 0.65f, p2, st.dim, w);
         break;
       case Row::Note:
-        label(a, ops, r.text, m, y + h * 0.5f, g.F(14, 12), st.dim, w);
+        label(a, ops, r.text, m, y + h * 0.5f, p1, st.dim, w);
         break;
       case Row::Bar:
       case Row::Game: {
@@ -236,7 +267,7 @@ class StatsScreen : public Screen {
         label(a, ops, r.value, right, l1, p1, st.txt, 0, true);
         label(a, ops, r.text, m, l1, p1, st.txt, w - vw - float(g.U(2)));
         if (r.kind == Row::Game) {
-          label(a, ops, r.sub, m, y + float(p1) * 1.3f + float(p2) * 0.65f, p2, st.dim, w);
+          label(a, ops, r.sub, m, y + float(p1) * 1.3f + float(p2) * 0.95f, p2, st.dim, w);  // under the name line, 0.3 of its size of air above
         } else {
           const float bh = float(g.U(1)), by = y + float(g.U(cells_of(g, float(p1)) + 1));
           g_sh.pill(a, ops, m, by, w, bh, ui::with_alpha(st.dim, 0.18f));

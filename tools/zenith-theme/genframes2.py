@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 OUT = sys.argv[1]
 DEBUG = '--debug' in sys.argv
 os.makedirs(OUT, exist_ok=True)
-RUBIK = 'C:/Users/epsil/Documents/r36-kernel-mainline/SESION-2026-10-04-OS-DEFINITIVO/temas-zenith/zenith-switch-claro/assets/fonts/Rubik-Regular.ttf'
+RUBIK = __import__('os').environ.get('ZENITH_THEMES_SRC', 'temas-zenith').rstrip('/') + '/zenith-switch-claro/assets/fonts/Rubik-Regular.ttf'
 CJK = 'C:/Windows/Fonts/msyh.ttc'
 S = 3
 # Paleta oscura (la misma que el tema Zenith oscuro: bg 26262A, txt F0F0F2, dim 8C8C94, pista 55555C)

@@ -186,7 +186,7 @@ static Entry T[] = {
     {"Write", "Escritura"},
     {"Copy", "Copia"},
     {"points", "puntos"},
-    {"Benchmark program not found. Reinstall R36 Tuner.", "No se encuentra el programa de benchmark. Reinstala R36 Tuner."},
+    {"Benchmark program not found. Reinstall R36 Tuner Next.", "No se encuentra el programa de benchmark. Reinstala R36 Tuner Next."},
     {"The GPU benchmark failed.", "El benchmark de GPU ha fallado."},
     {"No results yet.", "Aún no hay resultados."},
     {"Clear all results?", "¿Borrar todos los resultados?"},

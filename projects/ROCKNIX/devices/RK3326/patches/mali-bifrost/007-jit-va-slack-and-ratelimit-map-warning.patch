@@ -1,0 +1,88 @@
+From: Zenith
+Subject: [PATCH] mali: rate-limit the "Failed to map memory on GPU" warning and give the 64-bit JIT zone 1 GiB of slack
+
+Under memory pressure the shrinker evicts JIT regions, the blob re-requests them, the VA of the JIT zone (filled to the byte by the
+client) gets fragmented and a 94208-page request fails, which logged up to 285 lines/s (journald at 19-46 % of a core). The warning is
+now rate-limited, and the 64-bit JIT zone is made 0x40000 pages (1 GiB) larger than requested, taken from SAME_VA, so the evicted
+regions can be placed again far more reliably (first-fit makes a failure much less likely, not impossible). Both changes are Zenith-specific, not from Arm.
+
+--- a/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
++++ b/product/kernel/drivers/gpu/arm/midgard/mali_kbase_mem_linux.c
+@@ -486,7 +486,7 @@
+ #endif /* !MALI_USE_CSF */
+ 		}
+ 		if (kbase_gpu_mmap(kctx, reg, *gpu_va, va_pages, align, mmu_sync_info) != 0) {
+-			dev_warn(dev, "Failed to map memory on GPU");
++			dev_warn_ratelimited(dev, "Failed to map memory on GPU");
+ 			kbase_gpu_vm_unlock_with_pmode_sync(kctx);
+ 			goto no_mmap;
+ 		}
+@@ -1924,7 +1924,7 @@
+ 	} else {
+ 		/* we control the VA */
+ 		if (kbase_gpu_mmap(kctx, reg, 0, *num_pages, 1, mmu_sync_info) != 0) {
+-			dev_warn(kctx->kbdev->dev, "Failed to map memory on GPU");
++			dev_warn_ratelimited(kctx->kbdev->dev, "Failed to map memory on GPU");
+ 			goto no_mmap;
+ 		}
+ 		/* return real GPU VA */
+--- a/product/kernel/drivers/gpu/arm/midgard/mali_kbase_reg_track.c
++++ b/product/kernel/drivers/gpu/arm/midgard/mali_kbase_reg_track.c
+@@ -1099,12 +1099,18 @@
+ 	return false;
+ }
+ 
++/* Extra VA (in pages) added to the 64-bit JIT zone: 0x40000 pages = 1 GiB */
++#define KBASE_ZENITH_JIT_VA_SLACK_PAGES ((u64)0x40000)
++/* Never leave SAME_VA with less than 0x80000 pages = 2 GiB because of the slack */
++#define KBASE_ZENITH_JIT_VA_MIN_SAME_VA_PAGES ((u64)0x80000)
++
+ static int kbase_region_tracker_init_jit_64(struct kbase_context *kctx, u64 jit_va_pages)
+ {
+ 	struct kbase_va_region *same_va_reg;
+ 	struct kbase_reg_zone *same_va_zone, *custom_va_zone;
+ 	u64 same_va_zone_base_addr;
+ 	u64 jit_va_start;
++	u64 zone_pages;
+ 
+ 	lockdep_assert_held(&kctx->reg_lock);
+ 
+@@ -1133,9 +1139,27 @@
+ 	if (same_va_reg->nr_pages < jit_va_pages || same_va_zone->va_size_pages < jit_va_pages)
+ 		return -ENOMEM;
+ 
++	/*
++	 * Zenith: give the 64-bit JIT zone extra VA on top of what the client asked for.
++	 * The Arm user-space blob (libmali g29p1, PPSSPP/Ghost of Sparta on the R36 Ultra) asks for a
++	 * zone of exactly 1 GiB and then fills it to the byte with its max_allocations regions. After
++	 * the shrinker evicts some of them and the blob re-requests them, the first-fit VA allocator
++	 * places them in a different order, the free VA ends up split (e.g. 80 MiB + 288 MiB instead of
++	 * 368 MiB) and the next 94208-page request fails with "Failed to map memory on GPU". The client
++	 * never sees the real zone size (JIT VA is always picked by the kernel), so a larger zone is
++	 * invisible to it. The slack is taken from SAME_VA like the requested size, and is skipped if
++	 * SAME_VA would be left with less than KBASE_ZENITH_JIT_VA_MIN_SAME_VA_PAGES.
++	 */
++	zone_pages = jit_va_pages;
++	if (same_va_reg->nr_pages - jit_va_pages >=
++		    KBASE_ZENITH_JIT_VA_SLACK_PAGES + KBASE_ZENITH_JIT_VA_MIN_SAME_VA_PAGES &&
++	    same_va_zone->va_size_pages - jit_va_pages >=
++		    KBASE_ZENITH_JIT_VA_SLACK_PAGES + KBASE_ZENITH_JIT_VA_MIN_SAME_VA_PAGES)
++		zone_pages += KBASE_ZENITH_JIT_VA_SLACK_PAGES;
++
+ 	/* It's safe to adjust the same VA zone now */
+-	same_va_reg->nr_pages -= jit_va_pages;
+-	same_va_zone->va_size_pages -= jit_va_pages;
++	same_va_reg->nr_pages -= zone_pages;
++	same_va_zone->va_size_pages -= zone_pages;
+ 	jit_va_start = kbase_reg_zone_end_pfn(same_va_zone);
+ 
+ 	/*
+@@ -1146,7 +1170,7 @@
+ 	 */
+ 	custom_va_zone = kbase_ctx_reg_zone_get(kctx, CUSTOM_VA_ZONE);
+ 	if (kbase_reg_zone_init(kctx->kbdev, custom_va_zone, CUSTOM_VA_ZONE, jit_va_start,
+-				jit_va_pages))
++				zone_pages))
+ 		return -ENOMEM;
+ 
+ 	return 0;

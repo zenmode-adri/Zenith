@@ -11,6 +11,7 @@ namespace {
 Status g_raw;
 Prefs g_prefs;
 bool g_have_raw = false;
+std::string g_bedside;  // g_raw.time in the format of the preferences, ClockMode12 included
 }  // namespace
 
 Prefs read(const EsSettings& es) {
@@ -63,6 +64,7 @@ void on_status(Ctx& cx, const Status& raw) {
   g_have_raw = true;
   g_prefs = read(cx.es);
   cx.status = filter(raw, g_prefs);
+  g_bedside = g_prefs.clock12 ? clock12(raw.time) : raw.time;
 }
 
 void reapply(Ctx& cx) {
@@ -70,7 +72,10 @@ void reapply(Ctx& cx) {
   g_prefs = read(cx.es);
   if (!g_have_raw) return;
   cx.status = filter(g_raw, g_prefs);
+  g_bedside = g_prefs.clock12 ? clock12(g_raw.time) : g_raw.time;
 }
+
+const std::string& bedside_time() { return g_bedside; }
 
 std::optional<Battery> raw_battery() { return g_have_raw ? g_raw.battery : std::nullopt; }
 

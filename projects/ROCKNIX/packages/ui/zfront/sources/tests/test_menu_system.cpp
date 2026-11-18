@@ -201,8 +201,9 @@ int main() {
     Menu* m = open(h, cx, "menu.system");
     for (const char* l : {"INFORMATION", "LANGUAGE (REGION)", "KEYBOARD LAYOUT", "KEYBOARD VARIANT", "TIMEZONE", "ENABLE MANGOHUD OVERLAY", "SCREEN BRIGHTNESS",
                           "GAMMA", "CONTRAST", "SATURATION", "HUE", "LED COLOR", "JOYSTICK LED", "AUTODETECT GAMES CARD", "EJECT MICROSD CARD",
-                          "DEFAULT SCALING GOVERNOR", "DEFAULT GPU SCALING GOVERNOR", "ENABLE CPU OVERCLOCK", "DEVICE SUSPEND MODE", "SYSTEM MANAGEMENT AND RESET"})
+                          "DEFAULT SCALING GOVERNOR", "DEFAULT GPU SCALING GOVERNOR", "ENABLE CPU OVERCLOCK", "SYSTEM MANAGEMENT AND RESET"})
       CHECK(has(*m, l));
+    CHECK(!has(*m, "DEVICE SUSPEND MODE"));  // the image picks the mode (v0.3.0), even with suspendmode installed
     CHECK(has(*m, "ENABLE ROCKNIX SCREENSHOT"));
     CHECK(!has(*m, "ENABLE TOUCHSCREEN KEYBOARD"));  // DEVICE_HAS_TOUCHSCREEN not set
     CHECK(!has(*m, "COOLING PROFILE"));              // no fan
@@ -213,8 +214,8 @@ int main() {
     // shown values
     CHECK_EQ(m->entry(size_t(find(*m, "SCREEN BRIGHTNESS"))).value_text, std::string("50%"));  // 128 / 255
     CHECK_EQ(m->entry(size_t(find(*m, "TIMEZONE"))).value_text, std::string("Europe/Paris"));  // current_timezone, nothing configured
-    CHECK_EQ(m->entry(size_t(find(*m, "DEFAULT SCALING GOVERNOR"))).value_text, std::string("default"));
-    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("libmali"));
+    CHECK_EQ(m->entry(size_t(find(*m, "DEFAULT SCALING GOVERNOR"))).value_text, std::string("Default"));
+    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("Arm (official)"));
     CHECK_EQ(m->entry(size_t(find(*m, "LANGUAGE (REGION)"))).value_text, std::string("English (US)"));  // normal case, like the other language row
     // group titles exist only with something below them
     int last_header = -1;
@@ -355,6 +356,29 @@ int main() {
     CHECK(logged(cx, "/usr/bin/sh -lc '. /etc/profile.d/099-freqfunctions; gpu_performance_level performance' >/dev/null 2>&1"));
   }
 
+  // ---- the raw `default` of a list shows as a translated label; the stored value stays `default`
+  {
+    CHECK_EQ(value_label("default"), std::string("Default"));
+    CHECK_EQ(value_label("performance"), std::string("performance"));
+    LazyList l;
+    l.loaded = true;
+    l.opts = {{"default", "default"}, {"performance", "performance"}};
+    std::vector<Option> o = options_or_current(l, "default");
+    CHECK_EQ(o.size(), size_t(2));
+    CHECK_EQ(o[0].value, std::string("default"));
+    CHECK_EQ(o[0].label, std::string("Default"));
+    CHECK_EQ(o[1].label, std::string("performance"));
+    LazyList none;
+    std::vector<Option> c = options_or_current(none, "default");
+    CHECK_EQ(c[0].value, std::string("default"));
+    CHECK_EQ(c[0].label, std::string("Default"));
+    Ctx cx;
+    make_console(cx);
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.system");
+    CHECK_EQ(m->entry(size_t(find(*m, "DEFAULT GPU SCALING GOVERNOR"))).value_text, std::string("Default"));
+  }
+
   // ---- time zone: list from `timeinfo timezones`, ES's ln -sf, key system.timezone
   {
     Ctx cx;
@@ -367,6 +391,52 @@ int main() {
     CHECK(tz == "Africa/Abidjan" || tz == "Europe/Madrid" || tz == "Europe/Paris");
     CHECK(tz != "Europe/Paris");
     CHECK(logged(cx, "ln -sf '/usr/share/zoneinfo/" + tz + "' $(readlink /etc/localtime)"));
+  }
+
+  // ---- DATE & TIME: the row under TIMEZONE in LANGUAGE & TIME, and the screen that sets the clock (date -s + hwclock --systohc)
+  {
+    Ctx cx;
+    make_console(cx);
+    std::unique_ptr<Screen> h;
+    Menu* m = open(h, cx, "menu.g.lang");
+    CHECK(has(*m, "DATE & TIME"));
+    CHECK(find(*m, "TIMEZONE") < find(*m, "DATE & TIME"));
+    const Entry& row = m->entry(size_t(find(*m, "DATE & TIME")));
+    CHECK(row.show_arrow);
+    CHECK(row.value_text == "Not set" || row.value_text.size() == 16);  // "2026-11-15 14:05" (the test clock is the PC's)
+    CHECK(row.hint_text.find("Wi-Fi") != std::string::npos);
+
+    std::unique_ptr<Screen> h2;
+    Menu* d = open(h2, cx, "menu.datetime");
+    for (const char* l : {"YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SET DATE & TIME"}) CHECK(has(*d, l));
+    auto set = [&](const char* label, const char* v) {  // choice: left/right step through the list, so walk to the value
+      CHECK(go(*d, cx, label));
+      for (int k = 0; k < 200 && d->entry(size_t(d->cursor())).value_text != v; ++k) { d->handle(Action::Right, cx); d->tick(0.0f, cx); }  // the tick applies the rebuild a year/month change asks for
+      CHECK_EQ(d->entry(size_t(d->cursor())).value_text, std::string(v));
+    };
+    set("YEAR", "2028");
+    set("MONTH", "02");
+    set("DAY", "29");  // 2028 is a leap year
+    set("HOUR", "09");
+    set("MINUTE", "07");
+    // 2028-02-29 -> year 2027: the day follows (28), the list of days has 28 entries
+    set("YEAR", "2027");
+    CHECK_EQ(d->entry(size_t(find(*d, "DAY"))).value_text, std::string("28"));
+    CHECK_EQ(d->entry(size_t(find(*d, "DAY"))).options.size(), size_t(28));
+    set("MONTH", "01");
+    set("DAY", "31");
+    set("MONTH", "03");  // 31 January -> March: stays 31 (stepping through February clamped it to 28 on the way, so 28)
+    CHECK_EQ(d->entry(size_t(find(*d, "DAY"))).value_text, std::string("28"));
+    CHECK_EQ(d->entry(size_t(find(*d, "YEAR"))).options.size(), size_t(76));  // 2024..2099
+    cx.sv->cmd.log.clear();
+    CHECK(go(*d, cx, "SET DATE & TIME"));
+    Transition t = d->handle(Action::A, cx);
+    CHECK(t.kind == Transition::Pop);
+    settle(cx);
+    CHECK_EQ(cx.sv->cmd.log.size(), size_t(2));
+    CHECK(logged(cx, "date -s '2027-03-28 09:07:00'"));
+    CHECK(logged(cx, "hwclock --systohc"));
+    if (cx.sv->cmd.log.size() == 2) CHECK(cx.sv->cmd.log[0] < cx.sv->cmd.log[1]);  // date first, then the RTC
   }
 
   // ---- keyboard: the layout resets the variant to "none"; a failing script changes nothing
@@ -385,7 +455,8 @@ int main() {
     CHECK(lay == "es" || lay == "fr");
     CHECK(logged(cx, "/usr/bin/rocknix-keyboard set '" + lay + "' 'none'"));
     CHECK_EQ(cx.conf.get_or("system.kbvariant", ""), std::string("none"));
-    CHECK(has(*m, "Reboot now"));  // reboot hint row appears
+    CHECK(!has(*m, "Reboot now"));  // no reboot: the OS applies it at once with swaymsg
+    CHECK(cx.conf.get_bool("zfront.kblayout_manual", false));  // chosen by hand: a new language no longer moves it
     // the variants belong to the layout: the list of the NEW one is read (none + one), not left empty until the page is reopened
     CHECK(logged(cx, "/usr/bin/rocknix-keyboard list-variants '" + lay + "'"));
     CHECK_EQ(m->entry(size_t(find(*m, "KEYBOARD VARIANT"))).options.size(), size_t(2));
@@ -404,6 +475,45 @@ int main() {
     CHECK_EQ(m->entry(size_t(find(*m, "KEYBOARD LAYOUT"))).value_text, std::string("English (US)"));
     CHECK(!has(*m, "Reboot now"));
     CHECK(!cx.sv->toasts.items().empty());
+  }
+
+  // ---- a new language moves the keyboard layout with it, until one is chosen by hand
+  {
+    CHECK_EQ(keyboard_for_language("es_ES"), std::string("es"));
+    CHECK_EQ(keyboard_for_language("ca_ES"), std::string("es"));
+    CHECK_EQ(keyboard_for_language("pt_BR"), std::string("br"));
+    CHECK_EQ(keyboard_for_language("pt_PT"), std::string("pt"));
+    CHECK_EQ(keyboard_for_language("en_GB"), std::string("gb"));
+    CHECK_EQ(keyboard_for_language("sv_SE"), std::string("se"));
+    CHECK_EQ(keyboard_for_language("de_DE"), std::string("us"));  // QWERTZ: Y/Z swapped would break ports that read key symbols
+    CHECK_EQ(keyboard_for_language("fr_FR"), std::string("us"));  // AZERTY
+    CHECK_EQ(keyboard_for_language("ru_RU"), std::string("us"));  // Cyrillic only: no Latin letters without a toggle key
+    CHECK_EQ(keyboard_for_language("en_US"), std::string("us"));
+    CHECK_EQ(keyboard_for_language(""), std::string("us"));
+    Ctx cx;
+    make_console(cx);
+    keyboard_follow_language(cx, "es_ES");  // the console is in en_US with "us"
+    CHECK(logged(cx, "/usr/bin/rocknix-keyboard set 'es' none"));
+    CHECK_EQ(cx.conf.get_or("system.kblayout", ""), std::string("es"));
+    cx.conf.set("system.language", "es_ES");
+    cx.sv->cmd.log.clear();
+    keyboard_follow_language(cx, "es_MX");  // es -> latam: it still follows
+    CHECK(logged(cx, "/usr/bin/rocknix-keyboard set 'latam' none"));
+    cx.conf.set("system.language", "es_MX");
+    cx.sv->cmd.log.clear();
+    keyboard_follow_language(cx, "es_MX");  // already there: nothing to run
+    CHECK(cx.sv->cmd.log.empty());
+    cx.conf.set("zfront.kblayout_manual", "1");
+    keyboard_follow_language(cx, "it_IT");
+    CHECK(cx.sv->cmd.log.empty());
+    CHECK_EQ(cx.conf.get_or("system.kblayout", ""), std::string("latam"));
+    // chosen by hand with an older zfront (no mark): "de" on an English console is not the language's, so it stays
+    cx.conf.set("zfront.kblayout_manual", "0");
+    cx.conf.set("system.language", "en_US");
+    cx.conf.set("system.kblayout", "de");
+    keyboard_follow_language(cx, "es_ES");
+    CHECK(cx.sv->cmd.log.empty());
+    CHECK_EQ(cx.conf.get_or("system.kblayout", ""), std::string("de"));
   }
 
   // ---- language: key + live switch of the catalog
@@ -447,9 +557,6 @@ int main() {
     std::unique_ptr<Screen> h;
     Menu* m = open(h, cx, "menu.system");
     CHECK_EQ(m->entry(size_t(find(*m, "THIS DEVICE IS"))).value_text, std::string("R36S"));
-    pick(*m, cx, "DEVICE SUSPEND MODE", 2);  // default, freeze, mem (disk is not offered)
-    CHECK_EQ(cx.conf.get_or("system.suspendmode", ""), std::string("mem"));
-    CHECK(logged(cx, "/usr/bin/suspendmode 'mem'"));
     pick(*m, cx, "THIS DEVICE IS", 1);
     settle(cx);  // runs on the slow worker, the exit code decides the hint
     m->tick(0.0f, cx);
@@ -504,12 +611,32 @@ int main() {
     make_console(cx);
     std::unique_ptr<Screen> h;
     Menu* m = open(h, cx, "menu.system");
-    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("libmali"));
+    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("Arm (official)"));  // shown name, raw value libmali
     pick(*m, cx, "GPU DRIVER", 1);
     settle(cx);
     m->tick(0.0f, cx);
-    CHECK(logged(cx, "/usr/bin/gpudriver 'panfrost'"));
-    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("panfrost"));
+    CHECK(logged(cx, "/usr/bin/gpudriver 'panfrost'"));  // the raw value goes to gpudriver, not the label
+    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("Open source (Panfrost / PanVK)"));
+    CHECK_EQ(gpu_driver_label("libmali"), std::string("Arm (official)"));
+    CHECK_EQ(gpu_driver_label("panfrost"), std::string("Open source (Panfrost / PanVK)"));
+    CHECK_EQ(gpu_driver_label("mystery"), std::string("mystery"));
+    {
+      LazyList l;
+      l.loaded = true;
+      l.opts = {{"libmali", "libmali"}, {"panfrost", "panfrost"}, {"mystery", "mystery"}};
+      std::vector<Option> o = gpu_driver_options(l, "libmali");
+      CHECK_EQ(o.size(), size_t(3));
+      CHECK_EQ(o[0].value, std::string("libmali"));
+      CHECK_EQ(o[0].label, std::string("Arm (official)"));
+      CHECK_EQ(o[1].value, std::string("panfrost"));
+      CHECK_EQ(o[1].label, std::string("Open source (Panfrost / PanVK)"));
+      CHECK_EQ(o[2].value, std::string("mystery"));
+      CHECK_EQ(o[2].label, std::string("mystery"));
+      LazyList none;
+      std::vector<Option> c = gpu_driver_options(none, "");
+      CHECK_EQ(c.size(), size_t(1));
+      CHECK_EQ(c[0].label, std::string("..."));
+    }
     CHECK(has(*m, "Reboot now"));
   }
   {
@@ -521,7 +648,7 @@ int main() {
     pick(*m, cx, "GPU DRIVER", 1);
     settle(cx);
     m->tick(0.0f, cx);
-    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("libmali"));  // not switched: back to the real one
+    CHECK_EQ(m->entry(size_t(find(*m, "GPU DRIVER"))).value_text, std::string("Arm (official)"));  // not switched: back to the real one
     CHECK(!has(*m, "Reboot now"));                                                         // and no promise of a switch
     CHECK(!cx.sv->toasts.items().empty());
   }
@@ -544,14 +671,14 @@ int main() {
   {
     Ctx cx;
     make_console(cx);
-    probe().canned["rocknix-info --full"] = {0,
+    probe().canned["rocknix-info --full 2>/dev/null"] = {0,
                                              "SYSTEM INFORMATION:\nDEVICE: Game Console R36Ultra\nOPERATING SYSTEM: Zenith\nVERSION: 20261024 (aurknix)\n"
                                              "NETWORK INFORMATION:\nHOST NAME: zenith\nIP ADDRESS: 192.168.1.42\nBATTERY INFORMATION:\nBATTERY REMAINING: 87%\n"
                                              "CPU INFORMATION:\nCPU TEMPERATURE: 41°\nRAM INFORMATION:\nRAM AVAILABLE: 611 MB\nRAM CAPACITY: 983 MB\n"};
     put_file("/root/proc/uptime", "93784.12 12345.67\n");
     std::unique_ptr<Screen> h;
     Menu* m = open(h, cx, "menu.system.info");
-    CHECK(logged(cx, "rocknix-info --full"));
+    CHECK(logged(cx, "rocknix-info --full 2>/dev/null"));
     CHECK_EQ(m->title(), std::string("INFORMATION"));
     int ip = find(*m, "IP ADDRESS");
     CHECK(ip >= 0);
@@ -667,6 +794,13 @@ int main() {
       Menu* lm = open(hl, cx, "menu.g.look");
       for (const char* l : {"SHOW CLOCK", "TEXT SIZE"}) CHECK(has(*lm, l));  // (the battery row needs a battery)
       CHECK(!has(*lm, "SCREEN BRIGHTNESS"));
+      CHECK(!has(*lm, "APPEARANCE"));  // no header repeating the screen's own title
+      CHECK(has(*lm, "SHOW NETWORK INDICATOR"));  // with the clock and the battery, under TOP BAR
+      CHECK(find(*lm, "TOP BAR") < find(*lm, "SHOW NETWORK INDICATOR") && find(*lm, "SHOW NETWORK INDICATOR") < find(*lm, "NAVIGATION"));
+      CHECK(lm->entry(size_t(find(*lm, "SHOW NETWORK INDICATOR"))).get_b());  // ES default on
+      CHECK(go(*lm, cx, "SHOW NETWORK INDICATOR"));
+      lm->handle(Action::A, cx);
+      CHECK(!cx.es.get_bool("ShowNetworkIndicator", true));
     }
     std::unique_ptr<Screen> hp;
     m = open(hp, cx, "menu.g.panel");
@@ -675,19 +809,54 @@ int main() {
 
     std::unique_ptr<Screen> h2;
     m = open(h2, cx, "menu.g.power");
-    for (const char* l : {"ENABLE AUDIBLE BATTERY WARNING", "BATTERY WARNING THRESHOLD", "DEFAULT SCALING GOVERNOR", "DEFAULT GPU SCALING GOVERNOR", "DEVICE SUSPEND MODE",
-                          "START SCREENSAVER AFTER", "SCREENSAVER TYPE", "OVERCLOCK & MONITORING"})
+    for (const char* l : {"ENABLE AUDIBLE BATTERY WARNING", "BATTERY WARNING THRESHOLD", "DEFAULT SCALING GOVERNOR", "DEFAULT GPU SCALING GOVERNOR",
+                          "SCREENSAVER TYPE", "OVERCLOCK & MONITORING"})
       CHECK(has(*m, l));
     for (const char* l : {"ENABLE CPU OVERCLOCK", "SYSTEM VOLUME", "SCREEN BRIGHTNESS"}) CHECK(!has(*m, l));
     // what the console does with its power: governors, then idle (suspend, screensaver), then the warning
-    CHECK(find(*m, "DEFAULT SCALING GOVERNOR") < find(*m, "DEVICE SUSPEND MODE"));
-    CHECK(find(*m, "DEVICE SUSPEND MODE") < find(*m, "START SCREENSAVER AFTER"));
-    CHECK(find(*m, "START SCREENSAVER AFTER") < find(*m, "ENABLE AUDIBLE BATTERY WARNING"));
+    CHECK(!has(*m, "DEVICE SUSPEND MODE"));
+    CHECK(find(*m, "DEFAULT SCALING GOVERNOR") < find(*m, "SCREENSAVER TYPE"));
+    CHECK(find(*m, "SCREENSAVER TYPE") < find(*m, "ENABLE AUDIBLE BATTERY WARNING"));
+    CHECK(!has(*m, "START SCREENSAVER AFTER"));  // the time lives on the battery screen ("Screensaver after")
     std::unique_ptr<Screen> h3;
     m = open(h3, cx, "menu.g.power.adv");
     CHECK(has(*m, "ENABLE CPU OVERCLOCK"));
     CHECK(has(*m, "ENABLE MANGOHUD OVERLAY"));
     CHECK(!has(*m, "DEFAULT SCALING GOVERNOR"));
+    {  // R36 Tuner Next installed (its Tools script in a system's folder): one row opens it and the overclock submenu goes away
+      System tools;
+      tools.name = "tools";
+      tools.rom_dir = g_dir + "/modules/";
+      mkdirs(tools.rom_dir);
+      { std::ofstream(tools.rom_dir + "Start R36 Tuner.sh") << "#!/bin/bash\n"; }
+      cx.systems.push_back(tools);
+      probe().env["DEVICE_GPU_OVERCLOCK"] = "true";
+      std::unique_ptr<Screen> ht;
+      Menu* tm = open(ht, cx, "menu.g.power");
+      CHECK(has(*tm, "R36 Tuner Next"));
+      {  // the row launches it and keeps the menus: on exit the user is back on this page
+        Game g;
+        g.name = "Start R36 Tuner";
+        g.path = tools.rom_dir + "Start R36 Tuner.sh";
+        cx.systems.back().games.push_back(g);
+        cx.systems.back().command = "%ROM%";
+        CHECK(go(*tm, cx, "R36 Tuner Next"));
+        Transition t = tm->handle(Action::A, cx);
+        CHECK(t.kind == Transition::Launch);
+        CHECK(t.keep_menus);
+      }
+      CHECK(has(*tm, "OVERCLOCK & MONITORING"));  // MangoHud and the GPU overclock switch are still reachable
+      std::unique_ptr<Screen> hta;
+      Menu* ta = open(hta, cx, "menu.g.power.adv");
+      CHECK(has(*ta, "ENABLE MANGOHUD OVERLAY"));
+      CHECK(has(*ta, "ENABLE GPU OVERCLOCK"));
+      CHECK(!has(*ta, "ENABLE CPU OVERCLOCK"));  // the Tuner owns the CPU turbo
+      CHECK(find(*tm, "R36 Tuner Next") < find(*tm, "ENABLE AUDIBLE BATTERY WARNING"));  // with the performance rows, not after the battery warning
+      cx.systems.pop_back();
+      probe().env.erase("DEVICE_GPU_OVERCLOCK");
+      std::unique_ptr<Screen> hn;
+      CHECK(has(*open(hn, cx, "menu.g.power"), "OVERCLOCK & MONITORING"));  // without it, the submenu is back
+    }
 
     std::unique_ptr<Screen> h4;
     m = open(h4, cx, "menu.g.library");
@@ -711,14 +880,14 @@ int main() {
     // the main menu: only the groups (the volume and the brightness have hardware buttons)
     std::unique_ptr<Screen> h8;
     m = open(h8, cx, "menu.main");
-    for (const char* l : {"GAMES", "SCREEN & SOUND", "BATTERY & PERFORMANCE", "LIBRARY", "SYSTEM", "QUIT"}) CHECK(has(*m, l));
+    for (const char* l : {"GAME SETTINGS", "SCREEN & SOUND", "BATTERY & PERFORMANCE", "LIBRARY", "SYSTEM", "QUIT"}) CHECK(has(*m, l));
     for (const char* l : {"SYSTEM VOLUME", "SCREEN BRIGHTNESS"}) CHECK(!has(*m, l));
-    CHECK_EQ(find(*m, "GAMES"), 0);  // no quick settings above the groups
+    CHECK_EQ(find(*m, "GAME SETTINGS"), 0);  // no quick settings above the groups
 
     // the section screens keep every row (ES order), so nothing that opens them changes
     std::unique_ptr<Screen> h9;
     m = open(h9, cx, "menu.system");
-    for (const char* l : {"SCREEN BRIGHTNESS", "ENABLE CPU OVERCLOCK", "DEVICE SUSPEND MODE", "LANGUAGE (REGION)", "ROOT PASSWORD", "SYSTEM MANAGEMENT AND RESET"}) CHECK(has(*m, l));
+    for (const char* l : {"SCREEN BRIGHTNESS", "ENABLE CPU OVERCLOCK", "LANGUAGE (REGION)", "ROOT PASSWORD", "SYSTEM MANAGEMENT AND RESET"}) CHECK(has(*m, l));
 
     // a console without overclock: no ADVANCED row in BATTERY & PERFORMANCE
     probe().env.erase("DEVICE_TURBO_MODE");

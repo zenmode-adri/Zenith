@@ -167,13 +167,25 @@ float Font::measure(std::string_view s, int px) {
 
 // ES `Font`: every ASCII glyph is rendered at start; the line box is as tall as the tallest one (mMaxGlyphHeight)
 // and the baseline sits at (box height + 'S' bearing) / 2, so capital letters are centred in the box.
+// Unlike ES, the baseline then moves the least needed for every ASCII glyph to fit in the box: with some faces at small
+// sizes (Iconic's at 14 px) ES's baseline let the tail of a 'g' fall out of the box, and it was cut ("1 qame").
+// The box itself (max_h) does not change, so nothing moves in the layout.
 const Font::SizeInfo& Font::size_info(int px) {
   auto it = info_.find(px);
   if (it != info_.end()) return it->second;
   set_px(px);
   SizeInfo si;
+  float above = 0, below = 0;  // the most any ASCII glyph rises above / drops below the baseline
   for (uint32_t c = 32; c < 128; ++c)
-    if (!FT_Load_Char(face_, c, FT_LOAD_RENDER)) si.max_h = std::max(si.max_h, int(face_->glyph->bitmap.rows));
+    if (!FT_Load_Char(face_, c, FT_LOAD_RENDER)) {
+      const int rows = int(face_->glyph->bitmap.rows);
+      si.max_h = std::max(si.max_h, rows);
+      if (rows > 0) {
+        const float top = float(face_->glyph->metrics.horiBearingY) / 64.0f;
+        above = std::max(above, top);
+        below = std::max(below, float(rows) - top);
+      }
+    }
   if (!FT_Load_Char(face_, 'S', FT_LOAD_RENDER)) {
     si.cap_top = float(face_->glyph->metrics.horiBearingY) / 64.0f;
     si.letter_h = int(face_->glyph->bitmap.rows);
@@ -182,6 +194,10 @@ const Font::SizeInfo& Font::size_info(int px) {
     si.letter_h = px;
   }
   si.max_h = std::max(si.max_h, 1);
+  si.baseline = (float(si.max_h) + si.cap_top) / 2.0f;
+  const float lo = std::ceil(above), hi = std::floor(float(si.max_h) - below);
+  if (lo <= hi) si.baseline = std::min(std::max(si.baseline, lo), hi);
+  else si.baseline = std::max(hi, 0.0f);  // no baseline fits the tallest ascender and the deepest tail: keep the tails (g j p q y), lose at most 1-2 px of '(' or '|'
   return info_.emplace(px, si).first->second;
 }
 
@@ -190,7 +206,7 @@ int Font::letter_height(int px) { return size_info(px).letter_h; }
 
 Img Font::render(std::string_view s, int px, Color color) {
   const SizeInfo si = size_info(px);
-  const float baseline = (float(si.max_h) + si.cap_top) / 2.0f;
+  const float baseline = si.baseline;
   const float width = measure(s, px);
   Img img;
   img.w = uint32_t(std::max(int(std::ceil(width)) + 1, 1));

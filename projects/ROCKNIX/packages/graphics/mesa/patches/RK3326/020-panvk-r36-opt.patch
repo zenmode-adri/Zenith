@@ -1,0 +1,886 @@
+diff -urN a/src/panfrost/vulkan/bifrost/panvk_vX_meta_desc_copy.c b/src/panfrost/vulkan/bifrost/panvk_vX_meta_desc_copy.c
+--- a/src/panfrost/vulkan/bifrost/panvk_vX_meta_desc_copy.c
++++ b/src/panfrost/vulkan/bifrost/panvk_vX_meta_desc_copy.c
+@@ -5,6 +5,8 @@
+ 
+ #include <stddef.h>
+ #include <stdint.h>
++#include <stdlib.h>
++#include <string.h>
+ 
+ #include "genxml/gen_macros.h"
+ 
+@@ -384,6 +386,136 @@
+    return panvk_priv_mem_dev_addr(shader->rsd);
+ }
+ 
++static bool
++panvk_cpu_desc_copy_enabled(void)
++{
++   static int enabled = -1;
++
++   if (enabled < 0) {
++      const char *e = getenv("PANVK_CPU_DESC_COPY");
++      enabled = e && e[0] && strcmp(e, "0") != 0;
++   }
++
++   return enabled;
++}
++
++/* CPU port of the desc_copy NIR shader above. Returns false (having written
++ * nothing) when some CPU pointer is missing, in which case the caller falls
++ * back to the GPU job. */
++static bool
++panvk_cpu_desc_copy(const struct panvk_shader_variant *shader,
++                    const struct panvk_descriptor_state *desc_state,
++                    const struct panvk_shader_desc_state *sds,
++                    uint32_t attrib_buf_idx_offset)
++{
++   const uint32_t *copy_map =
++      panvk_priv_mem_host_addr(shader->desc_info.others.map);
++   if (!copy_map)
++      return false;
++
++   uint32_t limits[PANVK_BIFROST_DESC_TABLE_COUNT];
++   for (uint32_t i = 0; i < ARRAY_SIZE(limits); i++)
++      limits[i] = shader->desc_info.others.count[i] + (i > 0 ? limits[i - 1] : 0);
++
++   for (uint32_t i = 0; i < ARRAY_SIZE(limits); i++) {
++      if (shader->desc_info.others.count[i] && !sds->tables_cpu[i])
++         return false;
++   }
++   if (shader->desc_info.others.count[PANVK_BIFROST_DESC_TABLE_IMG] &&
++       !sds->img_attrib_table_cpu)
++      return false;
++
++   for (uint32_t i = 0; i < ARRAY_SIZE(desc_state->sets); i++) {
++      const struct panvk_descriptor_set *set = desc_state->sets[i];
++      if (set && !set->descs.host)
++         return false;
++   }
++
++   const uint32_t ubo_end = limits[PANVK_BIFROST_DESC_TABLE_UBO];
++   const uint32_t img_end = limits[PANVK_BIFROST_DESC_TABLE_IMG];
++   const uint32_t tex_end = limits[PANVK_BIFROST_DESC_TABLE_TEXTURE];
++   const uint32_t sampler_end = limits[PANVK_BIFROST_DESC_TABLE_SAMPLER];
++
++   for (uint32_t idx = 0; idx < sampler_end; idx++) {
++      uint32_t handle = copy_map[idx];
++      uint32_t set_idx = handle >> 28;
++      uint32_t src_idx = handle & 0xfffffff;
++      const struct panvk_descriptor_set *set =
++         set_idx < ARRAY_SIZE(desc_state->sets) ? desc_state->sets[set_idx]
++                                                : NULL;
++      /* Absent set or out-of-range index: the shader writes zeroes. */
++      const uint32_t *src =
++         (set && src_idx < set->desc_count)
++            ? (const uint32_t *)((const uint8_t *)set->descs.host +
++                                 (size_t)src_idx * PANVK_DESCRIPTOR_SIZE)
++            : NULL;
++
++      if (idx < ubo_end || (idx >= img_end && idx < sampler_end)) {
++         void *dst;
++         size_t sz;
++
++         if (idx < ubo_end) {
++            sz = sizeof(struct mali_attribute_packed);
++            dst = (uint8_t *)sds->tables_cpu[PANVK_BIFROST_DESC_TABLE_UBO] +
++                  (size_t)idx * sz;
++         } else if (idx < tex_end) {
++            sz = sizeof(struct mali_texture_packed);
++            dst = (uint8_t *)sds->tables_cpu[PANVK_BIFROST_DESC_TABLE_TEXTURE] +
++                  (size_t)(idx - img_end) * sz;
++         } else {
++            sz = sizeof(struct mali_sampler_packed);
++            dst = (uint8_t *)sds->tables_cpu[PANVK_BIFROST_DESC_TABLE_SAMPLER] +
++                  (size_t)(idx - tex_end) * sz;
++         }
++
++         if (src)
++            memcpy(dst, src, sz);
++         else
++            memset(dst, 0, sz);
++      } else {
++         /* Image: attribute + attribute buffer pair. */
++         const uint32_t j = idx - ubo_end;
++         const size_t elem = pan_size(ATTRIBUTE_BUFFER) * 2;
++         uint32_t attrib[2] = {0, 0};
++         uint32_t buf[8] = {0};
++
++         if (src) {
++            uint32_t buf_idx = j * 2 + attrib_buf_idx_offset;
++
++            if ((src[0] & BITFIELD_MASK(5)) == MALI_ATTRIBUTE_TYPE_1D) {
++               /* Texel buffer */
++               attrib[0] = (src[4] & ~BITFIELD_MASK(9)) | buf_idx;
++               attrib[1] = src[5];
++               buf[0] = src[0];
++               buf[1] = src[1];
++               buf[2] = src[2] & BITFIELD_MASK(10);
++               buf[3] = src[3];
++            } else {
++               attrib[0] = buf_idx | (src[2] & 0xfffffc00);
++               attrib[1] = 0;
++               buf[0] = src[0];
++               buf[1] = src[1];
++               buf[2] = src[2] & BITFIELD_MASK(10);
++               buf[3] = src[3];
++               buf[4] = src[4];
++               buf[5] = src[5];
++               buf[6] = src[6];
++               buf[7] = src[7];
++            }
++         }
++
++         memcpy((uint8_t *)sds->img_attrib_table_cpu +
++                   (size_t)j * pan_size(ATTRIBUTE),
++                attrib, sizeof(attrib));
++         memcpy((uint8_t *)sds->tables_cpu[PANVK_BIFROST_DESC_TABLE_IMG] +
++                   (size_t)j * elem,
++                buf, sizeof(buf));
++      }
++   }
++
++   return true;
++}
++
+ VkResult
+ panvk_per_arch(meta_get_copy_desc_job)(
+    struct panvk_cmd_buffer *cmdbuf, const struct panvk_shader_variant *shader,
+@@ -402,6 +534,11 @@
+    if (!copy_table)
+       return VK_SUCCESS;
+ 
++   if (panvk_cpu_desc_copy_enabled() &&
++       panvk_cpu_desc_copy(shader, desc_state, shader_desc_state,
++                           attrib_buf_idx_offset))
++      return VK_SUCCESS;
++
+    struct pan_nir_desc_copy_info copy_info = {
+       .img_attrib_table = shader_desc_state->img_attrib_table,
+       .desc_copy =
+diff -urN a/src/panfrost/vulkan/jm/panvk_cmd_buffer.h b/src/panfrost/vulkan/jm/panvk_cmd_buffer.h
+--- a/src/panfrost/vulkan/jm/panvk_cmd_buffer.h
++++ b/src/panfrost/vulkan/jm/panvk_cmd_buffer.h
+@@ -60,6 +60,14 @@
+    struct pan_tls_info tlsinfo;
+    unsigned wls_total_size;
+    bool issued;
++
++   /* PANVK_OPT bit 2: union of the scissor/viewport rectangles (inclusive
++    * max) of the rasterizing draws recorded in this batch. */
++   struct {
++      bool any;
++      bool unbounded;
++      uint32_t minx, miny, maxx, maxy;
++   } bbox;
+ };
+ 
+ enum panvk_cmd_event_op_type {
+@@ -83,6 +91,13 @@
+    struct list_head push_sets;
+    struct panvk_batch *cur_batch;
+ 
++   /* Scissor/viewport rectangle of the last emitted viewport descriptor
++    * (inclusive max); valid == false when there is no viewport. */
++   struct {
++      bool valid;
++      uint32_t minx, miny, maxx, maxy;
++   } vp_rect;
++
+    struct {
+       struct panvk_cmd_graphics_state gfx;
+       struct panvk_cmd_compute_state compute;
+diff -urN a/src/panfrost/vulkan/jm/panvk_vX_cmd_buffer.c b/src/panfrost/vulkan/jm/panvk_vX_cmd_buffer.c
+--- a/src/panfrost/vulkan/jm/panvk_vX_cmd_buffer.c
++++ b/src/panfrost/vulkan/jm/panvk_vX_cmd_buffer.c
+@@ -23,6 +23,7 @@
+ #include "panvk_entrypoints.h"
+ #include "panvk_instance.h"
+ #include "panvk_meta.h"
++#include "panvk_opt.h"
+ #include "panvk_physical_device.h"
+ #include "panvk_priv_bo.h"
+ 
+@@ -57,6 +58,48 @@
+    return VK_SUCCESS;
+ }
+ 
++/* PANVK_OPT bit 2: restrict the fragment area of a batch to what its draws can
++ * touch, as the GL driver does. Returns true and fills *out when it is safe;
++ * the caller restores fbinfo->draw_extent afterwards. Safe means: no clear
++ * (a clear must cover the whole render area), single sampled, and every
++ * attachment either preloaded (its untouched tiles keep the memory contents)
++ * or discarded (never written). */
++static bool
++panvk_batch_shrunk_extent(const struct panvk_batch *batch,
++                          const struct pan_fb_info *fbinfo,
++                          struct pan_bbox *out)
++{
++   if (!panvk_opt(PANVK_OPT_BBOX) || !batch->bbox.any || batch->bbox.unbounded ||
++       fbinfo->nr_samples > 1)
++      return false;
++
++   for (unsigned i = 0; i < fbinfo->rt_count; i++) {
++      if (!fbinfo->rts[i].view)
++         continue;
++      if (fbinfo->rts[i].clear)
++         return false;
++      if (!fbinfo->rts[i].preload && !fbinfo->rts[i].discard)
++         return false;
++   }
++
++   if (fbinfo->zs.clear.z || fbinfo->zs.clear.s)
++      return false;
++
++   if (fbinfo->zs.view.zs && !fbinfo->zs.preload.z && !fbinfo->zs.discard.z)
++      return false;
++
++   if (fbinfo->zs.view.s && !fbinfo->zs.preload.s && !fbinfo->zs.discard.s)
++      return false;
++
++   /* Never grow beyond the render area. */
++   out->minx = MAX2(fbinfo->draw_extent.minx, batch->bbox.minx);
++   out->miny = MAX2(fbinfo->draw_extent.miny, batch->bbox.miny);
++   out->maxx = MIN2(fbinfo->draw_extent.maxx, batch->bbox.maxx);
++   out->maxy = MIN2(fbinfo->draw_extent.maxy, batch->bbox.maxy);
++
++   return out->minx <= out->maxx && out->miny <= out->maxy;
++}
++
+ void
+ panvk_per_arch(cmd_close_batch)(struct panvk_cmd_buffer *cmdbuf)
+ {
+@@ -133,9 +176,17 @@
+       fbinfo->first_provoking_vertex =
+          cmdbuf->state.gfx.render.first_provoking_vertex != U_TRISTATE_NO;
+ 
++      const struct pan_bbox full_extent = fbinfo->draw_extent;
++      struct pan_bbox shrunk_extent;
++
++      if (panvk_batch_shrunk_extent(batch, fbinfo, &shrunk_extent))
++         fbinfo->draw_extent = shrunk_extent;
++
+       VkResult result = panvk_per_arch(cmd_fb_preload)(cmdbuf, fbinfo);
+-      if (result != VK_SUCCESS)
++      if (result != VK_SUCCESS) {
++         fbinfo->draw_extent = full_extent;
+          return;
++      }
+ 
+       uint32_t view_mask = cmdbuf->state.gfx.render.view_mask;
+       assert(view_mask == 0 || util_bitcount(view_mask) <= batch->fb.layer_count);
+@@ -162,6 +213,10 @@
+          if (result != VK_SUCCESS)
+             break;
+       }
++
++      /* draw_extent is the render area for everything else (e.g. the meta
++       * resolve after the pass). */
++      fbinfo->draw_extent = full_extent;
+    }
+ 
+    cmdbuf->cur_batch = NULL;
+@@ -421,7 +476,7 @@
+    struct panvk_pool_properties desc_pool_props = {
+       .create_flags =
+          panvk_device_adjust_bo_flags(device, PAN_KMOD_BO_FLAG_WB_MMAP),
+-      .slab_size = 64 * 1024,
++      .slab_size = panvk_opt(PANVK_OPT_POOLS) ? 512 * 1024 : 64 * 1024,
+       .label = "Command buffer descriptor pool",
+       .prealloc = true,
+       .owns_bos = true,
+@@ -445,7 +500,7 @@
+    struct panvk_pool_properties var_pool_props = {
+       .create_flags =
+          panvk_device_adjust_bo_flags(device, PAN_KMOD_BO_FLAG_NO_MMAP),
+-      .slab_size = 64 * 1024,
++      .slab_size = panvk_opt(PANVK_OPT_POOLS) ? 512 * 1024 : 64 * 1024,
+       .label = "Varying pool",
+       .prealloc = false,
+       .owns_bos = true,
+diff -urN a/src/panfrost/vulkan/jm/panvk_vX_cmd_draw.c b/src/panfrost/vulkan/jm/panvk_vX_cmd_draw.c
+--- a/src/panfrost/vulkan/jm/panvk_vX_cmd_draw.c
++++ b/src/panfrost/vulkan/jm/panvk_vX_cmd_draw.c
+@@ -24,6 +24,7 @@
+ #include "panvk_image_view.h"
+ #include "panvk_instance.h"
+ #include "panvk_meta.h"
++#include "panvk_opt.h"
+ #include "panvk_priv_bo.h"
+ #include "panvk_shader.h"
+ 
+@@ -42,6 +43,10 @@
+ 
+ struct panvk_draw_data {
+    struct panvk_draw_info info;
++   /* Indexed draw whose min/max index was computed on the CPU: it takes the
++    * direct path. */
++   bool cpu_index;
++   uint64_t indices;
+    unsigned vertex_range;
+    unsigned padded_vertex_count;
+    struct mali_invocation_packed invocation;
+@@ -86,7 +91,7 @@
+ is_indirect_draw(const struct panvk_draw_data *draw)
+ {
+    return draw->info.indirect.buffer_dev_addr != 0 ||
+-          draw->info.index.size != 0;
++          (draw->info.index.size != 0 && !draw->cpu_index);
+ }
+ 
+ static bool
+@@ -707,6 +712,10 @@
+          attribs.gpu + (MAX_VS_ATTRIBS * pan_size(ATTRIBUTE));
+       cmdbuf->state.gfx.vs.desc.tables[PANVK_BIFROST_DESC_TABLE_IMG] =
+          bufs.gpu + (num_vbs * pan_size(ATTRIBUTE_BUFFER) * 2);
++      cmdbuf->state.gfx.vs.desc.img_attrib_table_cpu =
++         (uint8_t *)attribs.cpu + (MAX_VS_ATTRIBS * pan_size(ATTRIBUTE));
++      cmdbuf->state.gfx.vs.desc.tables_cpu[PANVK_BIFROST_DESC_TABLE_IMG] =
++         (uint8_t *)bufs.cpu + (num_vbs * pan_size(ATTRIBUTE_BUFFER) * 2);
+    }
+ 
+    return VK_SUCCESS;
+@@ -730,6 +739,8 @@
+ {
+    const struct vk_viewport_state *vp = &cmdbuf->vk.dynamic_graphics_state.vp;
+ 
++   cmdbuf->vp_rect.valid = false;
++
+    if (vp->viewport_count < 1)
+       return;
+ 
+@@ -764,6 +775,12 @@
+    miny = CLAMP(miny, 0, UINT16_MAX);
+    maxy = CLAMP(maxy, 0, UINT16_MAX);
+ 
++   cmdbuf->vp_rect.valid = true;
++   cmdbuf->vp_rect.minx = minx;
++   cmdbuf->vp_rect.miny = miny;
++   cmdbuf->vp_rect.maxx = maxx;
++   cmdbuf->vp_rect.maxy = maxy;
++
+    pan_pack(vpd, VIEWPORT, cfg) {
+       cfg.scissor_minimum_x = minx;
+       cfg.scissor_minimum_y = miny;
+@@ -940,6 +957,12 @@
+       /* In case of indirect draw, the descriptor will be patched at runtime */
+       cfg.index_count = is_indirect_draw(draw) ? 1 : draw->info.vertex.count;
+ 
++      if (draw->cpu_index) {
++         cfg.indices = draw->indices;
++         cfg.base_vertex_offset =
++            (int64_t)draw->info.vertex.base - draw->info.vertex.raw_offset;
++      }
++
+       cfg.low_depth_cull = cfg.high_depth_cull =
+          vk_rasterization_state_depth_clip_enable(rs);
+ 
+@@ -1404,6 +1427,49 @@
+    return VK_SUCCESS;
+ }
+ 
++/* PANVK_OPT bit 2: grow the batch bounding box with the rectangle the
++ * tiler clips this draw to (same rectangle as the VIEWPORT descriptor). */
++static void
++panvk_batch_note_draw_rect(struct panvk_cmd_buffer *cmdbuf)
++{
++   struct panvk_batch *batch = cmdbuf->cur_batch;
++
++   if (!panvk_opt(PANVK_OPT_BBOX) || !batch ||
++       cmdbuf->vk.dynamic_graphics_state.rs.rasterizer_discard_enable)
++      return;
++
++   if (!cmdbuf->vp_rect.valid) {
++      batch->bbox.unbounded = true;
++      return;
++   }
++
++   if (!batch->bbox.any) {
++      batch->bbox.any = true;
++      batch->bbox.minx = cmdbuf->vp_rect.minx;
++      batch->bbox.miny = cmdbuf->vp_rect.miny;
++      batch->bbox.maxx = cmdbuf->vp_rect.maxx;
++      batch->bbox.maxy = cmdbuf->vp_rect.maxy;
++   } else {
++      batch->bbox.minx = MIN2(batch->bbox.minx, cmdbuf->vp_rect.minx);
++      batch->bbox.miny = MIN2(batch->bbox.miny, cmdbuf->vp_rect.miny);
++      batch->bbox.maxx = MAX2(batch->bbox.maxx, cmdbuf->vp_rect.maxx);
++      batch->bbox.maxy = MAX2(batch->bbox.maxy, cmdbuf->vp_rect.maxy);
++   }
++}
++
++static bool
++panvk_cpu_index_minmax_enabled(void)
++{
++   static int enabled = -1;
++
++   if (enabled < 0) {
++      const char *e = getenv("PANVK_CPU_INDEX_MINMAX");
++      enabled = e && e[0] && strcmp(e, "0") != 0;
++   }
++
++   return enabled;
++}
++
+ static void
+ panvk_cmd_draw(struct panvk_cmd_buffer *cmdbuf, struct panvk_draw_data *draw)
+ {
+@@ -1423,6 +1489,8 @@
+    if (result != VK_SUCCESS)
+       return;
+ 
++   panvk_batch_note_draw_rect(cmdbuf);
++
+    pan_pack_work_groups_compute(&draw->invocation, 1, draw->vertex_range,
+                                 draw->info.instance.count, 1, 1, 1, true,
+                                 false);
+@@ -1531,6 +1599,8 @@
+    if (result != VK_SUCCESS)
+       return;
+ 
++   panvk_batch_note_draw_rect(cmdbuf);
++
+    struct panvk_batch *batch = cmdbuf->cur_batch;
+    const struct vk_input_assembly_state *ia =
+       &cmdbuf->vk.dynamic_graphics_state.ia;
+@@ -1600,6 +1670,10 @@
+       util_dynarray_append(&batch->jobs, write_job.cpu);
+ 
+       uint32_t index_count = cmdbuf->state.gfx.ib.size / draw->info.index.size;
++      /* The search kernel exits early for threads beyond cmd->indexCount, so
++       * launching groups for the whole bound buffer is wasted work. */
++      if (panvk_opt(PANVK_OPT_IDX_GRID) && draw->info.index_count_hint)
++         index_count = MIN2(index_count, draw->info.index_count_hint);
+       uint32_t wg_count = DIV_ROUND_UP(index_count, 65536);
+       assert(wg_count <= 65536);
+ 
+@@ -1863,6 +1937,91 @@
+     * firstInstnace. */
+    assert(firstInstance < INT32_MAX);
+ 
++   if (panvk_cpu_index_minmax_enabled() && cmdbuf->state.gfx.ib.host &&
++       cmdbuf->state.gfx.ib.index_size) {
++      const uint32_t isz = cmdbuf->state.gfx.ib.index_size;
++      const bool restart =
++         cmdbuf->vk.dynamic_graphics_state.ia.primitive_restart_enable;
++      const uint8_t *base = cmdbuf->state.gfx.ib.host;
++      uint32_t mn = UINT32_MAX, mx = 0;
++      bool found = false;
++
++      /* Copy the index range out of the (uncached) mapping with a single
++       * memcpy and scan the copy. */
++      const size_t nbytes = (size_t)indexCount * isz;
++      uint64_t stackbuf[2048];
++      uint8_t *copy = NULL;
++
++      if ((uint64_t)firstIndex + indexCount <=
++          cmdbuf->state.gfx.ib.size / isz) {
++         copy = nbytes <= sizeof(stackbuf) ? (uint8_t *)stackbuf
++                                           : (uint8_t *)malloc(nbytes);
++      }
++
++      if (copy) {
++         memcpy(copy, base + (size_t)firstIndex * isz, nbytes);
++         if (isz == 4) {
++            const uint32_t *p = (const uint32_t *)copy;
++            for (uint32_t i = 0; i < indexCount; i++) {
++               uint32_t v = p[i];
++               if (restart && v == UINT32_MAX)
++                  continue;
++               mn = MIN2(mn, v);
++               mx = MAX2(mx, v);
++               found = true;
++            }
++         } else if (isz == 2) {
++            const uint16_t *p = (const uint16_t *)copy;
++            for (uint32_t i = 0; i < indexCount; i++) {
++               uint32_t v = p[i];
++               if (restart && v == UINT16_MAX)
++                  continue;
++               mn = MIN2(mn, v);
++               mx = MAX2(mx, v);
++               found = true;
++            }
++         } else {
++            const uint8_t *p = copy;
++            for (uint32_t i = 0; i < indexCount; i++) {
++               uint32_t v = p[i];
++               if (restart && v == UINT8_MAX)
++                  continue;
++               mn = MIN2(mn, v);
++               mx = MAX2(mx, v);
++               found = true;
++            }
++         }
++
++         if (copy != (uint8_t *)stackbuf)
++            free(copy);
++
++         /* Only restart indices: nothing to draw. */
++         if (!found)
++            return;
++
++         uint32_t vertex_range = mx - mn + 1;
++         struct panvk_draw_data draw = {
++            .cpu_index = true,
++            .indices = cmdbuf->state.gfx.ib.dev_addr + (uint64_t)firstIndex * isz,
++            .info = {
++               .index.size = isz,
++               .index.offset = firstIndex,
++               .vertex.base = vertexOffset,
++               .vertex.raw_offset = (int32_t)mn + vertexOffset,
++               .vertex.count = indexCount,
++               .instance.base = firstInstance,
++               .instance.count = instanceCount,
++            },
++            .vertex_range = vertex_range,
++            .padded_vertex_count =
++               padded_vertex_count(cmdbuf, vertex_range, instanceCount),
++         };
++
++         panvk_cmd_draw(cmdbuf, &draw);
++         return;
++      }
++   }
++
+    struct pan_ptr indirect_index_alloc = panvk_cmd_alloc_dev_mem(
+       cmdbuf, desc, sizeof(struct VkDrawIndexedIndirectCommand), 8);
+ 
+@@ -1883,6 +2042,7 @@
+          .indirect.buffer_dev_addr = indirect_index_alloc.gpu,
+          .indirect.draw_count = 1,
+          .indirect.stride = 0,
++         .index_count_hint = indexCount,
+       },
+    };
+ 
+@@ -1973,6 +2133,47 @@
+       panvk_per_arch(cmd_preload_render_area_border)(cmdbuf, pRenderingInfo);
+ }
+ 
++/* PANVK_OPT bit 1: skip the write-back of attachments whose storeOp is
++ * DONT_CARE/NONE. Only called right before the LAST batch of a pass that was
++ * neither suspended nor resumed is closed, so earlier (split) batches, which
++ * the next batch preloads from, always store. */
++static void
++panvk_set_store_discard(struct panvk_cmd_buffer *cmdbuf, bool discard)
++{
++   const struct panvk_rendering_state *render = &cmdbuf->state.gfx.render;
++   struct pan_fb_info *fbinfo = &cmdbuf->state.gfx.render.fb.info;
++
++   /* Keep it simple and safe: multisampled passes are left alone. */
++   if (discard && (fbinfo->nr_samples > 1 || render->fb.nr_samples > 1))
++      return;
++
++   for (unsigned i = 0; i < fbinfo->rt_count; i++) {
++      if (fbinfo->rts[i].view && (render->store_dc.rt_mask & BITFIELD_BIT(i)))
++         fbinfo->rts[i].discard = discard;
++   }
++
++   if (fbinfo->zs.view.zs) {
++      if (fbinfo->zs.view.s == NULL &&
++          util_format_is_depth_and_stencil(fbinfo->zs.view.zs->format)) {
++         /* Interleaved D24S8 in a single plane: one write-back flag covers
++          * both aspects, so both must be bound and discardable. An unbound
++          * aspect must survive. */
++         bool both = render->z_attachment.iview && render->s_attachment.iview &&
++                     render->store_dc.z && render->store_dc.s;
++         fbinfo->zs.discard.z = discard && both;
++         fbinfo->zs.discard.s = discard && both;
++      } else {
++         fbinfo->zs.discard.z =
++            discard && render->z_attachment.iview && render->store_dc.z;
++      }
++   }
++
++   if (fbinfo->zs.view.s) {
++      fbinfo->zs.discard.s =
++         discard && render->s_attachment.iview && render->store_dc.s;
++   }
++}
++
+ VKAPI_ATTR void VKAPI_CALL
+ panvk_per_arch(CmdEndRendering)(VkCommandBuffer commandBuffer)
+ {
+@@ -1987,7 +2188,18 @@
+       if (clear)
+          panvk_per_arch(cmd_alloc_fb_desc)(cmdbuf);
+ 
++      const bool store_discard =
++         panvk_opt(PANVK_OPT_STORE_OP) &&
++         !(cmdbuf->state.gfx.render.flags & VK_RENDERING_RESUMING_BIT);
++
++      if (store_discard)
++         panvk_set_store_discard(cmdbuf, true);
++
+       panvk_per_arch(cmd_close_batch)(cmdbuf);
++
++      if (store_discard)
++         panvk_set_store_discard(cmdbuf, false);
++
+       cmdbuf->cur_batch = NULL;
+       panvk_per_arch(cmd_meta_resolve_attachments)(cmdbuf);
+    }
+diff -urN a/src/panfrost/vulkan/panvk_buffer.c b/src/panfrost/vulkan/panvk_buffer.c
+--- a/src/panfrost/vulkan/panvk_buffer.c
++++ b/src/panfrost/vulkan/panvk_buffer.c
+@@ -88,6 +88,8 @@
+          *bind_status->pResult = VK_SUCCESS;
+ 
+       buffer->vk.device_address = mem->addr.dev + pBindInfos[i].memoryOffset;
++      buffer->mem = mem;
++      buffer->mem_offset = pBindInfos[i].memoryOffset;
+    }
+    return VK_SUCCESS;
+ }
+diff -urN a/src/panfrost/vulkan/panvk_buffer.h b/src/panfrost/vulkan/panvk_buffer.h
+--- a/src/panfrost/vulkan/panvk_buffer.h
++++ b/src/panfrost/vulkan/panvk_buffer.h
+@@ -14,8 +14,14 @@
+ 
+ struct panvk_priv_bo;
+ 
++struct panvk_device_memory;
++
+ struct panvk_buffer {
+    struct vk_buffer vk;
++
++   /* Bound memory (for the CPU index min/max search). */
++   struct panvk_device_memory *mem;
++   uint64_t mem_offset;
+ };
+ 
+ VK_DEFINE_NONDISP_HANDLE_CASTS(panvk_buffer, vk.base, VkBuffer,
+diff -urN a/src/panfrost/vulkan/panvk_cmd_desc_state.h b/src/panfrost/vulkan/panvk_cmd_desc_state.h
+--- a/src/panfrost/vulkan/panvk_cmd_desc_state.h
++++ b/src/panfrost/vulkan/panvk_cmd_desc_state.h
+@@ -32,6 +32,10 @@
+    uint64_t tables[PANVK_BIFROST_DESC_TABLE_COUNT];
+    uint64_t img_attrib_table;
+    uint64_t dyn_ssbos;
++   /* CPU mappings of the tables above (NULL when unknown), used for the
++    * CPU descriptor copy (PANVK_CPU_DESC_COPY). */
++   void *tables_cpu[PANVK_BIFROST_DESC_TABLE_COUNT];
++   void *img_attrib_table_cpu;
+ #else
+    struct {
+       uint64_t dev_addr;
+diff -urN a/src/panfrost/vulkan/panvk_cmd_draw.h b/src/panfrost/vulkan/panvk_cmd_draw.h
+--- a/src/panfrost/vulkan/panvk_cmd_draw.h
++++ b/src/panfrost/vulkan/panvk_cmd_draw.h
+@@ -46,6 +46,18 @@
+    enum u_tristate first_provoking_vertex;
+ 
+    enum vk_rp_attachment_flags bound_attachments;
++
++#if PAN_ARCH < 9
++   /* PANVK_OPT bit 1: attachments whose storeOp (DONT_CARE/NONE) lets us skip
++    * the final write-back. Filled by cmd_init_render_state(), consumed when
++    * the last batch of the pass is closed. */
++   struct {
++      uint32_t rt_mask;
++      bool z;
++      bool s;
++   } store_dc;
++#endif
++
+    struct {
+       struct panvk_image_view *iviews[MAX_RTS];
+       /* If non-null, preload_iviews[i] overrides iviews[i] for preloads. */
+@@ -179,6 +191,9 @@
+       uint64_t dev_addr;
+       uint64_t size;
+       uint8_t index_size;
++      /* CPU address of the bound index data, NULL if not host mapped by the
++       * application. */
++      const void *host;
+    } ib;
+ 
+    struct {
+@@ -406,6 +421,10 @@
+ 
+ #if PAN_ARCH < 9
+    uint32_t layer_id;
++
++   /* indexCount of a direct indexed draw lowered to an indirect one; 0 when
++    * unknown (real indirect draws). Only used to size the min/max search. */
++   uint32_t index_count_hint;
+ #endif
+ };
+ 
+diff -urN a/src/panfrost/vulkan/panvk_opt.h b/src/panfrost/vulkan/panvk_opt.h
+--- a/src/panfrost/vulkan/panvk_opt.h
++++ b/src/panfrost/vulkan/panvk_opt.h
+@@ -0,0 +1,41 @@
++/*
++ * Experimental PanVK optimisations, switchable at run time (R23).
++ * PANVK_OPT is a bit mask read once from the environment (decimal or 0x..):
++ *   1: respect storeOp DONT_CARE/NONE (discard) at the end of a render pass
++ *   2: shrink the fragment area to the union of the drawn scissors
++ *   4: bigger per-command-buffer pool slabs (fewer BOs per submit)
++ *   8: size the index min/max search grid with the draw's indexCount
++ * Bit at 0 = original behaviour.
++ */
++#ifndef PANVK_OPT_H
++#define PANVK_OPT_H
++
++#include <stdint.h>
++#include <stdlib.h>
++
++#define PANVK_OPT_STORE_OP (1u << 0)
++#define PANVK_OPT_BBOX     (1u << 1)
++#define PANVK_OPT_POOLS    (1u << 2)
++#define PANVK_OPT_IDX_GRID (1u << 3)
++
++static inline uint32_t
++panvk_opt_mask(void)
++{
++   /* Benign race: every thread computes the same value. */
++   static int32_t cached = -1;
++
++   if (cached < 0) {
++      const char *e = getenv("PANVK_OPT");
++      cached = e && e[0] ? (int32_t)(strtoul(e, NULL, 0) & 0x7fffffffu) : 0;
++   }
++
++   return (uint32_t)cached;
++}
++
++static inline bool
++panvk_opt(uint32_t bit)
++{
++   return (panvk_opt_mask() & bit) != 0;
++}
++
++#endif
+diff -urN a/src/panfrost/vulkan/panvk_vX_cmd_desc_state.c b/src/panfrost/vulkan/panvk_vX_cmd_desc_state.c
+--- a/src/panfrost/vulkan/panvk_vX_cmd_desc_state.c
++++ b/src/panfrost/vulkan/panvk_vX_cmd_desc_state.c
+@@ -183,7 +183,10 @@
+    struct panvk_shader_desc_state *shader_desc_state)
+ {
+    memset(shader_desc_state->tables, 0, sizeof(shader_desc_state->tables));
++   memset(shader_desc_state->tables_cpu, 0,
++          sizeof(shader_desc_state->tables_cpu));
+    shader_desc_state->img_attrib_table = 0;
++   shader_desc_state->img_attrib_table_cpu = NULL;
+ 
+    if (!shader)
+       return VK_SUCCESS;
+@@ -205,6 +208,7 @@
+          return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+ 
+       shader_desc_state->tables[i] = ptr.gpu;
++      shader_desc_state->tables_cpu[i] = ptr.cpu;
+ 
+       if (i == PANVK_BIFROST_DESC_TABLE_UBO)
+          panvk_cmd_fill_dyn_ubos(desc_state, shader, ptr.cpu, desc_count);
+@@ -218,6 +222,7 @@
+             return VK_ERROR_OUT_OF_DEVICE_MEMORY;
+ 
+          shader_desc_state->img_attrib_table = ptr.gpu;
++         shader_desc_state->img_attrib_table_cpu = ptr.cpu;
+       }
+    }
+ 
+@@ -237,6 +242,8 @@
+       }
+ 
+       shader_desc_state->tables[PANVK_BIFROST_DESC_TABLE_SAMPLER] = sampler.gpu;
++      shader_desc_state->tables_cpu[PANVK_BIFROST_DESC_TABLE_SAMPLER] =
++         sampler.cpu;
+    }
+ 
+    return VK_SUCCESS;
+diff -urN a/src/panfrost/vulkan/panvk_vX_cmd_draw.c b/src/panfrost/vulkan/panvk_vX_cmd_draw.c
+--- a/src/panfrost/vulkan/panvk_vX_cmd_draw.c
++++ b/src/panfrost/vulkan/panvk_vX_cmd_draw.c
+@@ -8,10 +8,27 @@
+ #include "panvk_cmd_buffer.h"
+ #include "panvk_device_memory.h"
+ #include "panvk_entrypoints.h"
++#include "panvk_opt.h"
+ 
+ #include "pan_desc.h"
++#include "pan_format.h"
+ #include "pan_util.h"
+ 
++#if PAN_ARCH < 9
++/* True if the write-back of this attachment can be skipped at the end of the
++ * pass (PANVK_OPT bit 1). Attachments with a pending resolve (the meta
++ * resolve reads them after the pass) and multisampled-render-to-single-sampled
++ * ones are never discarded. */
++static bool
++att_store_discardable(const VkRenderingAttachmentInfo *att, bool ms2ss)
++{
++   return panvk_opt(PANVK_OPT_STORE_OP) &&
++          (att->storeOp == VK_ATTACHMENT_STORE_OP_DONT_CARE ||
++           att->storeOp == VK_ATTACHMENT_STORE_OP_NONE) &&
++          att->resolveMode == VK_RESOLVE_MODE_NONE && !ms2ss;
++}
++#endif
++
+ static void
+ att_set_clear_preload(const VkRenderingAttachmentInfo *att, bool *clear, bool *preload)
+ {
+@@ -144,6 +161,15 @@
+    att_set_clear_preload(att, &fbinfo->rts[index].clear,
+                          &fbinfo->rts[index].preload);
+ 
++#if PAN_ARCH < 9
++   /* pan_emit_rt() replaces a discarded RT by an RGBA8 dummy descriptor, which
++    * is only valid if the real internal (tile buffer) format is RGBA8. */
++   if (att_store_discardable(att, ms2ss) &&
++       GENX(pan_blendable_format_from_pipe_format)(iview->pview.format)
++             ->internal == MALI_COLOR_BUFFER_INTERNAL_FORMAT_R8G8B8A8)
++      state->render.store_dc.rt_mask |= BITFIELD_BIT(index);
++#endif
++
+    if (att->resolveMode != VK_RESOLVE_MODE_NONE) {
+       struct panvk_resolve_attachment *resolve_info =
+          &state->render.color_attachments.resolve[index];
+@@ -230,6 +256,10 @@
+ 
+    att_set_clear_preload(att, &fbinfo->zs.clear.z, &fbinfo->zs.preload.z);
+ 
++#if PAN_ARCH < 9
++   state->render.store_dc.z = att_store_discardable(att, ms2ss);
++#endif
++
+    if (att->resolveMode != VK_RESOLVE_MODE_NONE) {
+       struct panvk_resolve_attachment *resolve_info =
+          &state->render.z_attachment.resolve;
+@@ -330,6 +360,10 @@
+ 
+    att_set_clear_preload(att, &fbinfo->zs.clear.s, &fbinfo->zs.preload.s);
+ 
++#if PAN_ARCH < 9
++   state->render.store_dc.s = att_store_discardable(att, ms2ss);
++#endif
++
+    if (att->resolveMode != VK_RESOLVE_MODE_NONE) {
+       struct panvk_resolve_attachment *resolve_info =
+          &state->render.s_attachment.resolve;
+@@ -376,6 +410,9 @@
+    memset(&state->render.z_attachment, 0, sizeof(state->render.z_attachment));
+    memset(&state->render.s_attachment, 0, sizeof(state->render.s_attachment));
+    state->render.bound_attachments = 0;
++#if PAN_ARCH < 9
++   memset(&state->render.store_dc, 0, sizeof(state->render.store_dc));
++#endif
+ 
+    const VkMultisampledRenderToSingleSampledInfoEXT *ms2ss_info =
+       vk_find_struct_const(pRenderingInfo,
+@@ -908,6 +945,11 @@
+    VK_FROM_HANDLE(panvk_cmd_buffer, cmdbuf, commandBuffer);
+    VK_FROM_HANDLE(panvk_buffer, buf, buffer);
+ 
++   cmdbuf->state.gfx.ib.host = NULL;
++   if (buf && buf->mem && buf->mem->addr.host)
++      cmdbuf->state.gfx.ib.host =
++         (const uint8_t *)buf->mem->addr.host + buf->mem_offset + offset;
++
+    if (buf) {
+       cmdbuf->state.gfx.ib.size = panvk_buffer_range(buf, offset, size);
+       assert(cmdbuf->state.gfx.ib.size <= UINT32_MAX);

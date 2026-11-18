@@ -629,7 +629,7 @@ void build_menu(MenuBuilder& m, Ctx& cx) {
     save(cx);
     next();  // ES: changePlaylist(force) starts a track of the new folder set
   });
-  m.toggle(tr("PLAY SYSTEM-SPECIFIC MUSIC"), [&cx] { return cx.es.get_bool("audio.thememusics", true); }, [&cx](bool b) {
+  m.toggle(tr("PLAY THEME MUSIC"), [&cx] { return cx.es.get_bool("audio.thememusics", true); }, [&cx](bool b) {
     cx.es.set_bool("audio.thememusics", b);
     save(cx);
     next();

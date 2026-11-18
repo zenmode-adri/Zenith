@@ -1,7 +1,6 @@
 // MODULE `menu-collections` (data layer). Everything ES keeps about collections, in the same files, so zfront and ES can be
 // swapped without losing anything:
 //   * `es_settings.cfg`: CollectionSystemsAuto / CollectionSystemsCustom (comma lists), HiddenSystems (`;` list), SortSystems,
-//     StartupSystem, StartupOnGameList, UseCustomCollectionsSystemEx, CollectionShowSystemInfo, HiddenSystemsShowGames,
 //     LoadEmptySystems (CollectionSystemManager.cpp, GuiCollectionSystemsOptions.cpp, Settings.cpp).
 //   * `<ES user dir>/collections/custom-<name>.cfg`: editable collections, one game per line, `./roms/gbc/X.gbc` (relative to
 //     /storage), `#` lines and lines starting with `0` ignored. `<name>.xcc`: dynamic collection (XML filter).

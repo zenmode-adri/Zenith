@@ -15,6 +15,7 @@ namespace fs = std::filesystem;
 namespace zf {
 // battery_screen.cpp: how the screen shows ScreenSaverTime (milliseconds)
 long saver_time_minutes(long ms);
+long saver_step_minutes(long cur, int d);
 std::string saver_time_label(long ms);
 }  // namespace zf
 
@@ -148,6 +149,20 @@ int main() {
     CHECK_EQ(saver_time_minutes(0), 0L);
     CHECK_EQ(saver_time_minutes(30000), 1L);  // stepping from 30 s goes on from the 1 minute slot, not from "Never"
     CHECK_EQ(saver_time_minutes(300000), 5L);
+  }
+  {  // Left / Right on "Screensaver after": steps 1 2 5 10 30 never; a value set by the old slider goes to the nearest step
+    const long steps[] = {1, 2, 5, 10, 30, 0};
+    for (int k = 0; k < 6; ++k) {
+      CHECK_EQ(saver_step_minutes(steps[k], 1), steps[(k + 1) % 6]);
+      CHECK_EQ(saver_step_minutes(steps[k], -1), steps[(k + 5) % 6]);
+    }
+    CHECK_EQ(saver_step_minutes(7, 1), 10L);
+    CHECK_EQ(saver_step_minutes(7, -1), 5L);
+    CHECK_EQ(saver_step_minutes(45, 1), 0L);
+    CHECK_EQ(saver_step_minutes(45, -1), 30L);
+    CHECK_EQ(saver_step_minutes(120, -1), 30L);
+    CHECK_EQ(saver_step_minutes(3, 1), 5L);
+    CHECK_EQ(saver_step_minutes(3, -1), 2L);
   }
   std::error_code ec;
   fs::remove_all(root, ec);

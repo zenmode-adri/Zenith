@@ -12,7 +12,7 @@
 //   QUICK SYSTEM SELECT                       QuickSystemSelect (es)          shown: left / right in a game list = previous / next system
 //   ON-SCREEN HELP                            ShowHelpPrompts (es)            shown: ui_prefs, the help bars are not drawn when off
 //   SHOW BATTERY STATUS                       ShowBattery (es)                shown when the console has a battery
-//   START SCREENSAVER AFTER (0 = never)       ScreenSaverTime (es, ms)        shown: oscontract reads it every loop
+//   (the screensaver time is "Screensaver after" on the battery screen: one row for ScreenSaverTime)
 //   SCREENSAVER TYPE                          ScreenSaverBehavior (es)        dim | black | suspend (suspend only where the sleep.sh hook exists)
 //   THEME SET                                 ThemeSet (es)                   shown; the choices of each set are kept like ES does (themecfg::switch_theme)
 //   THEME CONFIGURATION                       Theme*, subset.* (es)           shown when the active ES theme has subsets (menu_theme_cfg.cpp); Zenith has none
@@ -35,6 +35,7 @@
 #include <dirent.h>
 
 #include "bootargs.hpp"
+#include "dock.hpp"
 
 #include <algorithm>
 #include <cstdio>
@@ -43,6 +44,7 @@
 
 #include "listopts.hpp"
 #include "menu_lang.hpp"
+#include "menu_system.hpp"  // msys::keyboard_follow_language
 #include "music.hpp"
 #include "menu_theme_cfg.hpp"
 #include "oscontract.hpp"
@@ -165,16 +167,7 @@ MenuSpec make_ui_spec(unsigned parts) {
   MenuSpec s;
   s.title = tr("USER INTERFACE SETTINGS");
   s.title_key = N_("USER INTERFACE SETTINGS");
-  // A look option was changed: the frontend restarts ONCE, when the menu is left (it restarted at every pick, so trying the four options
-  // meant four restarts). Shared by `build` (which runs again on every refresh) and `on_close`.
-  auto look_dirty = std::make_shared<bool>(false);
-  s.on_close = [look_dirty](Ctx& cx) {
-    if (!*look_dirty) return;
-    *look_dirty = false;
-    cx.sv->toasts.push(tr("Restarting to apply the theme"));
-    oscontract::quit(oscontract::Mode::Quit);  // systemd (Restart=always) starts the frontend again with the new look
-  };
-  s.build = [parts, look_dirty](MenuBuilder& m, Ctx& cx) {
+  s.build = [parts](MenuBuilder& m, Ctx& cx) {
     using namespace ui_part;
     // ---- language (live: the catalogs are mapped, the menus rebuild with the new strings)
     std::vector<Option> langs = available_language_options(ui_language_options());
@@ -186,6 +179,7 @@ MenuSpec make_ui_spec(unsigned parts) {
            tr("LANGUAGE (REGION)"), langs, [&cx, langs] { return selected_language(langs, cx.conf.get_or("system.language", "")); },
            [&cx](const std::string& code) {
              std::string err;
+             msys::keyboard_follow_language(cx, code);  // before the key: it compares with the layout of the old language
              if (!cx.conf.persist("system.language", code, &err)) {
                cx.sv->toasts.push(tr("Could not save the settings"));
                return;
@@ -197,9 +191,10 @@ MenuSpec make_ui_spec(unsigned parts) {
 
     // ---- theme: ThemeSet (es_settings.cfg). The theme is read once at start, so the frontend restarts to show it.
     if (parts & kTheme) {
-      std::vector<boot::ThemeChoice> sets = boot::list_theme_sets();
+      const std::vector<boot::ThemeChoice> all_sets = boot::list_theme_sets();
+      const std::vector<boot::ThemeChoice> sets = boot::theme_families(all_sets);  // the light and dark sets of a theme are one choice and the MODE row
       if (sets.size() > 1) {
-        if (!appearance) m.header(tr("APPEARANCE"));
+        if (!appearance && !(parts & kNoHdr)) m.header(tr("APPEARANCE"));
         appearance = true;
         std::vector<Option> opts;
         for (const boot::ThemeChoice& t : sets) opts.push_back({t.value, t.label});
@@ -207,15 +202,23 @@ MenuSpec make_ui_spec(unsigned parts) {
              tr("THEME SET"), opts,
              [&cx, opts] {
                const std::string* v = cx.es.get("ThemeSet");
-               const std::string cur = v ? *v : std::string("es-theme-zenith");
+               const std::string cur = v ? *v : std::string(boot::kDefaultThemeSet);  // what resolve_theme opens
                for (const Option& o : opts)
                  if (o.value == cur) return cur;
+               const std::string fam = boot::theme_family(cur);
+               for (const Option& o : opts)
+                 if (o.value == fam) return fam;
                return opts.front().value;
              },
-             [&cx](const std::string& v) {
+             [&cx, all_sets](const std::string& v) {
                const std::string* cur = cx.es.get("ThemeSet");
-               if (cur && *cur == v) return;
-               themecfg::switch_theme(cx, v);  // ES: ThemeSet plus the choices of the old set saved and those of the new one loaded
+               std::string target = v;
+               if (cur && boot::theme_is_dark(*cur)) {  // the mode stays when the new theme has it
+                 const std::string d = boot::theme_in_mode(v, true, all_sets);
+                 if (!d.empty()) target = d;
+               }
+               if (cur && *cur == target) return;
+               themecfg::switch_theme(cx, target);  // ES: ThemeSet plus the choices of the old set saved and those of the new one loaded
                save_es(cx);
                cx.sv->toasts.push(tr("Restarting to apply the theme"));
                oscontract::quit(oscontract::Mode::Quit);  // systemd (Restart=always) starts the frontend again with the new theme
@@ -224,15 +227,57 @@ MenuSpec make_ui_spec(unsigned parts) {
             .hint(tr("The frontend restarts to apply the theme"));
       }
 
+      // MODE: light or dark. A Zenith theme has the two as sets ending in "-dark"; Iconic has it as its own colour scheme. A theme with one
+      // mode (XMB, Art Book, TechDweeb) has no row.
+      {
+        const std::string* tv = cx.es.get("ThemeSet");
+        const std::string cur_set = tv ? *tv : std::string(boot::kDefaultThemeSet);
+        const std::string fam = boot::theme_family(cur_set);
+        const bool iconic = fam.find("iconic") != std::string::npos || !boot::virtual_carousel(cur_set).empty();
+        if (iconic || !boot::theme_in_mode(fam, !boot::theme_is_dark(cur_set), all_sets).empty()) {
+          if (!appearance && !(parts & kNoHdr)) m.header(tr("APPEARANCE"));
+          appearance = true;
+          const std::vector<Option> modes = {{"light", tr("Light")}, {"dark", tr("Dark")}};
+          m.choice(
+               tr("MODE"), modes,
+               [&cx, iconic] {
+                 const std::string* t = cx.es.get("ThemeSet");
+                 if (iconic) {
+                   const std::string* s = cx.es.get("subset.color-scheme");
+                   return std::string(s && *s == "dark" ? "dark" : "light");
+                 }
+                 return std::string(t && boot::theme_is_dark(*t) ? "dark" : "light");
+               },
+               [&cx, iconic, fam, all_sets](const std::string& v) {
+                 const bool dark = v == "dark";
+                 if (iconic) {
+                   const std::string* s = cx.es.get("subset.color-scheme");
+                   if ((s && *s == "dark") == dark) return;
+                   cx.es.set_string("subset.color-scheme", dark ? "dark" : "light");
+                 } else {
+                   const std::string target = boot::theme_in_mode(fam, dark, all_sets);
+                   const std::string* cur = cx.es.get("ThemeSet");
+                   if (target.empty() || (cur && *cur == target)) return;
+                   themecfg::switch_theme(cx, target);
+                 }
+                 save_es(cx);
+                 cx.sv->toasts.push(tr("Restarting to apply the theme"));
+                 oscontract::quit(oscontract::Mode::Quit);
+               })
+              .no_cycle()
+              .hint(tr("The frontend restarts to apply the theme"));
+        }
+      }
+
       // ES: THEME CONFIGURATION when the theme hasSubsets(). Not for a theme zfront draws itself: its drawing does not read them
       if (!remake::active(cx.th) && themecfg::available(cx, m.refresh)) {
-        if (!appearance) m.header(tr("APPEARANCE"));
+        if (!appearance && !(parts & kNoHdr)) m.header(tr("APPEARANCE"));
         appearance = true;
         m.submenu(tr("THEME CONFIGURATION"), "menu.ui.theme");
       }
 
       // The user's own look over the theme's: variables only (no images), so any theme can be bent a little. Empty = the theme's own.
-      if (!appearance) m.header(tr("APPEARANCE"));
+      if (!appearance && !(parts & kNoHdr)) m.header(tr("APPEARANCE"));
       appearance = true;
       auto own = [&](const std::string& title, const std::string& key, std::vector<Option> opts) {
         opts.insert(opts.begin(), Option{"", tr("Theme default")});
@@ -244,22 +289,22 @@ MenuSpec make_ui_spec(unsigned parts) {
                  if (o.value == cur) return cur;
                return std::string();
              },
-             [&cx, key, look_dirty](const std::string& v) {
+             [&cx, key](const std::string& v) {
                if (cx.conf.get_or(key, "") == v) return;
                std::string err;
                if (!(v.empty() ? cx.conf.persist_remove(key, &err) : cx.conf.persist(key, v, &err))) {
                  cx.sv->toasts.push(tr("Could not save the settings"));
                  return;
                }
-               *look_dirty = true;  // saved now; the restart waits for the menu to close
+               // applied at once: the theme's variable changes and every open menu lays out again; nothing restarts
+               boot::set_user_theme(cx.th, key, v);
+               ui::relayout_all();
              })
-            .no_cycle()
-            .hint(tr("The frontend restarts to apply the theme"));
+            .no_cycle();
       };
       own(tr("SELECTOR STYLE"), "zfront.sel_style",
           {{"fill", tr("Filled")}, {"outline", tr("Outline")}, {"underline", tr("Underline")}, {"bar", tr("Side bar")}});
       own(tr("TITLE ALIGNMENT"), "zfront.header_align", {{"left", tr("Left")}, {"center", tr("Centered")}});
-      own(tr("CAROUSEL CARDS"), "zfront.car_count", {{"3", "3"}, {"5", "5"}, {"7", "7"}});
       own(tr("LIST TEXT CASE"), "zfront.list_case", {{"upper", tr("Uppercase")}, {"lower", tr("Lowercase")}});
 
       // Accessibility: both live (es_settings.cfg; ui_prefs::reapply publishes them and every open menu lays out again).
@@ -345,6 +390,14 @@ MenuSpec make_ui_spec(unsigned parts) {
               ui_prefs::reapply(cx);
             });
 
+      m.toggle(
+          tr("SHOW NETWORK INDICATOR"), [&cx] { return cx.es.get_bool("ShowNetworkIndicator", true); },
+          [&cx](bool on) {
+            cx.es.set_bool("ShowNetworkIndicator", on);
+            save_es(cx);
+            ui_prefs::reapply(cx);  // the status bar follows at once
+          });
+
       m.header(tr("NAVIGATION"));  // not about the top bar: they were under its header
       m.toggle(
           tr("CAROUSEL TRANSITIONS"), [&cx] { return cx.es.get_bool("MoveCarousel", true); },
@@ -371,11 +424,6 @@ MenuSpec make_ui_spec(unsigned parts) {
     // ---- screensaver: oscontract starts it when ScreenSaverTime ms pass without input (0 = never)
     if (!(parts & kSaver)) return;
     if (!(parts & kNoHdr)) m.header(tr("SCREENSAVER SETTINGS"));
-    m.slider(
-         tr("START SCREENSAVER AFTER"), 0, 120, 1, [&cx] { return int(std::min(std::max((cx.es.get_int("ScreenSaverTime", 300000) + 30000) / 60000, 0L), 120L)); },
-         [&cx](int v) { cx.es.set_int("ScreenSaverTime", long(v) * 60000); })
-        .format([](int v) { return v == 0 ? std::string(tr("OFF")) : std::to_string(v) + " min"; })
-        .commit([&cx](int) { save_es(cx); });
     {  // ES: dim, black, random video, slideshow and suspend when the system can suspend
       auto shown = [](const char* t) { return i18n::sentence_case(utf8_upper(tr(t))); };  // ES's lower-case words: "Dim", "Random video"
       std::vector<Option> types = {{"dim", shown("dim")}, {"black", shown("black")}, {"random video", shown("random video")}, {"slideshow", shown("slideshow")}};
@@ -393,6 +441,20 @@ MenuSpec make_ui_spec(unsigned parts) {
             save_es(cx);
             if (again) again();  // the rows of the slideshow / random video appear or go
           });
+    }
+    {  // plugged in and left alone for a while, a clock replaces the screensaver (dock.hpp); off unless chosen
+      m.choice(
+          tr("BEDSIDE CLOCK"), {{"off", tr("OFF")}, {"1", "1 min"}, {"5", "5 min"}, {"10", "10 min"}},
+          [&cx] {
+            const std::string* v = cx.es.get("BedsideClock");
+            const int minutes = dock::parse_minutes(v ? std::string_view(*v) : std::string_view());
+            return minutes == 0 ? std::string("off") : std::to_string(minutes);
+          },
+          [&cx](const std::string& v) {
+            cx.es.set_string("BedsideClock", v);
+            save_es(cx);
+          })
+          .hint(tr("With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."));
     }
     if (music::available()) music::build_saver_row(m, cx);
     ssmedia::build_rows(m, cx);  // IMAGE/VIDEO DURATION, SHOW GAME INFO, ... for the chosen type (nothing for dim / black / suspend)

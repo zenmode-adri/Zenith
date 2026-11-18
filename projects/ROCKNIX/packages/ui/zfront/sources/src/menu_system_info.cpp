@@ -3,8 +3,10 @@
 #include <cstdio>
 #include <memory>
 
+#include "i18n.hpp"
 #include "menu.hpp"
 #include "menu_system.hpp"
+#include "playtime.hpp"
 #include "registry.hpp"
 #include "ui_dialogs.hpp"
 #include "util.hpp"
@@ -67,16 +69,35 @@ std::string uptime_text_now() {
   return buf;
 }
 
+// The labels `rocknix-info --full` prints (the OS script, in capitals): listed here so they reach the catalogs; ES has none of them.
+[[maybe_unused]] const char* const kInfoLabels[] = {
+    N_("SYSTEM INFORMATION"), N_("DEVICE"), N_("OPERATING SYSTEM"), N_("VERSION"), N_("BUILD ID"), N_("KERNEL"),
+    N_("NETWORK INFORMATION"), N_("HOST NAME"), N_("IP ADDRESS"), N_("DISK SPACE"), N_("BATTERY INFORMATION"),
+    N_("BATTERY REMAINING"), N_("BATTERY HEALTH"), N_("BATTERY STATE"), N_("CPU INFORMATION"), N_("CPU"), N_("CPU TEMPERATURE"),
+    N_("CPU FAN"), N_("GPU INFORMATION"), N_("GPU TEMPERATURE"), N_("GPU CURRENT FREQUENCY"), N_("GPU MAXIMUM FREQUENCY"),
+    N_("RAM INFORMATION"), N_("RAM AVAILABLE"), N_("RAM CAPACITY"), N_("CURRENT FREQUENCY"), N_("MAXIMUM FREQUENCY")};
+
+// BATTERY STATE comes as the kernel's word (Charging, Discharging, Full, Not charging): shown translated.
+std::string battery_state_text(const std::string& v) {
+  if (v == "Charging") return i18n::sentence_case(tr("CHARGING"));
+  if (v == "Discharging") return i18n::sentence_case(tr("DISCHARGING"));
+  if (v == "Full") return i18n::sentence_case(tr("FULL"));
+  if (v == "Not charging") return i18n::sentence_case(tr("NOT CHARGING"));
+  return v;
+}
+
 std::unique_ptr<Screen> make_info() {
   auto data = std::make_shared<InfoData>();
   MenuSpec s;
   s.title = tr("INFORMATION");
   s.title_key = N_("INFORMATION");
-  s.build = [data](MenuBuilder& m, Ctx&) {
+  s.build = [data](MenuBuilder& m, Ctx& cx) {
     if (!data->loaded) {
       m.info(tr("Loading..."));
       return;
     }
+    const std::string left = playtime::left_text(cx.conf);  // empty when there is no limit
+    if (!left.empty()) m.info(tr("TIME LEFT TODAY"), left);
     bool uptime_done = false;
     std::string up = uptime_text_now();
     int groups = 0;
@@ -88,7 +109,7 @@ std::unique_ptr<Screen> make_info() {
         ++groups;
       } else {
         if (groups == 0) m.header(tr("SYSTEM")), groups = 1;
-        m.info(tr(r.label.c_str()), r.value);
+        m.info(tr(r.label.c_str()), r.label == "BATTERY STATE" ? battery_state_text(r.value) : r.value);
       }
     }
     if (!uptime_done && !up.empty()) m.info(tr("UPTIME"), up);
@@ -97,7 +118,8 @@ std::unique_ptr<Screen> make_info() {
   s.on_open = [data](Ctx& cx, const Refresh& refresh) {
     auto sv = cx.sv;
     auto rows = std::make_shared<std::vector<InfoRow>>();
-    post(cx, [sv, rows] { *rows = parse_info(query(*sv, "rocknix-info --full", 20000).out); },
+    // stderr out: the script's own warnings ("line 47: echo: write error: Broken pipe") became a row of the list (seen on the R36S)
+    post(cx, [sv, rows] { *rows = parse_info(query(*sv, "rocknix-info --full 2>/dev/null", 20000).out); },
                      [data, rows, refresh] {
                        data->rows = std::move(*rows);
                        data->loaded = true;

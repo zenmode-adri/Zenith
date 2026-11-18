@@ -102,7 +102,23 @@ std::string_view Theme::str(std::string_view name) const {
 }
 
 bool Theme::has(std::string_view name) const { return vars_.count(std::string(name)) != 0; }
-void Theme::set_var(std::string_view name, std::string_view value) { vars_[std::string(name)] = std::string(value); }
+void Theme::set_var(std::string_view name, std::string_view value) {
+  const std::string k(name);
+  if (before_.count(k) == 0) {
+    auto it = vars_.find(k);
+    before_[k] = it == vars_.end() ? std::make_pair(false, std::string()) : std::make_pair(true, it->second);
+  }
+  vars_[k] = std::string(value);
+}
+
+void Theme::reset_var(std::string_view name) {
+  const std::string k(name);
+  auto b = before_.find(k);
+  if (b == before_.end()) return;
+  if (b->second.first) vars_[k] = b->second.second;
+  else vars_.erase(k);
+  before_.erase(b);
+}
 
 float Theme::f(std::string_view name) const {
   float v = 0;

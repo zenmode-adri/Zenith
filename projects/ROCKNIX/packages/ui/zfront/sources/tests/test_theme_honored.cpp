@@ -90,7 +90,7 @@ float lum(const Color& c) { return (0.2126f * float(c[0]) + 0.7152f * float(c[1]
 int main() {
   // ---- which subsets are honored
   {
-    CHECK(themecfg::honored("iconic", "color-scheme"));
+    CHECK(!themecfg::honored("iconic", "color-scheme"));  // it is the MODE row of Appearance now
     CHECK(themecfg::honored("iconic", "play-video-previews-of-games"));
     CHECK(themecfg::honored("iconic", "show-detailed-game-info"));
     CHECK(!themecfg::honored("iconic", "aspect-ratio"));
@@ -130,7 +130,7 @@ int main() {
         Menu& m = *static_cast<Menu*>(s.get());
         m.rebuild(cx);
         const std::vector<std::string> l = labels(m);
-        CHECK(has(l, "Color Scheme"));
+        CHECK(!has(l, "Color Scheme"));
         CHECK(has(l, "Play Video Previews"));
         CHECK(has(l, "Show Detailed Game Info"));
         CHECK(!has(l, "Aspect Ratio"));

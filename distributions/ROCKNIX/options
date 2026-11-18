@@ -16,6 +16,9 @@
 # Name of the Distro to build (full name, without special characters)
   DISTRONAME="AURKNIX"
 
+# Zenith release number shown on the Information screen (written to /etc/os-release as ZENITH_VERSION by scripts/image)
+  ZENITH_VERSION="0.3.0"
+
 # Name of the OS to build (full name, lower case, without special characters)
   OSNAME="rocknix"
 
@@ -91,9 +94,6 @@
 
 # build and install OpenVPN support (yes / no)
   OPENVPN_SUPPORT="no"
-
-# build and install ZeroTier support (yes / no)
-  ZEROTIER_SUPPORT="yes"
 
 # build and install WireGuard support (yes / no)
   WIREGUARD_SUPPORT="yes"

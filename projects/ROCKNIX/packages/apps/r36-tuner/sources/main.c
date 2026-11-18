@@ -38,7 +38,7 @@ void app_chrome(void) {
     ui_clear();
     if (st.bat_pct >= 0) snprintf(bat, sizeof(bat), "  ·  %d%%%s", st.bat_pct, st.bat_charging ? "+" : "");
     snprintf(right, sizeof(right), "%s%s%s%s", plat->name, st.gpu_driver[0] ? "  ·  " : "", st.gpu_driver, bat);
-    ui_header("R36 Tuner", right);
+    ui_header("R36 Tuner Next", right);
 
     int y = ui_content_top(), h = G(TAB_H);
     ui_round(UI_M, y, UW - 2 * UI_M, h, UI_RAD, C_PANEL);

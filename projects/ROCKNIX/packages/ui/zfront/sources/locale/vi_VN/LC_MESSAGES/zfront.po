@@ -1,0 +1,2481 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: vi_VN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "DANH SÁCH TRÒ CHƠI BỊ HỎNG"
+
+msgid "Not available yet"
+msgstr "Chưa khả dụng"
+
+msgid "Game lists updated"
+msgstr "Đã cập nhật danh sách trò chơi"
+
+msgid "COVERS ADDED"
+msgstr "ĐÃ THÊM ẢNH BÌA"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "CHẾ ĐỘ HIỆU NĂNG CÓ THỂ GIÚP TRÒ CHƠI NÀY"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "TRÒ CHƠI NÀY CÓ THỂ CHẠY TỐT HƠN VỚI CHẾ ĐỘ HIỆU NĂNG"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "BẬT CHẾ ĐỘ HIỆU NĂNG CHO TRÒ CHƠI NÀY"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "CHẾ ĐỘ HIỆU NĂNG ĐANG BẬT CHO TRÒ CHƠI NÀY"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Trò chơi này có thể chạy tốt hơn với chế độ hiệu năng: GPU và bộ nhớ luôn chạy hết tốc độ khi chơi."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "ĐỪNG ĐỀ XUẤT CHẾ ĐỘ HIỆU NĂNG NỮA"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Không đề xuất chế độ hiệu năng cho trò chơi này nữa."
+
+msgid "BATTERY"
+msgstr "PIN"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "CHƯA ĐỦ DỮ LIỆU"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Hãy chơi trò chơi này từ năm phút trở lên bằng pin, ước tính sẽ hiện ở đây."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Với mức pin hiện tại, theo tốc độ của các lần chơi gần nhất của trò chơi này."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Với mức pin hiện tại. Trò chơi này chưa có lần chơi nào: dùng mức trung bình của hệ thống của nó."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Với mức pin hiện tại. Hệ thống này chưa có lần chơi nào: dùng mức trung bình của mọi trò chơi."
+
+msgid "Never"
+msgstr "Không bao giờ"
+
+msgid "What used the most"
+msgstr "Dùng nhiều nhất"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Kể từ lần sạc đầy gần nhất. Ước tính."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Chưa đo được gì. Dữ liệu sẽ có dần khi bạn chơi."
+
+msgid "Asleep"
+msgstr "Ngủ"
+
+msgid "Menus and system"
+msgstr "Menu và hệ thống"
+
+msgid "Screen"
+msgstr "Màn hình"
+
+msgid "Charging"
+msgstr "Đang sạc"
+
+msgid "About"
+msgstr "Giới thiệu"
+
+msgid "Since full"
+msgstr "Từ lúc đầy"
+
+msgid "Using now"
+msgstr "Đang dùng"
+
+msgid "Last hours"
+msgstr "Vài giờ qua"
+
+msgid "Now"
+msgstr "Bây giờ"
+
+msgid "More settings"
+msgstr "Thêm cài đặt"
+
+msgid "Power saver"
+msgstr "Tiết kiệm điện"
+
+msgid "Screensaver after"
+msgstr "Bảo vệ màn hình sau"
+
+msgid "Turn on by itself at"
+msgstr "Tự bật lúc"
+
+msgid "ADJUST"
+msgstr "ĐIỀU CHỈNH"
+
+msgid "Action"
+msgstr "Hành động"
+
+msgid "Adult"
+msgstr "Người lớn"
+
+msgid "Adventure"
+msgstr "Phiêu lưu"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Sòng bạc"
+
+msgid "Casual Game"
+msgstr "Trò chơi giải trí"
+
+msgid "Hunting and Fishing"
+msgstr "Săn bắn và câu cá"
+
+msgid "Fight"
+msgstr "Đối kháng"
+
+msgid "Race, Driving"
+msgstr "Đua xe, lái xe"
+
+msgid "Demo"
+msgstr "Bản demo"
+
+msgid "Pinball"
+msgstr "Pinball"
+
+msgid "Playing cards"
+msgstr "Bài"
+
+msgid "Role playing games"
+msgstr "Nhập vai"
+
+msgid "Asiatic board game"
+msgstr "Cờ bàn châu Á"
+
+msgid "Educational"
+msgstr "Giáo dục"
+
+msgid "Music and Dance"
+msgstr "Âm nhạc và nhảy"
+
+msgid "Platform"
+msgstr "Platform"
+
+msgid "Puzzle-Game"
+msgstr "Giải đố"
+
+msgid "Quiz"
+msgstr "Đố vui"
+
+msgid "Reflection"
+msgstr "Phản xạ"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Mô phỏng"
+
+msgid "Sports"
+msgstr "Thể thao"
+
+msgid "Sports with Animals"
+msgstr "Thể thao với động vật"
+
+msgid "Strategy"
+msgstr "Chiến thuật"
+
+msgid "Shooter"
+msgstr "Bắn súng"
+
+msgid "Not set"
+msgstr "Chưa đặt"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "T2"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "CN"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "T3"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "T4"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "T6"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "T7"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "T5"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Th4"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Th2"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Th1"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Th6"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Th3"
+
+msgctxt "date"
+msgid "May"
+msgstr "Th5"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Th8"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Th12"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Th7"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Th11"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Th10"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Th9"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "KHÔNG THỂ LƯU DỮ LIỆU TRÒ CHƠI"
+
+msgid "Could not save the settings"
+msgstr "Không thể lưu cài đặt"
+
+msgid "FILTER BY"
+msgstr "LỌC THEO"
+
+msgid "FAVORITES ONLY"
+msgstr "CHỈ ƯA THÍCH"
+
+msgid "LIST"
+msgstr "DANH SÁCH"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Không tải được giao diện đã chọn: dùng Zenith"
+
+msgid "PAGE"
+msgstr "TRANG"
+
+msgid "Could not show this page"
+msgstr "Không thể hiển thị trang này"
+
+msgid "INSTALLED"
+msgstr "ĐÃ CÀI"
+
+msgid "SMART COLLECTIONS"
+msgstr "BỘ SƯU TẬP THÔNG MINH"
+
+msgid "EDIT FILTERS"
+msgstr "SỬA BỘ LỌC"
+
+msgid "NO OPTIONS"
+msgstr "KHÔNG CÓ LỰA CHỌN"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Bạn có chắc muốn xoá '%s' không?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Hãy đặt bộ lọc sau trong Bộ sưu tập trò chơi tuỳ chỉnh."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Khởi động lại giao diện để áp dụng thay đổi."
+
+msgid "Could not save the setting"
+msgstr "Không thể lưu cài đặt"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "GÁN BỘ ĐIỀU KHIỂN CHO NGƯỜI CHƠI"
+
+msgid "Could not start Bluetooth"
+msgstr "Không thể khởi động Bluetooth"
+
+msgid "Searching..."
+msgstr "Đang tìm..."
+
+msgid "CONTROLLERS"
+msgstr "BỘ ĐIỀU KHIỂN"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "ĐỔI NÚT XÁC NHẬN VÀ HUỶ"
+
+msgid "ENABLE RUMBLE"
+msgstr "BẬT RUNG"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "TỰ CẤU HÌNH PHÍM TẮT RETROARCH"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "BỘ ĐIỀU KHIỂN ĐÃ KẾT NỐI"
+
+msgid "Not configured"
+msgstr "Chưa cấu hình"
+
+msgid "Unknown controller"
+msgstr "Bộ điều khiển không xác định"
+
+msgid "PAIRED"
+msgstr "ĐÃ GHÉP NỐI"
+
+msgid "Could not pair"
+msgstr "Không thể ghép nối"
+
+msgid "Connected"
+msgstr "Đã kết nối"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Gỡ tất cả thiết bị Bluetooth?"
+
+msgid "Could not disconnect"
+msgstr "Không thể ngắt kết nối"
+
+msgid "Could not connect"
+msgstr "Không thể kết nối"
+
+msgid "Could not remove"
+msgstr "Không thể gỡ"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "NÚT A / ĐÔNG"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "NÚT B / NAM"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "NÚT X / BẮC"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "NÚT Y / TÂY"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "NÚT CẦN TRÁI"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "NÚT CẦN PHẢI"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "BẬT HOTKEY"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "BỘ ĐIỀU KHIỂN TÍCH HỢP"
+
+msgid "GAMEPAD DETECTED"
+msgstr "ĐÃ PHÁT HIỆN TAY CẦM"
+
+msgid "GAMEPADS DETECTED"
+msgstr "ĐÃ PHÁT HIỆN CÁC TAY CẦM"
+
+msgid "PRESS B TO CANCEL."
+msgstr "GIỮ MỘT NÚT TRÊN THIẾT BỊ ĐỂ CẤU HÌNH."
+
+msgid "Could not save the controller configuration"
+msgstr "Không thể lưu cấu hình bộ điều khiển"
+
+msgid "Controller configuration saved"
+msgstr "Đã lưu cấu hình bộ điều khiển"
+
+msgid "Controller configuration cancelled"
+msgstr "Đã huỷ cấu hình bộ điều khiển"
+
+msgid "Controller disconnected"
+msgstr "Bộ điều khiển đã ngắt kết nối"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "GIỮ TIẾP ĐỂ HUỶ"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "GIỮ BẤT KỲ NÚT NÀO TRONG 3 GIÂY ĐỂ HUỶ."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "GIỮ BẤT KỲ NÚT NÀO ĐỂ BỎ QUA. GIỮ TIẾP ĐỂ HUỶ."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "ĐÃ XONG TẤT CẢ CÁC NÚT"
+
+msgid "set"
+msgstr "đã đặt"
+
+msgid "skipped"
+msgstr "đã bỏ qua"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "CHƯA GÁN NÚT HOTKEY. CẦN NÚT NÀY ĐỂ THOÁT TRÒ CHƠI BẰNG BỘ ĐIỀU KHIỂN."
+
+msgid "DATE & TIME"
+msgstr "NGÀY VÀ GIỜ"
+
+msgid "MONTH"
+msgstr "THÁNG"
+
+msgid "DAY"
+msgstr "NGÀY"
+
+msgid "HOUR"
+msgstr "GIỜ"
+
+msgid "MINUTE"
+msgstr "PHÚT"
+
+msgid "SET DATE & TIME"
+msgstr "ĐẶT NGÀY VÀ GIỜ"
+
+msgid "Date and time set"
+msgstr "Đã đặt ngày và giờ"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Có Wi-Fi thì giờ được đặt tự động."
+
+msgid "That folder is protected"
+msgstr "Thư mục đó được bảo vệ"
+
+msgid "Outside the allowed folders"
+msgstr "Ngoài các thư mục được phép"
+
+msgid "Not enough free space"
+msgstr "Không đủ dung lượng trống"
+
+msgid "That name already exists"
+msgstr "Tên đó đã tồn tại"
+
+msgid "Cancelled"
+msgstr "Đã huỷ"
+
+msgid "A folder cannot go into itself"
+msgstr "Không thể đưa thư mục vào chính nó"
+
+msgid "That name is not valid"
+msgstr "Tên đó không hợp lệ"
+
+msgid "Not found"
+msgstr "Không tìm thấy"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Tệp lớn hơn 4 GB: thẻ này không chứa được"
+
+msgid "This card does not accept that name"
+msgstr "Thẻ này không chấp nhận tên đó"
+
+msgid "This location is read-only"
+msgstr "Vị trí này chỉ đọc"
+
+msgid "An error occurred"
+msgstr "Đã xảy ra lỗi"
+
+msgid "%s of %s done"
+msgstr "Đã xong %s trên %s"
+
+msgid "item"
+msgstr "mục"
+
+msgid "items"
+msgstr "mục"
+
+msgid "link skipped"
+msgstr "đã bỏ qua liên kết"
+
+msgid "links skipped"
+msgstr "đã bỏ qua liên kết"
+
+msgid "This can't be undone."
+msgstr "Không thể hoàn tác."
+
+msgid "Files"
+msgstr "Tệp"
+
+msgid "selected"
+msgstr "đã chọn"
+
+msgid "Cannot read this folder"
+msgstr "Không thể đọc thư mục này"
+
+msgid "This folder is empty"
+msgstr "Thư mục này trống"
+
+msgid "free"
+msgstr "trống"
+
+msgid "File"
+msgstr "Tệp"
+
+msgid "Folder"
+msgstr "Thư mục"
+
+msgid "Link"
+msgstr "Liên kết"
+
+msgid "Properties"
+msgstr "Thuộc tính"
+
+msgid "Copy"
+msgstr "Sao chép"
+
+msgid "Move"
+msgstr "Di chuyển"
+
+msgid "Paste here"
+msgstr "Dán vào đây"
+
+msgid "Rename"
+msgstr "Đổi tên"
+
+msgid "New folder"
+msgstr "Thư mục mới"
+
+msgid "Delete"
+msgstr "Xoá"
+
+msgid "Select all"
+msgstr "Chọn tất cả"
+
+msgid "Clear selection"
+msgstr "Bỏ chọn"
+
+msgid "Date"
+msgstr "Ngày"
+
+msgid "Size"
+msgstr "Kích thước"
+
+msgid "Sort by"
+msgstr "Sắp xếp theo"
+
+msgid "Hide hidden files"
+msgstr "Ẩn tệp ẩn"
+
+msgid "Show hidden files"
+msgstr "Hiện tệp ẩn"
+
+msgid "Actions"
+msgstr "Hành động"
+
+msgid "Home"
+msgstr "Trang chủ"
+
+msgid "Games"
+msgstr "Trò chơi"
+
+msgid "Game card"
+msgstr "Thẻ trò chơi"
+
+msgid "USB drive"
+msgstr "Ổ USB"
+
+msgid "Screenshots"
+msgstr "Ảnh chụp màn hình"
+
+msgid "Go to"
+msgstr "Đi tới"
+
+msgid "Ready to copy"
+msgstr "Sẵn sàng sao chép"
+
+msgid "Ready to move"
+msgstr "Sẵn sàng di chuyển"
+
+msgid "Warning"
+msgstr "Cảnh báo"
+
+msgid "Cancel"
+msgstr "Huỷ"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Đây là tệp hệ thống. Đổi tên có thể làm hỏng máy."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Đây là tệp hệ thống. Xoá có thể làm hỏng máy."
+
+msgid "Wait for the other job"
+msgstr "Hãy đợi tác vụ kia xong"
+
+msgid "Copied"
+msgstr "Đã sao chép"
+
+msgid "Deleted"
+msgstr "Đã xoá"
+
+msgid "Moved"
+msgstr "Đã di chuyển"
+
+msgid "originals kept"
+msgstr "giữ nguyên bản gốc"
+
+msgid "Copying"
+msgstr "Đang sao chép"
+
+msgid "Deleting"
+msgstr "Đang xoá"
+
+msgid "Moving"
+msgstr "Đang di chuyển"
+
+msgid "Calculating..."
+msgstr "Đang tính..."
+
+msgid "Back"
+msgstr "Trở về"
+
+msgid "Close"
+msgstr "Đóng"
+
+msgid "Mark"
+msgstr "Đánh dấu"
+
+msgid "Open"
+msgstr "Mở"
+
+msgid "Page"
+msgstr "Trang"
+
+msgid "WHILE PLAYING"
+msgstr "KHI ĐANG CHƠI"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "TIẾP TỤC TRÒ CHƠI CUỐI KHI KHỞI ĐỘNG"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Khởi chạy trò chơi cuối của bạn từ bản lưu tự động khi khởi động. B để huỷ."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "MENU HOME TRONG LÚC CHƠI"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Thử nghiệm. Giữ START và nút vai đã chọn trong một giây khi đang chơi để tạm dừng và mở bảng có pin, độ sáng, âm lượng, TIẾP TỤC và THOÁT TRÒ CHƠI (LƯU TRẠNG THÁI và TẢI TRẠNG THÁI chỉ khi bật lệnh mạng của RetroArch)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "NÚT MENU HOME"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Các nút giữ cùng START để mở menu home. RetroArch dùng các tổ hợp dựa trên Select."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "ĐỀ XUẤT HIỆU NĂNG"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Đề xuất chế độ hiệu năng cho các trò chơi bị bộ điều tốc GPU kìm lại."
+
+msgid "PLAY TIME LIMIT"
+msgstr "GIỚI HẠN THỜI GIAN CHƠI"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Thời gian được chơi mỗi ngày. Có thông báo 5 phút trước khi hết (trong trò chơi chỉ khi bật lệnh mạng của RetroArch), sau đó trò chơi bị đóng. Thời gian bắt đầu tính khi bật mục này."
+
+msgid "SAVED GAMES"
+msgstr "TRÒ CHƠI ĐÃ LƯU"
+
+msgid "PICTURE AND CONTROL"
+msgstr "HÌNH ẢNH VÀ ĐIỀU KHIỂN"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "PHÁT TRÒ CHƠI MOONLIGHT"
+
+msgid "MORE"
+msgstr "THÊM"
+
+msgid "PLAY STATISTICS"
+msgstr "THỐNG KÊ CHƠI"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "TUỲ CHỌN THEO HỆ THỐNG"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "chế độ hiệu năng"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU và bộ nhớ chạy hết tốc độ khi chơi"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "HỆ THỐNG KHÔNG XÁC ĐỊNH"
+
+msgid "EMULATOR"
+msgstr "TRÌNH GIẢ LẬP"
+
+msgid "The emulator and core that run this."
+msgstr "Trình giả lập và core chạy trò chơi này."
+
+msgid "SYSTEM OPTIONS"
+msgstr "TUỲ CHỌN HỆ THỐNG"
+
+msgid "DISPLAY"
+msgstr "HIỂN THỊ"
+
+msgid "GAMEPLAY"
+msgstr "LỐI CHƠI"
+
+msgid "ACTIONS"
+msgstr "HÀNH ĐỘNG"
+
+msgid "RANDOM GAME"
+msgstr "TRÒ CHƠI NGẪU NHIÊN"
+
+msgid "COOLING PROFILE"
+msgstr "HỒ SƠ LÀM MÁT"
+
+msgid "AGGRESSIVE"
+msgstr "MẠNH"
+
+msgid "MODERATE"
+msgstr "VỪA"
+
+msgid "QUIET"
+msgstr "YÊN LẶNG"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "BỘ ĐIỀU TỐC CPU"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "BỘ ĐIỀU TỐC GPU"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "LỚP PHỦ MANGOHUD"
+
+msgid "UNKNOWN GAME"
+msgstr "TRÒ CHƠI KHÔNG XÁC ĐỊNH"
+
+msgid "Sort name"
+msgstr "Tên sắp xếp"
+
+msgid "enter game sort name"
+msgstr "nhập tên sắp xếp của trò chơi"
+
+msgid "INVALID DATE"
+msgstr "NGÀY KHÔNG HỢP LỆ"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "KHÔNG THỂ XOÁ TRÒ CHƠI"
+
+msgid "CONFIG"
+msgstr "CẤU HÌNH"
+
+msgid "CORE PROVIDED"
+msgstr "DO CORE CUNG CẤP"
+
+msgid "FULL"
+msgstr "ĐẦY ĐỦ"
+
+msgid "SQUARE PIXEL"
+msgstr "ĐIỂM ẢNH VUÔNG"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "ĐIỀU CHỈNH MÀN HÌNH"
+
+msgid "SCREEN & SOUND"
+msgstr "MÀN HÌNH VÀ ÂM THANH"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "CHỜ"
+
+msgid "MONITORING"
+msgstr "GIÁM SÁT"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "ÉP XUNG VÀ GIÁM SÁT"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "PIN VÀ HIỆU NĂNG"
+
+msgid "LIBRARY"
+msgstr "THƯ VIỆN"
+
+msgid "CHECK LIBRARY"
+msgstr "KIỂM TRA THƯ VIỆN"
+
+msgid "SAVE BACKUPS"
+msgstr "SAO LƯU BẢN LƯU"
+
+msgid "LANGUAGE & TIME"
+msgstr "NGÔN NGỮ VÀ GIỜ"
+
+msgid "HOME MENU"
+msgstr "MENU HOME"
+
+msgid "CHARGING"
+msgstr "ĐANG SẠC"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "ĐỘ SÁNG MÀN HÌNH"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "GHI ĐÈ LÊN ĐIỂM LƯU?"
+
+msgid "SAVE STATE"
+msgstr "LƯU TRẠNG THÁI"
+
+msgid "LOAD STATE"
+msgstr "TẢI TRẠNG THÁI"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "TẢI ĐIỂM LƯU? TIẾN TRÌNH CHƯA LƯU SẼ MẤT."
+
+msgid "RESUME"
+msgstr "TIẾP TỤC"
+
+msgid "QUIT GAME"
+msgstr "THOÁT TRÒ CHƠI"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "THỰC SỰ THOÁT TRÒ CHƠI?"
+
+msgid "AND MORE"
+msgstr "VÀ HƠN NỮA"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "KHÔNG CÓ VẤN ĐỀ"
+
+msgid "PROBLEMS FOUND"
+msgstr "TÌM THẤY VẤN ĐỀ"
+
+msgid "MISSING BIOS"
+msgstr "THIẾU BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "TỆP CÓ THỂ BỊ HỎNG"
+
+msgid "DUPLICATES"
+msgstr "TRÙNG LẶP"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "TRÒ CHƠI KHÔNG CÓ ẢNH"
+
+msgid "NETWORK"
+msgstr "MẠNG"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "BỘ ĐIỀU KHIỂN VÀ BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Chỉ để phát triển: mọi thành phần của khung menu."
+
+msgid "WIDGET DEMO"
+msgstr "DEMO THÀNH PHẦN"
+
+msgid "Unable to connect to server"
+msgstr "Không thể kết nối đến máy chủ"
+
+msgid "Succesfully paired with server"
+msgstr "Đã ghép nối với máy chủ thành công"
+
+msgid "QUIT CURRENT GAME"
+msgstr "THOÁT TRÒ CHƠI HIỆN TẠI"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "CẬP NHẬT TRÒ CHƠI MOONLIGHT"
+
+msgid "PAIR WITH SERVER"
+msgstr "GHÉP NỐI VỚI MÁY CHỦ"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "HUỶ GHÉP NỐI VỚI MÁY CHỦ"
+
+msgid "Unpaired and settings cleared"
+msgstr "Đã huỷ ghép nối và xoá cài đặt"
+
+msgid "Unpaired from server"
+msgstr "Đã huỷ ghép nối với máy chủ"
+
+msgid "SERVER IP"
+msgstr "IP MÁY CHỦ"
+
+msgid "PAIRING PIN"
+msgstr "PIN GHÉP NỐI"
+
+msgid "HOST"
+msgstr "MÁY CHỦ"
+
+msgid "ONLINE GAMES"
+msgstr "TRÒ CHƠI TRỰC TUYẾN"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "THAM GIA TRÒ CHƠI NETPLAY"
+
+msgid "NETPLAY NICKNAME"
+msgstr "BIỆT DANH NETPLAY"
+
+msgid "NETPLAY HOST"
+msgstr "MÁY CHỦ NETPLAY"
+
+msgid "NETPLAY PORT"
+msgstr "CỔNG NETPLAY"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Đang bật Wi-Fi..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Lỗi cấu hình Wi-Fi"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi đang bật"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi đang tắt"
+
+msgid "Wi-Fi region updated"
+msgstr "Đã cập nhật vùng Wi-Fi"
+
+msgid "Please wait..."
+msgstr "Vui lòng đợi..."
+
+msgid "Local play mode updated"
+msgstr "Đã cập nhật chế độ chơi cục bộ"
+
+msgid "The service did not answer"
+msgstr "Dịch vụ không phản hồi"
+
+msgid "N/A"
+msgstr "Không có"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "MẠNG WI-FI"
+
+msgid "WI-FI COUNTRY"
+msgstr "QUỐC GIA WI-FI"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Đặt quy định sóng vô tuyến: các kênh bạn được dùng."
+
+msgid "TRANSFER FILES"
+msgstr "CHUYỂN TỆP"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Gửi trò chơi vào máy từ điện thoại hoặc máy tính trong mạng này."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "ĐỊA CHỈ IP KHẢ DỤNG:"
+
+msgid "LOCAL PLAY"
+msgstr "CHƠI CỤC BỘ"
+
+msgid "LOCAL PLAY MODE"
+msgstr "CHẾ ĐỘ CHƠI CỤC BỘ"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Phát điểm truy cập để chơi netplay với các máy khác."
+
+msgid "1 (HOST)"
+msgstr "1 (MÁY CHỦ)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (MÁY KHÁCH 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (MÁY KHÁCH 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (MÁY KHÁCH 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ID CHƠI CỤC BỘ"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, đám mây, VPN và tên của máy."
+
+msgid "NETWORK SERVICES"
+msgstr "DỊCH VỤ MẠNG"
+
+msgid "ENABLE SSH"
+msgstr "BẬT SSH"
+
+msgid "SSH is off"
+msgstr "SSH đang tắt"
+
+msgid "SSH is on"
+msgstr "SSH đang bật"
+
+msgid "Remote access to the console over the network."
+msgstr "Truy cập từ xa vào máy qua mạng."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "BẬT MÁY CHỦ HTTP ĐƠN GIẢN"
+
+msgid "HTTP server is off"
+msgstr "Máy chủ HTTP đang tắt"
+
+msgid "HTTP server is on"
+msgstr "Máy chủ HTTP đang bật"
+
+msgid "FILE TRANSFER"
+msgstr "CHUYỂN TỆP"
+
+msgid "USB GADGET FUNCTION"
+msgstr "CHỨC NĂNG USB GADGET"
+
+msgid "USB networking is on. The console is at"
+msgstr "Mạng USB đang bật. Máy ở địa chỉ"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Những gì máy cung cấp qua cổng USB-C."
+
+msgid "CLOUD SERVICES"
+msgstr "DỊCH VỤ ĐÁM MÂY"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "GẮN Ổ ĐÁM MÂY"
+
+msgid "Cloud drive mounted"
+msgstr "Đã gắn ổ đám mây"
+
+msgid "Cloud drive unmounted"
+msgstr "Đã tháo ổ đám mây"
+
+msgid "VPN SERVICES"
+msgstr "DỊCH VỤ VPN"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuard đang tắt"
+
+msgid "WireGuard is on"
+msgstr "WireGuard đang bật"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscale đang tắt"
+
+msgid "Tailscale is on"
+msgstr "Tailscale đang bật"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale không thể kết nối"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale yêu cầu bạn đăng nhập"
+
+msgid "SHOW LINK"
+msgstr "HIỆN LIÊN KẾT"
+
+msgid "TAILSCALE LOGIN"
+msgstr "ĐĂNG NHẬP TAILSCALE"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "XÁC THỰC LẠI TAILSCALE:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Chỉ dùng chữ cái, chữ số và dấu gạch ngang"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Đã lưu tên máy. Áp dụng ở lần khởi động tới"
+
+msgid "The new name is used at the next boot."
+msgstr "Tên mới được dùng ở lần khởi động tới."
+
+msgid "WEB FILE TRANSFER"
+msgstr "CHUYỂN TỆP QUA WEB"
+
+msgid "Could not start the web transfer"
+msgstr "Không thể khởi động chuyển tệp qua web"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Cho phép điện thoại hoặc máy tính trong mạng này gửi trò chơi vào máy."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "KHÔNG THỂ KHỞI ĐỘNG (CỔNG BẬN?)"
+
+msgid "WEB ADDRESS"
+msgstr "ĐỊA CHỈ WEB"
+
+msgid "WEB PIN"
+msgstr "PIN WEB"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "Ổ MẠNG (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "BẬT SAMBA"
+
+msgid "Samba is off"
+msgstr "Samba đang tắt"
+
+msgid "Samba is on"
+msgstr "Samba đang bật"
+
+msgid "Shares the games folder with other computers."
+msgstr "Chia sẻ thư mục trò chơi với các máy tính khác."
+
+msgid "SAMBA ADDRESS"
+msgstr "ĐỊA CHỈ SAMBA"
+
+msgid "SAMBA USER"
+msgstr "NGƯỜI DÙNG SAMBA"
+
+msgid "SAMBA PASSWORD"
+msgstr "MẬT KHẨU SAMBA"
+
+msgid "Connecting to"
+msgstr "Đang kết nối tới"
+
+msgid "Connected successfully"
+msgstr "Đã kết nối thành công"
+
+msgid "Failed to connect"
+msgstr "Kết nối thất bại"
+
+msgid "SAVED"
+msgstr "ĐÃ LƯU"
+
+msgid "ENTERPRISE"
+msgstr "DOANH NGHIỆP"
+
+msgid "SECURED"
+msgstr "CÓ BẢO MẬT"
+
+msgid "Enterprise networks are not supported"
+msgstr "Không hỗ trợ mạng doanh nghiệp"
+
+msgid "Network forgotten"
+msgstr "Đã quên mạng"
+
+msgid "WI-FI KEY FOR "
+msgstr "KHOÁ WI-FI CỦA "
+
+msgid "CONNECTING..."
+msgstr "ĐANG KẾT NỐI..."
+
+msgid "WI-FI SSID"
+msgstr "SSID WI-FI"
+
+msgid "WI-FI KEY"
+msgstr "KHOÁ WI-FI"
+
+msgid "REALLY SUSPEND ?"
+msgstr "THỰC SỰ TẠM NGỪNG?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "THỰC SỰ TẮT NGUỒN?"
+
+msgid "REALLY RESTART?"
+msgstr "THỰC SỰ KHỞI ĐỘNG LẠI?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "THỰC SỰ KHỞI ĐỘNG LẠI GIAO DIỆN?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "KHỞI ĐỘNG LẠI GIAO DIỆN"
+
+msgid "TEST ACCOUNT"
+msgstr "KIỂM TRA TÀI KHOẢN"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Kiểm tra tên người dùng và mật khẩu với retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "ĐANG KẾT NỐI TỚI RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "ĐÃ ĐĂNG NHẬP"
+
+msgid "Enable unlocking of unofficial achievements."
+msgstr "Cho phép mở khoá thành tích không chính thức."
+
+msgid "UNOFFICIAL ACHIEVEMENTS"
+msgstr "THÀNH TÍCH KHÔNG CHÍNH THỨC"
+
+msgid "LED NOTIFICATIONS"
+msgstr "THÔNG BÁO LED"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Hiện hàng RetroAchievements trong menu chính."
+
+msgid "NO SAVES FOUND"
+msgstr "KHÔNG TÌM THẤY BẢN LƯU"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "KHÔNG ĐỦ DUNG LƯỢNG TRỐNG"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "ĐÃ CÓ BẢN SAO LƯU CỦA PHÚT NÀY"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "BẢN SAO LƯU BỊ HỎNG HOẶC THIẾU"
+
+msgid "BACKUP DONE"
+msgstr "ĐÃ SAO LƯU XONG"
+
+msgid "SAVES RESTORED"
+msgstr "ĐÃ KHÔI PHỤC BẢN LƯU"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "ĐÃ SAO LƯU LÊN ĐÁM MÂY XONG"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "SAO LƯU LÊN ĐÁM MÂY THẤT BẠI"
+
+msgid "BEFORE A RESTORE"
+msgstr "TRƯỚC KHI KHÔI PHỤC"
+
+msgid "BACK UP SAVES NOW"
+msgstr "SAO LƯU BẢN LƯU NGAY"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "SAVEGAME, SAVESTATE VÀ BẢN LƯU PSP, KHÔNG CÓ ROM HAY PHƯƠNG TIỆN"
+
+msgid "CLOUD BACKUP"
+msgstr "SAO LƯU ĐÁM MÂY"
+
+msgid "BACKUPS"
+msgstr "BẢN SAO LƯU"
+
+msgid "NO BACKUPS YET"
+msgstr "CHƯA CÓ BẢN SAO LƯU"
+
+msgid "BACKUP DELETED"
+msgstr "ĐÃ XOÁ BẢN SAO LƯU"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "VIỆC NÀY SẼ THAY CÁC BẢN LƯU HIỆN TẠI CỦA BẠN BẰNG BẢN LƯU TỪ %s. BẢN SAO LƯU CỦA CÁC BẢN LƯU HIỆN TẠI SẼ ĐƯỢC TẠO TRƯỚC."
+
+msgid "RESTORE"
+msgstr "KHÔI PHỤC"
+
+msgid "DELETE BACKUP"
+msgstr "XOÁ BẢN SAO LƯU"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "XOÁ BẢN SAO LƯU NÀY?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "BẢN DỰNG NÀY KHÔNG THỂ TRUY CẬP SCREENSCRAPER"
+
+msgid "ALL GAMES"
+msgstr "TẤT CẢ TRÒ CHƠI"
+
+msgid "GAMES TO SCRAPE"
+msgstr "TRÒ CHƠI CẦN LẤY DỮ LIỆU"
+
+msgid "WITH MISSING MEDIA"
+msgstr "THIẾU PHƯƠNG TIỆN"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "KHÔNG CÓ PHƯƠNG TIỆN NÀO"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Những trò chơi nào của các hệ thống đã chọn sẽ được tra cứu."
+
+msgid "1 DAY"
+msgstr "1 NGÀY"
+
+msgid "1 MONTH"
+msgstr "1 THÁNG"
+
+msgid "1 WEEK"
+msgstr "1 TUẦN"
+
+msgid "1 YEAR"
+msgstr "1 NĂM"
+
+msgid "15 DAYS"
+msgstr "15 NGÀY"
+
+msgid "3 MONTHS"
+msgstr "3 THÁNG"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Trò chơi đã lấy dữ liệu trong khoảng này sẽ bị bỏ qua, giúp tiết kiệm yêu cầu."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "TỰ ĐỘNG TẢI PHƯƠNG TIỆN CÒN THIẾU"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Tải ảnh bìa còn thiếu ở nền khi máy rảnh."
+
+msgid "SCRAPER SETTINGS"
+msgstr "CÀI ĐẶT LẤY DỮ LIỆU"
+
+msgid "ACCOUNT"
+msgstr "TÀI KHOẢN"
+
+msgid "Choose at least one system."
+msgstr "Hãy chọn ít nhất một hệ thống."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Tra cứu trò chơi trên ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "KHÔNG CÓ HỆ THỐNG NÀO CÓ TRÒ CHƠI MÀ SCREENSCRAPER BIẾT"
+
+msgid "PICTURES"
+msgstr "HÌNH ẢNH"
+
+msgid "IMAGE"
+msgstr "ẢNH"
+
+msgid "BOX FRONT"
+msgstr "MẶT TRƯỚC HỘP"
+
+msgid "TITLE SCREEN"
+msgstr "MÀN HÌNH TIÊU ĐỀ"
+
+msgid "The main picture of each game."
+msgstr "Ảnh chính của mỗi trò chơi."
+
+msgid "THUMBNAIL"
+msgstr "ẢNH THU NHỎ"
+
+msgid "The small picture of each game."
+msgstr "Ảnh nhỏ của mỗi trò chơi."
+
+msgid "LOGO"
+msgstr "LOGO"
+
+msgid "The logo of each game."
+msgstr "Logo của mỗi trò chơi."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "KÍCH THƯỚC ĐẦY ĐỦ"
+
+msgid "IMAGE SIZE"
+msgstr "KÍCH THƯỚC ẢNH"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper thu nhỏ ảnh trước khi gửi: nhanh và nhẹ hơn."
+
+msgid "AUTOMATIC"
+msgstr "TỰ ĐỘNG"
+
+msgid "BRAZIL"
+msgstr "BRAZIL"
+
+msgid "EUROPE"
+msgstr "CHÂU ÂU"
+
+msgid "FRANCE"
+msgstr "PHÁP"
+
+msgid "GERMANY"
+msgstr "ĐỨC"
+
+msgid "ITALY"
+msgstr "Ý"
+
+msgid "JAPAN"
+msgstr "NHẬT BẢN"
+
+msgid "SPAIN"
+msgstr "TÂY BAN NHA"
+
+msgid "USA"
+msgstr "HOA KỲ"
+
+msgid "WORLD"
+msgstr "THẾ GIỚI"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Khu vực ưu tiên cho tên, ngày và ảnh."
+
+msgid "NAMES"
+msgstr "TÊN"
+
+msgid "Replace the names of the games."
+msgstr "Thay thế tên của các trò chơi."
+
+msgid "DESCRIPTIONS"
+msgstr "MÔ TẢ"
+
+msgid "Replace the descriptions."
+msgstr "Thay thế các mô tả."
+
+msgid "Download the rating of each game."
+msgstr "Tải xếp hạng của mỗi trò chơi."
+
+msgid "RATINGS"
+msgstr "XẾP HẠNG"
+
+msgid "EXTRA MEDIA"
+msgstr "PHƯƠNG TIỆN BỔ SUNG"
+
+msgid "VIDEOS"
+msgstr "VIDEO"
+
+msgid "Videos are big and take longer to download."
+msgstr "Video nặng và tải lâu hơn."
+
+msgid "MANUALS"
+msgstr "HƯỚNG DẪN"
+
+msgid "PDF manuals."
+msgstr "Hướng dẫn PDF."
+
+msgid "MAPS"
+msgstr "BẢN ĐỒ"
+
+msgid "Maps of the game."
+msgstr "Bản đồ của trò chơi."
+
+msgid "Background pictures."
+msgstr "Ảnh nền."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "MẶT SAU HỘP"
+
+msgid "The back of the box."
+msgstr "Mặt sau của hộp."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Chỉ cho \"Tất cả trò chơi\": ảnh đã có sẽ được tải lại."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "THAY THẾ PHƯƠNG TIỆN ĐÃ CÓ"
+
+msgid "SCREENSCRAPER"
+msgstr "SCREENSCRAPER"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Tuỳ chọn. Không có tài khoản, ScreenScraper cho rất ít yêu cầu."
+
+msgid "IGDB"
+msgstr "IGDB"
+
+msgid "CLIENT ID"
+msgstr "CLIENT ID"
+
+msgid "CLIENT SECRET"
+msgstr "CLIENT SECRET"
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB không cần tài khoản."
+
+msgid "Asks IGDB for an access token."
+msgstr "Xin IGDB một mã truy cập."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Hỏi ScreenScraper về giới hạn của bạn."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "ĐANG KẾT NỐI TỚI SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "ẨN DANH"
+
+msgid "LOGIN"
+msgstr "ĐĂNG NHẬP"
+
+msgid "REQUESTS TODAY"
+msgstr "YÊU CẦU HÔM NAY"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "YÊU CẦU MỖI PHÚT"
+
+msgid "STOP"
+msgstr "DỪNG"
+
+msgid "SCROLL"
+msgstr "CUỘN"
+
+msgid "SCRAPE COMPLETE"
+msgstr "LẤY DỮ LIỆU XONG"
+
+msgid "SCRAPE STOPPED"
+msgstr "ĐÃ DỪNG LẤY DỮ LIỆU"
+
+msgid "FOUND"
+msgstr "ĐÃ TÌM THẤY"
+
+msgid "NOT FOUND"
+msgstr "KHÔNG TÌM THẤY"
+
+msgid "ERRORS"
+msgstr "LỖI"
+
+msgid "MEDIA FILES"
+msgstr "TỆP PHƯƠNG TIỆN"
+
+msgid "READING GAME LISTS"
+msgstr "ĐANG ĐỌC DANH SÁCH TRÒ CHƠI"
+
+msgid "STOPPING"
+msgstr "ĐANG DỪNG"
+
+msgid "SECONDS"
+msgstr "GIÂY"
+
+msgid "WAITING"
+msgstr "ĐANG CHỜ"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "ĐÃ DỪNG. PHẦN ĐÃ LÀM ĐƯỢC LƯU"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "KHÔNG CÓ TRÒ CHƠI ĐỂ LẤY DỮ LIỆU VỚI CÁC BỘ LỌC NÀY"
+
+msgid "GAMES"
+msgstr "TRÒ CHƠI"
+
+msgid "PROBLEMS"
+msgstr "VẤN ĐỀ"
+
+msgid "MEDIA MISSING"
+msgstr "THIẾU PHƯƠNG TIỆN"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "CÔNG TẮC VÀ THANH TRƯỢT"
+
+msgid "The clock shows in the top right corner."
+msgstr "Đồng hồ hiện ở góc trên bên phải."
+
+msgid "Volume saved"
+msgstr "Đã lưu âm lượng"
+
+msgid "LISTS AND TEXT"
+msgstr "DANH SÁCH VÀ VĂN BẢN"
+
+msgid "TEXT"
+msgstr "VĂN BẢN"
+
+msgid "WI-FI PASSWORD"
+msgstr "MẬT KHẨU WI-FI"
+
+msgid "SHOW A TOAST"
+msgstr "HIỆN THÔNG BÁO NHANH"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi đã kết nối: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "HIỆN THANH ÂM LƯỢNG"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "HIỆN THANH ĐỘ SÁNG"
+
+msgid "ASK A QUESTION"
+msgstr "ĐẶT MỘT CÂU HỎI"
+
+msgid "Delete all saved states of this game?"
+msgstr "Xoá tất cả điểm lưu của trò chơi này?"
+
+msgid "SHOW A MESSAGE"
+msgstr "HIỆN MỘT THÔNG BÁO"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Đã cài bản cập nhật. Hãy khởi động lại máy để dùng."
+
+msgid "Restart the system now?"
+msgstr "Khởi động lại hệ thống ngay?"
+
+msgid "Restarting..."
+msgstr "Đang khởi động lại..."
+
+msgid "DISABLED ENTRY"
+msgstr "MỤC BỊ VÔ HIỆU"
+
+msgid "SELECTOR STYLE"
+msgstr "KIỂU THANH CHỌN"
+
+msgid "TITLE ALIGNMENT"
+msgstr "CĂN TIÊU ĐỀ"
+
+msgid "LIST TEXT CASE"
+msgstr "KIỂU CHỮ DANH SÁCH"
+
+msgid "TEXT SIZE"
+msgstr "CỠ CHỮ"
+
+msgid "HIGH CONTRAST"
+msgstr "ĐỘ TƯƠNG PHẢN CAO"
+
+msgid "options"
+msgstr "tuỳ chọn"
+
+msgid "AUDIO"
+msgstr "ÂM THANH"
+
+msgid "Could not change the audio output"
+msgstr "Không thể đổi đầu ra âm thanh"
+
+msgid "BATTERY WARNING"
+msgstr "CẢNH BÁO PIN"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "BẬT CẢNH BÁO PIN BẰNG ÂM THANH"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "NGƯỠNG CẢNH BÁO PIN"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Khởi chạy trò chơi này khi máy khởi động, trước các menu, mỗi lần khởi động một lần."
+
+msgid "Reboot now"
+msgstr "Khởi động lại ngay"
+
+msgid "Later"
+msgstr "Để sau"
+
+msgid "Default"
+msgstr "Mặc định"
+
+msgid "Arm (official)"
+msgstr "Arm (chính thức)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Mã nguồn mở (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "THỜI GIAN CÒN LẠI HÔM NAY"
+
+msgid "UPTIME"
+msgstr "THỜI GIAN HOẠT ĐỘNG"
+
+msgid "No information available"
+msgstr "Không có thông tin"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "QUẢN LÝ HỆ THỐNG VÀ ĐẶT LẠI"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr ""
+"BẠN CÓ CHẮC KHÔNG?\n"
+"\n"
+"KHÔNG THỂ HOÀN TÁC."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "SAO LƯU CẤU HÌNH"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr ""
+"CẢNH BÁO: VIỆC NÀY SẼ KHỞI ĐỘNG LẠI GIAO DIỆN!\n"
+"\n"
+"SAU KHI SCRIPT CHẠY XONG, HÃY NHỚ SAO CHÉP TỆP /storage/roms/backup/ROCKNIX_BACKUP.zip SANG NƠI AN TOÀN, NẾU KHÔNG NÓ SẼ BỊ XOÁ Ở LẦN KHỞI ĐỘNG TỚI!\n"
+"\n"
+"SAO LƯU CẤU HÌNH HIỆN TẠI VÀ KHỞI ĐỘNG LẠI?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "KHÔI PHỤC TỪ BẢN SAO LƯU"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr ""
+"CẢNH BÁO: VIỆC NÀY SẼ KHỞI ĐỘNG LẠI THIẾT BỊ CỦA BẠN!\n"
+"\n"
+"CẤU HÌNH HIỆN CÓ CỦA BẠN SẼ BỊ GHI ĐÈ!\n"
+"\n"
+"KHÔI PHỤC TỪ BẢN SAO LƯU VÀ KHỞI ĐỘNG LẠI?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "QUẢN LÝ TRÌNH GIẢ LẬP"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "ĐẶT LẠI CẤU HÌNH RETROARCH VỀ MẶC ĐỊNH"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr ""
+"CẢNH BÁO: CẤU HÌNH RETROARCH SẼ ĐƯỢC ĐẶT LẠI VỀ MẶC ĐỊNH\n"
+"\n"
+"CẤU HÌNH THEO TỪNG CORE SẼ KHÔNG BỊ ẢNH HƯỞNG VÀ SẼ KHÔNG TẠO BẢN SAO LƯU!\n"
+"\n"
+"ĐẶT LẠI CẤU HÌNH RETROARCH VỀ MẶC ĐỊNH?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "ĐẶT LẠI OVERLAY (CORE, CHEAT, TAY CẦM, V.V.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr ""
+"CẢNH BÁO: TẤT CẢ OVERLAY RETROARCH TUỲ CHỈNH SẼ BỊ XOÁ\n"
+"\n"
+"CORE, TAY CẦM, CHEAT TUỲ CHỈNH, V.V. SẼ KHÔNG TẠO BẢN SAO LƯU!\n"
+"\n"
+"ĐẶT LẠI OVERLAY RETROARCH VỀ MẶC ĐỊNH?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "ĐẶT LẠI HOÀN TOÀN RETROARCH"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr ""
+"CẢNH BÁO: RETROARCH VÀ MỌI CẤU HÌNH NGƯỜI DÙNG ĐÃ LƯU SẼ ĐƯỢC ĐẶT LẠI VỀ MẶC ĐỊNH\n"
+"\n"
+"CẤU HÌNH THEO TỪNG CORE SẼ BỊ XOÁ VÀ SẼ KHÔNG TẠO BẢN SAO LƯU!\n"
+"\n"
+"ĐẶT LẠI RETROARCH?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "ĐẶT LẠI CẤU HÌNH MEDNAFEN VỀ MẶC ĐỊNH"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr ""
+"CẢNH BÁO: CẤU HÌNH MEDNAFEN SẼ ĐƯỢC ĐẶT LẠI VỀ MẶC ĐỊNH\n"
+"\n"
+"SẼ KHÔNG TẠO BẢN SAO LƯU!\n"
+"\n"
+"ĐẶT LẠI CẤU HÌNH MEDNAFEN VỀ MẶC ĐỊNH?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "ĐẶT LẠI CẤU HÌNH TRÌNH GIẢ LẬP ĐỘC LẬP VỀ MẶC ĐỊNH"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr ""
+"CẢNH BÁO: CẤU HÌNH TRÌNH GIẢ LẬP ĐỘC LẬP SẼ ĐƯỢC ĐẶT LẠI VỀ MẶC ĐỊNH\n"
+"\n"
+"SẼ KHÔNG TẠO BẢN SAO LƯU!\n"
+"\n"
+"ĐẶT LẠI CẤU HÌNH TRÌNH GIẢ LẬP ĐỘC LẬP VỀ MẶC ĐỊNH?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "ĐẶT LẠI HOÀN TOÀN PORTMASTER"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr ""
+"CẢNH BÁO: PORTMASTER SẼ ĐƯỢC ĐẶT LẠI VỀ MẶC ĐỊNH\n"
+"\n"
+"SẼ KHÔNG TẠO BẢN SAO LƯU!\n"
+"\n"
+"ĐẶT LẠI PORTMASTER VỀ MẶC ĐỊNH?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "QUẢN LÝ HỆ THỐNG"
+
+msgid "AUDIO RESET"
+msgstr "ĐẶT LẠI ÂM THANH"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr ""
+"CẢNH BÁO: CÀI ĐẶT ÂM THANH SẼ ĐƯỢC ĐẶT LẠI VỀ MẶC ĐỊNH VÀ HỆ THỐNG SẼ KHỞI ĐỘNG LẠI!\n"
+"\n"
+"ĐẶT LẠI ÂM THANH VÀ KHỞI ĐỘNG LẠI?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "ĐẶT LẠI ĐỒNG HỒ ĐO PIN"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr ""
+"CẢNH BÁO: ĐỒNG HỒ ĐO PIN PMIC SẼ ĐƯỢC ĐẶT LẠI VÀ HỆ THỐNG SẼ TẮT NGUỒN!\n"
+"\n"
+"HÃY ĐỂ SẠC RÚT RA VÀ BẬT LẠI MÁY SAU VÀI GIÂY. MỨC PIN ĐƯỢC ƯỚC TÍNH LẠI TỪ ĐIỆN ÁP PIN LÚC NGHỈ VÀ SẼ CHÍNH XÁC TRỞ LẠI SAU KHI SẠC ĐẦY.\n"
+"\n"
+"ĐẶT LẠI ĐỒNG HỒ ĐO PIN VÀ TẮT NGUỒN?"
+
+msgid "FACTORY RESET"
+msgstr "KHÔI PHỤC CÀI ĐẶT GỐC"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr ""
+"CẢNH BÁO: DỮ LIỆU VÀ MỌI CẤU HÌNH KHÁC CỦA BẠN SẼ ĐƯỢC ĐẶT LẠI VỀ MẶC ĐỊNH!\n"
+"\n"
+"NẾU MUỐN GIỮ CÀI ĐẶT, HÃY SAO LƯU VÀ LƯU VÀO Ổ NGOÀI TRƯỚC KHI CHẠY TUỲ CHỌN NÀY!\n"
+"\n"
+"HÃY THÁO THẺ TRÒ CHƠI TRƯỚC KHI TIẾP TỤC!\n"
+"\n"
+"ĐẶT LẠI HỆ THỐNG VÀ KHỞI ĐỘNG LẠI?"
+
+msgid "KEYBOARD LAYOUT"
+msgstr "BỐ CỤC BÀN PHÍM"
+
+msgid "KEYBOARD VARIANT"
+msgstr "BIẾN THỂ BÀN PHÍM"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Chọn biến thể bàn phím cho bố cục đã chọn (ví dụ phím chết hoặc cách đặt phím khác)."
+
+msgid "TIMEZONE"
+msgstr "MÚI GIỜ"
+
+msgid "Run welcome again"
+msgstr "Chạy lại phần chào mừng"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Hiện lại phần chào mừng lần khởi động đầu: ngôn ngữ, WiFi và múi giờ."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "BẬT LỚP PHỦ MANGOHUD"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "BẬT BÀN PHÍM MÀN HÌNH CẢM ỨNG"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "BẬT CHỤP MÀN HÌNH ROCKNIX"
+
+msgid "SCREEN"
+msgstr "MÀN HÌNH"
+
+msgid "CONTRAST"
+msgstr "ĐỘ TƯƠNG PHẢN"
+
+msgid "GAMMA"
+msgstr "GAMMA"
+
+msgid "HUE"
+msgstr "SẮC ĐỘ"
+
+msgid "SATURATION"
+msgstr "ĐỘ BÃO HOÀ"
+
+msgid "LEDS"
+msgstr "ĐÈN LED"
+
+msgid "DISABLE POWER LED"
+msgstr "TẮT ĐÈN LED NGUỒN"
+
+msgid "LED COLOR"
+msgstr "MÀU LED"
+
+msgid "JOYSTICK LED"
+msgstr "LED CẦN ĐIỀU KHIỂN"
+
+msgid "MAX"
+msgstr "TỐI ĐA"
+
+msgid "MID"
+msgstr "TRUNG BÌNH"
+
+msgid "MIN"
+msgstr "TỐI THIỂU"
+
+msgid "DEVICE"
+msgstr "THIẾT BỊ"
+
+msgid "THIS DEVICE IS"
+msgstr "THIẾT BỊ NÀY LÀ"
+
+msgid "Device will be switched on next reboot"
+msgstr "Thiết bị sẽ được đổi ở lần khởi động lại tới"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "TỰ PHÁT HIỆN THẺ TRÒ CHƠI"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "BẬT BỘ NHỚ GỘP"
+
+msgid "EXTERNAL"
+msgstr "BÊN NGOÀI"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "THẺ CHÍNH CỦA BỘ NHỚ GỘP"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "CẢNH BÁO: ĐỔI THẺ CHÍNH CÓ THỂ LÀM MẤT QUYỀN TRUY CẬP TRÒ CHƠI, CẦN CAN THIỆP THỦ CÔNG ĐỂ SỬA. TIẾP TỤC?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "TRỤC XUẤT THẺ MICROSD"
+
+msgid "You may now remove the card."
+msgstr "Bây giờ bạn có thể tháo thẻ."
+
+msgid "PERFORMANCE"
+msgstr "HIỆU NĂNG"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "BỘ ĐIỀU TỐC MẶC ĐỊNH"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "BỘ ĐIỀU TỐC GPU MẶC ĐỊNH"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "BẬT ÉP XUNG CPU"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "BẬT ÉP XUNG GPU"
+
+msgid "GPU DRIVER"
+msgstr "TRÌNH ĐIỀU KHIỂN GPU"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "Trình điều khiển GPU sẽ được đổi ở lần khởi động lại tới"
+
+msgid "Restarting to apply the theme"
+msgstr "Đang khởi động lại để áp dụng giao diện"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Giao diện sẽ khởi động lại để áp dụng giao diện mới"
+
+msgid "Dark"
+msgstr "Tối"
+
+msgid "Light"
+msgstr "Sáng"
+
+msgid "Theme default"
+msgstr "Mặc định của giao diện"
+
+msgid "Filled"
+msgstr "Đặc"
+
+msgid "Outline"
+msgstr "Viền"
+
+msgid "Side bar"
+msgstr "Thanh bên"
+
+msgid "Underline"
+msgstr "Gạch chân"
+
+msgid "Centered"
+msgstr "Ở giữa"
+
+msgid "Left"
+msgstr "Trái"
+
+msgid "Lowercase"
+msgstr "Chữ thường"
+
+msgid "Uppercase"
+msgstr "Chữ hoa"
+
+msgid "EXTRA LARGE"
+msgstr "RẤT LỚN"
+
+msgid "LARGE"
+msgstr "LỚN"
+
+msgid "SMALL"
+msgstr "NHỎ"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Cỡ chữ trong menu, hộp thoại và thanh trợ giúp"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Chữ trắng hoặc đen thuần, bảng đặc và thanh chọn dày hơn"
+
+msgid "CONTROL OPTIONS"
+msgstr "TUỲ CHỌN ĐIỀU KHIỂN"
+
+msgid "TOP BAR"
+msgstr "THANH TRÊN"
+
+msgid "BEDSIDE CLOCK"
+msgstr "ĐỒNG HỒ ĐẦU GIƯỜNG"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Khi cắm sạc, hiện đồng hồ lớn sau khoảng thời gian này không chạm vào máy, thay cho bảo vệ màn hình. Bấm nút bất kỳ để đóng. Không bao giờ khi đang mở trò chơi."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "KHÔNG THỂ HUỶ TẢI XUỐNG"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "ĐÃ HUỶ TẢI XUỐNG"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "KHÔNG THỂ TẢI BẢN CẬP NHẬT. HÃY KIỂM TRA KẾT NỐI VÀ THỬ LẠI."
+
+msgid "No update source available"
+msgstr "Không có nguồn cập nhật khả dụng"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "ÉP CẬP NHẬT TIẾP THEO"
+
+msgid "UPDATING"
+msgstr "ĐANG CẬP NHẬT"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "HUỶ TẢI XUỐNG"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "HUỶ TẢI XUỐNG? TỆP TẢI DỞ SẼ BỊ XOÁ."
+
+msgid "Checking..."
+msgstr "Đang kiểm tra..."
+
+msgid "available"
+msgstr "khả dụng"
+
+msgid "SKIP ALL"
+msgstr "BỎ QUA TẤT CẢ"
+
+msgid "Welcome"
+msgstr "Chào mừng"
+
+msgid "of"
+msgstr "trên"
+
+msgid "Choose your language"
+msgstr "Chọn ngôn ngữ của bạn"
+
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+msgid "You can change it later in System."
+msgstr "Bạn có thể đổi sau trong Hệ thống."
+
+msgid "Connect to WiFi"
+msgstr "Kết nối WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Đồng hồ, cập nhật và chuyển tệp."
+
+msgid "Continue"
+msgstr "Tiếp tục"
+
+msgid "Not now"
+msgstr "Để sau"
+
+msgid "Choose a network"
+msgstr "Chọn một mạng"
+
+msgid "Choose another network"
+msgstr "Chọn mạng khác"
+
+msgid "Where are you?"
+msgstr "Bạn ở đâu?"
+
+msgid "Time zone"
+msgstr "Múi giờ"
+
+msgid "Sets your local time."
+msgstr "Đặt giờ địa phương của bạn."
+
+msgid "Keep UTC"
+msgstr "Giữ UTC"
+
+msgid "LOADING..."
+msgstr "ĐANG TẢI..."
+
+msgid "All set"
+msgstr "Đã sẵn sàng"
+
+msgid "Add games from your phone"
+msgstr "Thêm trò chơi từ điện thoại"
+
+msgid "Network"
+msgstr "Mạng"
+
+msgid "Start opens the menu"
+msgstr "Start mở menu"
+
+msgid "anywhere"
+msgstr "ở bất cứ đâu"
+
+msgid "Screen looks wrong?"
+msgstr "Màn hình trông lạ?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Bắt đầu chơi"
+
+msgid "PLAY THEME MUSIC"
+msgstr "PHÁT NHẠC CHỦ ĐỀ"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "KHÔNG CÓ KẾT NỐI MẠNG"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "MỨC DÙNG PIN (SẠC ĐẦY)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "TỔNG THỜI GIAN ĐÃ CHƠI"
+
+msgid "LAST FIVE WEEKS"
+msgstr "NĂM TUẦN QUA"
+
+msgid "2 WEEKS AGO"
+msgstr "2 TUẦN TRƯỚC"
+
+msgid "3 WEEKS AGO"
+msgstr "3 TUẦN TRƯỚC"
+
+msgid "4 WEEKS AGO"
+msgstr "4 TUẦN TRƯỚC"
+
+msgid "THIS WEEK"
+msgstr "TUẦN NÀY"
+
+msgid "MOST PLAYED GAMES"
+msgstr "TRÒ CHƠI CHƠI NHIỀU NHẤT"
+
+msgid "TIME PER SYSTEM"
+msgstr "THỜI GIAN THEO HỆ THỐNG"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "CHƯA CHƠI GÌ. HÃY CHƠI MỘT TRÒ CHƠI VÀ NÓ SẼ HIỆN Ở ĐÂY."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Hôm nay chỉ còn %d phút chơi"
+
+msgid "Power saver on"
+msgstr "Tiết kiệm điện đang bật"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "PHẢN HỒI KHÔNG MONG ĐỢI TỪ RETROACHIEVEMENTS"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "KHÔNG CÓ TRONG BẢN DỰNG NÀY"
+
+msgid "%i min ago"
+msgstr "%i phút trước"
+
+msgid "%i h ago"
+msgstr "%i giờ trước"
+
+msgid "%i d ago"
+msgstr "%i ngày trước"
+
+msgid "CONTINUE PLAYING"
+msgstr "TIẾP TỤC CHƠI"
+
+msgid "START NOW"
+msgstr "BẮT ĐẦU NGAY"
+
+msgid "RESUMING"
+msgstr "ĐANG TIẾP TỤC"
+
+msgid "STARTING IN %i"
+msgstr "BẮT ĐẦU SAU %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacks"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Dọc"
+
+msgid "recently added"
+msgstr "mới thêm gần đây"
+
+msgid "unfinished"
+msgstr "chưa hoàn thành"
+
+msgid "most played this week"
+msgstr "chơi nhiều nhất tuần này"
+
+msgid "BOOKS"
+msgstr "SÁCH"
+
+msgid "screenshots"
+msgstr "ảnh chụp màn hình"
+
+msgid "media player"
+msgstr "trình phát đa phương tiện"
+
+msgid "NETWORK ERROR"
+msgstr "LỖI MẠNG"
+
+msgid "SERVER BUSY"
+msgstr "MÁY CHỦ BẬN"
+
+msgid "SERVER ERROR"
+msgstr "LỖI MÁY CHỦ"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "KHÔNG THỂ GHI GAMELIST"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "ĐĂNG NHẬP THẤT BẠI. HÃY KIỂM TRA TÊN NGƯỜI DÙNG VÀ MẬT KHẨU"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER ĐANG ĐÓNG VỚI TÀI KHOẢN NÀY"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER ĐANG BẢO TRÌ"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "PHẦN MỀM NÀY BỊ SCREENSCRAPER CHẶN"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "ĐÃ ĐẠT HẠN MỨC LẤY DỮ LIỆU HÀNG NGÀY. HÃY THỬ LẠI NGÀY MAI"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "HÔM NAY CÓ QUÁ NHIỀU ROM KHÔNG NHẬN RA. HÃY THỬ LẠI NGÀY MAI"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "THẺ HẾT DUNG LƯỢNG"
+
+msgid "INVALID CREDENTIALS"
+msgstr "THÔNG TIN ĐĂNG NHẬP KHÔNG HỢP LỆ"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "HÃY NHẬP CLIENT ID VÀ SECRET CỦA IGDB TRONG TÀI KHOẢN TRƯỚC"
+
+msgid "SCRAPING STOPPED"
+msgstr "ĐÃ DỪNG LẤY DỮ LIỆU"
+
+msgid "GAME NOT FOUND"
+msgstr "KHÔNG TÌM THẤY TRÒ CHƠI"
+
+msgid "NO OTHER GAME"
+msgstr "KHÔNG CÒN TRÒ CHƠI NÀO KHÁC"
+
+msgid "Time is up for today"
+msgstr "Hôm nay đã hết giờ"
+
+msgid "SHOW DATE TIME"
+msgstr "HIỆN NGÀY GIỜ"
+
+msgid "DATE FORMAT"
+msgstr "ĐỊNH DẠNG NGÀY"
+
+msgid "TIME FORMAT"
+msgstr "ĐỊNH DẠNG GIỜ"
+
+msgid "ACCENTS"
+msgstr "DẤU"
+
+msgid "SHOW"
+msgstr "HIỆN"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "HIỆN XEM TRƯỚC VIDEO"
+
+msgid "Device paired"
+msgstr "Đã ghép nối thiết bị"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "CHO PHÉP THIẾT BỊ NÀY?"
+
+msgid "RECEIVED"
+msgstr "ĐÃ NHẬN"
+
+msgid "QR CODE"
+msgstr "MÃ QR"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "VỪA XONG"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d PHÚT TRƯỚC"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d GIỜ TRƯỚC"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d NGÀY TRƯỚC"
+
+msgid "NO PAIRED DEVICES"
+msgstr "KHÔNG CÓ THIẾT BỊ ĐÃ GHÉP NỐI"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "QUÊN THIẾT BỊ NÀY?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "QUÊN TẤT CẢ THIẾT BỊ"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "QUÊN TẤT CẢ THIẾT BỊ?"
+
+msgid "PAIRED DEVICES"
+msgstr "THIẾT BỊ ĐÃ GHÉP NỐI"
+
+msgid "SHOW QR CODE"
+msgstr "HIỆN MÃ QR"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Quét bằng camera điện thoại: trang sẽ mở và đã biết PIN."
+
+msgid "Phones that need no PIN."
+msgstr "Điện thoại không cần PIN."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "KHÔI PHỤC BẢN LƯU TỪ WEB?"
+
+msgid "BUILD ID"
+msgstr "ID BẢN DỰNG"
+
+msgid "KERNEL"
+msgstr "NHÂN HỆ ĐIỀU HÀNH"
+
+msgid "OPERATING SYSTEM"
+msgstr "HỆ ĐIỀU HÀNH"
+
+msgid "SYSTEM INFORMATION"
+msgstr "THÔNG TIN HỆ THỐNG"
+
+msgid "BATTERY INFORMATION"
+msgstr "THÔNG TIN PIN"
+
+msgid "DISK SPACE"
+msgstr "DUNG LƯỢNG Ổ ĐĨA"
+
+msgid "HOST NAME"
+msgstr "TÊN MÁY CHỦ"
+
+msgid "NETWORK INFORMATION"
+msgstr "THÔNG TIN MẠNG"
+
+msgid "BATTERY HEALTH"
+msgstr "ĐỘ CHAI PIN"
+
+msgid "BATTERY REMAINING"
+msgstr "PIN CÒN LẠI"
+
+msgid "BATTERY STATE"
+msgstr "TRẠNG THÁI PIN"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "THÔNG TIN CPU"
+
+msgid "CPU TEMPERATURE"
+msgstr "NHIỆT ĐỘ CPU"
+
+msgid "CPU FAN"
+msgstr "QUẠT CPU"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "TẦN SỐ GPU HIỆN TẠI"
+
+msgid "GPU INFORMATION"
+msgstr "THÔNG TIN GPU"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "TẦN SỐ GPU TỐI ĐA"
+
+msgid "GPU TEMPERATURE"
+msgstr "NHIỆT ĐỘ GPU"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM KHẢ DỤNG"
+
+msgid "RAM CAPACITY"
+msgstr "DUNG LƯỢNG RAM"
+
+msgid "RAM INFORMATION"
+msgstr "THÔNG TIN RAM"
+
+msgid "CURRENT FREQUENCY"
+msgstr "TẦN SỐ HIỆN TẠI"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "TẦN SỐ TỐI ĐA"
+
+msgid "DISCHARGING"
+msgstr "ĐANG XẢ PIN"
+
+msgid "NOT CHARGING"
+msgstr "KHÔNG SẠC"
+
+msgid "Follows the language until you choose one here."
+msgstr "Theo ngôn ngữ cho đến khi bạn chọn ở đây."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Không có mạng. Cắm thẻ microSD vào máy tính và chép từng trò chơi vào thư mục của hệ máy đó, bên trong roms (ví dụ roms/snes). Hoặc kết nối WiFi rồi quay lại đây để thêm trò chơi từ điện thoại."
+
+msgid "Add games"
+msgstr "Thêm trò chơi"
+
+msgid "left, in the menus"
+msgstr "còn lại, khi ở menu"
+
+msgid "From your phone or microSD"
+msgstr "Từ điện thoại hoặc thẻ microSD"
+
+msgid "Web transfer turned off"
+msgstr "Đã tắt truyền qua web"

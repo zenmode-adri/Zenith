@@ -1,0 +1,2682 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: el\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "ΠΑΡΑΜΟΡΦΩΜΕΝΗ ΛΙΣΤΑ ΠΑΙΧΝΙΔΙΩΝ"
+
+msgid "Not available yet"
+msgstr "Δεν είναι διαθέσιμο ακόμα"
+
+msgid "Game lists updated"
+msgstr "Οι λίστες παιχνιδιών ενημερώθηκαν"
+
+msgid "COVERS ADDED"
+msgstr "ΤΑ ΕΞΩΦΥΛΛΑ ΠΡΟΣΤΕΘΗΚΑΝ"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "Η ΛΕΙΤΟΥΡΓΙΑ ΑΠΟΔΟΣΗΣ ΜΠΟΡΕΙ ΝΑ ΒΟΗΘΗΣΕΙ ΑΥΤΟ ΤΟ ΠΑΙΧΝΙΔΙ"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "ΑΥΤΟ ΤΟ ΠΑΙΧΝΙΔΙ ΜΠΟΡΕΙ ΝΑ ΤΡΕΧΕΙ ΚΑΛΥΤΕΡΑ ΜΕ ΛΕΙΤΟΥΡΓΙΑ ΑΠΟΔΟΣΗΣ"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΛΕΙΤΟΥΡΓΙΑΣ ΑΠΟΔΟΣΗΣ ΓΙΑ ΑΥΤΟ ΤΟ ΠΑΙΧΝΙΔΙ"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "Η ΛΕΙΤΟΥΡΓΙΑ ΑΠΟΔΟΣΗΣ ΕΙΝΑΙ ΕΝΕΡΓΗ ΓΙΑ ΑΥΤΟ ΤΟ ΠΑΙΧΝΙΔΙ"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Αυτό το παιχνίδι μπορεί να τρέχει καλύτερα με τη λειτουργία απόδοσης: η GPU και η μνήμη μένουν στη μέγιστη ταχύτητα όσο παίζετε."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "ΝΑ ΜΗΝ ΠΡΟΤΕΙΝΕΤΑΙ ΞΑΝΑ Η ΛΕΙΤΟΥΡΓΙΑ ΑΠΟΔΟΣΗΣ"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Να μην προτείνεται ξανά η λειτουργία απόδοσης για αυτό το παιχνίδι."
+
+msgid "BATTERY"
+msgstr "ΜΠΑΤΑΡΙΑ"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "ΔΕΝ ΥΠΑΡΧΟΥΝ ΑΡΚΕΤΑ ΔΕΔΟΜΕΝΑ ΑΚΟΜΑ"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Παίξτε αυτό το παιχνίδι για πέντε λεπτά ή περισσότερο με μπαταρία και η εκτίμηση θα εμφανιστεί εδώ."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Με το τρέχον φορτίο, με τον ρυθμό των τελευταίων συνεδριών αυτού του παιχνιδιού."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Με το τρέχον φορτίο. Δεν υπάρχουν ακόμα συνεδρίες αυτού του παιχνιδιού: χρησιμοποιείται ο μέσος όρος του συστήματός του."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Με το τρέχον φορτίο. Δεν υπάρχουν ακόμα συνεδρίες αυτού του συστήματος: χρησιμοποιείται ο μέσος όρος όλων των παιχνιδιών."
+
+msgid "Never"
+msgstr "Ποτέ"
+
+msgid "What used the most"
+msgstr "Τι κατανάλωσε περισσότερο"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Από την τελευταία πλήρη φόρτιση. Εκτίμηση."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Δεν έχει μετρηθεί τίποτα ακόμα. Συμπληρώνεται καθώς παίζετε."
+
+msgid "Asleep"
+msgstr "Σε αναστολή"
+
+msgid "Menus and system"
+msgstr "Μενού και σύστημα"
+
+msgid "Screen"
+msgstr "Οθόνη"
+
+msgid "Charging"
+msgstr "Φόρτιση"
+
+msgid "About"
+msgstr "Πληροφορίες"
+
+msgid "Since full"
+msgstr "Από την πλήρη φόρτιση"
+
+msgid "Using now"
+msgstr "Τρέχουσα χρήση"
+
+msgid "Last hours"
+msgstr "Τελευταίες ώρες"
+
+msgid "Now"
+msgstr "Τώρα"
+
+msgid "More settings"
+msgstr "Περισσότερες ρυθμίσεις"
+
+msgid "Power saver"
+msgstr "Εξοικονόμηση ενέργειας"
+
+msgid "Screensaver after"
+msgstr "Προφύλαξη οθόνης μετά από"
+
+msgid "Turn on by itself at"
+msgstr "Αυτόματη ενεργοποίηση στις"
+
+msgid "ADJUST"
+msgstr "ΡΥΘΜΙΣΗ"
+
+msgid "Action"
+msgstr "Δράση"
+
+msgid "Adult"
+msgstr "Για ενήλικες"
+
+msgid "Adventure"
+msgstr "Περιπέτεια"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Καζίνο"
+
+msgid "Casual Game"
+msgstr "Ευκολοπαίχνιδο"
+
+msgid "Hunting and Fishing"
+msgstr "Κυνήγι και ψάρεμα"
+
+msgid "Fight"
+msgstr "Μάχη"
+
+msgid "Race, Driving"
+msgstr "Αγώνες, οδήγηση"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Φλίπερ"
+
+msgid "Playing cards"
+msgstr "Τραπουλόχαρτα"
+
+msgid "Role playing games"
+msgstr "Παιχνίδια ρόλων"
+
+msgid "Asiatic board game"
+msgstr "Ασιατικό επιτραπέζιο"
+
+msgid "Educational"
+msgstr "Εκπαιδευτικό"
+
+msgid "Music and Dance"
+msgstr "Μουσική και χορός"
+
+msgid "Platform"
+msgstr "Πλατφόρμας"
+
+msgid "Puzzle-Game"
+msgstr "Παζλ"
+
+msgid "Quiz"
+msgstr "Κουίζ"
+
+msgid "Reflection"
+msgstr "Σκέψης"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Προσομοίωση"
+
+msgid "Sports"
+msgstr "Αθλήματα"
+
+msgid "Sports with Animals"
+msgstr "Αθλήματα με ζώα"
+
+msgid "Strategy"
+msgstr "Στρατηγικής"
+
+msgid "Shooter"
+msgstr "Shooter"
+
+msgid "RetroAchievements"
+msgstr "RetroAchievements"
+
+msgid "arcade"
+msgstr "arcade"
+
+msgid "wheel games"
+msgstr "παιχνίδια με τιμόνι"
+
+msgid "trackball games"
+msgstr "παιχνίδια με trackball"
+
+msgid "spinner games"
+msgstr "παιχνίδια με spinner"
+
+msgid "Not set"
+msgstr "Δεν έχει οριστεί"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Δευ"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Κυρ"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Τρί"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "Τετ"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Παρ"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "Σάβ"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "Πέμ"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Απρ"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Φεβ"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Ιαν"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Ιουν"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Μαρ"
+
+msgctxt "date"
+msgid "May"
+msgstr "Μάι"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Αύγ"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Δεκ"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Ιουλ"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Νοε"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Οκτ"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Σεπ"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "ΑΔΥΝΑΜΙΑ ΑΠΟΘΗΚΕΥΣΗΣ ΔΕΔΟΜΕΝΩΝ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "Could not save the settings"
+msgstr "Δεν ήταν δυνατή η αποθήκευση των ρυθμίσεων"
+
+msgid "Ignore 'The' and 'A' if at the start."
+msgstr "Αγνόηση των «The» και «A» στην αρχή."
+
+msgid "FILTER BY"
+msgstr "ΦΙΛΤΡΟ ΒΑΣΕΙ"
+
+msgid "FAVORITES ONLY"
+msgstr "ΜΟΝΟ ΑΓΑΠΗΜΕΝΑ"
+
+msgid "LIST"
+msgstr "ΛΙΣΤΑ"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Το επιλεγμένο θέμα δεν φορτώθηκε: χρησιμοποιείται το Zenith"
+
+msgid "PAGE"
+msgstr "ΣΕΛΙΔΑ"
+
+msgid "Could not show this page"
+msgstr "Δεν ήταν δυνατή η εμφάνιση αυτής της σελίδας"
+
+msgid "INSTALLED"
+msgstr "ΕΓΚΑΤΕΣΤΗΜΕΝΟ"
+
+msgid "SMART COLLECTIONS"
+msgstr "ΕΞΥΠΝΕΣ ΣΥΛΛΟΓΕΣ"
+
+msgid "EDIT FILTERS"
+msgstr "ΕΠΕΞΕΡΓΑΣΙΑ ΦΙΛΤΡΩΝ"
+
+msgid "NO OPTIONS"
+msgstr "ΚΑΜΙΑ ΕΠΙΛΟΓΗ"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Θέλετε σίγουρα να διαγράψετε το «%s»;"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Ορίστε τα φίλτρα της αργότερα στις Προσαρμοσμένες συλλογές παιχνιδιών."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Επανεκκινήστε το περιβάλλον για να εφαρμοστούν οι αλλαγές."
+
+msgid "Could not save the setting"
+msgstr "Δεν ήταν δυνατή η αποθήκευση της ρύθμισης"
+
+msgid "YOU ARE GOING TO MAP A CONTROLLER. MAP BASED ON THE BUTTON'S POSITION, NOT ITS PHYSICAL LABEL. IF YOU DO NOT HAVE A SPECIAL BUTTON FOR HOTKEY, USE THE SELECT BUTTON. SKIP ALL BUTTONS/STICKS YOU DO NOT HAVE BY HOLDING ANY BUTTON. PRESS THE SOUTH BUTTON TO CONFIRM WHEN DONE."
+msgstr "ΕΠΙΜΕΡΙΖΕΤΕ ΚΟΥΜΠΙΑ ΣΕ ΕΝΑ ΧΕΙΡΙΣΤΗΡΙΟ. ΑΝΤΙΣΤΟΙΧΙΣΤΕ ΜΕ ΒΑΣΗ ΤΗ ΘΕΣΗ ΤΟΥ ΚΟΥΜΠΙΟΥ, ΟΧΙ ΤΗΝ ΕΤΙΚΕΤΑ ΤΟΥ. ΑΝ ΔΕΝ ΕΧΕΤΕ ΕΙΔΙΚΟ ΚΟΥΜΠΙ ΓΙΑ ΤΟ HOTKEY, ΧΡΗΣΙΜΟΠΟΙΗΣΤΕ ΤΟ SELECT. ΠΑΡΑΛΕΙΨΤΕ ΟΛΑ ΤΑ ΚΟΥΜΠΙΑ/ΜΟΧΛΟΥΣ ΠΟΥ ΔΕΝ ΕΧΕΤΕ ΚΡΑΤΩΝΤΑΣ ΠΑΤΗΜΕΝΟ ΟΠΟΙΟΔΗΠΟΤΕ ΚΟΥΜΠΙ. ΠΑΤΗΣΤΕ ΤΟ ΚΑΤΩ ΚΟΥΜΠΙ ΓΙΑ ΕΠΙΒΕΒΑΙΩΣΗ ΟΤΑΝ ΤΕΛΕΙΩΣΕΤΕ."
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "ΑΝΑΘΕΣΗ ΧΕΙΡΙΣΤΗΡΙΩΝ ΣΕ ΠΑΙΚΤΕΣ"
+
+msgid "P%i'S CONTROLLER"
+msgstr "ΧΕΙΡΙΣΤΗΡΙΟ P%i"
+
+msgid "Could not start Bluetooth"
+msgstr "Δεν ήταν δυνατή η εκκίνηση του Bluetooth"
+
+msgid "Searching..."
+msgstr "Αναζήτηση..."
+
+msgid "BLUETOOTH DEVICE LIST"
+msgstr "ΛΙΣΤΑ ΣΥΣΚΕΥΩΝ BLUETOOTH"
+
+msgid "CONTROLLERS"
+msgstr "ΧΕΙΡΙΣΤΗΡΙΑ"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "ΑΝΤΑΛΛΑΓΗ ΚΟΥΜΠΙΩΝ ΕΠΙΒΕΒΑΙΩΣΗΣ ΚΑΙ ΑΚΥΡΩΣΗΣ"
+
+msgid "Switches the South and East buttons' functionality"
+msgstr "Ανταλλάσσει τις λειτουργίες των κουμπιών Νότου και Ανατολής"
+
+msgid "ENABLE RUMBLE"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΔΟΝΗΣΗΣ"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "ΑΥΤΟΜΑΤΗ ΡΥΘΜΙΣΗ HOTKEYS RETROARCH"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "ΣΥΝΔΕΔΕΜΕΝΑ ΧΕΙΡΙΣΤΗΡΙΑ"
+
+msgid "Not configured"
+msgstr "Δεν έχει ρυθμιστεί"
+
+msgid "Unknown controller"
+msgstr "Άγνωστο χειριστήριο"
+
+msgid "PAIRED"
+msgstr "ΣΕ ΖΕΥΞΗ"
+
+msgid "Could not pair"
+msgstr "Δεν ήταν δυνατή η σύζευξη"
+
+msgid "Connected"
+msgstr "Συνδέθηκε"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Να αφαιρεθούν όλες οι συσκευές Bluetooth;"
+
+msgid "Could not disconnect"
+msgstr "Δεν ήταν δυνατή η αποσύνδεση"
+
+msgid "DISCONNECT"
+msgstr "ΑΠΟΣΥΝΔΕΣΗ"
+
+msgid "ARE YOU SURE YOU WANT TO DISCONNECT '%s' ?"
+msgstr "ΘΕΛΕΤΕ ΣΙΓΟΥΡΑ ΝΑ ΑΠΟΣΥΝΔΕΘΕΙΤΕ ΑΠΟ ΤΟ «%s»;"
+
+msgid "CONNECT"
+msgstr "ΣΥΝΔΕΣΗ"
+
+msgid "Could not connect"
+msgstr "Δεν ήταν δυνατή η σύνδεση"
+
+msgid "ARE YOU SURE YOU WANT TO CONNECT TO '%s' ?"
+msgstr "ΘΕΛΕΤΕ ΣΙΓΟΥΡΑ ΝΑ ΣΥΝΔΕΘΕΙΤΕ ΜΕ ΤΟ «%s»;"
+
+msgid "Could not remove"
+msgstr "Δεν ήταν δυνατή η αφαίρεση"
+
+msgid "FORGET"
+msgstr "ΞΕΧΑΣΜΑ"
+
+msgid "ARE YOU SURE YOU WANT TO FORGET '%s' ?"
+msgstr "ΘΕΛΕΤΕ ΣΙΓΟΥΡΑ ΝΑ ΞΕΧΑΣΤΕ ΤΟ «%s»;"
+
+msgctxt "joystick"
+msgid "D-PAD UP"
+msgstr "D-PAD ΠΑΝΩ"
+
+msgctxt "joystick"
+msgid "D-PAD DOWN"
+msgstr "D-PAD ΚΑΤΩ"
+
+msgctxt "joystick"
+msgid "D-PAD LEFT"
+msgstr "D-PAD ΑΡΙΣΤΕΡΑ"
+
+msgctxt "joystick"
+msgid "D-PAD RIGHT"
+msgstr "D-PAD ΔΕΞΙΑ"
+
+msgctxt "joystick"
+msgid "START"
+msgstr "START"
+
+msgctxt "joystick"
+msgid "SELECT"
+msgstr "SELECT"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "ΚΟΥΜΠΙ A / ΑΝΑΤΟΛΗ"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "ΚΟΥΜΠΙ B / ΝΟΤΟΣ"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "ΚΟΥΜΠΙ X / ΒΟΡΡΑΣ"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "ΚΟΥΜΠΙ Y / ΔΥΣΗ"
+
+msgctxt "joystick"
+msgid "LEFT SHOULDER"
+msgstr "ΑΡΙΣΤΕΡΟ ΚΟΥΜΠΙ ΩΜΟΥ"
+
+msgctxt "joystick"
+msgid "RIGHT SHOULDER"
+msgstr "ΔΕΞΙ ΚΟΥΜΠΙ ΩΜΟΥ"
+
+msgctxt "joystick"
+msgid "LEFT TRIGGER"
+msgstr "ΑΡΙΣΤΕΡΗ ΣΚΑΝΔΑΛΗ"
+
+msgctxt "joystick"
+msgid "RIGHT TRIGGER"
+msgstr "ΔΕΞΙΑ ΣΚΑΝΔΑΛΗ"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "ΑΡΙΣΤΕΡΟΣ ΜΟΧΛΟΣ (ΠΑΤΗΜΑ)"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "ΔΕΞΙΟΣ ΜΟΧΛΟΣ (ΠΑΤΗΜΑ)"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG UP"
+msgstr "ΑΡΙΣΤΕΡΟ ΑΝΑΛΟΓΙΚΟ ΠΑΝΩ"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG DOWN"
+msgstr "ΑΡΙΣΤΕΡΟ ΑΝΑΛΟΓΙΚΟ ΚΑΤΩ"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG LEFT"
+msgstr "ΑΡΙΣΤΕΡΟ ΑΝΑΛΟΓΙΚΟ ΑΡΙΣΤΕΡΑ"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG RIGHT"
+msgstr "ΑΡΙΣΤΕΡΟ ΑΝΑΛΟΓΙΚΟ ΔΕΞΙΑ"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ HOTKEY"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG UP"
+msgstr "ΔΕΞΙ ΑΝΑΛΟΓΙΚΟ ΠΑΝΩ"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG DOWN"
+msgstr "ΔΕΞΙ ΑΝΑΛΟΓΙΚΟ ΚΑΤΩ"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG LEFT"
+msgstr "ΔΕΞΙ ΑΝΑΛΟΓΙΚΟ ΑΡΙΣΤΕΡΑ"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG RIGHT"
+msgstr "ΔΕΞΙ ΑΝΑΛΟΓΙΚΟ ΔΕΞΙΑ"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "ΕΝΣΩΜΑΤΩΜΕΝΟ ΧΕΙΡΙΣΤΗΡΙΟ"
+
+msgid "GAMEPAD DETECTED"
+msgstr "ΕΝΤΟΠΙΣΤΗΚΕ ΧΕΙΡΙΣΤΗΡΙΟ"
+
+msgid "GAMEPADS DETECTED"
+msgstr "ΕΝΤΟΠΙΣΤΗΚΑΝ ΧΕΙΡΙΣΤΗΡΙΑ"
+
+msgid "PRESS B TO CANCEL."
+msgstr "ΠΑΤΗΣΤΕ B ΓΙΑ ΑΚΥΡΩΣΗ."
+
+msgid "Could not save the controller configuration"
+msgstr "Δεν ήταν δυνατή η αποθήκευση της ρύθμισης του χειριστηρίου"
+
+msgid "Controller configuration saved"
+msgstr "Η ρύθμιση του χειριστηρίου αποθηκεύτηκε"
+
+msgid "Controller configuration cancelled"
+msgstr "Η ρύθμιση του χειριστηρίου ακυρώθηκε"
+
+msgid "Controller disconnected"
+msgstr "Το χειριστήριο αποσυνδέθηκε"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "ΣΥΝΕΧΙΣΤΕ ΝΑ ΚΡΑΤΑΤΕ ΓΙΑ ΑΚΥΡΩΣΗ"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "ΚΡΑΤΗΣΤΕ ΠΑΤΗΜΕΝΟ ΟΠΟΙΟΔΗΠΟΤΕ ΚΟΥΜΠΙ ΓΙΑ 3 ΔΕΥΤΕΡΟΛΕΠΤΑ ΓΙΑ ΑΚΥΡΩΣΗ."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "ΚΡΑΤΗΣΤΕ ΠΑΤΗΜΕΝΟ ΟΠΟΙΟΔΗΠΟΤΕ ΚΟΥΜΠΙ ΓΙΑ ΠΑΡΑΛΕΙΨΗ. ΣΥΝΕΧΙΣΤΕ ΝΑ ΚΡΑΤΑΤΕ ΓΙΑ ΑΚΥΡΩΣΗ."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "ΟΛΑ ΤΑ ΚΟΥΜΠΙΑ ΕΙΝΑΙ ΕΤΟΙΜΑ"
+
+msgid "set"
+msgstr "ορίστηκε"
+
+msgid "skipped"
+msgstr "παραλείφθηκε"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "ΔΕΝ ΕΧΕΙ ΟΡΙΣΤΕΙ ΚΟΥΜΠΙ HOTKEY. ΑΠΑΙΤΕΙΤΑΙ ΓΙΑ ΤΗΝ ΕΞΟΔΟ ΑΠΟ ΤΑ ΠΑΙΧΝΙΔΙΑ ΜΕ ΧΕΙΡΙΣΤΗΡΙΟ."
+
+msgid "DATE & TIME"
+msgstr "ΗΜΕΡΟΜΗΝΙΑ ΚΑΙ ΩΡΑ"
+
+msgid "MONTH"
+msgstr "ΜΗΝΑΣ"
+
+msgid "DAY"
+msgstr "ΗΜΕΡΑ"
+
+msgid "HOUR"
+msgstr "ΩΡΑ"
+
+msgid "MINUTE"
+msgstr "ΛΕΠΤΟ"
+
+msgid "SET DATE & TIME"
+msgstr "ΟΡΙΣΜΟΣ ΗΜΕΡΟΜΗΝΙΑΣ ΚΑΙ ΩΡΑΣ"
+
+msgid "Date and time set"
+msgstr "Η ημερομηνία και η ώρα ορίστηκαν"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Με Wi-Fi η ώρα ορίζεται αυτόματα."
+
+msgid "That folder is protected"
+msgstr "Αυτός ο φάκελος είναι προστατευμένος"
+
+msgid "Outside the allowed folders"
+msgstr "Εκτός των επιτρεπόμενων φακέλων"
+
+msgid "Not enough free space"
+msgstr "Δεν υπάρχει αρκετός ελεύθερος χώρος"
+
+msgid "That name already exists"
+msgstr "Αυτό το όνομα υπάρχει ήδη"
+
+msgid "Cancelled"
+msgstr "Ακυρώθηκε"
+
+msgid "A folder cannot go into itself"
+msgstr "Ένας φάκελος δεν μπορεί να μπει στον εαυτό του"
+
+msgid "That name is not valid"
+msgstr "Αυτό το όνομα δεν είναι έγκυρο"
+
+msgid "Not found"
+msgstr "Δεν βρέθηκε"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Αρχείο μεγαλύτερο από 4 GB: αυτή η κάρτα δεν μπορεί να το χωρέσει"
+
+msgid "This card does not accept that name"
+msgstr "Αυτή η κάρτα δεν δέχεται αυτό το όνομα"
+
+msgid "This location is read-only"
+msgstr "Αυτή η τοποθεσία είναι μόνο για ανάγνωση"
+
+msgid "An error occurred"
+msgstr "Παρουσιάστηκε σφάλμα"
+
+msgid "%s of %s done"
+msgstr "%s από %s ολοκληρώθηκαν"
+
+msgid "item"
+msgstr "στοιχείο"
+
+msgid "items"
+msgstr "στοιχεία"
+
+msgid "link skipped"
+msgstr "σύνδεσμος παραλείφθηκε"
+
+msgid "links skipped"
+msgstr "σύνδεσμοι παραλείφθηκαν"
+
+msgid "This can't be undone."
+msgstr "Αυτό δεν μπορεί να αναιρεθεί."
+
+msgid "Files"
+msgstr "Αρχεία"
+
+msgid "selected"
+msgstr "επιλεγμένα"
+
+msgid "Cannot read this folder"
+msgstr "Δεν είναι δυνατή η ανάγνωση αυτού του φακέλου"
+
+msgid "This folder is empty"
+msgstr "Αυτός ο φάκελος είναι κενός"
+
+msgid "free"
+msgstr "ελεύθερα"
+
+msgid "File"
+msgstr "Αρχείο"
+
+msgid "Folder"
+msgstr "Φάκελος"
+
+msgid "Link"
+msgstr "Σύνδεσμος"
+
+msgid "Properties"
+msgstr "Ιδιότητες"
+
+msgid "Copy"
+msgstr "Αντιγραφή"
+
+msgid "Move"
+msgstr "Μετακίνηση"
+
+msgid "Paste here"
+msgstr "Επικόλληση εδώ"
+
+msgid "Rename"
+msgstr "Μετονομασία"
+
+msgid "New folder"
+msgstr "Νέος φάκελος"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+msgid "Select all"
+msgstr "Επιλογή όλων"
+
+msgid "Clear selection"
+msgstr "Εκκαθάριση επιλογής"
+
+msgid "Date"
+msgstr "Ημερομηνία"
+
+msgid "Size"
+msgstr "Μέγεθος"
+
+msgid "Sort by"
+msgstr "Ταξινόμηση κατά"
+
+msgid "Hide hidden files"
+msgstr "Απόκρυψη κρυφών αρχείων"
+
+msgid "Show hidden files"
+msgstr "Εμφάνιση κρυφών αρχείων"
+
+msgid "Actions"
+msgstr "Ενέργειες"
+
+msgid "Home"
+msgstr "Αρχική"
+
+msgid "Games"
+msgstr "Παιχνίδια"
+
+msgid "Game card"
+msgstr "Κάρτα παιχνιδιών"
+
+msgid "USB drive"
+msgstr "Μονάδα USB"
+
+msgid "Screenshots"
+msgstr "Στιγμιότυπα οθόνης"
+
+msgid "Go to"
+msgstr "Μετάβαση σε"
+
+msgid "Ready to copy"
+msgstr "Έτοιμο για αντιγραφή"
+
+msgid "Ready to move"
+msgstr "Έτοιμο για μετακίνηση"
+
+msgid "Warning"
+msgstr "Προειδοποίηση"
+
+msgid "Cancel"
+msgstr "Ακύρωση"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Αυτό είναι αρχείο συστήματος. Η μετονομασία του μπορεί να χαλάσει την κονσόλα."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Αυτό είναι αρχείο συστήματος. Η διαγραφή του μπορεί να χαλάσει την κονσόλα."
+
+msgid "Wait for the other job"
+msgstr "Περιμένετε την άλλη εργασία"
+
+msgid "Copied"
+msgstr "Αντιγράφηκε"
+
+msgid "Deleted"
+msgstr "Διαγράφηκε"
+
+msgid "Moved"
+msgstr "Μετακινήθηκε"
+
+msgid "originals kept"
+msgstr "τα πρωτότυπα διατηρήθηκαν"
+
+msgid "Copying"
+msgstr "Αντιγραφή"
+
+msgid "Deleting"
+msgstr "Διαγραφή"
+
+msgid "Moving"
+msgstr "Μετακίνηση"
+
+msgid "Calculating..."
+msgstr "Υπολογισμός..."
+
+msgid "Back"
+msgstr "Πίσω"
+
+msgid "Close"
+msgstr "Κλείσιμο"
+
+msgid "Mark"
+msgstr "Σήμανση"
+
+msgid "Open"
+msgstr "Άνοιγμα"
+
+msgid "Page"
+msgstr "Σελίδα"
+
+msgid "WHILE PLAYING"
+msgstr "ΚΑΤΑ ΤΗ ΔΙΑΡΚΕΙΑ ΤΟΥ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "ΕΠΑΝΑΛΗΨΗ ΤΕΛΕΥΤΑΙΟΥ ΠΑΙΧΝΙΔΙΟΥ ΣΤΗΝ ΕΚΚΙΝΗΣΗ"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Ξεκινά το τελευταίο σας παιχνίδι από την αυτόματη αποθήκευσή του κατά την εκκίνηση. Το B ακυρώνει."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "ΜΕΝΟΥ ΑΡΧΙΚΗΣ ΚΑΤΑ ΤΗ ΔΙΑΡΚΕΙΑ ΠΑΙΧΝΙΔΙΩΝ"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Πειραματικό. Κρατήστε πατημένα το START και το επιλεγμένο κουμπί ώμου για ένα δευτερόλεπτο ενώ τρέχει ένα παιχνίδι, για να το θέσετε σε παύση και να ανοίξετε πάνελ με μπαταρία, φωτεινότητα, ένταση, ΣΥΝΕΧΕΙΑ και ΕΞΟΔΟ ΑΠΟ ΤΟ ΠΑΙΧΝΙΔΙ (ΑΠΟΘΗΚΕΥΣΗ ΚΑΙ ΦΟΡΤΩΣΗ ΚΑΤΑΣΤΑΣΗΣ μόνο με ενεργές τις εντολές δικτύου του RetroArch)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "ΚΟΥΜΠΙΑ ΜΕΝΟΥ ΑΡΧΙΚΗΣ"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Τα κουμπιά που κρατιούνται μαζί με το START για να ανοίξει το μενού αρχικής. Οι συνδυασμοί με Select χρησιμοποιούνται από το RetroArch."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "ΠΡΟΤΑΣΕΙΣ ΑΠΟΔΟΣΗΣ"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Προτείνει τη λειτουργία απόδοσης για παιχνίδια που τα συγκρατεί ο ρυθμιστής της GPU."
+
+msgid "PLAY TIME LIMIT"
+msgstr "ΟΡΙΟ ΧΡΟΝΟΥ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Χρόνος παιχνιδιού κάθε μέρα. Εμφανίζεται μήνυμα 5 λεπτά πριν από το τέλος (μέσα στο παιχνίδι μόνο με ενεργές τις εντολές δικτύου του RetroArch) και μετά το παιχνίδι κλείνει. Ο χρόνος μετράει από τη στιγμή που ενεργοποιείται."
+
+msgid "SAVED GAMES"
+msgstr "ΑΠΟΘΗΚΕΥΜΕΝΑ ΠΑΙΧΝΙΔΙΑ"
+
+msgid "Never overwrite old savestates, always make new ones."
+msgstr "Να μην αντικαθίστανται ποτέ παλιές αποθηκεύσεις καταστάσεων, αλλά να δημιουργούνται πάντα νέες."
+
+msgid "PICTURE AND CONTROL"
+msgstr "ΕΙΚΟΝΑ ΚΑΙ ΕΛΕΓΧΟΣ"
+
+msgid "Force the game to render in this aspect ratio."
+msgstr "Αναγκάζει το παιχνίδι να αποδίδεται σε αυτή την αναλογία εικόνας."
+
+msgid "GAME ASPECT RATIO"
+msgstr "ΑΝΑΛΟΓΙΑ ΕΙΚΟΝΑΣ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "SMOOTH GAMES (BILINEAR FILTERING)"
+msgstr "ΟΜΑΛΑ ΠΑΙΧΝΙΔΙΑ (ΔΙΓΡΑΜΜΙΚΟ ΦΙΛΤΡΑΡΙΣΜΑ)"
+
+msgid "Store past states to rewind to in realtime, if the core supports it."
+msgstr "Αποθηκεύει παλιές καταστάσεις για επαναφορά σε πραγματικό χρόνο, αν το υποστηρίζει ο πυρήνας."
+
+msgid "VIDEO FILTER"
+msgstr "ΦΙΛΤΡΟ ΕΙΚΟΝΑΣ"
+
+msgid "DECORATION SET"
+msgstr "ΣΕΤ ΔΙΑΚΟΣΜΗΣΗΣ"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "ΡΟΗ ΠΑΙΧΝΙΔΙΩΝ MOONLIGHT"
+
+msgid "BIOS SETTINGS"
+msgstr "ΡΥΘΜΙΣΕΙΣ BIOS"
+
+msgid "MORE"
+msgstr "ΠΕΡΙΣΣΟΤΕΡΑ"
+
+msgid "PLAY STATISTICS"
+msgstr "ΣΤΑΤΙΣΤΙΚΑ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "ΕΠΙΛΟΓΕΣ ΑΝΑ ΣΥΣΤΗΜΑ"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "λειτουργία απόδοσης"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU και μνήμη στη μέγιστη ταχύτητα όσο παίζετε"
+
+msgid "Current setting"
+msgstr "Τρέχουσα ρύθμιση"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "ΑΓΝΩΣΤΟ ΣΥΣΤΗΜΑ"
+
+msgid "EMULATOR"
+msgstr "ΕΜΟΥΛΑΤΕΡ"
+
+msgid "The emulator and core that run this."
+msgstr "Το εμουλάτερ και ο πυρήνας που το τρέχουν."
+
+msgid "SYSTEM OPTIONS"
+msgstr "ΕΠΙΛΟΓΕΣ ΣΥΣΤΗΜΑΤΟΣ"
+
+msgid "DISPLAY"
+msgstr "ΟΘΟΝΗ"
+
+msgid "GAMEPLAY"
+msgstr "ΠΑΙΧΝΙΔΙ"
+
+msgid "Load latest save state on game launch and save state when exiting game."
+msgstr "Φορτώνει την τελευταία αποθηκευμένη κατάσταση κατά την εκκίνηση του παιχνιδιού και αποθηκεύει κατάσταση κατά την έξοδο."
+
+msgid "ACTIONS"
+msgstr "ΕΝΕΡΓΕΙΕΣ"
+
+msgid "RANDOM GAME"
+msgstr "ΤΥΧΑΙΟ ΠΑΙΧΝΙΔΙ"
+
+msgid "COOLING PROFILE"
+msgstr "ΠΡΟΦΙΛ ΨΥΞΗΣ"
+
+msgid "AGGRESSIVE"
+msgstr "ΕΠΙΘΕΤΙΚΟ"
+
+msgid "CUSTOM"
+msgstr "ΠΡΟΣΑΡΜΟΣΜΕΝΟ"
+
+msgid "MODERATE"
+msgstr "ΜΕΤΡΙΟ"
+
+msgid "QUIET"
+msgstr "ΗΣΥΧΟ"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "ΡΥΘΜΙΣΤΗΣ ΣΥΧΝΟΤΗΤΑΣ CPU"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "ΡΥΘΜΙΣΤΗΣ ΣΥΧΝΟΤΗΤΑΣ GPU"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "OVERLAY MANGOHUD"
+
+msgid "High numbers can result in visible jitter."
+msgstr "Οι υψηλές τιμές μπορεί να προκαλέσουν ορατό τρέμουλο."
+
+msgid "Can prevent audio skips on button presses."
+msgstr "Μπορεί να αποτρέψει διακοπές ήχου όταν πατιούνται κουμπιά."
+
+msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
+msgstr "ΧΡΗΣΗ ΔΕΥΤΕΡΗΣ ΕΜΦΑΝΙΣΗΣ ΓΙΑ RUN-AHEAD"
+
+msgid "UNKNOWN GAME"
+msgstr "ΑΓΝΩΣΤΟ ΠΑΙΧΝΙΔΙ"
+
+msgid "Sort name"
+msgstr "Όνομα ταξινόμησης"
+
+msgid "enter game sort name"
+msgstr "εισάγετε όνομα ταξινόμησης παιχνιδιού"
+
+msgid "INVALID DATE"
+msgstr "ΜΗ ΕΓΚΥΡΗ ΗΜΕΡΟΜΗΝΙΑ"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "ΤΟ ΠΑΙΧΝΙΔΙ ΔΕΝ ΜΠΟΡΕΣΕ ΝΑ ΔΙΑΓΡΑΦΕΙ"
+
+msgid "CONFIG"
+msgstr "ΡΥΘΜΙΣΕΙΣ"
+
+msgid "CORE PROVIDED"
+msgstr "ΑΠΟ ΤΟΝ ΠΥΡΗΝΑ"
+
+msgid "FULL"
+msgstr "ΠΛΗΡΕΣ"
+
+msgid "SQUARE PIXEL"
+msgstr "ΤΕΤΡΑΓΩΝΙΚΟ PIXEL"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "ΡΥΘΜΙΣΗ ΠΑΝΕΛ"
+
+msgid "SCREEN & SOUND"
+msgstr "ΟΘΟΝΗ ΚΑΙ ΗΧΟΣ"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "ΑΔΡΑΝΕΙΑ"
+
+msgid "MONITORING"
+msgstr "ΠΑΡΑΚΟΛΟΥΘΗΣΗ"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "ΥΠΕΡΣΥΧΝΟΤΗΤΑ ΚΑΙ ΠΑΡΑΚΟΛΟΥΘΗΣΗ"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "ΜΠΑΤΑΡΙΑ ΚΑΙ ΑΠΟΔΟΣΗ"
+
+msgid "LIBRARY"
+msgstr "ΒΙΒΛΙΟΘΗΚΗ"
+
+msgid "CHECK LIBRARY"
+msgstr "ΕΛΕΓΧΟΣ ΒΙΒΛΙΟΘΗΚΗΣ"
+
+msgid "SAVE BACKUPS"
+msgstr "ΑΝΤΙΓΡΑΦΑ ΑΣΦΑΛΕΙΑΣ ΑΠΟΘΗΚΕΥΣΕΩΝ"
+
+msgid "LANGUAGE & TIME"
+msgstr "ΓΛΩΣΣΑ ΚΑΙ ΩΡΑ"
+
+msgid "HOME MENU"
+msgstr "ΜΕΝΟΥ ΑΡΧΙΚΗΣ"
+
+msgid "CHARGING"
+msgstr "ΦΟΡΤΙΣΗ"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "ΦΩΤΕΙΝΟΤΗΤΑ ΟΘΟΝΗΣ"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "ΑΝΤΙΚΑΤΑΣΤΑΣΗ ΤΗΣ ΑΠΟΘΗΚΕΥΜΕΝΗΣ ΚΑΤΑΣΤΑΣΗΣ;"
+
+msgid "SAVE STATE"
+msgstr "ΑΠΟΘΗΚΕΥΣΗ ΚΑΤΑΣΤΑΣΗΣ"
+
+msgid "LOAD STATE"
+msgstr "ΦΟΡΤΩΣΗ ΚΑΤΑΣΤΑΣΗΣ"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "ΦΟΡΤΩΣΗ ΤΗΣ ΑΠΟΘΗΚΕΥΜΕΝΗΣ ΚΑΤΑΣΤΑΣΗΣ; Η ΜΗ ΑΠΟΘΗΚΕΥΜΕΝΗ ΠΡΟΟΔΟΣ ΧΑΝΕΤΑΙ."
+
+msgid "RESUME"
+msgstr "ΣΥΝΕΧΕΙΑ"
+
+msgid "QUIT GAME"
+msgstr "ΕΞΟΔΟΣ ΑΠΟ ΤΟ ΠΑΙΧΝΙΔΙ"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "ΝΑ ΚΛΕΙΣΕΙ ΣΙΓΟΥΡΑ ΤΟ ΠΑΙΧΝΙΔΙ;"
+
+msgid "AND MORE"
+msgstr "ΚΑΙ ΑΛΛΑ"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "ΔΕΝ ΒΡΕΘΗΚΑΝ ΠΡΟΒΛΗΜΑΤΑ"
+
+msgid "PROBLEMS FOUND"
+msgstr "ΒΡΕΘΗΚΑΝ ΠΡΟΒΛΗΜΑΤΑ"
+
+msgid "MISSING BIOS"
+msgstr "ΛΕΙΠΕΙ BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "ΠΙΘΑΝΩΣ ΚΑΤΕΣΤΡΑΜΜΕΝΑ ΑΡΧΕΙΑ"
+
+msgid "DUPLICATES"
+msgstr "ΔΙΠΛΟΤΥΠΑ"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "ΠΑΙΧΝΙΔΙΑ ΧΩΡΙΣ ΕΙΚΟΝΑ"
+
+msgid "NETWORK"
+msgstr "ΔΙΚΤΥΟ"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "ΧΕΙΡΙΣΤΗΡΙΟ ΚΑΙ BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Μόνο για ανάπτυξη: κάθε widget του πλαισίου μενού."
+
+msgid "WIDGET DEMO"
+msgstr "ΔΕΙΓΜΑ WIDGET"
+
+msgid "Unable to connect to server"
+msgstr "Αδυναμία σύνδεσης με τον διακομιστή"
+
+msgid "Succesfully paired with server"
+msgstr "Η σύζευξη με τον διακομιστή ολοκληρώθηκε"
+
+msgid "QUIT CURRENT GAME"
+msgstr "ΕΞΟΔΟΣ ΑΠΟ ΤΟ ΤΡΕΧΟΝ ΠΑΙΧΝΙΔΙ"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "ΕΝΗΜΕΡΩΣΗ ΠΑΙΧΝΙΔΙΩΝ MOONLIGHT"
+
+msgid "PAIR WITH SERVER"
+msgstr "ΣΥΖΕΥΞΗ ΜΕ ΔΙΑΚΟΜΙΣΤΗ"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "ΚΑΤΑΡΓΗΣΗ ΣΥΖΕΥΞΗΣ ΜΕ ΔΙΑΚΟΜΙΣΤΗ"
+
+msgid "Unpaired and settings cleared"
+msgstr "Η σύζευξη καταργήθηκε και οι ρυθμίσεις διαγράφηκαν"
+
+msgid "Unpaired from server"
+msgstr "Η σύζευξη με τον διακομιστή καταργήθηκε"
+
+msgid "SERVER IP"
+msgstr "IP ΔΙΑΚΟΜΙΣΤΗ"
+
+msgid "PAIRING PIN"
+msgstr "PIN ΣΥΖΕΥΞΗΣ"
+
+msgid "HOST"
+msgstr "HOST"
+
+msgid "CUSTOM RELAY SERVER"
+msgstr "ΠΡΟΣΑΡΜΟΣΜΕΝΟΣ RELAY SERVER"
+
+msgid "Relay server games have a higher chance of successful entry."
+msgstr "Τα παιχνίδια μέσω relay server έχουν μεγαλύτερη πιθανότητα επιτυχούς σύνδεσης."
+
+msgid "SHOW RELAY SERVER GAMES ONLY"
+msgstr "ΕΜΦΑΝΙΣΗ ΜΟΝΟ ΠΑΙΧΝΙΔΙΩΝ ΜΕΣΩ RELAY SERVER"
+
+msgid "Select a game lobby to join"
+msgstr "Επιλέξτε ένα λόμπι παιχνιδιού για συμμετοχή"
+
+msgid "ONLINE GAMES"
+msgstr "ΠΑΙΧΝΙΔΙΑ ΔΙΑΔΙΚΤΥΟΥ"
+
+msgid "NETPLAY"
+msgstr "NETPLAY"
+
+msgid "HOST A NETPLAY GAME"
+msgstr "ΔΗΜΙΟΥΡΓΙΑ ΠΑΙΧΝΙΔΙΟΥ NETPLAY"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "ΣΥΜΜΕΤΟΧΗ ΣΕ ΠΑΙΧΝΙΔΙ NETPLAY"
+
+msgid "NETPLAY NICKNAME"
+msgstr "ΨΕΥΔΩΝΥΜΟ NETPLAY"
+
+msgid "NETPLAY HOST"
+msgstr "HOST NETPLAY"
+
+msgid "NETPLAY PORT"
+msgstr "ΘΥΡΑ NETPLAY"
+
+msgid "START A NETPLAY GAME"
+msgstr "ΕΝΑΡΞΗ ΠΑΙΧΝΙΔΙΟΥ NETPLAY"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Ενεργοποίηση Wi-Fi..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Σφάλμα ρύθμισης Wi-Fi"
+
+msgid "Wi-Fi is on"
+msgstr "Το Wi-Fi είναι ενεργό"
+
+msgid "Wi-Fi is off"
+msgstr "Το Wi-Fi είναι ανενεργό"
+
+msgid "Wi-Fi region updated"
+msgstr "Η περιοχή Wi-Fi ενημερώθηκε"
+
+msgid "Please wait..."
+msgstr "Παρακαλώ περιμένετε..."
+
+msgid "Local play mode updated"
+msgstr "Η λειτουργία τοπικού παιχνιδιού ενημερώθηκε"
+
+msgid "The service did not answer"
+msgstr "Η υπηρεσία δεν απάντησε"
+
+msgid "N/A"
+msgstr "Μ/Δ"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "ΔΙΚΤΥΑ WI-FI"
+
+msgid "WI-FI COUNTRY"
+msgstr "ΧΩΡΑ WI-FI"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Ορίζει τους ραδιοφωνικούς κανονισμούς: τα κανάλια που μπορείτε να χρησιμοποιήσετε."
+
+msgid "TRANSFER FILES"
+msgstr "ΜΕΤΑΦΟΡΑ ΑΡΧΕΙΩΝ"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Στείλτε παιχνίδια στην κονσόλα από κινητό ή υπολογιστή σε αυτό το δίκτυο."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "ΔΙΑΘΕΣΙΜΕΣ ΔΙΕΥΘΥΝΣΕΙΣ IP:"
+
+msgid "LOCAL PLAY"
+msgstr "ΤΟΠΙΚΟ ΠΑΙΧΝΙΔΙ"
+
+msgid "LOCAL PLAY MODE"
+msgstr "ΛΕΙΤΟΥΡΓΙΑ ΤΟΠΙΚΟΥ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Δημιουργεί σημείο πρόσβασης για netplay με άλλες κονσόλες."
+
+msgid "1 (HOST)"
+msgstr "1 (HOST)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (ΠΕΛΑΤΗΣ 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (ΠΕΛΑΤΗΣ 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (ΠΕΛΑΤΗΣ 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ΤΑΥΤΟΤΗΤΑ ΤΟΠΙΚΟΥ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, cloud, VPN και το όνομα της κονσόλας."
+
+msgid "NETWORK SERVICES"
+msgstr "ΥΠΗΡΕΣΙΕΣ ΔΙΚΤΥΟΥ"
+
+msgid "ENABLE SSH"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ SSH"
+
+msgid "SSH is off"
+msgstr "Το SSH είναι ανενεργό"
+
+msgid "SSH is on"
+msgstr "Το SSH είναι ενεργό"
+
+msgid "Remote access to the console over the network."
+msgstr "Απομακρυσμένη πρόσβαση στην κονσόλα μέσω δικτύου."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΑΠΛΟΥ HTTP SERVER"
+
+msgid "HTTP server is off"
+msgstr "Ο HTTP server είναι ανενεργός"
+
+msgid "HTTP server is on"
+msgstr "Ο HTTP server είναι ενεργός"
+
+msgid "FILE TRANSFER"
+msgstr "ΜΕΤΑΦΟΡΑ ΑΡΧΕΙΩΝ"
+
+msgid "USB GADGET FUNCTION"
+msgstr "ΛΕΙΤΟΥΡΓΙΑ USB GADGET"
+
+msgid "USB networking is on. The console is at"
+msgstr "Το δίκτυο USB είναι ενεργό. Η κονσόλα βρίσκεται στο"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Τι προσφέρει η κονσόλα στη θύρα USB-C της."
+
+msgid "CLOUD SERVICES"
+msgstr "ΥΠΗΡΕΣΙΕΣ CLOUD"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "ΠΡΟΣΑΡΤΗΣΗ ΔΙΣΚΟΥ CLOUD"
+
+msgid "Cloud drive mounted"
+msgstr "Ο δίσκος cloud προσαρτήθηκε"
+
+msgid "Cloud drive unmounted"
+msgstr "Ο δίσκος cloud αποσυνδέθηκε"
+
+msgid "VPN SERVICES"
+msgstr "ΥΠΗΡΕΣΙΕΣ VPN"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD VPN"
+
+msgid "WireGuard is off"
+msgstr "Το WireGuard είναι ανενεργό"
+
+msgid "WireGuard is on"
+msgstr "Το WireGuard είναι ενεργό"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE VPN"
+
+msgid "Tailscale is off"
+msgstr "Το Tailscale είναι ανενεργό"
+
+msgid "Tailscale is on"
+msgstr "Το Tailscale είναι ενεργό"
+
+msgid "Tailscale could not connect"
+msgstr "Το Tailscale δεν μπόρεσε να συνδεθεί"
+
+msgid "Tailscale needs you to log in"
+msgstr "Το Tailscale χρειάζεται να συνδεθείτε"
+
+msgid "SHOW LINK"
+msgstr "ΕΜΦΑΝΙΣΗ ΣΥΝΔΕΣΜΟΥ"
+
+msgid "TAILSCALE LOGIN"
+msgstr "ΣΥΝΔΕΣΗ ΣΤΟ TAILSCALE"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "ΝΕΑ ΕΞΟΥΣΙΟΔΟΤΗΣΗ TAILSCALE:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Χρησιμοποιήστε μόνο γράμματα, ψηφία και παύλες"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Το όνομα υπολογιστή αποθηκεύτηκε. Εφαρμόζεται στην επόμενη εκκίνηση"
+
+msgid "The new name is used at the next boot."
+msgstr "Το νέο όνομα χρησιμοποιείται στην επόμενη εκκίνηση."
+
+msgid "WEB FILE TRANSFER"
+msgstr "ΜΕΤΑΦΟΡΑ ΑΡΧΕΙΩΝ ΜΕΣΩ ΙΣΤΟΥ"
+
+msgid "Could not start the web transfer"
+msgstr "Δεν ήταν δυνατή η εκκίνηση της μεταφοράς μέσω ιστού"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Επιτρέπει σε κινητό ή υπολογιστή σε αυτό το δίκτυο να στέλνει παιχνίδια στην κονσόλα."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "ΑΔΥΝΑΜΙΑ ΕΚΚΙΝΗΣΗΣ (ΚΑΤΕΙΛΗΜΜΕΝΗ ΘΥΡΑ;)"
+
+msgid "WEB ADDRESS"
+msgstr "ΔΙΕΥΘΥΝΣΗ ΙΣΤΟΥ"
+
+msgid "WEB PIN"
+msgstr "PIN ΙΣΤΟΥ"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "ΔΙΚΤΥΑΚΟΣ ΔΙΣΚΟΣ (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ SAMBA"
+
+msgid "Samba is off"
+msgstr "Το Samba είναι ανενεργό"
+
+msgid "Samba is on"
+msgstr "Το Samba είναι ενεργό"
+
+msgid "Shares the games folder with other computers."
+msgstr "Μοιράζεται τον φάκελο παιχνιδιών με άλλους υπολογιστές."
+
+msgid "SAMBA ADDRESS"
+msgstr "ΔΙΕΥΘΥΝΣΗ SAMBA"
+
+msgid "SAMBA USER"
+msgstr "ΧΡΗΣΤΗΣ SAMBA"
+
+msgid "SAMBA PASSWORD"
+msgstr "ΚΩΔΙΚΟΣ SAMBA"
+
+msgid "Connecting to"
+msgstr "Σύνδεση με"
+
+msgid "Connected successfully"
+msgstr "Η σύνδεση ολοκληρώθηκε"
+
+msgid "Failed to connect"
+msgstr "Αποτυχία σύνδεσης"
+
+msgid "SAVED"
+msgstr "ΑΠΟΘΗΚΕΥΜΕΝΟ"
+
+msgid "ENTERPRISE"
+msgstr "ΕΠΙΧΕΙΡΗΣΙΑΚΟ"
+
+msgid "SECURED"
+msgstr "ΑΣΦΑΛΕΣ"
+
+msgid "Enterprise networks are not supported"
+msgstr "Τα επιχειρησιακά δίκτυα δεν υποστηρίζονται"
+
+msgid "Network forgotten"
+msgstr "Το δίκτυο ξεχάστηκε"
+
+msgid "WI-FI KEY FOR "
+msgstr "ΚΛΕΙΔΙ WI-FI ΓΙΑ "
+
+msgid "CONNECTING..."
+msgstr "ΣΥΝΔΕΣΗ..."
+
+msgid "WI-FI SSID"
+msgstr "SSID WI-FI"
+
+msgid "WI-FI KEY"
+msgstr "ΚΛΕΙΔΙ WI-FI"
+
+msgid "REALLY SUSPEND ?"
+msgstr "ΝΑ ΜΠΕΙ ΣΕ ΑΝΑΣΤΟΛΗ ;"
+
+msgid "SUSPEND SYSTEM"
+msgstr "ΑΝΑΣΤΟΛΗ ΣΥΣΤΗΜΑΤΟΣ"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "ΝΑ ΤΕΡΜΑΤΙΣΤΕΙ ΣΙΓΟΥΡΑ;"
+
+msgid "REALLY RESTART?"
+msgstr "ΝΑ ΕΠΑΝΑΕΚΚΙΝΗΘΕΙ ΣΙΓΟΥΡΑ;"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "ΝΑ ΕΠΑΝΑΕΚΚΙΝΗΘΕΙ ΣΙΓΟΥΡΑ ΤΟ ΠΕΡΙΒΑΛΛΟΝ;"
+
+msgid "RESTART THE FRONTEND"
+msgstr "ΕΠΑΝΕΚΚΙΝΗΣΗ ΠΕΡΙΒΑΛΛΟΝΤΟΣ"
+
+msgid "Shutdown without saving metadata."
+msgstr "Τερματισμός χωρίς αποθήκευση μεταδεδομένων."
+
+msgid "TEST ACCOUNT"
+msgstr "ΔΟΚΙΜΗ ΛΟΓΑΡΙΑΣΜΟΥ"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Ελέγχει το όνομα χρήστη και τον κωδικό στο retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "ΣΥΝΔΕΣΗ ΣΤΟ RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "ΕΧΕΙ ΓΙΝΕΙ ΣΥΝΔΕΣΗ"
+
+msgid "Compete in high-score and best time leaderboards (requires hardcore)."
+msgstr "Διαγωνιστείτε σε πίνακες κορυφαίων σκορ και καλύτερων χρόνων (απαιτεί hardcore)."
+
+msgid "LEADERBOARDS"
+msgstr "ΠΙΝΑΚΕΣ ΚΑΤΑΤΑΞΗΣ"
+
+msgid "Show achievement progression on game launch and other notifications."
+msgstr "Εμφάνιση της προόδου επιτευγμάτων κατά την εκκίνηση παιχνιδιού και άλλων ειδοποιήσεων."
+
+msgid "RICH PRESENCE"
+msgstr "RICH PRESENCE"
+
+msgid "CHALLENGE INDICATORS"
+msgstr "ΕΝΔΕΙΞΕΙΣ ΠΡΟΚΛΗΣΗΣ"
+
+msgid "Enable unlocking of unofficial achievements."
+msgstr "Ενεργοποίηση ξεκλειδώματος ανεπίσημων επιτευγμάτων."
+
+msgid "UNOFFICIAL ACHIEVEMENTS"
+msgstr "ΑΝΕΠΙΣΗΜΑ ΕΠΙΤΕΥΓΜΑΤΑ"
+
+msgid "LED NOTIFICATIONS"
+msgstr "ΕΙΔΟΠΟΙΗΣΕΙΣ LED"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Εμφάνιση της γραμμής RetroAchievements στο κεντρικό μενού."
+
+msgid "NO SAVES FOUND"
+msgstr "ΔΕΝ ΒΡΕΘΗΚΑΝ ΑΠΟΘΗΚΕΥΣΕΙΣ"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "ΔΕΝ ΥΠΑΡΧΕΙ ΑΡΚΕΤΟΣ ΕΛΕΥΘΕΡΟΣ ΧΩΡΟΣ"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "ΥΠΑΡΧΕΙ ΗΔΗ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΑΠΟ ΑΥΤΟ ΤΟ ΛΕΠΤΟ"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "ΤΟ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΕΙΝΑΙ ΚΑΤΕΣΤΡΑΜΜΕΝΟ Ή ΛΕΙΠΕΙ"
+
+msgid "BACKUP DONE"
+msgstr "ΤΟ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΟΛΟΚΛΗΡΩΘΗΚΕ"
+
+msgid "SAVES RESTORED"
+msgstr "ΟΙ ΑΠΟΘΗΚΕΥΣΕΙΣ ΕΠΑΝΑΦΕΡΘΗΚΑΝ"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "ΤΟ ΑΝΤΙΓΡΑΦΟ ΣΤΟ CLOUD ΟΛΟΚΛΗΡΩΘΗΚΕ"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "ΑΠΟΤΥΧΙΑ ΑΝΤΙΓΡΑΦΟΥ ΣΤΟ CLOUD"
+
+msgid "BEFORE A RESTORE"
+msgstr "ΠΡΙΝ ΑΠΟ ΜΙΑ ΕΠΑΝΑΦΟΡΑ"
+
+msgid "BACK UP SAVES NOW"
+msgstr "ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΑΠΟΘΗΚΕΥΣΕΩΝ ΤΩΡΑ"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "ΑΠΟΘΗΚΕΥΣΕΙΣ ΠΑΙΧΝΙΔΙΩΝ, ΚΑΤΑΣΤΑΣΕΩΝ ΚΑΙ PSP, ΧΩΡΙΣ ROMS Ή ΜΕΣΑ"
+
+msgid "CLOUD BACKUP"
+msgstr "ΑΝΤΙΓΡΑΦΟ ΣΤΟ CLOUD"
+
+msgid "BACKUPS"
+msgstr "ΑΝΤΙΓΡΑΦΑ ΑΣΦΑΛΕΙΑΣ"
+
+msgid "NO BACKUPS YET"
+msgstr "ΔΕΝ ΥΠΑΡΧΟΥΝ ΑΚΟΜΑ ΑΝΤΙΓΡΑΦΑ ΑΣΦΑΛΕΙΑΣ"
+
+msgid "BACKUP DELETED"
+msgstr "ΤΟ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΔΙΑΓΡΑΦΗΚΕ"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "ΑΥΤΟ ΘΑ ΑΝΤΙΚΑΤΑΣΤΗΣΕΙ ΤΙΣ ΤΡΕΧΟΥΣΕΣ ΑΠΟΘΗΚΕΥΣΕΙΣ ΜΕ ΑΥΤΕΣ ΑΠΟ ΤΙΣ %s. ΠΡΩΤΑ ΔΗΜΙΟΥΡΓΕΙΤΑΙ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΝ ΤΡΕΧΟΥΣΩΝ ΑΠΟΘΗΚΕΥΣΕΩΝ."
+
+msgid "RESTORE"
+msgstr "ΕΠΑΝΑΦΟΡΑ"
+
+msgid "DELETE BACKUP"
+msgstr "ΔΙΑΓΡΑΦΗ ΑΝΤΙΓΡΑΦΟΥ ΑΣΦΑΛΕΙΑΣ"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "ΝΑ ΔΙΑΓΡΑΦΕΙ ΑΥΤΟ ΤΟ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ;"
+
+msgid "SAVESTATE MANAGER"
+msgstr "ΔΙΑΧΕΙΡΙΣΤΗΣ ΑΠΟΘΗΚΕΥΜΕΝΩΝ ΚΑΤΑΣΤΑΣΕΩΝ"
+
+msgid "SLOT"
+msgstr "ΘΕΣΗ"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "ΑΥΤΗ Η ΕΚΔΟΣΗ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΣΥΝΔΕΘΕΙ ΣΤΟ SCREENSCRAPER"
+
+msgid "ALL GAMES"
+msgstr "ΟΛΑ ΤΑ ΠΑΙΧΝΙΔΙΑ"
+
+msgid "GAMES TO SCRAPE"
+msgstr "ΠΑΙΧΝΙΔΙΑ ΓΙΑ SCRAPE"
+
+msgid "WITH MISSING MEDIA"
+msgstr "ΜΕ ΛΕΙΠΟΝΤΑ ΜΕΣΑ"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "ΧΩΡΙΣ ΚΑΘΟΛΟΥ ΜΕΣΑ"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Ποια παιχνίδια των επιλεγμένων συστημάτων αναζητούνται."
+
+msgid "1 DAY"
+msgstr "1 ΗΜΕΡΑ"
+
+msgid "1 MONTH"
+msgstr "1 ΜΗΝΑΣ"
+
+msgid "1 WEEK"
+msgstr "1 ΕΒΔΟΜΑΔΑ"
+
+msgid "1 YEAR"
+msgstr "1 ΕΤΟΣ"
+
+msgid "15 DAYS"
+msgstr "15 ΗΜΕΡΕΣ"
+
+msgid "3 MONTHS"
+msgstr "3 ΜΗΝΕΣ"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Τα παιχνίδια που έχουν γίνει scrape μέσα σε αυτό το διάστημα παραλείπονται, εξοικονομώντας αιτήματα."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "ΑΥΤΟΜΑΤΗ ΛΗΨΗ ΛΕΙΠΟΝΤΩΝ ΜΕΣΩΝ"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Κατεβάζει τα λείποντα εξώφυλλα στο παρασκήνιο όταν το σύστημα είναι αδρανές."
+
+msgid "SCRAPER SETTINGS"
+msgstr "ΡΥΘΜΙΣΕΙΣ SCRAPER"
+
+msgid "ACCOUNT"
+msgstr "ΛΟΓΑΡΙΑΣΜΟΣ"
+
+msgid "Choose at least one system."
+msgstr "Επιλέξτε τουλάχιστον ένα σύστημα."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Αναζητά τα παιχνίδια στο ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "ΚΑΝΕΝΑ ΣΥΣΤΗΜΑ ΜΕ ΠΑΙΧΝΙΔΙΑ ΠΟΥ ΓΝΩΡΙΖΕΙ ΤΟ SCREENSCRAPER"
+
+msgid "PICTURES"
+msgstr "ΕΙΚΟΝΕΣ"
+
+msgid "IMAGE"
+msgstr "ΕΙΚΟΝΑ"
+
+msgid "BOX 3D"
+msgstr "BOX 3D"
+
+msgid "BOX FRONT"
+msgstr "ΕΜΠΡΟΣ ΜΕΡΟΣ ΚΟΥΤΙΟΥ"
+
+msgid "MIX V1"
+msgstr "MIX V1"
+
+msgid "MIX V2"
+msgstr "MIX V2"
+
+msgid "TITLE SCREEN"
+msgstr "ΟΘΟΝΗ ΤΙΤΛΟΥ"
+
+msgid "The main picture of each game."
+msgstr "Η κύρια εικόνα κάθε παιχνιδιού."
+
+msgid "THUMBNAIL"
+msgstr "ΜΙΚΡΟΓΡΑΦΙΑ"
+
+msgid "The small picture of each game."
+msgstr "Η μικρή εικόνα κάθε παιχνιδιού."
+
+msgid "LOGO"
+msgstr "ΛΟΓΟΤΥΠΟ"
+
+msgid "The logo of each game."
+msgstr "Το λογότυπο κάθε παιχνιδιού."
+
+msgid "WHEEL"
+msgstr "WHEEL"
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "ΠΛΗΡΕΣ ΜΕΓΕΘΟΣ"
+
+msgid "IMAGE SIZE"
+msgstr "ΜΕΓΕΘΟΣ ΕΙΚΟΝΑΣ"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "Το ScreenScraper μικραίνει τις εικόνες πριν τις στείλει: πιο γρήγορα και ελαφρύτερα."
+
+msgid "AUTOMATIC"
+msgstr "ΑΥΤΟΜΑΤΟ"
+
+msgid "BRAZIL"
+msgstr "ΒΡΑΖΙΛΙΑ"
+
+msgid "EUROPE"
+msgstr "ΕΥΡΩΠΗ"
+
+msgid "FRANCE"
+msgstr "ΓΑΛΛΙΑ"
+
+msgid "GERMANY"
+msgstr "ΓΕΡΜΑΝΙΑ"
+
+msgid "ITALY"
+msgstr "ΙΤΑΛΙΑ"
+
+msgid "JAPAN"
+msgstr "ΙΑΠΩΝΙΑ"
+
+msgid "SPAIN"
+msgstr "ΙΣΠΑΝΙΑ"
+
+msgid "USA"
+msgstr "ΗΠΑ"
+
+msgid "WORLD"
+msgstr "ΚΟΣΜΟΣ"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Προτιμώμενη περιοχή για ονόματα, ημερομηνίες και εικόνες."
+
+msgid "NAMES"
+msgstr "ΟΝΟΜΑΤΑ"
+
+msgid "Replace the names of the games."
+msgstr "Αντικατάσταση των ονομάτων των παιχνιδιών."
+
+msgid "DESCRIPTIONS"
+msgstr "ΠΕΡΙΓΡΑΦΕΣ"
+
+msgid "Replace the descriptions."
+msgstr "Αντικατάσταση των περιγραφών."
+
+msgid "Download the rating of each game."
+msgstr "Λήψη της βαθμολογίας κάθε παιχνιδιού."
+
+msgid "RATINGS"
+msgstr "ΒΑΘΜΟΛΟΓΙΕΣ"
+
+msgid "EXTRA MEDIA"
+msgstr "ΕΠΙΠΛΕΟΝ ΜΕΣΑ"
+
+msgid "VIDEOS"
+msgstr "ΒΙΝΤΕΟ"
+
+msgid "Videos are big and take longer to download."
+msgstr "Τα βίντεο είναι μεγάλα και κάνουν περισσότερο να κατέβουν."
+
+msgid "MANUALS"
+msgstr "ΕΓΧΕΙΡΙΔΙΑ"
+
+msgid "PDF manuals."
+msgstr "Εγχειρίδια PDF."
+
+msgid "MAPS"
+msgstr "ΧΑΡΤΕΣ"
+
+msgid "Maps of the game."
+msgstr "Χάρτες του παιχνιδιού."
+
+msgid "Background pictures."
+msgstr "Εικόνες φόντου."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "ΠΙΣΩ ΜΕΡΟΣ ΚΟΥΤΙΟΥ"
+
+msgid "The back of the box."
+msgstr "Το πίσω μέρος του κουτιού."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Μόνο για «Όλα τα παιχνίδια»: οι εικόνες που υπάρχουν ήδη κατεβαίνουν ξανά."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "ΑΝΤΙΚΑΤΑΣΤΑΣΗ ΥΠΑΡΧΟΝΤΩΝ ΜΕΣΩΝ"
+
+msgid "SCREENSCRAPER"
+msgstr "SCREENSCRAPER"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Προαιρετικό. Χωρίς λογαριασμό το ScreenScraper επιτρέπει πολύ λίγα αιτήματα."
+
+msgid "IGDB"
+msgstr "IGDB"
+
+msgid "CLIENT ID"
+msgstr "CLIENT ID"
+
+msgid "CLIENT SECRET"
+msgstr "CLIENT SECRET"
+
+msgid "ArcadeDB needs no account."
+msgstr "Το ArcadeDB δεν χρειάζεται λογαριασμό."
+
+msgid "Asks IGDB for an access token."
+msgstr "Ζητά από το IGDB ένα διακριτικό πρόσβασης."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Ζητά από το ScreenScraper τα όριά σας."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "ΣΥΝΔΕΣΗ ΣΤΟ SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "ΑΝΩΝΥΜΟΣ"
+
+msgid "LOGIN"
+msgstr "ΣΥΝΔΕΣΗ"
+
+msgid "REQUESTS TODAY"
+msgstr "ΑΙΤΗΜΑΤΑ ΣΗΜΕΡΑ"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "ΑΙΤΗΜΑΤΑ ΑΝΑ ΛΕΠΤΟ"
+
+msgid "STOP"
+msgstr "ΔΙΑΚΟΠΗ"
+
+msgid "SCROLL"
+msgstr "ΚΥΛΙΣΗ"
+
+msgid "SCRAPE COMPLETE"
+msgstr "ΤΟ SCRAPE ΟΛΟΚΛΗΡΩΘΗΚΕ"
+
+msgid "SCRAPE STOPPED"
+msgstr "ΤΟ SCRAPE ΣΤΑΜΑΤΗΣΕ"
+
+msgid "FOUND"
+msgstr "ΒΡΕΘΗΚΑΝ"
+
+msgid "NOT FOUND"
+msgstr "ΔΕΝ ΒΡΕΘΗΚΑΝ"
+
+msgid "ERRORS"
+msgstr "ΣΦΑΛΜΑΤΑ"
+
+msgid "MEDIA FILES"
+msgstr "ΑΡΧΕΙΑ ΜΕΣΩΝ"
+
+msgid "READING GAME LISTS"
+msgstr "ΑΝΑΓΝΩΣΗ ΛΙΣΤΩΝ ΠΑΙΧΝΙΔΙΩΝ"
+
+msgid "STOPPING"
+msgstr "ΔΙΑΚΟΠΗ"
+
+msgid "SECONDS"
+msgstr "ΔΕΥΤΕΡΟΛΕΠΤΑ"
+
+msgid "WAITING"
+msgstr "ΑΝΑΜΟΝΗ"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "ΔΙΕΚΟΠΗ. ΑΥΤΑ ΠΟΥ ΕΓΙΝΑΝ ΑΠΟΘΗΚΕΥΤΗΚΑΝ"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "ΔΕΝ ΥΠΑΡΧΟΥΝ ΠΑΙΧΝΙΔΙΑ ΓΙΑ SCRAPE ΜΕ ΑΥΤΑ ΤΑ ΦΙΛΤΡΑ"
+
+msgid "GAMES"
+msgstr "ΠΑΙΧΝΙΔΙΑ"
+
+msgid "PROBLEMS"
+msgstr "ΠΡΟΒΛΗΜΑΤΑ"
+
+msgid "MEDIA MISSING"
+msgstr "ΛΕΙΠΟΥΝ ΜΕΣΑ"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "ΔΙΑΚΟΠΤΕΣ ΚΑΙ ΟΛΙΣΘΗΤΕΣ"
+
+msgid "The clock shows in the top right corner."
+msgstr "Το ρολόι εμφανίζεται πάνω δεξιά."
+
+msgid "Volume saved"
+msgstr "Η ένταση αποθηκεύτηκε"
+
+msgid "LISTS AND TEXT"
+msgstr "ΛΙΣΤΕΣ ΚΑΙ ΚΕΙΜΕΝΟ"
+
+msgid "TEXT"
+msgstr "ΚΕΙΜΕΝΟ"
+
+msgid "WI-FI PASSWORD"
+msgstr "ΚΩΔΙΚΟΣ WI-FI"
+
+msgid "SHOW A TOAST"
+msgstr "ΕΜΦΑΝΙΣΗ ΕΙΔΟΠΟΙΗΣΗΣ"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Το Wi-Fi συνδέθηκε: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "ΕΜΦΑΝΙΣΗ ΜΠΑΡΑΣ ΕΝΤΑΣΗΣ"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "ΕΜΦΑΝΙΣΗ ΜΠΑΡΑΣ ΦΩΤΕΙΝΟΤΗΤΑΣ"
+
+msgid "ASK A QUESTION"
+msgstr "ΕΡΩΤΗΣΗ"
+
+msgid "Delete all saved states of this game?"
+msgstr "Να διαγραφούν όλες οι αποθηκευμένες καταστάσεις αυτού του παιχνιδιού;"
+
+msgid "SHOW A MESSAGE"
+msgstr "ΕΜΦΑΝΙΣΗ ΜΗΝΥΜΑΤΟΣ"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Η ενημέρωση εγκαταστάθηκε. Επανεκκινήστε την κονσόλα για να τη χρησιμοποιήσετε."
+
+msgid "Restart the system now?"
+msgstr "Να γίνει επανεκκίνηση του συστήματος τώρα;"
+
+msgid "Restarting..."
+msgstr "Επανεκκίνηση..."
+
+msgid "DISABLED ENTRY"
+msgstr "ΑΠΕΝΕΡΓΟΠΟΙΗΜΕΝΗ ΕΠΙΛΟΓΗ"
+
+msgid "SELECTOR STYLE"
+msgstr "ΣΤΥΛ ΕΠΙΛΕΚΤΗ"
+
+msgid "TITLE ALIGNMENT"
+msgstr "ΣΤΟΙΧΙΣΗ ΤΙΤΛΟΥ"
+
+msgid "LIST TEXT CASE"
+msgstr "ΚΕΦΑΛΑΙΑ/ΠΕΖΑ ΣΤΗ ΛΙΣΤΑ"
+
+msgid "TEXT SIZE"
+msgstr "ΜΕΓΕΘΟΣ ΚΕΙΜΕΝΟΥ"
+
+msgid "HIGH CONTRAST"
+msgstr "ΥΨΗΛΗ ΑΝΤΙΘΕΣΗ"
+
+msgid "options"
+msgstr "επιλογές"
+
+msgid "AUDIO"
+msgstr "ΗΧΟΣ"
+
+msgid "Could not change the audio output"
+msgstr "Δεν ήταν δυνατή η αλλαγή της εξόδου ήχου"
+
+msgid "Available options can change depending on current audio output."
+msgstr "Οι διαθέσιμες επιλογές μπορεί να αλλάζουν ανάλογα με την τρέχουσα έξοδο ήχου."
+
+msgid "BATTERY WARNING"
+msgstr "ΠΡΟΕΙΔΟΠΟΙΗΣΗ ΜΠΑΤΑΡΙΑΣ"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΗΧΗΤΙΚΗΣ ΠΡΟΕΙΔΟΠΟΙΗΣΗΣ ΜΠΑΤΑΡΙΑΣ"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "ΟΡΙΟ ΠΡΟΕΙΔΟΠΟΙΗΣΗΣ ΜΠΑΤΑΡΙΑΣ"
+
+msgid "LAUNCH THIS GAME AT STARTUP"
+msgstr "ΕΚΚΙΝΗΣΗ ΑΥΤΟΥ ΤΟΥ ΠΑΙΧΝΙΔΙΟΥ ΣΤΗΝ ΕΚΚΙΝΗΣΗ ΣΥΣΤΗΜΑΤΟΣ"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Ξεκινά αυτό το παιχνίδι όταν εκκινεί η κονσόλα, πριν από τα μενού, μία φορά ανά εκκίνηση."
+
+msgid "Reboot now"
+msgstr "Επανεκκίνηση τώρα"
+
+msgid "Later"
+msgstr "Αργότερα"
+
+msgid "Default"
+msgstr "Προεπιλογή"
+
+msgid "Arm (official)"
+msgstr "Arm (επίσημο)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Ανοιχτού κώδικα (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "ΧΡΟΝΟΣ ΠΟΥ ΑΠΟΜΕΝΕΙ ΣΗΜΕΡΑ"
+
+msgid "UPTIME"
+msgstr "ΧΡΟΝΟΣ ΛΕΙΤΟΥΡΓΙΑΣ"
+
+msgid "No information available"
+msgstr "Δεν υπάρχουν διαθέσιμες πληροφορίες"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "ΔΙΑΧΕΙΡΙΣΗ ΣΥΣΤΗΜΑΤΟΣ ΚΑΙ ΕΠΑΝΑΦΟΡΑ"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr "ΕΙΣΤΕ ΣΙΓΟΥΡΟΙ;\n\nΑΥΤΟ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΑΝΑΙΡΕΘΕΙ."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΡΥΘΜΙΣΕΩΝ"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr "ΠΡΟΣΟΧΗ: ΤΟ ΠΕΡΙΒΑΛΛΟΝ ΘΑ ΕΠΑΝΕΚΚΙΝΗΘΕΙ!\n\nΜΕΤΑ ΤΗΝ ΟΛΟΚΛΗΡΩΣΗ ΤΟΥ ΣΕΝΑΡΙΟΥ ΘΥΜΗΘΕΙΤΕ ΝΑ ΑΝΤΙΓΡΑΨΕΤΕ ΤΟ ΑΡΧΕΙΟ /storage/roms/backup/ROCKNIX_BACKUP.zip ΣΕ ΑΣΦΑΛΕΣ ΜΕΡΟΣ, ΑΛΛΙΩΣ ΘΑ ΔΙΑΓΡΑΦΕΙ ΣΤΗΝ ΕΠΟΜΕΝΗ ΕΠΑΝΕΚΚΙΝΗΣΗ!\n\nΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΤΩΝ ΤΡΕΧΟΥΣΩΝ ΡΥΘΜΙΣΕΩΝ ΚΑΙ ΕΠΑΝΕΚΚΙΝΗΣΗ;"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "ΕΠΑΝΑΦΟΡΑ ΑΠΟ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr "ΠΡΟΣΟΧΗ: Η ΣΥΣΚΕΥΗ ΘΑ ΕΠΑΝΕΚΚΙΝΗΘΕΙ!\n\nΟΙ ΥΠΑΡΧΟΥΣΕΣ ΡΥΘΜΙΣΕΙΣ ΣΑΣ ΘΑ ΑΝΤΙΚΑΤΑΣΤΑΘΟΥΝ!\n\nΕΠΑΝΑΦΟΡΑ ΑΠΟ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΚΑΙ ΕΠΑΝΕΚΚΙΝΗΣΗ;"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "ΔΙΑΧΕΙΡΙΣΗ ΕΜΟΥΛΑΤΕΡ"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "ΕΠΑΝΑΦΟΡΑ ΡΥΘΜΙΣΕΩΝ RETROARCH ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr "ΠΡΟΣΟΧΗ: ΟΙ ΡΥΘΜΙΣΕΙΣ ΤΟΥ RETROARCH ΘΑ ΕΠΑΝΑΦΕΡΘΟΥΝ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ\n\nΟΙ ΡΥΘΜΙΣΕΙΣ ΑΝΑ ΠΥΡΗΝΑ ΔΕΝ ΘΑ ΕΠΗΡΕΑΣΤΟΥΝ ΚΑΙ ΔΕΝ ΘΑ ΔΗΜΙΟΥΡΓΗΘΕΙ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ!\n\nΕΠΑΝΑΦΟΡΑ ΡΥΘΜΙΣΕΩΝ RETROARCH ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ;"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "ΕΠΑΝΑΦΟΡΑ OVERLAYS (ΠΥΡΗΝΕΣ, CHEATS, ΧΕΙΡΙΣΤΗΡΙΑ ΚΛΠ)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr "ΠΡΟΣΟΧΗ: ΟΛΑ ΤΑ ΠΡΟΣΑΡΜΟΣΜΕΝΑ OVERLAYS ΤΟΥ RETROARCH ΘΑ ΑΦΑΙΡΕΘΟΥΝ\n\nΠΡΟΣΑΡΜΟΣΜΕΝΟΙ ΠΥΡΗΝΕΣ, ΧΕΙΡΙΣΤΗΡΙΑ, CHEATS ΚΛΠ. ΔΕΝ ΘΑ ΔΗΜΙΟΥΡΓΗΘΕΙ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ!\n\nΕΠΑΝΑΦΟΡΑ ΤΩΝ OVERLAYS ΤΟΥ RETROARCH ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ;"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "ΠΛΗΡΗΣ ΕΠΑΝΑΦΟΡΑ RETROARCH"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr "ΠΡΟΣΟΧΗ: ΤΟ RETROARCH ΚΑΙ ΟΛΕΣ ΟΙ ΑΠΟΘΗΚΕΥΜΕΝΕΣ ΡΥΘΜΙΣΕΙΣ ΧΡΗΣΤΗ ΘΑ ΕΠΑΝΑΦΕΡΘΟΥΝ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ\n\nΟΙ ΡΥΘΜΙΣΕΙΣ ΑΝΑ ΠΥΡΗΝΑ ΘΑ ΑΦΑΙΡΕΘΟΥΝ ΚΑΙ ΔΕΝ ΘΑ ΔΗΜΙΟΥΡΓΗΘΕΙ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ!\n\nΕΠΑΝΑΦΟΡΑ ΤΟΥ RETROARCH;"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "ΕΠΑΝΑΦΟΡΑ ΡΥΘΜΙΣΕΩΝ MEDNAFEN ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr "ΠΡΟΣΟΧΗ: ΟΙ ΡΥΘΜΙΣΕΙΣ ΤΟΥ MEDNAFEN ΘΑ ΕΠΑΝΑΦΕΡΘΟΥΝ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ\n\nΔΕΝ ΘΑ ΔΗΜΙΟΥΡΓΗΘΕΙ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ!\n\nΕΠΑΝΑΦΟΡΑ ΡΥΘΜΙΣΕΩΝ MEDNAFEN ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ;"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "ΕΠΑΝΑΦΟΡΑ ΡΥΘΜΙΣΕΩΝ ΑΥΤΟΝΟΜΩΝ ΕΜΟΥΛΑΤΕΡ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr "ΠΡΟΣΟΧΗ: ΟΙ ΡΥΘΜΙΣΕΙΣ ΤΩΝ ΑΥΤΟΝΟΜΩΝ ΕΜΟΥΛΑΤΕΡ ΘΑ ΕΠΑΝΑΦΕΡΘΟΥΝ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ\n\nΔΕΝ ΘΑ ΔΗΜΙΟΥΡΓΗΘΕΙ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ!\n\nΕΠΑΝΑΦΟΡΑ ΡΥΘΜΙΣΕΩΝ ΑΥΤΟΝΟΜΩΝ ΕΜΟΥΛΑΤΕΡ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ;"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "ΠΛΗΡΗΣ ΕΠΑΝΑΦΟΡΑ PORTMASTER"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr "ΠΡΟΣΟΧΗ: ΤΟ PORTMASTER ΘΑ ΕΠΑΝΑΦΕΡΘΕΙ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ\n\nΔΕΝ ΘΑ ΔΗΜΙΟΥΡΓΗΘΕΙ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ!\n\nΕΠΑΝΑΦΟΡΑ ΤΟΥ PORTMASTER ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ;"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "ΔΙΑΧΕΙΡΙΣΗ ΣΥΣΤΗΜΑΤΟΣ"
+
+msgid "AUDIO RESET"
+msgstr "ΕΠΑΝΑΦΟΡΑ ΗΧΟΥ"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr "ΠΡΟΣΟΧΗ: ΟΙ ΡΥΘΜΙΣΕΙΣ ΗΧΟΥ ΘΑ ΕΠΑΝΑΦΕΡΘΟΥΝ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ ΚΑΙ ΤΟ ΣΥΣΤΗΜΑ ΘΑ ΕΠΑΝΕΚΚΙΝΗΘΕΙ!\n\nΕΠΑΝΑΦΟΡΑ ΗΧΟΥ ΚΑΙ ΕΠΑΝΕΚΚΙΝΗΣΗ;"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "ΕΠΑΝΑΦΟΡΑ ΕΝΔΕΙΚΤΗ ΜΠΑΤΑΡΙΑΣ"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr "ΠΡΟΣΟΧΗ: Ο ΕΝΔΕΙΚΤΗΣ ΜΠΑΤΑΡΙΑΣ ΤΟΥ PMIC ΘΑ ΕΠΑΝΑΦΕΡΘΕΙ ΚΑΙ ΤΟ ΣΥΣΤΗΜΑ ΘΑ ΣΒΗΣΕΙ!\n\nΑΦΗΣΤΕ ΤΟ ΦΟΡΤΙΣΤΗ ΑΠΟΣΥΝΔΕΔΕΜΕΝΟ ΚΑΙ ΞΑΝΑΑΝΑΨΤΕ ΤΗ ΣΥΣΚΕΥΗ ΜΕΤΑ ΑΠΟ ΛΙΓΑ ΔΕΥΤΕΡΟΛΕΠΤΑ. ΤΟ ΕΠΙΠΕΔΟ ΤΗΣ ΜΠΑΤΑΡΙΑΣ ΕΚΤΙΜΑΤΑΙ ΞΑΝΑ ΑΠΟ ΤΗΝ ΤΑΣΗ ΤΗΣ ΜΠΑΤΑΡΙΑΣ ΣΕ ΑΝΑΠΑΥΣΗ ΚΑΙ ΓΙΝΕΤΑΙ ΞΑΝΑ ΑΚΡΙΒΕΣ ΜΕΤΑ ΑΠΟ ΜΙΑ ΠΛΗΡΗ ΦΟΡΤΙΣΗ.\n\nΕΠΑΝΑΦΟΡΑ ΕΝΔΕΙΚΤΗ ΚΑΙ ΤΕΡΜΑΤΙΣΜΟΣ;"
+
+msgid "FACTORY RESET"
+msgstr "ΕΠΑΝΑΦΟΡΑ ΕΡΓΟΣΤΑΣΙΟΥ"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr "ΠΡΟΣΟΧΗ: ΤΑ ΔΕΔΟΜΕΝΑ ΣΑΣ ΚΑΙ ΟΛΕΣ ΟΙ ΥΠΟΛΟΙΠΕΣ ΡΥΘΜΙΣΕΙΣ ΘΑ ΕΠΑΝΑΦΕΡΘΟΥΝ ΣΤΙΣ ΠΡΟΕΠΙΛΟΓΕΣ!\n\nΑΝ ΘΕΛΕΤΕ ΝΑ ΚΡΑΤΗΣΕΤΕ ΤΙΣ ΡΥΘΜΙΣΕΙΣ ΣΑΣ, ΚΑΝΤΕ ΑΝΤΙΓΡΑΦΟ ΑΣΦΑΛΕΙΑΣ ΚΑΙ ΑΠΟΘΗΚΕΥΣΤΕ ΤΟ ΣΕ ΕΞΩΤΕΡΙΚΟ ΔΙΣΚΟ ΠΡΙΝ ΕΚΤΕΛΕΣΕΤΕ ΑΥΤΗ ΤΗΝ ΕΠΙΛΟΓΗ!\n\nΒΓΑΛΤΕ ΤΗΝ ΚΑΡΤΑ ΠΑΙΧΝΙΔΙΩΝ ΠΡΙΝ ΣΥΝΕΧΙΣΕΤΕ!\n\nΕΠΑΝΑΦΟΡΑ ΣΥΣΤΗΜΑΤΟΣ ΚΑΙ ΕΠΑΝΕΚΚΙΝΗΣΗ;"
+
+msgid "KEYBOARD LAYOUT"
+msgstr "ΔΙΑΤΑΞΗ ΠΛΗΚΤΡΟΛΟΓΙΟΥ"
+
+msgid "KEYBOARD VARIANT"
+msgstr "ΕΚΔΟΧΗ ΠΛΗΚΤΡΟΛΟΓΙΟΥ"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Επιλέξτε την έκδοση πληκτρολογίου για την επιλεγμένη διάταξη (για παράδειγμα, νεκρά πλήκτρα ή εναλλακτική τοποθέτηση πλήκτρων)."
+
+msgid "Run welcome again"
+msgstr "Εκτέλεση καλωσορίσματος ξανά"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Εμφανίζει ξανά το καλωσόρισμα της πρώτης εκκίνησης: γλώσσα, WiFi και ζώνη ώρας."
+
+msgid "Lock down certain config menus for use with guest users/kids."
+msgstr "Κλειδώνει ορισμένα μενού ρυθμίσεων για χρήση από επισκέπτες/παιδιά."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ OVERLAY MANGOHUD"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΠΛΗΚΤΡΟΛΟΓΙΟΥ ΑΦΗΣ"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΣΤΙΓΜΙΟΤΥΠΩΝ ROCKNIX"
+
+msgid "SCREEN"
+msgstr "ΟΘΟΝΗ"
+
+msgid "CONTRAST"
+msgstr "ΑΝΤΙΘΕΣΗ"
+
+msgid "GAMMA"
+msgstr "GAMMA"
+
+msgid "HUE"
+msgstr "ΑΠΟΧΡΩΣΗ"
+
+msgid "SATURATION"
+msgstr "ΕΝΤΑΣΗ ΧΡΩΜΑΤΟΣ"
+
+msgid "LEDS"
+msgstr "LED"
+
+msgid "DISABLE POWER LED"
+msgstr "ΑΠΕΝΕΡΓΟΠΟΙΗΣΗ LED ΤΡΟΦΟΔΟΣΙΑΣ"
+
+msgid "LED COLOR"
+msgstr "ΧΡΩΜΑ LED"
+
+msgid "JOYSTICK LED"
+msgstr "LED ΜΟΧΛΟΥ"
+
+msgid "LED BRIGHTNESS"
+msgstr "ΦΩΤΕΙΝΟΤΗΤΑ LED"
+
+msgid "MAX"
+msgstr "ΜΕΓ"
+
+msgid "MID"
+msgstr "ΜΕΣ"
+
+msgid "MIN"
+msgstr "ΕΛΑΧ"
+
+msgid "DEVICE"
+msgstr "ΣΥΣΚΕΥΗ"
+
+msgid "THIS DEVICE IS"
+msgstr "ΑΥΤΗ Η ΣΥΣΚΕΥΗ ΕΙΝΑΙ"
+
+msgid "Device will be switched on next reboot"
+msgstr "Η συσκευή θα αλλάξει στην επόμενη επανεκκίνηση"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "ΑΥΤΟΜΑΤΗ ΑΝΙΧΝΕΥΣΗ ΚΑΡΤΑΣ ΠΑΙΧΝΙΔΙΩΝ"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΣΥΓΧΩΝΕΥΜΕΝΗΣ ΑΠΟΘΗΚΕΥΣΗΣ"
+
+msgid "EXTERNAL"
+msgstr "ΕΞΩΤΕΡΙΚΗ"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "ΚΥΡΙΑ ΚΑΡΤΑ ΣΥΓΧΩΝΕΥΜΕΝΗΣ ΑΠΟΘΗΚΕΥΣΗΣ"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "ΠΡΟΣΟΧΗ: Η ΑΛΛΑΓΗ ΤΗΣ ΚΥΡΙΑΣ ΚΑΡΤΑΣ ΜΠΟΡΕΙ ΝΑ ΕΧΕΙ ΩΣ ΑΠΟΤΕΛΕΣΜΑ ΤΗΝ ΑΠΩΛΕΙΑ ΠΡΟΣΒΑΣΗΣ ΣΤΑ ΠΑΙΧΝΙΔΙΑ, ΑΠΑΙΤΩΝΤΑΣ ΧΕΙΡΟΚΙΝΗΤΗ ΠΑΡΕΜΒΑΣΗ ΓΙΑ ΔΙΟΡΘΩΣΗ. ΣΥΝΕΧΕΙΑ;"
+
+msgid "EJECT MICROSD CARD"
+msgstr "ΑΦΑΙΡΕΣΗ ΚΑΡΤΑΣ MICROSD"
+
+msgid "You may now remove the card."
+msgstr "Μπορείτε τώρα να αφαιρέσετε την κάρτα."
+
+msgid "PERFORMANCE"
+msgstr "ΑΠΟΔΟΣΗ"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "ΠΡΟΕΠΙΛΕΓΜΕΝΟΣ ΡΥΘΜΙΣΤΗΣ ΣΥΧΝΟΤΗΤΑΣ"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "ΠΡΟΕΠΙΛΕΓΜΕΝΟΣ ΡΥΘΜΙΣΤΗΣ ΣΥΧΝΟΤΗΤΑΣ GPU"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΥΠΕΡΣΥΧΝΟΤΗΤΑΣ CPU"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "ΕΝΕΡΓΟΠΟΙΗΣΗ ΥΠΕΡΣΥΧΝΟΤΗΤΑΣ GPU"
+
+msgid "GPU DRIVER"
+msgstr "ΠΡΟΓΡΑΜΜΑ ΟΔΗΓΟΣ GPU"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "Το πρόγραμμα οδήγησης GPU θα αλλάξει στην επόμενη επανεκκίνηση"
+
+msgid "Restarting to apply the theme"
+msgstr "Επανεκκίνηση για εφαρμογή του θέματος"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Το περιβάλλον επανεκκινείται για να εφαρμοστεί το θέμα"
+
+msgid "Dark"
+msgstr "Σκούρο"
+
+msgid "Light"
+msgstr "Φωτεινό"
+
+msgid "MODE"
+msgstr "ΛΕΙΤΟΥΡΓΙΑ"
+
+msgid "Theme default"
+msgstr "Προεπιλογή θέματος"
+
+msgid "Filled"
+msgstr "Γεμάτο"
+
+msgid "Outline"
+msgstr "Περίγραμμα"
+
+msgid "Side bar"
+msgstr "Πλαϊνή μπάρα"
+
+msgid "Underline"
+msgstr "Υπογράμμιση"
+
+msgid "Centered"
+msgstr "Κεντραρισμένο"
+
+msgid "Left"
+msgstr "Αριστερά"
+
+msgid "Lowercase"
+msgstr "Πεζά"
+
+msgid "Uppercase"
+msgstr "Κεφαλαία"
+
+msgid "EXTRA LARGE"
+msgstr "ΠΟΛΥ ΜΕΓΑΛΟ"
+
+msgid "LARGE"
+msgstr "ΜΕΓΑΛΟ"
+
+msgid "SMALL"
+msgstr "ΜΙΚΡΟ"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Μέγεθος του κειμένου σε μενού, διαλόγους και γραμμές βοήθειας"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Καθαρά λευκό ή μαύρο κείμενο, συμπαγή πάνελ και πιο παχύς επιλέκτης"
+
+msgid "CONTROL OPTIONS"
+msgstr "ΕΠΙΛΟΓΕΣ ΕΛΕΓΧΟΥ"
+
+msgid "TOP BAR"
+msgstr "ΑΝΩ ΜΠΑΡΑ"
+
+msgid "BEDSIDE CLOCK"
+msgstr "ΡΟΛΟΪ ΚΟΜΟΔΙΝΟΥ"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Όταν ο φορτιστής είναι συνδεδεμένος, εμφανίζει ένα μεγάλο ρολόι μετά από τόσο χρόνο χωρίς να αγγίξετε την κονσόλα, αντί για την προφύλαξη οθόνης. Οποιοδήποτε κουμπί το κλείνει. Ποτέ όσο είναι ανοιχτό ένα παιχνίδι."
+
+msgid ""
+"You are changing the user interface to a restricted mode:\n"
+"This will hide most menu options to prevent changes to the system.\n"
+"To unlock and return to the full user interface, enter this code:"
+msgstr "Αλλάζετε το περιβάλλον χρήστη σε περιορισμένη λειτουργία:\nΑυτό θα κρύψει τις περισσότερες επιλογές μενού για να αποτραπούν αλλαγές στο σύστημα.\nΓια να ξεκλειδώσετε και να επιστρέψετε στο πλήρες περιβάλλον χρήστη, εισάγετε αυτόν τον κωδικό:"
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "ΑΔΥΝΑΜΙΑ ΑΚΥΡΩΣΗΣ ΤΗΣ ΛΗΨΗΣ"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "Η ΛΗΨΗ ΑΚΥΡΩΘΗΚΕ"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "Η ΕΝΗΜΕΡΩΣΗ ΔΕΝ ΜΠΟΡΕΣΕ ΝΑ ΚΑΤΕΒΕΙ. ΕΛΕΓΞΤΕ ΤΗ ΣΥΝΔΕΣΗ ΚΑΙ ΞΑΝΑΠΡΟΣΠΑΘΗΣΤΕ."
+
+msgid "No update source available"
+msgstr "Δεν υπάρχει διαθέσιμη πηγή ενημερώσεων"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "ΕΠΙΒΟΛΗ ΕΠΟΜΕΝΗΣ ΕΝΗΜΕΡΩΣΗΣ"
+
+msgid "UPDATING"
+msgstr "ΕΝΗΜΕΡΩΣΗ"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "ΑΚΥΡΩΣΗ ΛΗΨΗΣ"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "ΝΑ ΑΚΥΡΩΘΕΙ Η ΛΗΨΗ; ΤΟ ΜΕΡΙΚΩΣ ΛΗΦΘΕΝ ΑΡΧΕΙΟ ΔΙΑΓΡΑΦΕΤΑΙ."
+
+msgid "Checking..."
+msgstr "Έλεγχος..."
+
+msgid "available"
+msgstr "διαθέσιμο"
+
+msgid "SKIP ALL"
+msgstr "ΠΑΡΑΛΕΙΨΗ ΟΛΩΝ"
+
+msgid "Welcome"
+msgstr "Καλώς ήρθατε"
+
+msgid "of"
+msgstr "από"
+
+msgid "Choose your language"
+msgstr "Επιλέξτε τη γλώσσα σας"
+
+msgid "Language"
+msgstr "Γλώσσα"
+
+msgid "You can change it later in System."
+msgstr "Μπορείτε να την αλλάξετε αργότερα στο Σύστημα."
+
+msgid "Connect to WiFi"
+msgstr "Σύνδεση στο WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Ρολόι, ενημερώσεις και μεταφορά αρχείων."
+
+msgid "Continue"
+msgstr "Συνέχεια"
+
+msgid "Not now"
+msgstr "Όχι τώρα"
+
+msgid "Choose a network"
+msgstr "Επιλέξτε δίκτυο"
+
+msgid "Choose another network"
+msgstr "Επιλέξτε άλλο δίκτυο"
+
+msgid "Where are you?"
+msgstr "Πού βρίσκεστε;"
+
+msgid "Time zone"
+msgstr "Ζώνη ώρας"
+
+msgid "Sets your local time."
+msgstr "Ορίζει την τοπική σας ώρα."
+
+msgid "Keep UTC"
+msgstr "Διατήρηση UTC"
+
+msgid "LOADING..."
+msgstr "ΦΟΡΤΩΣΗ..."
+
+msgid "All set"
+msgstr "Όλα έτοιμα"
+
+msgid "Add games from your phone"
+msgstr "Προσθέστε παιχνίδια από το κινητό σας"
+
+msgid "Network"
+msgstr "Δίκτυο"
+
+msgid "Start opens the menu"
+msgstr "Το Start ανοίγει το μενού"
+
+msgid "anywhere"
+msgstr "οπουδήποτε"
+
+msgid "Screen looks wrong?"
+msgstr "Η οθόνη φαίνεται λάθος;"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Ξεκινήστε να παίζετε"
+
+msgid "PLAY THEME MUSIC"
+msgstr "ΑΝΑΠΑΡΑΓΩΓΗ ΜΟΥΣΙΚΗΣ ΘΕΜΑΤΟΣ"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "ΔΕΝ ΥΠΑΡΧΕΙ ΣΥΝΔΕΣΗ ΔΙΚΤΥΟΥ"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "ΧΡΗΣΗ ΜΠΑΤΑΡΙΑΣ (ΠΛΗΡΗΣ ΦΟΡΤΙΣΗ)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "ΣΥΝΟΛΙΚΟΣ ΧΡΟΝΟΣ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "LAST FIVE WEEKS"
+msgstr "ΤΕΛΕΥΤΑΙΕΣ ΠΕΝΤΕ ΕΒΔΟΜΑΔΕΣ"
+
+msgid "2 WEEKS AGO"
+msgstr "ΠΡΙΝ ΑΠΟ 2 ΕΒΔΟΜΑΔΕΣ"
+
+msgid "3 WEEKS AGO"
+msgstr "ΠΡΙΝ ΑΠΟ 3 ΕΒΔΟΜΑΔΕΣ"
+
+msgid "4 WEEKS AGO"
+msgstr "ΠΡΙΝ ΑΠΟ 4 ΕΒΔΟΜΑΔΕΣ"
+
+msgid "THIS WEEK"
+msgstr "ΑΥΤΗ ΤΗΝ ΕΒΔΟΜΑΔΑ"
+
+msgid "MOST PLAYED GAMES"
+msgstr "ΠΙΟ ΔΗΜΟΦΙΛΗ ΠΑΙΧΝΙΔΙΑ"
+
+msgid "TIME PER SYSTEM"
+msgstr "ΧΡΟΝΟΣ ΑΝΑ ΣΥΣΤΗΜΑ"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "ΔΕΝ ΕΧΕΙ ΠΑΙΧΤΕΙ ΤΙΠΟΤΑ ΑΚΟΜΑ. ΠΑΙΞΤΕ ΕΝΑ ΠΑΙΧΝΙΔΙ ΚΑΙ ΘΑ ΕΜΦΑΝΙΣΤΕΙ ΕΔΩ."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Απομένει μόνο %d λεπτό παιχνιδιού σήμερα"
+msgstr[1] "Απομένουν μόνο %d λεπτά παιχνιδιού σήμερα"
+
+msgid "Power saver on"
+msgstr "Εξοικονόμηση ενέργειας ενεργή"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "ΑΝΑΠΑΝΤΕΧΗ ΑΠΑΝΤΗΣΗ ΑΠΟ ΤΟ RETROACHIEVEMENTS"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "ΜΗ ΔΙΑΘΕΣΙΜΟ ΣΕ ΑΥΤΗ ΤΗΝ ΕΚΔΟΣΗ"
+
+msgid "%i min ago"
+msgstr "πριν %i λ"
+
+msgid "%i h ago"
+msgstr "πριν %i ώ"
+
+msgid "%i d ago"
+msgstr "πριν %i ημ"
+
+msgid "CONTINUE PLAYING"
+msgstr "ΣΥΝΕΧΙΣΗ ΠΑΙΧΝΙΔΙΟΥ"
+
+msgid "START NOW"
+msgstr "ΕΝΑΡΞΗ ΤΩΡΑ"
+
+msgid "RESUMING"
+msgstr "ΕΠΑΝΑΦΟΡΑ"
+
+msgid "STARTING IN %i"
+msgstr "ΕΚΚΙΝΗΣΗ ΣΕ %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacks"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Κάθετα"
+
+msgid "recently added"
+msgstr "προστέθηκαν πρόσφατα"
+
+msgid "unfinished"
+msgstr "ημιτελή"
+
+msgid "most played this week"
+msgstr "πιο δημοφιλή αυτή την εβδομάδα"
+
+msgid "BOOKS"
+msgstr "ΒΙΒΛΙΑ"
+
+msgid "screenshots"
+msgstr "στιγμιότυπα οθόνης"
+
+msgid "media player"
+msgstr "αναπαραγωγέας πολυμέσων"
+
+msgid "NETWORK ERROR"
+msgstr "ΣΦΑΛΜΑ ΔΙΚΤΥΟΥ"
+
+msgid "SERVER BUSY"
+msgstr "Ο ΔΙΑΚΟΜΙΣΤΗΣ ΕΙΝΑΙ ΑΠΑΣΧΟΛΗΜΕΝΟΣ"
+
+msgid "SERVER ERROR"
+msgstr "ΣΦΑΛΜΑ ΔΙΑΚΟΜΙΣΤΗ"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "ΑΔΥΝΑΜΙΑ ΕΓΓΡΑΦΗΣ ΤΗΣ GAMELIST"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "Η ΣΥΝΔΕΣΗ ΑΠΕΤΥΧΕ. ΕΛΕΓΞΤΕ ΤΟ ΟΝΟΜΑ ΧΡΗΣΤΗ ΚΑΙ ΤΟΝ ΚΩΔΙΚΟ ΣΑΣ"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "ΤΟ SCREENSCRAPER ΕΙΝΑΙ ΚΛΕΙΣΤΟ ΓΙΑ ΑΥΤΟΝ ΤΟΝ ΛΟΓΑΡΙΑΣΜΟ ΑΥΤΗ ΤΗ ΣΤΙΓΜΗ"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "ΤΟ SCREENSCRAPER ΕΙΝΑΙ ΣΕ ΣΥΝΤΗΡΗΣΗ"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "ΑΥΤΟ ΤΟ ΛΟΓΙΣΜΙΚΟ ΕΙΝΑΙ ΑΠΟΚΛΕΙΣΜΕΝΟ ΑΠΟ ΤΟ SCREENSCRAPER"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "ΕΞΑΝΤΛΗΘΗΚΕ ΤΟ ΗΜΕΡΗΣΙΟ ΟΡΙΟ SCRAPE. ΞΑΝΑΠΡΟΣΠΑΘΗΣΤΕ ΑΥΡΙΟ"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "ΠΑΡΑ ΠΟΛΛΑ ΑΝΑΓΝΩΡΙΣΤΑ ROMS ΣΗΜΕΡΑ. ΞΑΝΑΠΡΟΣΠΑΘΗΣΤΕ ΑΥΡΙΟ"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "ΔΕΝ ΕΜΕΙΝΕ ΧΩΡΟΣ ΣΤΗΝ ΚΑΡΤΑ"
+
+msgid "INVALID CREDENTIALS"
+msgstr "ΜΗ ΕΓΚΥΡΑ ΣΤΟΙΧΕΙΑ ΣΥΝΔΕΣΗΣ"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "ΠΡΩΤΑ ΠΛΗΚΤΡΟΛΟΓΗΣΤΕ ΤΟ IGDB CLIENT ID ΚΑΙ ΤΟ SECRET ΣΤΟΝ ΛΟΓΑΡΙΑΣΜΟ"
+
+msgid "SCRAPING STOPPED"
+msgstr "ΤΟ SCRAPING ΣΤΑΜΑΤΗΣΕ"
+
+msgid "GAME NOT FOUND"
+msgstr "ΤΟ ΠΑΙΧΝΙΔΙ ΔΕΝ ΒΡΕΘΗΚΕ"
+
+msgid "NO OTHER GAME"
+msgstr "ΔΕΝ ΥΠΑΡΧΕΙ ΑΛΛΟ ΠΑΙΧΝΙΔΙ"
+
+msgid "Time is up for today"
+msgstr "Ο χρόνος για σήμερα τελείωσε"
+
+msgid "VIDEO DURATION (SECS)"
+msgstr "ΔΙΑΡΚΕΙΑ ΒΙΝΤΕΟ (ΔΕΥΤ.)"
+
+msgid "SHOW DATE TIME"
+msgstr "ΕΜΦΑΝΙΣΗ ΗΜΕΡΟΜΗΝΙΑΣ ΚΑΙ ΩΡΑΣ"
+
+msgid "DATE FORMAT"
+msgstr "ΜΟΡΦΗ ΗΜΕΡΟΜΗΝΙΑΣ"
+
+msgid "TIME FORMAT"
+msgstr "ΜΟΡΦΗ ΩΡΑΣ"
+
+msgid "USE VIDEOS IN SUBFOLDERS OF CUSTOM DIRECTORY"
+msgstr "ΧΡΗΣΗ ΒΙΝΤΕΟ ΣΕ ΥΠΟΦΑΚΕΛΟΥΣ ΤΟΥ ΠΡΟΣΑΡΜΟΣΜΕΝΟΥ ΦΑΚΕΛΟΥ"
+
+msgid "CUSTOM VIDEO FILE EXTENSIONS"
+msgstr "ΠΡΟΣΑΡΜΟΣΜΕΝΕΣ ΕΠΕΚΤΑΣΕΙΣ ΑΡΧΕΙΩΝ ΒΙΝΤΕΟ"
+
+msgid "USE IMAGES IN SUBFOLDERS OF CUSTOM DIRECTORY"
+msgstr "ΧΡΗΣΗ ΕΙΚΟΝΩΝ ΣΕ ΥΠΟΦΑΚΕΛΟΥΣ ΤΟΥ ΠΡΟΣΑΡΜΟΣΜΕΝΟΥ ΦΑΚΕΛΟΥ"
+
+msgid "CUSTOM IMAGE FILE EXTENSIONS"
+msgstr "ΠΡΟΣΑΡΜΟΣΜΕΝΕΣ ΕΠΕΚΤΑΣΕΙΣ ΑΡΧΕΙΩΝ ΕΙΚΟΝΑΣ"
+
+msgid "ACCENTS"
+msgstr "ΤΟΝΟΙ"
+
+msgid "SHOW"
+msgstr "ΕΜΦΑΝΙΣΗ"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "ΕΜΦΑΝΙΣΗ ΠΡΟΕΠΙΣΚΟΠΗΣΕΩΝ ΒΙΝΤΕΟ"
+
+msgid "Device paired"
+msgstr "Η συσκευή συζεύχθηκε"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "ΝΑ ΕΠΙΤΡΑΠΕΙ ΑΥΤΗ Η ΣΥΣΚΕΥΗ;"
+
+msgid "RECEIVED"
+msgstr "ΛΗΦΘΗΚΑΝ"
+
+msgid "QR CODE"
+msgstr "ΚΩΔΙΚΟΣ QR"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "ΜΟΛΙΣ ΤΩΡΑ"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "ΠΡΙΝ %d ΛΕΠΤΟ"
+msgstr[1] "ΠΡΙΝ %d ΛΕΠΤΑ"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "ΠΡΙΝ %d ΩΡΑ"
+msgstr[1] "ΠΡΙΝ %d ΩΡΕΣ"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "ΠΡΙΝ %d ΗΜΕΡΑ"
+msgstr[1] "ΠΡΙΝ %d ΗΜΕΡΕΣ"
+
+msgid "NO PAIRED DEVICES"
+msgstr "ΔΕΝ ΥΠΑΡΧΟΥΝ ΣΥΖΕΥΓΜΕΝΕΣ ΣΥΣΚΕΥΕΣ"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "ΝΑ ΞΕΧΑΣΤΕΙ ΑΥΤΗ Η ΣΥΣΚΕΥΗ;"
+
+msgid "FORGET ALL DEVICES"
+msgstr "ΞΕΧΑΣΜΑ ΟΛΩΝ ΤΩΝ ΣΥΣΚΕΥΩΝ"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "ΝΑ ΞΕΧΑΣΤΟΥΝ ΟΛΕΣ ΟΙ ΣΥΣΚΕΥΕΣ;"
+
+msgid "PAIRED DEVICES"
+msgstr "ΣΥΖΕΥΓΜΕΝΕΣ ΣΥΣΚΕΥΕΣ"
+
+msgid "SHOW QR CODE"
+msgstr "ΕΜΦΑΝΙΣΗ ΚΩΔΙΚΟΥ QR"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Σαρώστε το με την κάμερα του κινητού: η σελίδα ανοίγει και γνωρίζει το PIN."
+
+msgid "Phones that need no PIN."
+msgstr "Κινητά που δεν χρειάζονται PIN."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "ΕΠΑΝΑΦΟΡΑ ΑΠΟΘΗΚΕΥΣΕΩΝ ΑΠΟ ΤΟΝ ΙΣΤΟ;"
+
+msgid "BUILD ID"
+msgstr "ΑΝΑΓΝΩΡΙΣΤΙΚΟ ΕΚΔΟΣΗΣ"
+
+msgid "KERNEL"
+msgstr "ΠΥΡΗΝΑΣ"
+
+msgid "OPERATING SYSTEM"
+msgstr "ΛΕΙΤΟΥΡΓΙΚΟ ΣΥΣΤΗΜΑ"
+
+msgid "SYSTEM INFORMATION"
+msgstr "ΠΛΗΡΟΦΟΡΙΕΣ ΣΥΣΤΗΜΑΤΟΣ"
+
+msgid "BATTERY INFORMATION"
+msgstr "ΠΛΗΡΟΦΟΡΙΕΣ ΜΠΑΤΑΡΙΑΣ"
+
+msgid "DISK SPACE"
+msgstr "ΧΩΡΟΣ ΔΙΣΚΟΥ"
+
+msgid "HOST NAME"
+msgstr "ΟΝΟΜΑ ΥΠΟΛΟΓΙΣΤΗ"
+
+msgid "NETWORK INFORMATION"
+msgstr "ΠΛΗΡΟΦΟΡΙΕΣ ΔΙΚΤΥΟΥ"
+
+msgid "BATTERY HEALTH"
+msgstr "ΥΓΕΙΑ ΜΠΑΤΑΡΙΑΣ"
+
+msgid "BATTERY REMAINING"
+msgstr "ΕΝΑΠΟΜΕΙΝΑΣΑ ΜΠΑΤΑΡΙΑ"
+
+msgid "BATTERY STATE"
+msgstr "ΚΑΤΑΣΤΑΣΗ ΜΠΑΤΑΡΙΑΣ"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "ΠΛΗΡΟΦΟΡΙΕΣ CPU"
+
+msgid "CPU TEMPERATURE"
+msgstr "ΘΕΡΜΟΚΡΑΣΙΑ CPU"
+
+msgid "CPU FAN"
+msgstr "ΑΝΕΜΙΣΤΗΡΑΣ CPU"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "ΤΡΕΧΟΥΣΑ ΣΥΧΝΟΤΗΤΑ GPU"
+
+msgid "GPU INFORMATION"
+msgstr "ΠΛΗΡΟΦΟΡΙΕΣ GPU"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "ΜΕΓΙΣΤΗ ΣΥΧΝΟΤΗΤΑ GPU"
+
+msgid "GPU TEMPERATURE"
+msgstr "ΘΕΡΜΟΚΡΑΣΙΑ GPU"
+
+msgid "RAM AVAILABLE"
+msgstr "ΔΙΑΘΕΣΙΜΗ RAM"
+
+msgid "RAM CAPACITY"
+msgstr "ΧΩΡΗΤΙΚΟΤΗΤΑ RAM"
+
+msgid "RAM INFORMATION"
+msgstr "ΠΛΗΡΟΦΟΡΙΕΣ RAM"
+
+msgid "CURRENT FREQUENCY"
+msgstr "ΤΡΕΧΟΥΣΑ ΣΥΧΝΟΤΗΤΑ"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "ΜΕΓΙΣΤΗ ΣΥΧΝΟΤΗΤΑ"
+
+msgid "DISCHARGING"
+msgstr "ΕΚΦΟΡΤΙΣΗ"
+
+msgid "NOT CHARGING"
+msgstr "ΔΕΝ ΦΟΡΤΙΖΕΙ"
+
+msgid "Follows the language until you choose one here."
+msgstr "Ακολουθεί τη γλώσσα μέχρι να επιλέξετε μία εδώ."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Χωρίς δίκτυο. Βάλτε την κάρτα microSD σε έναν υπολογιστή και αντιγράψτε κάθε παιχνίδι στον φάκελο του συστήματός του, μέσα στο roms (για παράδειγμα roms/snes). Ή συνδεθείτε στο WiFi και επιστρέψτε εδώ για να προσθέσετε παιχνίδια από το κινητό."
+
+msgid "Add games"
+msgstr "Προσθήκη παιχνιδιών"
+
+msgid "left, in the menus"
+msgstr "απομένουν, στα μενού"
+
+msgid "From your phone or microSD"
+msgstr "Από το κινητό ή την microSD"
+
+msgid "Web transfer turned off"
+msgstr "Η μεταφορά μέσω web απενεργοποιήθηκε"

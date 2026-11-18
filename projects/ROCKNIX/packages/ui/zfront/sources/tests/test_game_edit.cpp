@@ -439,7 +439,7 @@ int main() {
       CHECK_EQ(m.entry(size_t(name)).value_text, std::string("G0"));
       for (const char* k : {"Description", "Genre", "Developer", "Publisher", "Players", "Release date", "Rating", "Favorite", "Hidden", "Sort name", "Kidgame"}) CHECK(find(m, std::string(tr(k))) >= 0);
       CHECK(find(m, tr("SAVE")) >= 0);
-      CHECK(find(m, tr("DELETE")) >= 0);
+      CHECK(find(m, tr("DELETE")) < 0 && find(m, tr("SCRAPE")) < 0);  // both live in the game options, not on this screen
       // B on a clean draft closes; on a changed one it asks first
       CHECK(m.handle(Action::B, f.cx).kind == Transition::Pop);
       int fav = find(m, std::string(tr("Favorite")));

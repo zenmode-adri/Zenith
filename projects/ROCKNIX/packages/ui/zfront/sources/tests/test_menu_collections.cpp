@@ -317,8 +317,9 @@ int main() {
     CHECK(has(*m, "SYSTEMS DISPLAYED"));
     CHECK(has(*m, "AUTOMATIC GAME COLLECTIONS"));
     CHECK(!has(*m, "CUSTOM GAME COLLECTIONS"));       // none exist: hidden
-    CHECK(!has(*m, "GROUP CUSTOM COLLECTIONS"));       // meaningless without custom collections
-    CHECK(!has(*m, "SHOW GAMES OF HIDDEN SYSTEMS IN COLLECTIONS"));  // no system is hidden
+    // options nobody reads (ES-only keys) are not offered
+    for (const char* gone : {"START ON SYSTEM", "START ON GAMELIST", "GROUP CUSTOM COLLECTIONS", "SHOW SYSTEM NAME IN COLLECTIONS", "SHOW GAMES OF HIDDEN SYSTEMS IN COLLECTIONS"})
+      CHECK(!has(*m, gone));
     CHECK(!has(*m, "GROUPED SYSTEMS"));
     CHECK_EQ(m->entry(1).value_text, std::string("2/2"));
 
@@ -327,13 +328,6 @@ int main() {
     m->handle(Action::A, cx);
     CHECK(cx.es.get_bool("LoadEmptySystems", false));
     CHECK(slurp(g_tmp + "/es_settings.cfg").find("LoadEmptySystems") != std::string::npos);
-    CHECK(go(*m, cx, "START ON GAMELIST"));
-    m->handle(Action::A, cx);
-    CHECK(cx.es.get_bool("StartupOnGameList", false));
-    CHECK(go(*m, cx, "SHOW SYSTEM NAME IN COLLECTIONS"));
-    CHECK(cx.es.get_bool("CollectionShowSystemInfo", true));  // ES default on
-    m->handle(Action::A, cx);
-    CHECK(!cx.es.get_bool("CollectionShowSystemInfo", true));
 
     // SORT SYSTEMS: the stored "manufacturer" is shown as NO (not offered); choosing ALPHABETICALLY stores "alpha"
     CHECK(go(*m, cx, "SORT SYSTEMS"));
@@ -341,23 +335,7 @@ int main() {
     m->handle(Action::Right, cx);
     CHECK_EQ(*cx.es.get("SortSystems"), std::string("alpha"));
     m->handle(Action::Right, cx);
-    CHECK_EQ(*cx.es.get("SortSystems"), std::string(""));
-
-    // START ON SYSTEM: options = none, last selected, the visible systems; choosing one clears LastSystem
-    cx.es.set_string("LastSystem", "snes");
-    CHECK(go(*m, cx, "START ON SYSTEM"));
-    const Entry& st = m->entry(size_t(m->cursor()));
-    CHECK_EQ(st.options.size(), size_t(4));
-    CHECK_EQ(st.value_text, std::string("RESTORE LAST SELECTED"));
-    CHECK_EQ(st.options[2].value, std::string("gb"));
-    Transition t = m->handle(Action::A, cx);  // popup
-    CHECK(t.kind == Transition::Push && t.screen);
-    t.screen->handle(Action::Down, cx);  // the popup opens on the current value (last selected)
-    t.screen->handle(Action::A, cx);
-    CHECK_EQ(*cx.es.get("StartupSystem"), std::string("gb"));
-    CHECK_EQ(*cx.es.get("LastSystem"), std::string(""));
-    CHECK(col::reload_needed() || true);
-  }
+    CHECK_EQ(*cx.es.get("SortSystems"), std::string(""));  }
 
   // ---- screens: systems displayed (HiddenSystems keeps unknown names and the order)
   {
@@ -379,11 +357,10 @@ int main() {
     CHECK_EQ(*cx.es.get("HiddenSystems"), std::string("old;snes"));
     CHECK(col::reload_needed());
     CHECK(slurp(g_tmp + "/es_settings.cfg").find("old;snes") != std::string::npos);
-    // main screen now offers the "hidden systems" option and counts 1/2
+    // main screen counts 1/2
     std::unique_ptr<Screen> h2;
     Menu* mm = open(h2, cx, "menu.collections");
     CHECK_EQ(mm->entry(1).value_text, std::string("1/2"));
-    CHECK(has(*mm, "SHOW GAMES OF HIDDEN SYSTEMS IN COLLECTIONS"));
   }
 
   // ---- screens: automatic collections
@@ -526,7 +503,7 @@ int main() {
     std::unique_ptr<Screen> h;
     Menu* m = open(h, cx, "menu.collections");
     CHECK(m != nullptr);
-    CHECK(go(*m, cx, tr("START ON GAMELIST")));
+    CHECK(go(*m, cx, tr("SHOW EMPTY SYSTEMS")));
     m->entry(size_t(m->cursor())).set_b(true);
     bool settings = false, game_data = false;
     for (const Toast& x : cx.sv->toasts.items()) {

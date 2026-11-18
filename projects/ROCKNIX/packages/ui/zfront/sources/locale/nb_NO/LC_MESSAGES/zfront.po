@@ -1,0 +1,2485 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: nb_NO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "SKADET SPILLISTE"
+
+msgid "Not available yet"
+msgstr "Ikke tilgjengelig ennå"
+
+msgid "Game lists updated"
+msgstr "Spillister oppdatert"
+
+msgid "COVERS ADDED"
+msgstr "OMSLAG LAGT TIL"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "YTELSESMODUS KAN HJELPE DETTE SPILLET"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "DETTE SPILLET KAN GÅ BEDRE MED YTELSESMODUS"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "SLÅ PÅ YTELSESMODUS FOR DETTE SPILLET"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "YTELSESMODUS PÅ FOR DETTE SPILLET"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Dette spillet kan gå bedre med ytelsesmodus: GPU-en og minnet kjører på full hastighet mens du spiller."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "SLUTT Å FORESLÅ YTELSESMODUS"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Ikke foreslå ytelsesmodus for dette spillet igjen."
+
+msgid "BATTERY"
+msgstr "BATTERI"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "IKKE NOK DATA ENNÅ"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Spill dette spillet i fem minutter eller mer på batteri, så vises anslaget her."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Med nåværende lading, i tråd med de siste øktene i dette spillet."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Med nåværende lading. Ingen økter i dette spillet ennå: gjennomsnittet for systemet brukes."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Med nåværende lading. Ingen økter i dette systemet ennå: gjennomsnittet for alle spill brukes."
+
+msgid "Never"
+msgstr "Aldri"
+
+msgid "What used the most"
+msgstr "Størst forbruk"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Siden siste fulle lading. Anslått."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Ingenting målt ennå. Det fylles opp mens du spiller."
+
+msgid "Asleep"
+msgstr "Dvale"
+
+msgid "Menus and system"
+msgstr "Menyer og system"
+
+msgid "Screen"
+msgstr "Skjerm"
+
+msgid "Charging"
+msgstr "Lader"
+
+msgid "About"
+msgstr "Om"
+
+msgid "Since full"
+msgstr "Siden full"
+
+msgid "Using now"
+msgstr "Brukes nå"
+
+msgid "Last hours"
+msgstr "Siste timer"
+
+msgid "Now"
+msgstr "Nå"
+
+msgid "More settings"
+msgstr "Flere innstillinger"
+
+msgid "Power saver"
+msgstr "Strømsparing"
+
+msgid "Screensaver after"
+msgstr "Skjermsparer etter"
+
+msgid "Turn on by itself at"
+msgstr "Slå på av seg selv kl."
+
+msgid "ADJUST"
+msgstr "JUSTER"
+
+msgid "Action"
+msgstr "Action"
+
+msgid "Adult"
+msgstr "Voksen"
+
+msgid "Adventure"
+msgstr "Eventyr"
+
+msgid "Beat'em Up"
+msgstr "Beat'em up"
+
+msgid "Casino"
+msgstr "Kasino"
+
+msgid "Casual Game"
+msgstr "Casual-spill"
+
+msgid "Hunting and Fishing"
+msgstr "Jakt og fiske"
+
+msgid "Fight"
+msgstr "Kamp"
+
+msgid "Race, Driving"
+msgstr "Racing, kjøring"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Flipper"
+
+msgid "Playing cards"
+msgstr "Kortspill"
+
+msgid "Role playing games"
+msgstr "Rollespill"
+
+msgid "Asiatic board game"
+msgstr "Asiatisk brettspill"
+
+msgid "Educational"
+msgstr "Pedagogisk"
+
+msgid "Music and Dance"
+msgstr "Musikk og dans"
+
+msgid "Platform"
+msgstr "Plattform"
+
+msgid "Puzzle-Game"
+msgstr "Puslespill"
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Reflection"
+msgstr "Tenkespill"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em up"
+
+msgid "Simulation"
+msgstr "Simulator"
+
+msgid "Sports"
+msgstr "Sport"
+
+msgid "Sports with Animals"
+msgstr "Sport med dyr"
+
+msgid "Strategy"
+msgstr "Strategi"
+
+msgid "Shooter"
+msgstr "Shooter"
+
+msgid "Not set"
+msgstr "Ikke angitt"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "man"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "søn"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "tir"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "ons"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "fre"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "lør"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "tor"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "apr"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "feb"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "jan"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "jun"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "mar"
+
+msgctxt "date"
+msgid "May"
+msgstr "mai"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "aug"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "des"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "jul"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "nov"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "okt"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "sep"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "SPILLDATA KUNNE IKKE LAGRES"
+
+msgid "Could not save the settings"
+msgstr "Innstillingene kunne ikke lagres"
+
+msgid "FILTER BY"
+msgstr "FILTRER ETTER"
+
+msgid "FAVORITES ONLY"
+msgstr "BARE FAVORITTER"
+
+msgid "LIST"
+msgstr "LISTE"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Det valgte temaet kunne ikke lastes: Zenith brukes"
+
+msgid "PAGE"
+msgstr "SIDE"
+
+msgid "Could not show this page"
+msgstr "Denne siden kunne ikke vises"
+
+msgid "INSTALLED"
+msgstr "INSTALLERT"
+
+msgid "SMART COLLECTIONS"
+msgstr "SMARTE SAMLINGER"
+
+msgid "EDIT FILTERS"
+msgstr "REDIGER FILTRE"
+
+msgid "NO OPTIONS"
+msgstr "INGEN VALG"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Er du sikker på at du vil slette '%s'?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Angi filtrene etterpå under Egne spillsamlinger."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Start grensesnittet på nytt for å ta i bruk endringene."
+
+msgid "Could not save the setting"
+msgstr "Innstillingen kunne ikke lagres"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "TILORDNE KONTROLLERE TIL SPILLERE"
+
+msgid "Could not start Bluetooth"
+msgstr "Bluetooth kunne ikke startes"
+
+msgid "Searching..."
+msgstr "Søker..."
+
+msgid "CONTROLLERS"
+msgstr "KONTROLLERE"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "BYTT BEKREFT- OG AVBRYT-KNAPPENE"
+
+msgid "ENABLE RUMBLE"
+msgstr "AKTIVER VIBRASJON"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "KONFIGURER RETROARCH-SNARVEIER AUTOMATISK"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "TILKOBLEDE KONTROLLERE"
+
+msgid "Not configured"
+msgstr "Ikke konfigurert"
+
+msgid "Unknown controller"
+msgstr "Ukjent kontroller"
+
+msgid "PAIRED"
+msgstr "PARET"
+
+msgid "Could not pair"
+msgstr "Kunne ikke pare"
+
+msgid "Connected"
+msgstr "Tilkoblet"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Fjerne alle Bluetooth-enheter?"
+
+msgid "Could not disconnect"
+msgstr "Kunne ikke koble fra"
+
+msgid "Could not connect"
+msgstr "Kunne ikke koble til"
+
+msgid "Could not remove"
+msgstr "Kunne ikke fjerne"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "KNAPP A / ØST"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "KNAPP B / SØR"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "KNAPP X / NORD"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "KNAPP Y / VEST"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "VENSTRE STICK"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "HØYRE STICK"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "AKTIVER SNARVEITAST"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "INNEBYGD KONTROLLER"
+
+msgid "GAMEPAD DETECTED"
+msgstr "SPILLKONTROLLER FUNNET"
+
+msgid "GAMEPADS DETECTED"
+msgstr "SPILLKONTROLLERE FUNNET"
+
+msgid "PRESS B TO CANCEL."
+msgstr "TRYKK PÅ B FOR Å AVBRYTE."
+
+msgid "Could not save the controller configuration"
+msgstr "Kontrollerkonfigurasjonen kunne ikke lagres"
+
+msgid "Controller configuration saved"
+msgstr "Kontrollerkonfigurasjon lagret"
+
+msgid "Controller configuration cancelled"
+msgstr "Kontrollerkonfigurasjon avbrutt"
+
+msgid "Controller disconnected"
+msgstr "Kontrolleren er koblet fra"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "FORTSETT Å HOLDE FOR Å AVBRYTE"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "HOLD NEDE EN VILKÅRLIG KNAPP I 3 SEKUNDER FOR Å AVBRYTE."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "HOLD NEDE EN KNAPP FOR Å HOPPE OVER. FORTSETT Å HOLDE FOR Å AVBRYTE."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "ALLE KNAPPENE ER FERDIGE"
+
+msgid "set"
+msgstr "angitt"
+
+msgid "skipped"
+msgstr "hoppet over"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "INGEN SNARVEITAST ER TILORDNET. DEN TRENGS FOR Å AVSLUTTE SPILL MED EN KONTROLLER."
+
+msgid "DATE & TIME"
+msgstr "DATO OG KLOKKESLETT"
+
+msgid "MONTH"
+msgstr "MÅNED"
+
+msgid "DAY"
+msgstr "DAG"
+
+msgid "HOUR"
+msgstr "TIME"
+
+msgid "MINUTE"
+msgstr "MINUTT"
+
+msgid "SET DATE & TIME"
+msgstr "ANGI DATO OG KLOKKESLETT"
+
+msgid "Date and time set"
+msgstr "Dato og klokkeslett angitt"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Med Wi-Fi stilles klokken automatisk."
+
+msgid "That folder is protected"
+msgstr "Den mappen er beskyttet"
+
+msgid "Outside the allowed folders"
+msgstr "Utenfor de tillatte mappene"
+
+msgid "Not enough free space"
+msgstr "Ikke nok ledig plass"
+
+msgid "That name already exists"
+msgstr "Det navnet finnes allerede"
+
+msgid "Cancelled"
+msgstr "Avbrutt"
+
+msgid "A folder cannot go into itself"
+msgstr "En mappe kan ikke legges inn i seg selv"
+
+msgid "That name is not valid"
+msgstr "Det navnet er ikke gyldig"
+
+msgid "Not found"
+msgstr "Ikke funnet"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Filen er større enn 4 GB: dette kortet kan ikke romme den"
+
+msgid "This card does not accept that name"
+msgstr "Dette kortet godtar ikke det navnet"
+
+msgid "This location is read-only"
+msgstr "Dette stedet er skrivebeskyttet"
+
+msgid "An error occurred"
+msgstr "Det oppstod en feil"
+
+msgid "%s of %s done"
+msgstr "%s av %s ferdig"
+
+msgid "item"
+msgstr "element"
+
+msgid "items"
+msgstr "elementer"
+
+msgid "link skipped"
+msgstr "lenke hoppet over"
+
+msgid "links skipped"
+msgstr "lenker hoppet over"
+
+msgid "This can't be undone."
+msgstr "Dette kan ikke angres."
+
+msgid "Files"
+msgstr "Filer"
+
+msgid "selected"
+msgstr "valgt"
+
+msgid "Cannot read this folder"
+msgstr "Kan ikke lese denne mappen"
+
+msgid "This folder is empty"
+msgstr "Denne mappen er tom"
+
+msgid "free"
+msgstr "ledig"
+
+msgid "File"
+msgstr "Fil"
+
+msgid "Folder"
+msgstr "Mappe"
+
+msgid "Link"
+msgstr "Lenke"
+
+msgid "Properties"
+msgstr "Egenskaper"
+
+msgid "Copy"
+msgstr "Kopier"
+
+msgid "Move"
+msgstr "Flytt"
+
+msgid "Paste here"
+msgstr "Lim inn her"
+
+msgid "Rename"
+msgstr "Gi nytt navn"
+
+msgid "New folder"
+msgstr "Ny mappe"
+
+msgid "Delete"
+msgstr "Slett"
+
+msgid "Select all"
+msgstr "Velg alle"
+
+msgid "Clear selection"
+msgstr "Fjern utvalg"
+
+msgid "Date"
+msgstr "Dato"
+
+msgid "Size"
+msgstr "Størrelse"
+
+msgid "Sort by"
+msgstr "Sorter etter"
+
+msgid "Hide hidden files"
+msgstr "Skjul skjulte filer"
+
+msgid "Show hidden files"
+msgstr "Vis skjulte filer"
+
+msgid "Actions"
+msgstr "Handlinger"
+
+msgid "Home"
+msgstr "Hjem"
+
+msgid "Games"
+msgstr "Spill"
+
+msgid "Game card"
+msgstr "Spillkort"
+
+msgid "USB drive"
+msgstr "USB-stasjon"
+
+msgid "Screenshots"
+msgstr "Skjermbilder"
+
+msgid "Go to"
+msgstr "Gå til"
+
+msgid "Ready to copy"
+msgstr "Klar til å kopiere"
+
+msgid "Ready to move"
+msgstr "Klar til å flytte"
+
+msgid "Warning"
+msgstr "Advarsel"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Dette er en systemfil. Hvis du gir den nytt navn, kan konsollen slutte å virke."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Dette er en systemfil. Hvis du sletter den, kan konsollen slutte å virke."
+
+msgid "Wait for the other job"
+msgstr "Vent på den andre jobben"
+
+msgid "Copied"
+msgstr "Kopiert"
+
+msgid "Deleted"
+msgstr "Slettet"
+
+msgid "Moved"
+msgstr "Flyttet"
+
+msgid "originals kept"
+msgstr "originaler beholdt"
+
+msgid "Copying"
+msgstr "Kopierer"
+
+msgid "Deleting"
+msgstr "Sletter"
+
+msgid "Moving"
+msgstr "Flytter"
+
+msgid "Calculating..."
+msgstr "Beregner..."
+
+msgid "Back"
+msgstr "Tilbake"
+
+msgid "Close"
+msgstr "Lukk"
+
+msgid "Mark"
+msgstr "Merk"
+
+msgid "Open"
+msgstr "Åpne"
+
+msgid "Page"
+msgstr "Side"
+
+msgid "WHILE PLAYING"
+msgstr "MENS DU SPILLER"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "FORTSETT SISTE SPILL VED OPPSTART"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Starter det siste spillet ditt fra autolagringen ved oppstart. B avbryter."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "HJEMMENY UNDER SPILL"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Eksperimentell. Hold nede START og den valgte skulderknappen i ett sekund mens et spill kjører, for å sette det på pause og åpne et panel med batteri, lysstyrke, volum, FORTSETT og AVSLUTT SPILL (SAVE STATE og LOAD STATE bare med RetroArchs nettverkskommandoer på)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "HJEMMENYKNAPPER"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Knappene som holdes nede sammen med START for å åpne hjemmenyen. Kombinasjoner med Select brukes av RetroArch."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "YTELSESFORSLAG"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Foreslår ytelsesmodus for spill som GPU-governoren holder tilbake."
+
+msgid "PLAY TIME LIMIT"
+msgstr "SPILLTIDSGRENSE"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Tid til å spille hver dag. En melding kommer 5 minutter før slutten (i spillet bare med RetroArchs nettverkskommandoer på), og så lukkes spillet. Tiden begynner å telle når dette slås på."
+
+msgid "SAVED GAMES"
+msgstr "LAGREDE SPILL"
+
+msgid "PICTURE AND CONTROL"
+msgstr "BILDE OG KONTROLL"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "MOONLIGHT-SPILLSTRØMMING"
+
+msgid "MORE"
+msgstr "MER"
+
+msgid "PLAY STATISTICS"
+msgstr "SPILLSTATISTIKK"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "VALG PER SYSTEM"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "ytelsesmodus"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU og minne på full hastighet mens du spiller"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "UKJENT SYSTEM"
+
+msgid "EMULATOR"
+msgstr "EMULATOR"
+
+msgid "The emulator and core that run this."
+msgstr "Emulatoren og kjernen som kjører dette."
+
+msgid "SYSTEM OPTIONS"
+msgstr "SYSTEMVALG"
+
+msgid "DISPLAY"
+msgstr "VISNING"
+
+msgid "GAMEPLAY"
+msgstr "SPILLOPPLEVELSE"
+
+msgid "ACTIONS"
+msgstr "HANDLINGER"
+
+msgid "RANDOM GAME"
+msgstr "TILFELDIG SPILL"
+
+msgid "COOLING PROFILE"
+msgstr "KJØLEPROFIL"
+
+msgid "AGGRESSIVE"
+msgstr "AGGRESSIV"
+
+msgid "MODERATE"
+msgstr "MODERAT"
+
+msgid "QUIET"
+msgstr "STILLE"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "CPU-SKALERINGSGOVERNOR"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GPU-SKALERINGSGOVERNOR"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "MANGOHUD-OVERLEGG"
+
+msgid "UNKNOWN GAME"
+msgstr "UKJENT SPILL"
+
+msgid "Sort name"
+msgstr "Sorteringsnavn"
+
+msgid "enter game sort name"
+msgstr "skriv inn sorteringsnavn for spillet"
+
+msgid "INVALID DATE"
+msgstr "UGYLDIG DATO"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "SPILLET KUNNE IKKE SLETTES"
+
+msgid "CONFIG"
+msgstr "KONFIGURASJON"
+
+msgid "CORE PROVIDED"
+msgstr "LEVERT AV KJERNEN"
+
+msgid "FULL"
+msgstr "FULL"
+
+msgid "SQUARE PIXEL"
+msgstr "KVADRATISK PIKSEL"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "PANELJUSTERING"
+
+msgid "SCREEN & SOUND"
+msgstr "SKJERM OG LYD"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "INAKTIV"
+
+msgid "MONITORING"
+msgstr "OVERVÅKING"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "OVERKLOKKING OG OVERVÅKING"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "BATTERI OG YTELSE"
+
+msgid "LIBRARY"
+msgstr "BIBLIOTEK"
+
+msgid "CHECK LIBRARY"
+msgstr "KONTROLLER BIBLIOTEKET"
+
+msgid "SAVE BACKUPS"
+msgstr "SIKKERHETSKOPIER AV LAGRINGER"
+
+msgid "LANGUAGE & TIME"
+msgstr "SPRÅK OG KLOKKESLETT"
+
+msgid "HOME MENU"
+msgstr "HJEMMENY"
+
+msgid "CHARGING"
+msgstr "LADER"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "SKJERMLYSSTYRKE"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "OVERSKRIVE SAVE STATE?"
+
+msgid "SAVE STATE"
+msgstr "LAGRE STATE"
+
+msgid "LOAD STATE"
+msgstr "LAST SAVE STATE"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "LASTE SAVE STATE? IKKE-LAGRET FREMGANG GÅR TAPT."
+
+msgid "RESUME"
+msgstr "FORTSETT"
+
+msgid "QUIT GAME"
+msgstr "AVSLUTT SPILL"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "VIRKELIG AVSLUTTE SPILLET?"
+
+msgid "AND MORE"
+msgstr "OG MER"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "INGEN PROBLEMER FUNNET"
+
+msgid "PROBLEMS FOUND"
+msgstr "PROBLEMER FUNNET"
+
+msgid "MISSING BIOS"
+msgstr "MANGLENDE BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "MULIG ØDELAGTE FILER"
+
+msgid "DUPLICATES"
+msgstr "DUPLIKATER"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "SPILL UTEN BILDE"
+
+msgid "NETWORK"
+msgstr "NETTVERK"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "KONTROLLER OG BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Kun for utvikling: alle widgets i menyrammeverket."
+
+msgid "WIDGET DEMO"
+msgstr "WIDGETDEMO"
+
+msgid "Unable to connect to server"
+msgstr "Kan ikke koble til serveren"
+
+msgid "Succesfully paired with server"
+msgstr "Paret med serveren"
+
+msgid "QUIT CURRENT GAME"
+msgstr "AVSLUTT GJELDENDE SPILL"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "OPPDATER MOONLIGHT-SPILL"
+
+msgid "PAIR WITH SERVER"
+msgstr "PAR MED SERVER"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "FJERN PARING MED SERVER"
+
+msgid "Unpaired and settings cleared"
+msgstr "Paringen fjernet og innstillingene tømt"
+
+msgid "Unpaired from server"
+msgstr "Paringen med serveren fjernet"
+
+msgid "SERVER IP"
+msgstr "SERVER-IP"
+
+msgid "PAIRING PIN"
+msgstr "PARINGS-PIN"
+
+msgid "HOST"
+msgstr "VERT"
+
+msgid "ONLINE GAMES"
+msgstr "NETTSPILL"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "BLI MED I ET NETPLAY-SPILL"
+
+msgid "NETPLAY NICKNAME"
+msgstr "NETPLAY-KALLENAVN"
+
+msgid "NETPLAY HOST"
+msgstr "NETPLAY-VERT"
+
+msgid "NETPLAY PORT"
+msgstr "NETPLAY-PORT"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Slår på Wi-Fi..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Wi-Fi-konfigurasjonsfeil"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi er på"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi er av"
+
+msgid "Wi-Fi region updated"
+msgstr "Wi-Fi-region oppdatert"
+
+msgid "Please wait..."
+msgstr "Vent litt..."
+
+msgid "Local play mode updated"
+msgstr "Lokal spillmodus oppdatert"
+
+msgid "The service did not answer"
+msgstr "Tjenesten svarte ikke"
+
+msgid "N/A"
+msgstr "I/T"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "WI-FI-NETTVERK"
+
+msgid "WI-FI COUNTRY"
+msgstr "WI-FI-LAND"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Angir radioreglene: kanalene du kan bruke."
+
+msgid "TRANSFER FILES"
+msgstr "OVERFØR FILER"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Send spill til konsollen fra en telefon eller datamaskin på dette nettverket."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "TILGJENGELIGE IP-ADRESSER:"
+
+msgid "LOCAL PLAY"
+msgstr "LOKAL SPILLING"
+
+msgid "LOCAL PLAY MODE"
+msgstr "MODUS FOR LOKAL SPILLING"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Oppretter et tilgangspunkt for netplay med andre konsoller."
+
+msgid "1 (HOST)"
+msgstr "1 (VERT)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (KLIENT 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (KLIENT 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (KLIENT 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ID FOR LOKAL SPILLING"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, sky, VPN og konsollens navn."
+
+msgid "NETWORK SERVICES"
+msgstr "NETTVERKSTJENESTER"
+
+msgid "ENABLE SSH"
+msgstr "AKTIVER SSH"
+
+msgid "SSH is off"
+msgstr "SSH er av"
+
+msgid "SSH is on"
+msgstr "SSH er på"
+
+msgid "Remote access to the console over the network."
+msgstr "Fjerntilgang til konsollen over nettverket."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "AKTIVER ENKEL HTTP-SERVER"
+
+msgid "HTTP server is off"
+msgstr "HTTP-serveren er av"
+
+msgid "HTTP server is on"
+msgstr "HTTP-serveren er på"
+
+msgid "FILE TRANSFER"
+msgstr "FILOVERFØRING"
+
+msgid "USB GADGET FUNCTION"
+msgstr "USB-GADGETFUNKSJON"
+
+msgid "USB networking is on. The console is at"
+msgstr "USB-nettverk er på. Konsollen finnes på"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Hva konsollen tilbyr på USB-C-porten."
+
+msgid "CLOUD SERVICES"
+msgstr "SKYTJENESTER"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "MONTER SKYSTASJON"
+
+msgid "Cloud drive mounted"
+msgstr "Skystasjon montert"
+
+msgid "Cloud drive unmounted"
+msgstr "Skystasjon avmontert"
+
+msgid "VPN SERVICES"
+msgstr "VPN-TJENESTER"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD-VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuard er av"
+
+msgid "WireGuard is on"
+msgstr "WireGuard er på"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE-VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscale er av"
+
+msgid "Tailscale is on"
+msgstr "Tailscale er på"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale kunne ikke koble til"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale ber deg logge inn"
+
+msgid "SHOW LINK"
+msgstr "VIS LENKE"
+
+msgid "TAILSCALE LOGIN"
+msgstr "TAILSCALE-PÅLOGGING"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "TAILSCALE: AUTENTISER PÅ NYTT:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Bruk bare bokstaver, tall og bindestreker"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Vertsnavnet er lagret. Det tas i bruk ved neste oppstart"
+
+msgid "The new name is used at the next boot."
+msgstr "Det nye navnet brukes ved neste oppstart."
+
+msgid "WEB FILE TRANSFER"
+msgstr "FILOVERFØRING PÅ NETT"
+
+msgid "Could not start the web transfer"
+msgstr "Nettoverføringen kunne ikke startes"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Lar en telefon eller datamaskin på dette nettverket sende spill til konsollen."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "KUNNE IKKE STARTE (PORTEN OPPTATT?)"
+
+msgid "WEB ADDRESS"
+msgstr "NETTADRESSE"
+
+msgid "WEB PIN"
+msgstr "NETT-PIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "NETTVERKSSTASJON (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "AKTIVER SAMBA"
+
+msgid "Samba is off"
+msgstr "Samba er av"
+
+msgid "Samba is on"
+msgstr "Samba er på"
+
+msgid "Shares the games folder with other computers."
+msgstr "Deler spillmappen med andre datamaskiner."
+
+msgid "SAMBA ADDRESS"
+msgstr "SAMBA-ADRESSE"
+
+msgid "SAMBA USER"
+msgstr "SAMBA-BRUKER"
+
+msgid "SAMBA PASSWORD"
+msgstr "SAMBA-PASSORD"
+
+msgid "Connecting to"
+msgstr "Kobler til"
+
+msgid "Connected successfully"
+msgstr "Tilkoblingen lyktes"
+
+msgid "Failed to connect"
+msgstr "Kunne ikke koble til"
+
+msgid "SAVED"
+msgstr "LAGRET"
+
+msgid "ENTERPRISE"
+msgstr "ENTERPRISE"
+
+msgid "SECURED"
+msgstr "SIKRET"
+
+msgid "Enterprise networks are not supported"
+msgstr "Enterprise-nettverk støttes ikke"
+
+msgid "Network forgotten"
+msgstr "Nettverket glemt"
+
+msgid "WI-FI KEY FOR "
+msgstr "WI-FI-NØKKEL FOR "
+
+msgid "CONNECTING..."
+msgstr "KOBLER TIL..."
+
+msgid "WI-FI SSID"
+msgstr "WI-FI-SSID"
+
+msgid "WI-FI KEY"
+msgstr "WI-FI-NØKKEL"
+
+msgid "REALLY SUSPEND ?"
+msgstr "VIRKELIG SETTE I DVALE?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "VIRKELIG SLÅ AV?"
+
+msgid "REALLY RESTART?"
+msgstr "VIRKELIG STARTE PÅ NYTT?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "VIRKELIG STARTE GRENSESNITTET PÅ NYTT?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "START GRENSESNITTET PÅ NYTT"
+
+msgid "TEST ACCOUNT"
+msgstr "TEST KONTO"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Kontrollerer brukernavn og passord mot retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "KOBLER TIL RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "PÅLOGGET"
+
+msgid "Enable unlocking of unofficial achievements."
+msgstr "Aktiver opplåsing av uoffisielle prestasjoner."
+
+msgid "UNOFFICIAL ACHIEVEMENTS"
+msgstr "UOFFISIELLE PRESTASJONER"
+
+msgid "LED NOTIFICATIONS"
+msgstr "LED-VARSLER"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Vis RetroAchievements-raden i hovedmenyen."
+
+msgid "NO SAVES FOUND"
+msgstr "INGEN LAGRINGER FUNNET"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "IKKE NOK LEDIG PLASS"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "DET FINNES ALLEREDE EN SIKKERHETSKOPI FRA DETTE MINUTTET"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "SIKKERHETSKOPIEN ER ØDELAGT ELLER MANGLER"
+
+msgid "BACKUP DONE"
+msgstr "SIKKERHETSKOPIERING FERDIG"
+
+msgid "SAVES RESTORED"
+msgstr "LAGRINGER GJENOPPRETTET"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "SKYSIKKERHETSKOPIERING FERDIG"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "SKYSIKKERHETSKOPIERING FEILET"
+
+msgid "BEFORE A RESTORE"
+msgstr "FØR EN GJENOPPRETTING"
+
+msgid "BACK UP SAVES NOW"
+msgstr "SIKKERHETSKOPIER LAGRINGER NÅ"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "SPILLLAGRINGER, SAVE STATES OG PSP-LAGRINGER, UTEN ROM-FILER ELLER MEDIA"
+
+msgid "CLOUD BACKUP"
+msgstr "SKYSIKKERHETSKOPI"
+
+msgid "BACKUPS"
+msgstr "SIKKERHETSKOPIER"
+
+msgid "NO BACKUPS YET"
+msgstr "INGEN SIKKERHETSKOPIER ENNÅ"
+
+msgid "BACKUP DELETED"
+msgstr "SIKKERHETSKOPI SLETTET"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "DETTE ERSTATTER DINE NÅVÆRENDE LAGRINGER MED DE FRA %s. FØRST LAGES EN SIKKERHETSKOPI AV DE NÅVÆRENDE."
+
+msgid "RESTORE"
+msgstr "GJENOPPRETT"
+
+msgid "DELETE BACKUP"
+msgstr "SLETT SIKKERHETSKOPI"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "SLETTE DENNE SIKKERHETSKOPIEN?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "DENNE VERSJONEN KAN IKKE NÅ SCREENSCRAPER"
+
+msgid "ALL GAMES"
+msgstr "ALLE SPILL"
+
+msgid "GAMES TO SCRAPE"
+msgstr "SPILL SOM SKAL SKRAPES"
+
+msgid "WITH MISSING MEDIA"
+msgstr "MED MANGLENDE MEDIA"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "UTEN NOEN MEDIA"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Hvilke spill i de valgte systemene som slås opp."
+
+msgid "1 DAY"
+msgstr "1 DAG"
+
+msgid "1 MONTH"
+msgstr "1 MÅNED"
+
+msgid "1 WEEK"
+msgstr "1 UKE"
+
+msgid "1 YEAR"
+msgstr "1 ÅR"
+
+msgid "15 DAYS"
+msgstr "15 DAGER"
+
+msgid "3 MONTHS"
+msgstr "3 MÅNEDER"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Spill som er skrapet innen denne tiden hoppes over, noe som sparer forespørsler."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "HENT MANGLENDE MEDIA AUTOMATISK"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Laster ned manglende omslag i bakgrunnen når konsollen er inaktiv."
+
+msgid "SCRAPER SETTINGS"
+msgstr "SKRAPERINNSTILLINGER"
+
+msgid "ACCOUNT"
+msgstr "KONTO"
+
+msgid "Choose at least one system."
+msgstr "Velg minst ett system."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Slår opp spillene på ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "INGEN SYSTEMER MED SPILL SOM SCREENSCRAPER KJENNER TIL"
+
+msgid "PICTURES"
+msgstr "BILDER"
+
+msgid "IMAGE"
+msgstr "BILDE"
+
+msgid "BOX FRONT"
+msgstr "FORSIDE AV ESKEN"
+
+msgid "TITLE SCREEN"
+msgstr "TITTELSKJERM"
+
+msgid "The main picture of each game."
+msgstr "Hovedbildet for hvert spill."
+
+msgid "THUMBNAIL"
+msgstr "MINIATYRBILDE"
+
+msgid "The small picture of each game."
+msgstr "Det lille bildet for hvert spill."
+
+msgid "LOGO"
+msgstr "LOGO"
+
+msgid "The logo of each game."
+msgstr "Logoen for hvert spill."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "FULL STØRRELSE"
+
+msgid "IMAGE SIZE"
+msgstr "BILDESTØRRELSE"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper krymper bildene før de sendes: raskere og lettere."
+
+msgid "AUTOMATIC"
+msgstr "AUTOMATISK"
+
+msgid "BRAZIL"
+msgstr "BRASIL"
+
+msgid "EUROPE"
+msgstr "EUROPA"
+
+msgid "FRANCE"
+msgstr "FRANKRIKE"
+
+msgid "GERMANY"
+msgstr "TYSKLAND"
+
+msgid "ITALY"
+msgstr "ITALIA"
+
+msgid "JAPAN"
+msgstr "JAPAN"
+
+msgid "SPAIN"
+msgstr "SPANIA"
+
+msgid "USA"
+msgstr "USA"
+
+msgid "WORLD"
+msgstr "VERDEN"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Foretrukket region for navn, datoer og bilder."
+
+msgid "NAMES"
+msgstr "NAVN"
+
+msgid "Replace the names of the games."
+msgstr "Erstatt navnene på spillene."
+
+msgid "DESCRIPTIONS"
+msgstr "BESKRIVELSER"
+
+msgid "Replace the descriptions."
+msgstr "Erstatt beskrivelsene."
+
+msgid "Download the rating of each game."
+msgstr "Last ned vurderingen for hvert spill."
+
+msgid "RATINGS"
+msgstr "VURDERINGER"
+
+msgid "EXTRA MEDIA"
+msgstr "EKSTRA MEDIA"
+
+msgid "VIDEOS"
+msgstr "VIDEOER"
+
+msgid "Videos are big and take longer to download."
+msgstr "Videoer er store og tar lengre tid å laste ned."
+
+msgid "MANUALS"
+msgstr "MANUALER"
+
+msgid "PDF manuals."
+msgstr "PDF-manualer."
+
+msgid "MAPS"
+msgstr "KART"
+
+msgid "Maps of the game."
+msgstr "Kart over spillet."
+
+msgid "Background pictures."
+msgstr "Bakgrunnsbilder."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "BAKSIDE AV ESKEN"
+
+msgid "The back of the box."
+msgstr "Baksiden av esken."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Bare for «Alle spill»: bilder som allerede finnes, lastes ned på nytt."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "ERSTATT EKSISTERENDE MEDIA"
+
+msgid "SCREENSCRAPER"
+msgstr "SCREENSCRAPER"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Valgfritt. Uten konto tillater ScreenScraper svært få forespørsler."
+
+msgid "IGDB"
+msgstr "IGDB"
+
+msgid "CLIENT ID"
+msgstr "KLIENT-ID"
+
+msgid "CLIENT SECRET"
+msgstr "KLIENTHEMMELIGHET"
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB trenger ingen konto."
+
+msgid "Asks IGDB for an access token."
+msgstr "Ber IGDB om et tilgangstoken."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Ber ScreenScraper om grensene dine."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "KOBLER TIL SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "ANONYM"
+
+msgid "LOGIN"
+msgstr "LOGG PÅ"
+
+msgid "REQUESTS TODAY"
+msgstr "FORESPØRSLER I DAG"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "FORESPØRSLER PER MINUTT"
+
+msgid "STOP"
+msgstr "STOPP"
+
+msgid "SCROLL"
+msgstr "RULL"
+
+msgid "SCRAPE COMPLETE"
+msgstr "SKRAPING FERDIG"
+
+msgid "SCRAPE STOPPED"
+msgstr "SKRAPING STOPPET"
+
+msgid "FOUND"
+msgstr "FUNNET"
+
+msgid "NOT FOUND"
+msgstr "IKKE FUNNET"
+
+msgid "ERRORS"
+msgstr "FEIL"
+
+msgid "MEDIA FILES"
+msgstr "MEDIAFILER"
+
+msgid "READING GAME LISTS"
+msgstr "LESER SPILLISTER"
+
+msgid "STOPPING"
+msgstr "STOPPER"
+
+msgid "SECONDS"
+msgstr "SEKUNDER"
+
+msgid "WAITING"
+msgstr "VENTER"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "STOPPET. DET SOM ER GJORT, ER LAGRET"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "INGEN SPILL Å SKRAPE MED DISSE FILTRENE"
+
+msgid "GAMES"
+msgstr "SPILL"
+
+msgid "PROBLEMS"
+msgstr "PROBLEMER"
+
+msgid "MEDIA MISSING"
+msgstr "MANGLENDE MEDIA"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "BRYTERE OG SKYVERE"
+
+msgid "The clock shows in the top right corner."
+msgstr "Klokken vises i øvre høyre hjørne."
+
+msgid "Volume saved"
+msgstr "Volum lagret"
+
+msgid "LISTS AND TEXT"
+msgstr "LISTER OG TEKST"
+
+msgid "TEXT"
+msgstr "TEKST"
+
+msgid "WI-FI PASSWORD"
+msgstr "WI-FI-PASSORD"
+
+msgid "SHOW A TOAST"
+msgstr "VIS EN MELDING"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi tilkoblet: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "VIS VOLUMLINJEN"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "VIS LYSSTYRKELINJEN"
+
+msgid "ASK A QUESTION"
+msgstr "STILL ET SPØRSMÅL"
+
+msgid "Delete all saved states of this game?"
+msgstr "Slette alle save states for dette spillet?"
+
+msgid "SHOW A MESSAGE"
+msgstr "VIS EN BESKJED"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Oppdateringen er installert. Start konsollen på nytt for å ta den i bruk."
+
+msgid "Restart the system now?"
+msgstr "Starte systemet på nytt nå?"
+
+msgid "Restarting..."
+msgstr "Starter på nytt..."
+
+msgid "DISABLED ENTRY"
+msgstr "DEAKTIVERT VALG"
+
+msgid "SELECTOR STYLE"
+msgstr "MARKØRSTIL"
+
+msgid "TITLE ALIGNMENT"
+msgstr "TITTELJUSTERING"
+
+msgid "LIST TEXT CASE"
+msgstr "STORE BOKSTAVER I LISTER"
+
+msgid "TEXT SIZE"
+msgstr "TEKSTSTØRRELSE"
+
+msgid "HIGH CONTRAST"
+msgstr "HØY KONTRAST"
+
+msgid "options"
+msgstr "valg"
+
+msgid "AUDIO"
+msgstr "LYD"
+
+msgid "Could not change the audio output"
+msgstr "Lydutgangen kunne ikke endres"
+
+msgid "BATTERY WARNING"
+msgstr "BATTERIVARSEL"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "AKTIVER HØRBAR BATTERIVARSEL"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "GRENSE FOR BATTERIVARSEL"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Starter dette spillet når konsollen starter, før menyene, én gang per oppstart."
+
+msgid "Reboot now"
+msgstr "Start på nytt nå"
+
+msgid "Later"
+msgstr "Senere"
+
+msgid "Default"
+msgstr "Standard"
+
+msgid "Arm (official)"
+msgstr "Arm (offisiell)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Åpen kildekode (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "TID IGJEN I DAG"
+
+msgid "UPTIME"
+msgstr "DRIFTSTID"
+
+msgid "No information available"
+msgstr "Ingen informasjon tilgjengelig"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "SYSTEMADMINISTRASJON OG TILBAKESTILLING"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr ""
+"ER DU SIKKER?\n"
+"\n"
+"DETTE KAN IKKE ANGRES."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "SIKKERHETSKOPIER KONFIGURASJONER"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr ""
+"ADVARSEL: DETTE STARTER GRENSESNITTET PÅ NYTT!\n"
+"\n"
+"NÅR SKRIPTET ER FERDIG, HUSK Å KOPIERE FILEN /storage/roms/backup/ROCKNIX_BACKUP.zip TIL ET TRYGT STED, ELLERS BLIR DEN SLETTET VED NESTE OMSTART!\n"
+"\n"
+"SIKKERHETSKOPIERE GJELDENDE KONFIGURASJON OG STARTE PÅ NYTT?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "GJENOPPRETT FRA SIKKERHETSKOPI"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr ""
+"ADVARSEL: DETTE STARTER ENHETEN PÅ NYTT!\n"
+"\n"
+"DEN EKSISTERENDE KONFIGURASJONEN BLIR OVERSKREVET!\n"
+"\n"
+"GJENOPPRETTE FRA SIKKERHETSKOPI OG STARTE PÅ NYTT?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "EMULATORADMINISTRASJON"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "TILBAKESTILL RETROARCH-KONFIGURASJONEN TIL STANDARD"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr ""
+"ADVARSEL: RETROARCH-KONFIGURASJONEN TILBAKESTILLES TIL STANDARD\n"
+"\n"
+"KONFIGURASJONER PER KJERNE BLIR IKKE BERØRT, OG DET LAGES INGEN SIKKERHETSKOPI!\n"
+"\n"
+"TILBAKESTILLE RETROARCH-KONFIGURASJONEN TIL STANDARD?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "TILBAKESTILL OVERLEGG (KJERNER, JUKSEKODER, SPILLKONTROLLERE OSV.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr ""
+"ADVARSEL: ALLE EGENDEFINERTE RETROARCH-OVERLEGG FJERNES\n"
+"\n"
+"EGENDEFINERTE KJERNER, JOYSTICKS, JUKSEKODER OSV. DET LAGES INGEN SIKKERHETSKOPI!\n"
+"\n"
+"TILBAKESTILLE RETROARCH-OVERLEGG TIL STANDARD?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "TILBAKESTILL RETROARCH FULLSTENDIG"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr ""
+"ADVARSEL: RETROARCH OG ALLE LAGREDE BRUKERKONFIGURASJONER TILBAKESTILLES TIL STANDARD\n"
+"\n"
+"KONFIGURASJONER PER KJERNE FJERNES, OG DET LAGES INGEN SIKKERHETSKOPI!\n"
+"\n"
+"TILBAKESTILLE RETROARCH?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "TILBAKESTILL MEDNAFEN-KONFIGURASJONEN TIL STANDARD"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr ""
+"ADVARSEL: MEDNAFEN-KONFIGURASJONEN TILBAKESTILLES TIL STANDARD\n"
+"\n"
+"DET LAGES INGEN SIKKERHETSKOPI!\n"
+"\n"
+"TILBAKESTILLE MEDNAFEN-KONFIGURASJONEN TIL STANDARD?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "TILBAKESTILL KONFIGURASJONER FOR SELVSTENDIGE EMULATORER TIL STANDARD"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr ""
+"ADVARSEL: KONFIGURASJONER FOR SELVSTENDIGE EMULATORER TILBAKESTILLES TIL STANDARD\n"
+"\n"
+"DET LAGES INGEN SIKKERHETSKOPI!\n"
+"\n"
+"TILBAKESTILLE KONFIGURASJONER FOR SELVSTENDIGE EMULATORER TIL STANDARD?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "TILBAKESTILL PORTMASTER FULLSTENDIG"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr ""
+"ADVARSEL: PORTMASTER TILBAKESTILLES TIL STANDARD\n"
+"\n"
+"DET LAGES INGEN SIKKERHETSKOPI!\n"
+"\n"
+"TILBAKESTILLE PORTMASTER TIL STANDARD?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "SYSTEMADMINISTRASJON"
+
+msgid "AUDIO RESET"
+msgstr "TILBAKESTILL LYD"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr ""
+"ADVARSEL: LYDINNSTILLINGENE TILBAKESTILLES TIL STANDARD OG SYSTEMET STARTER PÅ NYTT!\n"
+"\n"
+"TILBAKESTILLE LYDEN OG STARTE PÅ NYTT?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "TILBAKESTILL BATTERIMÅLEREN"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr ""
+"ADVARSEL: PMIC-BATTERIMÅLEREN TILBAKESTILLES OG SYSTEMET SLÅS AV!\n"
+"\n"
+"LA LADEREN VÆRE FRAKOBLET OG SLÅ PÅ ENHETEN IGJEN ETTER NOEN SEKUNDER. BATTERINIVÅET ANSLÅS PÅ NYTT UT FRA BATTERIETS HVILESPENNING OG BLIR NØYAKTIG IGJEN ETTER EN FULL LADING.\n"
+"\n"
+"TILBAKESTILLE BATTERIMÅLEREN OG SLÅ AV?"
+
+msgid "FACTORY RESET"
+msgstr "TILBAKESTILL TIL FABRIKKINNSTILLINGER"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr ""
+"ADVARSEL: DATAENE DINE OG ALLE ANDRE KONFIGURASJONER TILBAKESTILLES TIL STANDARD!\n"
+"\n"
+"HVIS DU VIL BEHOLDE INNSTILLINGENE DINE, LAG EN SIKKERHETSKOPI OG LAGRE DEN PÅ EN EKSTERN STASJON FØR DU KJØRER DETTE VALGET!\n"
+"\n"
+"TA UT SPILLKORTET FØR DU FORTSETTER!\n"
+"\n"
+"TILBAKESTILLE SYSTEMET OG STARTE PÅ NYTT?"
+
+msgid "KEYBOARD LAYOUT"
+msgstr "TASTATUROPPSETT"
+
+msgid "KEYBOARD VARIANT"
+msgstr "TASTATURVARIANT"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Velg tastaturvarianten for den valgte layouten (for eksempel døde taster eller alternativ plassering av taster)."
+
+msgid "TIMEZONE"
+msgstr "TIDSSONE"
+
+msgid "Run welcome again"
+msgstr "Kjør velkomsten på nytt"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Viser velkomstguiden for første oppstart igjen: språk, WiFi og tidssone."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "AKTIVER MANGOHUD-OVERLEGG"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "AKTIVER PEKESKJERMTASTATUR"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "AKTIVER ROCKNIX-SKJERMBILDE"
+
+msgid "SCREEN"
+msgstr "SKJERM"
+
+msgid "CONTRAST"
+msgstr "KONTRAST"
+
+msgid "GAMMA"
+msgstr "GAMMA"
+
+msgid "HUE"
+msgstr "FARGETONE"
+
+msgid "SATURATION"
+msgstr "METNING"
+
+msgid "LEDS"
+msgstr "LED-LYS"
+
+msgid "DISABLE POWER LED"
+msgstr "SLÅ AV STRØMLYSET"
+
+msgid "LED COLOR"
+msgstr "LED-FARGE"
+
+msgid "JOYSTICK LED"
+msgstr "JOYSTICK-LED"
+
+msgid "MAX"
+msgstr "MAKS"
+
+msgid "MID"
+msgstr "MIDDELS"
+
+msgid "MIN"
+msgstr "MIN"
+
+msgid "DEVICE"
+msgstr "ENHET"
+
+msgid "THIS DEVICE IS"
+msgstr "DENNE ENHETEN ER"
+
+msgid "Device will be switched on next reboot"
+msgstr "Enheten byttes ved neste omstart"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "OPPDAG SPILLKORT AUTOMATISK"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "AKTIVER SAMMENSLÅTT LAGRING"
+
+msgid "EXTERNAL"
+msgstr "EKSTERN"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "PRIMÆRT KORT FOR SAMMENSLÅTT LAGRING"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "ADVARSEL: HVIS DU ENDRER DET PRIMÆRE KORTET, KAN TILGANGEN TIL SPILL GÅ TAPT OG KREVE MANUELT INNGREP. FORTSETTE?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "MATE UT MICROSD-KORT"
+
+msgid "You may now remove the card."
+msgstr "Du kan nå ta ut kortet."
+
+msgid "PERFORMANCE"
+msgstr "YTELSE"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "STANDARD SKALERINGSGOVERNOR"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "STANDARD GPU-SKALERINGSGOVERNOR"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "AKTIVER CPU-OVERKLOKKING"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "AKTIVER GPU-OVERKLOKKING"
+
+msgid "GPU DRIVER"
+msgstr "GPU-DRIVER"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "GPU-driveren byttes ved neste omstart"
+
+msgid "Restarting to apply the theme"
+msgstr "Starter på nytt for å ta i bruk temaet"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Grensesnittet starter på nytt for å ta i bruk temaet"
+
+msgid "Dark"
+msgstr "Mørkt"
+
+msgid "Light"
+msgstr "Lyst"
+
+msgid "Theme default"
+msgstr "Temaets standard"
+
+msgid "Filled"
+msgstr "Fylt"
+
+msgid "Outline"
+msgstr "Omriss"
+
+msgid "Side bar"
+msgstr "Sidefelt"
+
+msgid "Underline"
+msgstr "Understreket"
+
+msgid "Centered"
+msgstr "Sentrert"
+
+msgid "Left"
+msgstr "Venstre"
+
+msgid "Lowercase"
+msgstr "Små bokstaver"
+
+msgid "Uppercase"
+msgstr "Store bokstaver"
+
+msgid "EXTRA LARGE"
+msgstr "EKSTRA STOR"
+
+msgid "LARGE"
+msgstr "STOR"
+
+msgid "SMALL"
+msgstr "LITEN"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Tekststørrelse i menyer, dialoger og hjelpelinjer"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Helt hvit eller svart tekst, solide paneler og en tykkere markør"
+
+msgid "CONTROL OPTIONS"
+msgstr "KONTROLLVALG"
+
+msgid "TOP BAR"
+msgstr "ØVERSTE LINJE"
+
+msgid "BEDSIDE CLOCK"
+msgstr "NATTKLOKKE"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Når laderen er koblet til, vises en stor klokke etter så lang tid uten at du rører konsollen, i stedet for skjermspareren. Hvilken som helst knapp lukker den. Aldri mens et spill er åpent."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "NEDLASTINGEN KUNNE IKKE AVBRYTES"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "NEDLASTINGEN AVBRUTT"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "OPPDATERINGEN KUNNE IKKE LASTES NED. SJEKK TILKOBLINGEN OG PRØV IGJEN."
+
+msgid "No update source available"
+msgstr "Ingen oppdateringskilde tilgjengelig"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "TVING NESTE OPPDATERING"
+
+msgid "UPDATING"
+msgstr "OPPDATERER"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "AVBRYT NEDLASTING"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "AVBRYTE NEDLASTINGEN? DEN DELVISE FILEN SLETTES."
+
+msgid "Checking..."
+msgstr "Sjekker..."
+
+msgid "available"
+msgstr "tilgjengelig"
+
+msgid "SKIP ALL"
+msgstr "HOPP OVER ALT"
+
+msgid "Welcome"
+msgstr "Velkommen"
+
+msgid "of"
+msgstr "av"
+
+msgid "Choose your language"
+msgstr "Velg språk"
+
+msgid "Language"
+msgstr "Språk"
+
+msgid "You can change it later in System."
+msgstr "Du kan endre det senere under System."
+
+msgid "Connect to WiFi"
+msgstr "Koble til WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Klokke, oppdateringer og filoverføring."
+
+msgid "Continue"
+msgstr "Fortsett"
+
+msgid "Not now"
+msgstr "Ikke nå"
+
+msgid "Choose a network"
+msgstr "Velg et nettverk"
+
+msgid "Choose another network"
+msgstr "Velg et annet nettverk"
+
+msgid "Where are you?"
+msgstr "Hvor er du?"
+
+msgid "Time zone"
+msgstr "Tidssone"
+
+msgid "Sets your local time."
+msgstr "Stiller inn lokal tid."
+
+msgid "Keep UTC"
+msgstr "Behold UTC"
+
+msgid "LOADING..."
+msgstr "LASTER..."
+
+msgid "All set"
+msgstr "Alt klart"
+
+msgid "Add games from your phone"
+msgstr "Legg til spill fra telefonen"
+
+msgid "Network"
+msgstr "Nettverk"
+
+msgid "Start opens the menu"
+msgstr "Start åpner menyen"
+
+msgid "anywhere"
+msgstr "hvor som helst"
+
+msgid "Screen looks wrong?"
+msgstr "Ser skjermen rar ut?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Begynn å spille"
+
+msgid "PLAY THEME MUSIC"
+msgstr "SPILL AV TEMAMUSIKK"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "INGEN NETTVERKSTILKOBLING"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "BATTERIBRUK (FULL LADING)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "TOTAL SPILLTID"
+
+msgid "LAST FIVE WEEKS"
+msgstr "SISTE FEM UKER"
+
+msgid "2 WEEKS AGO"
+msgstr "2 UKER SIDEN"
+
+msgid "3 WEEKS AGO"
+msgstr "3 UKER SIDEN"
+
+msgid "4 WEEKS AGO"
+msgstr "4 UKER SIDEN"
+
+msgid "THIS WEEK"
+msgstr "DENNE UKEN"
+
+msgid "MOST PLAYED GAMES"
+msgstr "MEST SPILTE SPILL"
+
+msgid "TIME PER SYSTEM"
+msgstr "TID PER SYSTEM"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "INGENTING SPILT ENNÅ. SPILL ET SPILL, SÅ VISES DET HER."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Bare %d minutt spilletid igjen i dag"
+msgstr[1] "Bare %d minutter spilletid igjen i dag"
+
+msgid "Power saver on"
+msgstr "Strømsparing på"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "UVENTET SVAR FRA RETROACHIEVEMENTS"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "IKKE TILGJENGELIG I DENNE VERSJONEN"
+
+msgid "%i min ago"
+msgstr "%i min siden"
+
+msgid "%i h ago"
+msgstr "%i t siden"
+
+msgid "%i d ago"
+msgstr "%i d siden"
+
+msgid "CONTINUE PLAYING"
+msgstr "FORTSETT Å SPILLE"
+
+msgid "START NOW"
+msgstr "START NÅ"
+
+msgid "RESUMING"
+msgstr "FORTSETTER"
+
+msgid "STARTING IN %i"
+msgstr "STARTER OM %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacks"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Vertikal"
+
+msgid "recently added"
+msgstr "nylig lagt til"
+
+msgid "unfinished"
+msgstr "uferdige"
+
+msgid "most played this week"
+msgstr "mest spilt denne uken"
+
+msgid "BOOKS"
+msgstr "BØKER"
+
+msgid "screenshots"
+msgstr "skjermbilder"
+
+msgid "media player"
+msgstr "mediaspiller"
+
+msgid "NETWORK ERROR"
+msgstr "NETTVERKSFEIL"
+
+msgid "SERVER BUSY"
+msgstr "SERVEREN ER OPPTATT"
+
+msgid "SERVER ERROR"
+msgstr "SERVERFEIL"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "KAN IKKE SKRIVE SPILLISTEN"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "PÅLOGGINGEN FEILET. SJEKK BRUKERNAVN OG PASSORD"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER ER STENGT FOR DENNE KONTOEN AKKURAT NÅ"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER ER UNDER VEDLIKEHOLD"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "DENNE PROGRAMVAREN ER BLOKKERT AV SCREENSCRAPER"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "DAGLIG SKRAPEKVOTE NÅDD. PRØV IGJEN I MORGEN"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "FOR MANGE UKJENTE ROM-FILER I DAG. PRØV IGJEN I MORGEN"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "INGEN PLASS IGJEN PÅ KORTET"
+
+msgid "INVALID CREDENTIALS"
+msgstr "UGYLDIG LEGITIMASJON"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "OPPGI IGDB-KLIENT-ID OG HEMMELIGHET UNDER KONTO FØRST"
+
+msgid "SCRAPING STOPPED"
+msgstr "SKRAPINGEN STOPPET"
+
+msgid "GAME NOT FOUND"
+msgstr "SPILLET BLE IKKE FUNNET"
+
+msgid "NO OTHER GAME"
+msgstr "INGEN ANDRE SPILL"
+
+msgid "Time is up for today"
+msgstr "Tiden er ute for i dag"
+
+msgid "SHOW DATE TIME"
+msgstr "VIS DATO OG KLOKKESLETT"
+
+msgid "DATE FORMAT"
+msgstr "DATOFORMAT"
+
+msgid "TIME FORMAT"
+msgstr "KLOKKESLETTFORMAT"
+
+msgid "ACCENTS"
+msgstr "ACCENTER"
+
+msgid "SHOW"
+msgstr "VIS"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "VIS VIDEOFORHÅNDSVISNINGER"
+
+msgid "Device paired"
+msgstr "Enheten er paret"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "TILLATE DENNE ENHETEN?"
+
+msgid "RECEIVED"
+msgstr "MOTTATT"
+
+msgid "QR CODE"
+msgstr "QR-KODE"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "AKKURAT NÅ"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d MINUTT SIDEN"
+msgstr[1] "%d MINUTTER SIDEN"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d TIME SIDEN"
+msgstr[1] "%d TIMER SIDEN"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d DAG SIDEN"
+msgstr[1] "%d DAGER SIDEN"
+
+msgid "NO PAIRED DEVICES"
+msgstr "INGEN PAREDE ENHETER"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "GLEMME DENNE ENHETEN?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "GLEM ALLE ENHETER"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "GLEMME ALLE ENHETER?"
+
+msgid "PAIRED DEVICES"
+msgstr "PAREDE ENHETER"
+
+msgid "SHOW QR CODE"
+msgstr "VIS QR-KODE"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Skann den med telefonkameraet: siden åpnes og kjenner PIN-koden."
+
+msgid "Phones that need no PIN."
+msgstr "Telefoner som ikke trenger PIN."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "GJENOPPRETTE LAGRINGER FRA NETT?"
+
+msgid "BUILD ID"
+msgstr "BYGGE-ID"
+
+msgid "KERNEL"
+msgstr "KJERNE"
+
+msgid "OPERATING SYSTEM"
+msgstr "OPERATIVSYSTEM"
+
+msgid "SYSTEM INFORMATION"
+msgstr "SYSTEMINFORMASJON"
+
+msgid "BATTERY INFORMATION"
+msgstr "BATTERIINFORMASJON"
+
+msgid "DISK SPACE"
+msgstr "DISKPLASS"
+
+msgid "HOST NAME"
+msgstr "VERTSNAVN"
+
+msgid "NETWORK INFORMATION"
+msgstr "NETTVERKSINFORMASJON"
+
+msgid "BATTERY HEALTH"
+msgstr "BATTERIHELSE"
+
+msgid "BATTERY REMAINING"
+msgstr "BATTERI IGJEN"
+
+msgid "BATTERY STATE"
+msgstr "BATTERISTATUS"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "CPU-INFORMASJON"
+
+msgid "CPU TEMPERATURE"
+msgstr "CPU-TEMPERATUR"
+
+msgid "CPU FAN"
+msgstr "CPU-VIFTE"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "GPU NÅVÆRENDE FREKVENS"
+
+msgid "GPU INFORMATION"
+msgstr "GPU-INFORMASJON"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "GPU MAKSIMAL FREKVENS"
+
+msgid "GPU TEMPERATURE"
+msgstr "GPU-TEMPERATUR"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM TILGJENGELIG"
+
+msgid "RAM CAPACITY"
+msgstr "RAM-KAPASITET"
+
+msgid "RAM INFORMATION"
+msgstr "RAM-INFORMASJON"
+
+msgid "CURRENT FREQUENCY"
+msgstr "NÅVÆRENDE FREKVENS"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "MAKSIMAL FREKVENS"
+
+msgid "DISCHARGING"
+msgstr "LADER UT"
+
+msgid "NOT CHARGING"
+msgstr "LADER IKKE"
+
+msgid "Follows the language until you choose one here."
+msgstr "Følger språket til du velger et her."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Ingen nettverk. Sett microSD-kortet i en PC og kopier hvert spill til mappen for systemet, inne i roms (for eksempel roms/snes). Eller koble til WiFi og kom tilbake hit for å legge til spill fra telefonen."
+
+msgid "Add games"
+msgstr "Legg til spill"
+
+msgid "left, in the menus"
+msgstr "igjen, i menyene"
+
+msgid "From your phone or microSD"
+msgstr "Fra telefonen eller microSD"
+
+msgid "Web transfer turned off"
+msgstr "Nettoverføring slått av"

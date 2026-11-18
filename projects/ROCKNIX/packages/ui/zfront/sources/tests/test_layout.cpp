@@ -4,12 +4,15 @@
 // Zenith Next always; ZF_LAYOUT_ZENITH=<folder>: also Zenith Minimal (es-theme-zenith, -dark) by the same rules, counted apart. ZF_LAYOUT_REPORT=1 prints the table of measured margins. ZF_ES_THEMES: folder of the real ES themes (otherwise, empty ones).
 // ZF_LAYOUT_ACCESS=0 leaves out the LARGE and EXTRA LARGE + high contrast passes (480x320, 640x480, 720x720).
 // ZF_LAYOUT_LANG=es with ZF_LOCALE_DIR: measures in that language, longer than English. ZF_LAYOUT_PNG=<dir> and ZF_LAYOUT_PNG_SIZE=WxH: saves each screen with the grid over it.
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
 #include <iterator>
@@ -18,9 +21,13 @@
 #include <string>
 #include <vector>
 
+#include "scan.hpp"  // kCountPending (the "Add games" card)
 #include "app.hpp"
+#include "bootargs.hpp"
 #include "check.hpp"
 #include "cpu.hpp"
+#include "dock_screen.hpp"
+#include "homemenu.hpp"
 #include "es_theme.hpp"
 #include "gfx.hpp"
 #include "i18n.hpp"
@@ -58,6 +65,7 @@ std::string find_base(const char* name) {
 }
 
 int g_bad = 0;
+std::string g_user_sel, g_user_align;  // the user's SELECTOR STYLE / TITLE ALIGNMENT of the pass being measured (APPEARANCE, as main.cpp applies them)
 int g_zenith = 0;
 bool g_report_only = false;  // Zenith Minimal is not on the grid: its failures are counted apart and do not fail the test
 std::map<std::string, int> g_seen;  // what was measured, by kind: a rule nothing goes through proves nothing
@@ -106,6 +114,7 @@ void check_screen(const char* theme, int w, int h, const char* screen, const rem
       bad(theme, w, h, screen, "fuera de margen lateral (" + std::to_string(int(m)) + "): " + q.tag + " x=" + std::to_string(int(q.x)) + ".." + std::to_string(int(q.x + q.w)));
     if (q.y < mt - 1.0f || q.y + q.h > float(h) - mt + 1.0f)
       bad(theme, w, h, screen, "fuera de margen vertical (" + std::to_string(int(mt)) + "): " + q.tag + " y=" + std::to_string(int(q.y)) + ".." + std::to_string(int(q.y + q.h)));
+    if (q.tag == "fila cortada") bad(theme, w, h, screen, "fila de la lista cortada a medias al pie: y=" + std::to_string(int(q.y)) + ".." + std::to_string(int(q.y + q.h)));
     if (q.grid && (q.anchor == 'L' || q.anchor == 'B') && !on_column(g, q.x)) bad(theme, w, h, screen, "fuera de columna: " + q.tag + " x=" + std::to_string(int(q.x)));
     if (q.grid && (q.anchor == 'R' || q.anchor == 'B') && !on_column_end(g, q.x + q.w)) bad(theme, w, h, screen, "fin fuera de columna: " + q.tag + " r=" + std::to_string(int(q.x + q.w)));
     // the cells: every left edge on a vertical line, every right end too; a container on the lines in both directions
@@ -157,6 +166,17 @@ void save_shot(std::vector<Op> ops, Assets& a, const char* theme, int w, int h, 
   const char* only = std::getenv("ZF_LAYOUT_PNG_SIZE");  // WxH: the pictures are heavy, only of one size
   const char* dir = std::getenv("ZF_LAYOUT_PNG");
   if (!dir || !only || std::to_string(w) + "x" + std::to_string(h) != only) return;
+  if (const char* sub = std::getenv("ZF_LAYOUT_PNG_ONLY")) {  // pieces of the screen name, comma separated: only those pictures (e.g. "bienvenida" or "reloj,pildora")
+    bool hit = false;
+    const std::string list = sub;
+    for (size_t from = 0; from <= list.size();) {
+      size_t to = list.find(',', from);
+      if (to == std::string::npos) to = list.size();
+      if (std::string(name).find(list.substr(from, to - from)) != std::string::npos) hit = true;
+      from = to + 1;
+    }
+    if (!hit) return;
+  }
   const Color line{255, 0, 90, 120};
   for (int i = 0; i < 12; ++i) {
     ops.push_back(Op::rect(g.col(i), 0, 1, float(h), line));
@@ -186,17 +206,33 @@ void measure_screen(Ctx& cx, Screen& s, const char* theme, int w, int h, const c
 
 /// The menus and the battery screens of a theme: at the top, in the middle and at the end of their lists, plus a list picker.
 void measure_menus_once(const std::string& gen_dir, const char* theme, int w, int h, const std::string& tmp, std::vector<remake::Box>& boxes, bool report) {
+  if (const char* only = std::getenv("ZF_LAYOUT_ONLY_THEME")) {  // to look at one theme: the others are skipped
+    if (std::string(theme) != only) return;
+  }
   static std::vector<std::unique_ptr<Ctx>> keep;  // every Ctx stays alive: the caches of the shapes are keyed on the address of the Assets
   keep.push_back(std::make_unique<Ctx>());
   Ctx& cx = *keep.back();
   std::string err;
   CHECK(Theme::load(gen_dir, ratio_name(unsigned(w), unsigned(h)), cx.th, err));
   CHECK(cx.assets.load_font(cx.th.path(cx.th.str("font")), err));
+  if (const std::string_view alt = cx.th.str("esFontAlt", ""); !alt.empty()) cx.assets.load_alt_font(std::string(alt), err);  // the skins' second face
   cx.w = float(w), cx.h = float(h);
   cx.sv->cmd.dry_run = true;
-  write(tmp + "/system.cfg", "system.language=en_US\naudio.volume=40\n");
-  write(tmp + "/es_settings.cfg", "");
+  std::string sys_cfg = "system.language=en_US\naudio.volume=40\n";
+  if (!g_user_sel.empty()) sys_cfg += "zfront.sel_style=" + g_user_sel + "\n";
+  if (!g_user_align.empty()) sys_cfg += "zfront.header_align=" + g_user_align + "\n";
+  write(tmp + "/system.cfg", sys_cfg);
+  // the text size and the contrast of the variant measure_menus chose, as the user would have saved them: `ui_prefs::on_status` below applies the saved
+  // settings, so an access set only with `ui::set_access` was put back to normal and the LARGE and XL+HC runs measured the normal menus
+  std::string es_cfg;
+  const ui::Access acc = ui::access();
+  if (acc.size == ui::TextSize::Small) es_cfg += "<string name=\"TextSize\" value=\"small\"/>" + std::string(1, char(10));
+  if (acc.size == ui::TextSize::Large) es_cfg += "<string name=\"TextSize\" value=\"large\"/>" + std::string(1, char(10));
+  if (acc.size == ui::TextSize::XLarge) es_cfg += "<string name=\"TextSize\" value=\"xlarge\"/>" + std::string(1, char(10));
+  if (acc.contrast) es_cfg += "<bool name=\"HighContrast\" value=\"true\"/>" + std::string(1, char(10));
+  write(tmp + "/es_settings.cfg", es_cfg);
   cx.conf = SystemConf::load(tmp + "/system.cfg");
+  boot::apply_user_theme(cx.th, [&](const std::string& k) { return cx.conf.get_or(k, ""); });  // the user's choices over the theme's own
   cx.es = EsSettings::load(tmp + "/es_settings.cfg");
   SystemConf::lock_path() = tmp + "/lock";
   oscontract::reset_for_test();
@@ -213,11 +249,21 @@ void measure_menus_once(const std::string& gen_dir, const char* theme, int w, in
   ui_prefs::on_status(cx, cx.status);
   const remake::Grid g{float(w), float(h)};
   setenv("ZF_PLAYLOG", (tmp + "/no-playlog.tsv").c_str(), 1);  // no log and no systems: the empty state of the statistics
+  {  // the file manager's folder: folders, files of every kind, long names, enough rows to scroll (never /storage)
+    const std::string fr = tmp + "/files";
+    ::mkdir(fr.c_str(), 0755);
+    for (const char* d : {"media", "hacks", "A folder whose name is far too long to fit in any row of any screen at all"}) ::mkdir((fr + "/" + d).c_str(), 0755);
+    const char* names[] = {"Chrono Trigger.sfc", "Donkey Kong Country.sfc", "cover.png", "gamelist.xml", "backup-saves.tar.gz",
+                           "A file whose name is far too long to fit in any row of any screen at all.sfc", "notes.txt", "Super Metroid.sfc", "Zelda - A Link to the Past.sfc",
+                           "Final Fantasy VII (disc 1).chd", "screenshot-001.png", "readme.md", "a.bin", "b.bin", "c.bin", "d.bin", "e.bin", "f.bin"};
+    for (const char* f : names) write(fr + "/" + f, std::string(5000, 'x'));
+    setenv("ZF_FILES_ROOT", fr.c_str(), 1);
+  }
   for (const char* name : {"menu.main", "menu.ui", "menu.quit", "menu.system", "menu.g.screen", "menu.g.look", "menu.g.panel", "menu.g.power", "menu.g.power.adv", "menu.g.library", "menu.g.system", "menu.g.system.adv", "menu.g.lang",
                            "menu.sound", "menu.network", "menu.network.wifi", "menu.network.manual", "menu.network.transfer", "menu.network.services", "menu.controllers", "menu.controllers.players", "menu.controllers.btpair", "menu.controllers.btdevices", "menu.controllers.detect",
                            "menu.collections", "menu.collections.systems", "menu.collections.auto", "menu.collections.custom", "menu.game", "menu.game.systems", "menu.game.ai", "menu.game.bios", "menu.library_doctor", "menu.game.latency",
                            "menu.retroachievements", "menu.scraper", "menu.scraper.systems", "menu.scraper.options", "menu.scraper.account", "menu.updates", "menu.netplay", "menu.netplay.lobby", "menu.moonlight", "menu.bezelproject", "menu.system.info", "menu.system_options", "menu.game_options",
-                           "menu.savestates", "menu.savebackup", "menu.battery", "menu.battery.usage", "menu.game.stats", "menu.home"}) {
+                           "menu.savestates", "menu.savebackup", "menu.battery", "menu.battery.usage", "menu.game.stats", "menu.home", "menu.files", "menu.datetime"}) {
     auto s = Registry::instance().make(name, cx, "");
     if (!s) {  // needs something this test does not have (an argument, a device)
       ++g_seen[std::string("sin abrir ") + name];
@@ -243,6 +289,188 @@ void measure_menus_once(const std::string& gen_dir, const char* theme, int w, in
       }
       }
     }
+  }
+  {  // the file manager selecting (a box instead of each icon), inside a folder (the ".." row) and with the copy / delete card on top
+    auto fm = Registry::instance().make("menu.files", cx, "");
+    CHECK(fm != nullptr);
+    if (fm) {
+      fm->handle(Action::Down, cx);
+      for (int i = 0; i < 4; ++i) fm->handle(Action::Y, cx);
+      measure_screen(cx, *fm, theme, w, h, "files-seleccion", g, boxes, report);
+      fm->handle(Action::B, cx);  // clears the selection
+      fm->handle(Action::A, cx);  // into the first folder
+      measure_screen(cx, *fm, theme, w, h, "files-subcarpeta", g, boxes, report);
+    }
+    auto pg = Registry::instance().make("menu.files", cx, "@progress-test");
+    CHECK(pg != nullptr);
+    if (pg) measure_screen(cx, *pg, theme, w, h, "files-progreso", g, boxes, report);
+    auto pc = Registry::instance().make("menu.files", cx, "@progress-calc");  // still counting the tree: "Calculating..."
+    CHECK(pc != nullptr);
+    if (pc) measure_screen(cx, *pc, theme, w, h, "files-calculando", g, boxes, report);
+  }
+  {  // first-boot welcome: the four steps, long lists (scroll), a very long zone name, region change with R
+    setenv("ZF_WELCOME_WIFI", "1", 1);
+    setenv("ZF_WELCOME_LANGS", "es_ES,ca_ES,cs_CZ,cy_GB,de_DE,el_GR,en_GB,es_MX,eu_ES,fi_FI,fr_FR,gl_ES,hu_HU,id_ID,it_IT,ja_JP,ko_KR,nb_NO,nl_NL,nn_NO,oc_FR,pl_PL,pt_BR,pt_PT,ro_RO,ru_RU,sk_SK,sv_SE,tr_TR,uk_UA,vi_VN,zh_CN,zh_TW", 1);  // every language zfront has a catalog for: the long list must scroll
+    std::string zl = "UTC,America/Argentina/ComodRivadavia,America/New_York,Asia/Kolkata,Africa/Abidjan,Pacific/Kiritimati";
+    for (const char* c : {"Lisbon", "London", "Madrid", "Paris", "Rome", "Berlin", "Vienna", "Warsaw", "Athens", "Oslo", "Prague"}) zl += std::string(",Europe/") + c;
+    setenv("ZF_WELCOME_ZONES", zl.c_str(), 1);
+    for (const char* arg : {"", "2", "3", "4"}) {
+      auto ws = Registry::instance().make("menu.welcome", cx, arg);
+      CHECK(ws != nullptr);
+      if (!ws) continue;
+      ++g_seen["bienvenida"];
+      int at = 0;
+      for (int step : {0, 3, 7, 12}) {
+        for (; at < step; ++at) ws->handle(Action::Down, cx);
+        char tag[48];
+        std::snprintf(tag, sizeof tag, "bienvenida%s@%d", arg, step);
+        measure_screen(cx, *ws, theme, w, h, tag, g, boxes, report);
+      }
+      if (std::string(arg) == "3") {  // R changes the region: the list rebuilds and must still fit
+        ws->handle(Action::R, cx);
+        measure_screen(cx, *ws, theme, w, h, "bienvenida3-region", g, boxes, report);
+      }
+    }
+    unsetenv("ZF_WELCOME_WIFI"), unsetenv("ZF_WELCOME_LANGS"), unsetenv("ZF_WELCOME_ZONES");
+  }
+  {  // the bedside clock (nine drifts) and the plug-in notice (over a menu, at rest, fading, still and with a toast under it): dock_screen.cpp
+    Status raw = Status::demo("10:42");
+    raw.battery = Battery{78, true, true};
+    ui_prefs::on_status(cx, raw);
+    std::tm tmv{};
+    tmv.tm_year = 126, tmv.tm_mon = 10, tmv.tm_mday = 15, tmv.tm_hour = 12, tmv.tm_min = 0;  // Sunday 15 Nov 2026
+    const int64_t base_min = int64_t(timegm(&tmv)) / 60;
+    for (int m = 0; m < 9; ++m) {
+      std::vector<Op> ops;
+      boxes.clear();
+      dock::draw_clock(cx, dock::burn_in_offset(m), base_min + m, ops);
+      ++g_seen["reloj"];
+      check_screen(theme, w, h, "reloj", g, boxes, report);
+      char tag[24];
+      std::snprintf(tag, sizeof tag, "reloj-m%d", m);
+      if (m <= 1) save_shot(std::move(ops), cx.assets, theme, w, h, m == 0 ? "reloj" : tag, g);
+    }
+    {  // no battery: the card has no bar; the clock not set: dashes
+      Status nb = Status::demo("");
+      nb.battery.reset();
+      ui_prefs::on_status(cx, nb);
+      std::vector<Op> ops;
+      boxes.clear();
+      dock::draw_clock(cx, dock::burn_in_offset(4), base_min, ops);
+      check_screen(theme, w, h, "reloj-sin-bateria", g, boxes, report);
+      ui_prefs::on_status(cx, raw);
+    }
+    auto under = Registry::instance().make("menu.main", cx, "");
+    CHECK(under != nullptr);
+    if (under) {
+      const float times[] = {0.3f, 0.6f, 0.9f};
+      for (const bool motion : {true, false}) {
+        for (const float t : times) {
+          std::vector<Op> ops;
+          ui::header_box() = ui::HeaderBox{};
+          under->draw(cx, ops);
+          const ui::HeaderBox hb = ui::header_box();
+          boxes.clear();  // only the notice is measured: the menu's own boxes were measured with the menu
+          dock::pill_state() = dock::PillState{true, t, motion};
+          draw_toasts(cx, ops);
+          ++g_seen["pildora"];
+          CHECK_EQ(boxes.size(), 1ul);
+          if (hb.valid && !boxes.empty()) CHECK(boxes[0].y >= hb.line_y - 1.0f);  // under the title and its line
+          check_screen(theme, w, h, motion ? "pildora" : "pildora-quieta", g, boxes, report);
+          if (motion && t == 0.6f) save_shot(ops, cx.assets, theme, w, h, "pildora", g);
+        }
+      }
+      {  // a toast that arrives while the notice is up goes under it, never over
+        std::vector<Op> ops;
+        under->draw(cx, ops);
+        boxes.clear();
+        cx.sv->toasts.push("Saved", 4000);
+        dock::pill_state() = dock::PillState{true, 0.6f, true};
+        draw_toasts(cx, ops);
+        save_shot(std::move(ops), cx.assets, theme, w, h, "pildora-aviso", g);
+        cx.sv->toasts.expire(std::chrono::steady_clock::now() + std::chrono::hours(1));
+      }
+      for (const float t : {0.04f, 0.10f, 0.18f, 0.5f, 0.9f}) {  // the strip of the animation (the pictures are only made on demand)
+        std::vector<Op> ops;
+        under->draw(cx, ops);
+        boxes.clear();
+        dock::pill_state() = dock::PillState{true, t, true};
+        draw_toasts(cx, ops);
+        char tag[24];
+        std::snprintf(tag, sizeof tag, "pildora-t%02d", int(t * 100.0f + 0.5f));
+        save_shot(std::move(ops), cx.assets, theme, w, h, tag, g);
+      }
+      dock::pill_state() = dock::PillState{};
+    }
+    ui_prefs::on_status(cx, cx.status);
+  }
+  {  // the in-game HOME panel (menu_home.cpp) over the picture of a paused game: at rest on every row, with the question, with and without the states
+    homemenu::set_panel_info(homemenu::PanelInfo{std::string(ZF_TEST_DATA) + "/cover-box.png", "The Legend of Zelda: Link's Awakening DX (Europe), a name far too long for any panel", "Super Nintendo Entertainment System"});
+    for (const char* arg : {"", "states"}) {
+      for (const bool charging : {false, true}) {
+        write(tmp + "/sys/class/power_supply/battery/status", charging ? "Charging\n" : "Discharging\n");
+        auto hp = Registry::instance().make("menu.home", cx, arg);
+        CHECK(hp != nullptr);
+        if (!hp) continue;
+        ++g_seen["panel"];
+        const std::string pre = std::string("home") + (*arg ? "S" : "") + (charging ? "C" : "");
+        const int n = *arg ? 6 : 4;  // the rows the cursor can stop on: RESUME [SAVE LOAD] BRIGHTNESS VOLUME QUIT
+        for (int step = 0; step < n; ++step) {  // down the rows (the panel scrolls when they do not fit)
+          char tag[32];
+          std::snprintf(tag, sizeof tag, "%s@%d", pre.c_str(), step);
+          measure_screen(cx, *hp, theme, w, h, tag, g, boxes, report);
+          if (*arg ? (step == 3 || step == 4) : (step == 1 || step == 2)) {  // on a slider: it moves and the panel still fits
+            hp->handle(Action::Right, cx);
+            std::snprintf(tag, sizeof tag, "%s-ajuste@%d", pre.c_str(), step);
+            measure_screen(cx, *hp, theme, w, h, tag, g, boxes, report);
+          }
+          if (step < n - 1) hp->handle(Action::Down, cx);
+        }
+        hp->handle(Action::A, cx);  // QUIT GAME is the last row: the question takes the place of the rows
+        measure_screen(cx, *hp, theme, w, h, (pre + "-salir").c_str(), g, boxes, report);
+        hp->handle(Action::Left, cx);
+        measure_screen(cx, *hp, theme, w, h, (pre + "-salir-si").c_str(), g, boxes, report);
+      }
+      write(tmp + "/sys/class/power_supply/battery/status", "Discharging\n");
+    }
+    {  // SAVE STATE asks too (the longer question)
+      auto hp = Registry::instance().make("menu.home", cx, "states");
+      CHECK(hp != nullptr);
+      if (hp) {
+        hp->handle(Action::Down, cx);
+        hp->handle(Action::A, cx);
+        measure_screen(cx, *hp, theme, w, h, "homeS-guardar", g, boxes, report);
+        hp->handle(Action::B, cx);
+        hp->handle(Action::Down, cx);
+        hp->handle(Action::A, cx);
+        measure_screen(cx, *hp, theme, w, h, "homeS-cargar", g, boxes, report);
+      }
+    }
+    {  // the slide: the first frame is already on screen with the picture behind it (no black frame first); two steps of the way in
+      cx.ui_motion = true;
+      auto hp = Registry::instance().make("menu.home", cx, "states");
+      CHECK(hp != nullptr);
+      if (hp) {
+        std::vector<Op> ops;
+        hp->draw(cx, ops);
+        CHECK(!ops.empty() && ops[0].kind == Op::Image && ops[0].w == float(w) && ops[0].h == float(h));
+        for (const float dt : {0.04f, 0.06f}) {
+          hp->tick(dt, cx);
+          ops.clear();
+          hp->draw(cx, ops);
+          char tag[32];
+          std::snprintf(tag, sizeof tag, "home-entrando%02d", int(dt * 100.0f));
+          save_shot(ops, cx.assets, theme, w, h, tag, g);
+        }
+        while (hp->tick(0.05f, cx)) {
+        }
+        ops.clear();
+        hp->draw(cx, ops);
+        save_shot(std::move(ops), cx.assets, theme, w, h, "home-dentro", g);
+      }
+      cx.ui_motion = false;
+    }
+    homemenu::set_panel_info(homemenu::PanelInfo{});
   }
   {  // the statistics with something to show: a long list (scrolls), long names, the five weeks
     setenv("ZF_PLAYLOG", (tmp + "/playlog.tsv").c_str(), 1);
@@ -369,7 +597,8 @@ void measure_menus_once(const std::string& gen_dir, const char* theme, int w, in
   }
   if (remake::next(cx.th)) {  // Next: the card half a gutter further below the title, and a short menu spread over the viewport with taller rows
     const ui::Metrics m = ui::Metrics::from(cx.th, float(w), float(h));
-    CHECK(m.list_top == float(g.content_top()) + std::round(float(g.gutter()) / 2.0f));
+    // at the normal text size; a larger one grows the title band by whole cells and the list goes down with it (Metrics::from)
+    if (ui::access().scale() <= 1.0f) CHECK(m.list_top == float(g.content_top()) + std::round(float(g.gutter()) / 2.0f));
     const float cap = std::floor(m.row_h * 1.2f);
     for (const char* name : {"menu.quit", "menu.main", "menu.ui", "menu.g.system", "menu.sound"}) {
       auto s = Registry::instance().make(name, cx, "");
@@ -413,15 +642,42 @@ void measure_menus(const std::string& gen_dir, const char* theme, int w, int h, 
   const bool wanted = (w == 480 && h == 320) || (w == 640 && h == 480) || (w == 720 && h == 720);
   const char* off = std::getenv("ZF_LAYOUT_ACCESS");
   if (!wanted || (off && std::string(off) == "0")) return;
-  const std::string large = std::string(theme) + "+LARGE", xl = std::string(theme) + "+XL+HC";
+  // the user's own look over every theme (the skins, Zenith, Next, XMB, Art Book, Iconic, TechDweeb): an outline selector and the title in the middle, at
+  // normal size and at EXTRA LARGE (the longest chip and the biggest title: the centred title keeps clear of the status bar and of the count)
+  {
+    g_user_sel = "outline", g_user_align = "center";
+    const std::string own = std::string(theme) + "+OUT+CTR", own_xl = std::string(theme) + "+XL+OUT+CTR";
+    measure_menus_once(gen_dir, own.c_str(), w, h, tmp, boxes, report);
+    ui::set_access(ui::TextSize::XLarge, false);
+    measure_menus_once(gen_dir, own_xl.c_str(), w, h, tmp, boxes, report);
+    ui::set_access(ui::TextSize::Normal, false);
+    g_user_sel.clear(), g_user_align.clear();
+  }
+  const std::string large = std::string(theme) + "+LARGE", xl_only = std::string(theme) + "+XL", xl = std::string(theme) + "+XL+HC";
   ui::set_access(ui::TextSize::Large, false);
   measure_menus_once(gen_dir, large.c_str(), w, h, tmp, boxes, report);
+  // EXTRA LARGE alone: the skinned themes (Aurora, Swiss, Industrial) are switched off by high contrast, so only this pass draws them at that size
+  ui::set_access(ui::TextSize::XLarge, false);
+  measure_menus_once(gen_dir, xl_only.c_str(), w, h, tmp, boxes, report);
   ui::set_access(ui::TextSize::XLarge, true);
   measure_menus_once(gen_dir, xl.c_str(), w, h, tmp, boxes, report);
   ui::set_access(ui::TextSize::Normal, false);
 }
 
 /// On the device a picture is never decoded by the frame that needs it: that stops the screen (up to 400 ms the first time a list opened).
+// The carousel of a console with no game at all (syslist.cpp): the "Add games" card first, then Tools.
+std::vector<SystemItem> add_games_items() {
+  std::vector<SystemItem> v(2);
+  v[0].theme_name = "addgames";
+  v[0].full_name = tr("Add games");
+  v[0].games = kCountPending;
+  v[0].sys = kItemAddGames;
+  v[1].theme_name = "tools";
+  v[1].full_name = tr("Tools");
+  v[1].games = 3;
+  return v;
+}
+
 void no_stop_while_drawing(const Theme& th, const char* theme, const std::vector<SystemItem>& items, const std::vector<std::string>& names, const Status& st, float w, float h) {
   std::string err;
   Assets b;
@@ -541,6 +797,41 @@ void measure_zenith(const std::string& dir, const std::vector<const char*>& fold
         remake::state().row_room = 1.0f;
         check_screen(folder, sz[0], sz[1], "inicio-solo", g, boxes, report);
       }
+      {  // few systems: the ring wraps inside the view, and no card may be drawn twice (nor its label over another's)
+        const std::vector<SystemItem> few(items.begin(), items.begin() + 4);
+        for (const float cam : {0.0f, 1.0f, 2.0f, 3.0f, 0.5f, 2.5f}) {
+          boxes.clear();
+          std::vector<Op> ops;
+          InfoFade fade;
+          const int k = int(std::floor(cam));
+          fade.item = k;
+          system_view(th, a, common, w, h, few, k, cam, st, nullptr, fade, ops);
+          int cards = 0;
+          for (const Op& o : ops)
+            if (o.kind == Op::Image && o.id == common.tile && o.x + o.w / 2.0f > 0.0f && o.x + o.w / 2.0f < w) ++cards;
+          if (cards > int(few.size())) bad(folder, sz[0], sz[1], "pocos", "una tarjeta repetida: " + std::to_string(cards) + " tarjetas a la vista con " + std::to_string(few.size()) + " sistemas (camara " + std::to_string(cam) + ")");
+          ++g_seen["pocos sistemas"];
+          char nm[24];
+          std::snprintf(nm, sizeof nm, "pocos-%d", int(cam * 2.0f));
+          check_screen(folder, sz[0], sz[1], nm, g, boxes, report);
+          save_shot(std::move(ops), a, folder, sz[0], sz[1], nm, g);
+        }
+      }
+      {  // a console with no game at all: the "Add games" card (no logo, no count) and Tools
+        const std::vector<SystemItem> empty = add_games_items();
+        for (int k : {0, 1}) {
+          boxes.clear();
+          std::vector<Op> ops;
+          InfoFade fade;
+          fade.item = k;
+          RecentRow none;
+          system_view(th, a, common, w, h, empty, k, float(k), st, &none, fade, ops);
+          const char* nm = k ? "sin-juegos-tools" : "sin-juegos";
+          check_screen(folder, sz[0], sz[1], nm, g, boxes, report);
+          save_shot(std::move(ops), a, folder, sz[0], sz[1], nm, g);
+        }
+        ++g_seen["sin juegos"];
+      }
       for (int k : {0, 4}) {
         boxes.clear();
         std::vector<Op> ops;
@@ -558,6 +849,12 @@ void measure_zenith(const std::string& dir, const std::vector<const char*>& fold
         }
         check_screen(folder, sz[0], sz[1], k ? "inicio2" : "inicio", g, boxes, report);
         save_shot(std::move(ops), a, folder, sz[0], sz[1], k ? "inicio2" : "inicio", g);
+        if (k) {  // the row of games with the keys: the plate of the focused tile
+          recent.focus = 0, recent.focus_a = 1.0f, recent.focus_help = true;
+          std::vector<Op> ops2;
+          remake::system_view(th, a, w, h, items, k, float(k), st, &recent, fade, ops2);
+          save_shot(std::move(ops2), a, folder, sz[0], sz[1], "inicio-foco", g);
+        }
       }
       DetailedData d;
       d.name = names[2];
@@ -568,6 +865,7 @@ void measure_zenith(const std::string& dir, const std::vector<const char*>& fold
       d.desc.assign(4000, 'x');
       for (size_t i = 8; i < d.desc.size(); i += 9) d.desc[i] = ' ';
       d.desc_time = -1;
+      if (const char* cv = std::getenv("ZF_LAYOUT_COVER")) d.image = cv;  // a real picture for the cover, to see its corners
       const DetailedData* const details[] = {&d, nullptr};
       for (const DetailedData* detail : details)
         for (size_t cur : {size_t(0), size_t(2), size_t(19)}) {
@@ -607,9 +905,13 @@ int main() {
   const struct {
     const char* folder;
     const char* scheme;
-  } cases[] = {{"es-theme-xmb-fcamod", ""}, {"es-theme-art-book-next", ""}, {"es-theme-iconic", ""}, {"es-theme-iconic", "dark"}, {"es-theme-techdweeb", ""}};
+    const char* carousel;  // a theme of zfront's own on Iconic's pictures (boot::virtual_carousel)
+  } cases[] = {{"es-theme-xmb-fcamod", "", ""}, {"es-theme-art-book-next", "", ""}, {"es-theme-iconic", "", ""}, {"es-theme-iconic", "dark", ""}, {"es-theme-techdweeb", "", ""},
+               {"es-theme-iconic", "", "aurora"}, {"es-theme-iconic", "dark", "aurora"},
+               {"es-theme-iconic", "", "swiss"}, {"es-theme-iconic", "dark", "swiss"},
+               {"es-theme-iconic", "", "industrial"}, {"es-theme-iconic", "dark", "industrial"}};
   for (const auto& cs : cases) {
-    const std::string label = std::string(cs.folder) + (*cs.scheme ? "-" : "") + cs.scheme;
+    const std::string label = std::string(cs.folder) + (*cs.scheme ? "-" : "") + cs.scheme + (*cs.carousel ? "+" : "") + cs.carousel;
     const char* folder = label.c_str();
     std::string es = root + "/" + cs.folder;
     if (real && fs::exists(std::string(real) + "/" + cs.folder + "/theme.xml")) {
@@ -621,6 +923,7 @@ int main() {
     }
     const std::string choice = cs.scheme;
     estheme::Options opt;
+    opt.carousel = cs.carousel;
     if (!choice.empty())
       opt.setting = [&choice](const std::string& k) -> const std::string* { return k == "subset.color-scheme" ? &choice : nullptr; };
     estheme::Generated gen;
@@ -631,6 +934,7 @@ int main() {
       CHECK(Theme::load(gen.dir, ratio_name(unsigned(sz[0]), unsigned(sz[1])), th, err));
       Assets a;
       CHECK(a.load_font(th.path(th.str("font")), err));
+      if (const std::string_view alt = th.str("esFontAlt", ""); !alt.empty()) a.load_alt_font(std::string(alt), err);  // the skins' second face
       const float w = float(sz[0]), h = float(sz[1]);
       const remake::Grid g(w, h);
       Status st = Status::demo("12:04");
@@ -647,6 +951,45 @@ int main() {
       no_stop_while_drawing(th, folder, items, names, st, w, h);
       std::vector<remake::Box> boxes;
       remake::audit_sink() = &boxes;
+      if (std::getenv("ZF_LAYOUT_STRIP")) {  // a film strip of ONE move of the carousel (system 0 to 1), by TIME as the real screen does it (screens.cpp)
+        float cam = 0.0f, info_a = 1.0f;
+        int info_idx = 0;
+        const float dt = 1.0f / 60.0f;
+        for (int step = 0; step <= 27; ++step) {  // 0.45 s
+          if (step % 3 == 0) {
+            InfoFade fade;
+            fade.item = info_idx;
+            fade.alpha = info_a;
+            RecentRow none;
+            std::vector<Op> ops;
+            remake::system_view(th, a, w, h, items, 1, cam, st, &none, fade, ops);
+            const std::string nm = "giro" + std::to_string(step / 3);
+            save_shot(std::move(ops), a, folder, sz[0], sz[1], nm.c_str(), g);
+          }
+          cam += (1.0f - cam) * (1.0f - std::exp(-16.0f * dt));
+          if (info_idx != 1) {
+            info_a = std::max(0.0f, info_a - dt / 0.07f);
+            if (info_a <= 0.0f) info_idx = 1;
+          } else if (info_a < 1.0f && std::fabs(1.0f - cam) < 0.35f) {
+            info_a = std::min(1.0f, info_a + dt / 0.14f);
+          }
+        }
+      }
+      {  // a console with no game at all: the "Add games" card (no logo, no count) and Tools
+        const std::vector<SystemItem> empty = add_games_items();
+        for (int k : {0, 1}) {
+          boxes.clear();
+          std::vector<Op> ops;
+          InfoFade fade;
+          fade.item = k;
+          RecentRow none;
+          remake::system_view(th, a, w, h, empty, k, float(k), st, &none, fade, ops);
+          const char* nm = k ? "sin-juegos-tools" : "sin-juegos";
+          check_screen(folder, sz[0], sz[1], nm, g, boxes, report);
+          save_shot(std::move(ops), a, folder, sz[0], sz[1], nm, g);
+        }
+        ++g_seen["sin juegos"];
+      }
       for (int k : {0, 4}) {
         boxes.clear();
         std::vector<Op> ops;
@@ -658,6 +1001,12 @@ int main() {
         remake::system_view(th, a, w, h, items, k, float(k), st, &recent, fade, ops);
         check_screen(folder, sz[0], sz[1], k ? "inicio2" : "inicio", g, boxes, report);
         save_shot(std::move(ops), a, folder, sz[0], sz[1], k ? "inicio2" : "inicio", g);
+        if (k) {  // the row of games with the keys: the plate of the focused tile
+          recent.focus = 0, recent.focus_a = 1.0f, recent.focus_help = true;
+          std::vector<Op> ops2;
+          remake::system_view(th, a, w, h, items, k, float(k), st, &recent, fade, ops2);
+          save_shot(std::move(ops2), a, folder, sz[0], sz[1], "inicio-foco", g);
+        }
       }
       DetailedData d;
       d.name = names[2];
@@ -668,6 +1017,7 @@ int main() {
       d.desc.assign(4000, 'x');
       for (size_t i = 8; i < d.desc.size(); i += 9) d.desc[i] = ' ';
       d.desc_time = -1;
+      if (const char* cv = std::getenv("ZF_LAYOUT_COVER")) d.image = cv;  // a real picture for the cover, to see its corners
       const DetailedData* const details[] = {&d, nullptr};
       for (const DetailedData* detail : details)
         for (size_t cur : {size_t(0), size_t(2), size_t(19)}) {
@@ -677,6 +1027,7 @@ int main() {
           char screen[24];
           std::snprintf(screen, sizeof screen, "lista%s%zu", detail ? "D" : "", cur);
           check_screen(folder, sz[0], sz[1], screen, g, boxes, report);
+          save_shot(std::move(ops), a, folder, sz[0], sz[1], screen, g);
         }
       {  // a search with no match: the list has no names, the header and the help still draw
         const std::vector<std::string> none;
@@ -689,8 +1040,9 @@ int main() {
       remake::audit_sink() = nullptr;
     }
   }
+  CHECK(g_seen["panel"] > 0);  // the HOME panel was drawn and measured
   if (real) {  // with the real themes: everything the rules are about went through them
-    for (const char* kind : {"titulo", "texto", "barra", "ayuda", "columna", "pista", "desplazamiento", "tarjeta", "caratula"}) {
+    for (const char* kind : {"titulo", "texto", "barra", "ayuda", "columna", "pista", "desplazamiento", "tarjeta", "caratula", "dock-card", "dock-pill"}) {
       if (report) std::printf("    medidas %-16s %d\n", kind, g_seen[kind]);
       CHECK(g_seen[kind] > 0);
     }

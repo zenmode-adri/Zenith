@@ -11,7 +11,7 @@ if [ "$(get_setting system.frontend)" = "zfront" ]
 then
   set_setting system.frontend es
 else
-  [ -x /usr/bin/zfront ] || exit 1
+  [ -x /usr/bin/zfront ] || { echo "Error: zfront is not installed on this image." >&2; sleep 5; exit 1; }
   rm -f /run/zfront.failed /run/zfront.fails  # a fresh start for zfront
   set_setting system.frontend zfront
 fi

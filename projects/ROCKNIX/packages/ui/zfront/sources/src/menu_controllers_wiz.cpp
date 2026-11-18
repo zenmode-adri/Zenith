@@ -249,7 +249,7 @@ void DetectScreen::draw(Ctx& cx, std::vector<Op>& out) {
   centred(out, t_msg_, cxm, y0 + 0.42f * L, st.txt);
   centred(out, t_msg2_, cxm, y0 + 0.62f * L, st.dim);
   if (holding_ || picked_) {
-    centred(out, t_held_, cxm, y0 + 0.78f * L, st.cyan_dark);
+    centred(out, t_held_, cxm, y0 + 0.78f * L, st.dark ? st.cyan : st.cyan_dark);
     float bw = std::round(m.col_w * 0.4f), bh = std::max(std::round(0.012f * m.H), 3.0f);
     float bx = std::round(cxm - bw / 2.0f), by = std::round(y0 + 0.88f * L);
     shapes_.pill(a, out, bx, by, bw, bh, st.track);
@@ -569,7 +569,7 @@ void ConfigScreen::draw(Ctx& cx, std::vector<Op>& out) {
     if (cancel_line) state = *cancel_line, state_col = st.danger;
   }
   set_text(a, t_label_, shown_label_, label, big, m.col_w - 2 * inset);
-  centred(out, t_label_, cxm, y0 + 0.77f * L, st.cyan_dark);
+  centred(out, t_label_, cxm, y0 + 0.77f * L, st.dark ? st.cyan : st.cyan_dark);
   if (!state.empty()) {
     set_text(a, t_state_, shown_state_, state, m.small_px, m.col_w - 2 * inset);
     centred(out, t_state_, cxm, y0 + 0.855f * L, state_col);

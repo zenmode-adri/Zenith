@@ -396,6 +396,16 @@ int main() {
     EsSettings dflt = EsSettings::from_text("<config></config>");
     dl = idle_deadline(dflt);
     CHECK(dl && *dl == t0 + milliseconds(60000 + 300000));
+    // the bedside clock (plugged in): the mode is Clock, the event argument is "dim" (the fork's es-script keeps the light on for it)
+    set_bedside(1);
+    input(t0 + milliseconds(70000));
+    sh("rm -f " + d + "/m_ssstart");
+    before_acts(es, t0 + milliseconds(70000 + 60000), none);
+    CHECK(idle().active() && screensaver::mode() == screensaver::Mode::Clock);
+    CHECK(wait_content(d + "/m_ssstart", "dim"));
+    CHECK_EQ(slurp(d + "/bl/a/bl_power"), string("0\n"));
+    screensaver_stop();
+    set_bedside(0);
     // a game of hours must not end in an instant screensaver
     game_started("/r/x.gb", "X");
     game_ended();

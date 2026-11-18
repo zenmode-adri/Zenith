@@ -306,6 +306,32 @@ void test_resume() {
   CHECK(!exists(r.gb + "/G/.fin.bin.zfpart"));
 }
 
+// 255-byte names (the limit of ext4 / exFAT): the hidden partial of such a name cannot be ".<name>.zfpart", it gets a short name, and
+// the upload can still be cut and resumed; 256 bytes is "name too long"
+void test_long_names() {
+  Rig r;
+  webtransfer::set_enabled(true);
+  const string name = string(252, 'n') + ".gb", all = pattern(300);
+  CHECK_EQ(name.size(), size_t(255));
+  CHECK_EQ(put(r.port(), slice_q(name, 0, 300), all.substr(0, 200)), 200);
+  string st = get(r.port(), "/files/put/status?system=gb&path=" + name, kPin);
+  CHECK(st.find("{\"have\":200,\"done\":false,\"size\":0}") != string::npos);
+  CHECK_EQ(put(r.port(), slice_q(name, 200, 300), all.substr(200)), 200);
+  CHECK(slurp(r.gb + "/" + name) == all);
+  CHECK(list(r.gb) == std::vector<string>{name});
+  const string raw = put_raw(r.port(), slice_q(string(253, 'n') + ".gb", 0, 3), "abc");
+  CHECK_EQ(status_of(raw), 400);
+  CHECK(raw.find("name too long") != string::npos);
+  CHECK(list(r.gb) == std::vector<string>{name});
+  // a folder and a file whose names are long but whose path fits in the 400 bytes; one that does not fit says "path too long"
+  const string folder(150, 'f'), deep = string(200, 'd') + ".bin";
+  CHECK_EQ(put_whole(r.port(), folder + "%2F" + deep, pattern(50)), 200);
+  CHECK(slurp(r.gb + "/" + folder + "/" + deep) == pattern(50));
+  const string toolong = put_raw(r.port(), slice_q(string(255, 'f') + "%2F" + string(200, 'd') + ".bin", 0, 3), "abc");
+  CHECK_EQ(status_of(toolong), 400);
+  CHECK(toolong.find("path too long") != string::npos);
+}
+
 void test_bad_requests() {
   Rig r;
   webtransfer::set_enabled(true);
@@ -489,6 +515,7 @@ void test_page() {
 int main() {
   test_nested_and_status();
   test_resume();
+  test_long_names();
   test_bad_requests();
   test_symlinks();
   test_rules();

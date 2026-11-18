@@ -9,6 +9,7 @@
 #include "menu_controllers.hpp"
 #include "players.hpp"
 #include "registry.hpp"
+#include "status.hpp"
 #include "ui_dialogs.hpp"
 #include "util.hpp"
 
@@ -145,6 +146,8 @@ std::unique_ptr<Screen> make_page() {
   MenuSpec s;
   s.title = tr("CONTROLLER & BLUETOOTH SETTINGS");
   s.title_key = N_("CONTROLLER & BLUETOOTH SETTINGS");
+  s.title_short = tr("CONTROLLER & BLUETOOTH");  // when the full one does not fit: the words of its entry in the main menu
+  s.title_short_key = N_("CONTROLLER & BLUETOOTH");
   s.build = [st](MenuBuilder& m, Ctx& cx) {
     if (!st->loaded) {  // once per opening: reading es_input.cfg is not for every refresh
       st->loaded = true;
@@ -168,7 +171,11 @@ std::unique_ptr<Screen> make_page() {
                        *rc = sv->cmd.run(on ? "rocknix-bluetooth enable 2>&1 >/dev/null" : "rocknix-bluetooth disable", 30000).exit_code;
                      },
                      [&cx, rf, rc, on] {
-                       if (*rc != 0 && on) cx.sv->toasts.push(tr("Could not start Bluetooth"), 3000);
+                       if (*rc != 0 && on) {
+                         conf_set(cx, "controllers.bluetooth.enabled", false);  // the switch must not say ON when the script failed
+                         cx.sv->toasts.push(tr("Could not start Bluetooth"), 3000);
+                       }
+                       request_status_refresh();  // the bar's Bluetooth icon follows the service: show it at once
                        rf();
                      });
                });

@@ -54,7 +54,7 @@ function checkconfig() {
 # Mount a cloud storage remote using rclone
 # Parameters: $1 - Mount point path
 function mount() {
-  TARGET=$(rclone listremotes | awk '{printf $1; exit}')
+  TARGET=$(rclone listremotes | grep -x 'zenith:' || rclone listremotes | awk '{printf $1; exit}')
   rclone mount ${TARGET} ${1} \
     --vfs-cache-mode writes \
     --vfs-cache-max-size 100M \

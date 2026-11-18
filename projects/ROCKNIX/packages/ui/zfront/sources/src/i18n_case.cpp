@@ -82,7 +82,7 @@ const Keep kKeep[] = {
     {"PAL", "PAL"}, {"DOS", "DOS"}, {"SMS", "SMS"}, {"PSX", "PSX"}, {"N/A", "N/A"}, {"DHCP", "DHCP"},
     {"LEDS", "LEDs"}, {"AI", "AI"}, {"IGDB", "IGDB"}, {"SCREENSCRAPER", "ScreenScraper"}, {"ARCADEDB", "ArcadeDB"},
     {"RETROACHIEVEMENTS", "RetroAchievements"}, {"PPSSPP", "PPSSPP"}, {"PDF", "PDF"}, {"QR", "QR"}, {"ZIP", "ZIP"}, {"MD5", "MD5"},
-    {"WEBDAV", "WebDAV"}, {"SAMBA", "Samba"}, {"TAILSCALE", "Tailscale"}, {"ZEROTIER", "ZeroTier"},
+    {"WEBDAV", "WebDAV"}, {"MICROSD", "microSD"}, {"SAMBA", "Samba"}, {"TAILSCALE", "Tailscale"},
 };
 // Units after a number: "5GHZ" -> "5GHz".
 const Keep kUnits[] = {{"GHZ", "GHz"}, {"MHZ", "MHz"}, {"KHZ", "kHz"}, {"HZ", "Hz"}, {"GB", "GB"}, {"MB", "MB"}, {"KB", "KB"}, {"TB", "TB"}, {"MAH", "mAh"}, {"MS", "ms"}, {"G", "G"}};
@@ -222,7 +222,12 @@ std::string sentence_case(std::string_view s) {
       continue;
     }
     size_t a = 0, b = tok.size();
-    while (a < b && is_edge_punct(tok[a])) ++a;
+    // the Spanish opening marks are two bytes in UTF-8 (U+00BF, U+00A1): "¿SALIR DEL JUEGO?" gave "¿salir del juego?"
+    for (bool more = true; more;) {
+      more = false;
+      while (a < b && is_edge_punct(tok[a])) ++a, more = true;
+      if (b - a >= 2 && (tok.compare(a, 2, "\xC2\xBF") == 0 || tok.compare(a, 2, "\xC2\xA1") == 0)) a += 2, more = true;
+    }
     while (b > a && is_edge_punct(tok[b - 1])) --b;
     out += tok.substr(0, a);
     const std::string_view core = tok.substr(a, b - a);

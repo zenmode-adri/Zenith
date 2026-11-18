@@ -36,6 +36,10 @@ std::string controllers_config(const std::vector<JoyInfo>& joys);
 /// Deviation from ES: backtick, `|`, tab and newline are escaped too (ES leaves them, so a ROM called "a`id`.gb" runs
 /// commands through `sh -c`). `#` and `~` stay as they are: they only matter at the start of a word and a path starts with `/`.
 std::string escape_path(const std::string& p);
+/// The command that is really run for `cmd`. `/usr/bin/run <script>` opens the script inside a terminal window (foot) when the session
+/// is sway, so the text it prints shows for a moment before a graphical program covers it. R36 Tuner Next is graphical: its launcher
+/// (`Start R36 Tuner.sh`) is run directly, with no terminal. Any other command comes back unchanged.
+std::string direct_command(const std::string& cmd);
 /// Full command line ES would run for `game` (netplay and savestate arguments excluded). Deliberate deviation: placeholders are
 /// replaced in ONE pass (ES replaces them one after another, so a ROM called "Foo %CORE%.gb" got the core name inside its path). An empty `sys.command`
 /// gives an empty string (ES aborts the launch).
@@ -204,6 +208,8 @@ struct Env {
   LaunchPrep* prep = nullptr;
   /// Script dirs; empty = `default_script_dirs()`.
   std::vector<std::string> script_dirs;
+  /// Where a failed launch leaves its text (`runemu.sh` writes it); tests point it at their own folder.
+  std::string error_log = "/tmp/launch_error.log";
 };
 struct Outcome {
   RunResult run;

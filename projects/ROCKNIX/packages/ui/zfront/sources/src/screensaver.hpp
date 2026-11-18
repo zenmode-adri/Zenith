@@ -22,7 +22,7 @@ struct Ctx;
 
 namespace screensaver {
 
-enum class Mode : uint8_t { Off, Dim, Black, Media };  // Media: slideshow / random video (ssmedia.hpp)
+enum class Mode : uint8_t { Off, Dim, Black, Media, Clock };  // Media: slideshow / random video (ssmedia.hpp); Clock: the bedside clock (dock.hpp)
 constexpr uint8_t kDimAlpha = 0xA0;  // ES: 0x000000A0
 
 Mode mode();

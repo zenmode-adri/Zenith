@@ -169,10 +169,10 @@ int main() {
       fs::copy_file(droid, d + "/Extra.ttf");  // not one of the standard fallback names
       const std::string zh = "\xe8\xae\xbe\xe7\xbd\xae";
       std::string err;
-      Font none;  // no declared fallback: the folder has no standard one either, so nothing opens
+      Font none;  // no declared fallback: only the standard folder (which holds DroidSansFallbackFull: this branch runs only when it does) supplies the glyph
       CHECK(none.load(d + "/Main.ttf", err));
       none.measure(zh, 24);
-      CHECK_EQ(none.fallbacks_open(), 0);
+      CHECK(none.fallbacks_open() >= 1);  // the standard faces tried until one has the glyph (fontawesome, then Droid, in the order of text.cpp)
       Font with;
       CHECK(with.load(d + "/Main.ttf", err, {d + "/Extra.ttf", d + "/missing.ttf"}));
       float w = with.measure(zh, 24);

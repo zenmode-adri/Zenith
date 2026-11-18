@@ -1,5 +1,5 @@
 // Pure parsing helpers of the network menu (no I/O, no UI): output of `wifictl`, of iwd through busctl, of tailscale and
-// zerotier, hostnames, USB gadget modes. Kept apart so the tests feed them real samples.
+// hostnames, USB gadget modes. Kept apart so the tests feed them real samples.
 //
 // Where the samples come from (all of them are in the OS image):
 //  * `wifictl scanlist|list` prints one SSID per line, strongest first (iwd_get-networks: `busctl ... GetOrderedNetworks`,
@@ -70,8 +70,6 @@ struct TsStatus {
 };
 /// `tailscale status` (ES `IsTailscaleUp`).
 TsStatus parse_tailscale_status(std::string_view out);
-/// `zerotier-cli info`: false when the daemon does not answer (ES `IsZeroTierUp`).
-bool zerotier_running(std::string_view out);
 
 /// `[A-Za-z0-9-]{1,63}`, no leading or trailing dash (what the boot script can use as a hostname).
 bool valid_hostname(std::string_view s);

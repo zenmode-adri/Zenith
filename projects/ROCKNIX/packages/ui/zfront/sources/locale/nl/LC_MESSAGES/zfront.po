@@ -1,0 +1,2428 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "BESCHADIGDE SPELLIJST"
+
+msgid "Not available yet"
+msgstr "Nog niet beschikbaar"
+
+msgid "Game lists updated"
+msgstr "Spellijsten bijgewerkt"
+
+msgid "COVERS ADDED"
+msgstr "COVERS TOEGEVOEGD"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "PRESTATIEMODUS KAN DIT SPEL HELPEN"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "DIT SPEL DRAAIT MOGELIJK BETER MET PRESTATIEMODUS"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "SCHAKEL PRESTATIEMODUS IN VOOR DIT SPEL"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "PRESTATIEMODUS AAN VOOR DIT SPEL"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Dit spel draait mogelijk beter met prestatiemodus: de GPU en het geheugen blijven op volle snelheid tijdens het spelen."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "STOP MET PRESTATIEMODUS VOORSTELLEN"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Stel prestatiemodus voor dit spel niet meer voor."
+
+msgid "BATTERY"
+msgstr "BATTERIJ"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "NOG NIET GENOEG GEGEVENS"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Speel dit spel vijf minuten of langer op batterij en de schatting verschijnt hier."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Met de huidige lading, op basis van de laatste sessies van dit spel."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Met de huidige lading. Nog geen sessies van dit spel: het gemiddelde van het systeem wordt gebruikt."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Met de huidige lading. Nog geen sessies van dit systeem: het gemiddelde van alle spellen wordt gebruikt."
+
+msgid "Never"
+msgstr "Nooit"
+
+msgid "What used the most"
+msgstr "Grootste verbruikers"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Sinds de laatste volledige lading. Geschat."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Nog niets gemeten. Het vult zich terwijl je speelt."
+
+msgid "Asleep"
+msgstr "Slaapstand"
+
+msgid "Menus and system"
+msgstr "Menu's en systeem"
+
+msgid "Screen"
+msgstr "Scherm"
+
+msgid "Charging"
+msgstr "Opladen"
+
+msgid "About"
+msgstr "Over"
+
+msgid "Since full"
+msgstr "Sinds vol"
+
+msgid "Using now"
+msgstr "Nu in gebruik"
+
+msgid "Last hours"
+msgstr "Laatste uren"
+
+msgid "Now"
+msgstr "Nu"
+
+msgid "More settings"
+msgstr "Meer instellingen"
+
+msgid "Power saver"
+msgstr "Energiebesparing"
+
+msgid "Screensaver after"
+msgstr "Schermbeveiliging na"
+
+msgid "Turn on by itself at"
+msgstr "Zelf inschakelen om"
+
+msgid "ADJUST"
+msgstr "AANPASSEN"
+
+msgid "Action"
+msgstr "Actie"
+
+msgid "Adult"
+msgstr "Volwassen"
+
+msgid "Adventure"
+msgstr "Avontuur"
+
+msgid "Beat'em Up"
+msgstr "Beat'em up"
+
+msgid "Casino"
+msgstr "Casino"
+
+msgid "Casual Game"
+msgstr "Casual game"
+
+msgid "Hunting and Fishing"
+msgstr "Jagen en vissen"
+
+msgid "Fight"
+msgstr "Vechten"
+
+msgid "Race, Driving"
+msgstr "Race, rijden"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Flipperkast"
+
+msgid "Playing cards"
+msgstr "Kaartspellen"
+
+msgid "Role playing games"
+msgstr "Rollenspellen"
+
+msgid "Asiatic board game"
+msgstr "Aziatisch bordspel"
+
+msgid "Educational"
+msgstr "Educatief"
+
+msgid "Music and Dance"
+msgstr "Muziek en dans"
+
+msgid "Platform"
+msgstr "Platform"
+
+msgid "Puzzle-Game"
+msgstr "Puzzelspel"
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Reflection"
+msgstr "Denkspel"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em up"
+
+msgid "Simulation"
+msgstr "Simulatie"
+
+msgid "Sports"
+msgstr "Sport"
+
+msgid "Sports with Animals"
+msgstr "Sport met dieren"
+
+msgid "Strategy"
+msgstr "Strategie"
+
+msgid "Shooter"
+msgstr "Shooter"
+
+msgid "Not set"
+msgstr "Niet ingesteld"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "ma"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "zo"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "di"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "wo"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "vr"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "za"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "do"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "apr"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "feb"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "jan"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "jun"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "mrt"
+
+msgctxt "date"
+msgid "May"
+msgstr "mei"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "aug"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "dec"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "jul"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "nov"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "okt"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "sep"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "SPELGEGEVENS KONDEN NIET WORDEN OPGESLAGEN"
+
+msgid "Could not save the settings"
+msgstr "De instellingen konden niet worden opgeslagen"
+
+msgid "FILTER BY"
+msgstr "FILTEREN OP"
+
+msgid "FAVORITES ONLY"
+msgstr "ALLEEN FAVORIETEN"
+
+msgid "LIST"
+msgstr "LIJST"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Het gekozen thema kon niet worden geladen: Zenith wordt gebruikt"
+
+msgid "PAGE"
+msgstr "PAGINA"
+
+msgid "Could not show this page"
+msgstr "Deze pagina kan niet worden getoond"
+
+msgid "INSTALLED"
+msgstr "GEÏNSTALLEERD"
+
+msgid "SMART COLLECTIONS"
+msgstr "SLIMME COLLECTIES"
+
+msgid "EDIT FILTERS"
+msgstr "FILTERS BEWERKEN"
+
+msgid "NO OPTIONS"
+msgstr "GEEN OPTIES"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Weet je zeker dat je '%s' wilt verwijderen?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Stel de filters daarna in bij Aangepaste spelcollecties."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Start de frontend opnieuw om de wijzigingen toe te passen."
+
+msgid "Could not save the setting"
+msgstr "De instelling kon niet worden opgeslagen"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "CONTROLLERS AAN SPELERS TOEWIJZEN"
+
+msgid "Could not start Bluetooth"
+msgstr "Bluetooth kon niet worden gestart"
+
+msgid "Searching..."
+msgstr "Zoeken..."
+
+msgid "CONTROLLERS"
+msgstr "CONTROLLERS"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "BEVESTIGEN- EN ANNULEREN-KNOPPEN WISSELEN"
+
+msgid "ENABLE RUMBLE"
+msgstr "TRILLING INSCHAKELEN"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "RETROARCH-SNELTOETSEN AUTOMATISCH CONFIGUREREN"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "VERBONDEN CONTROLLERS"
+
+msgid "Not configured"
+msgstr "Niet geconfigureerd"
+
+msgid "Unknown controller"
+msgstr "Onbekende controller"
+
+msgid "PAIRED"
+msgstr "GEKOPPELD"
+
+msgid "Could not pair"
+msgstr "Koppelen mislukt"
+
+msgid "Connected"
+msgstr "Verbonden"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Alle Bluetooth-apparaten verwijderen?"
+
+msgid "Could not disconnect"
+msgstr "Verbinding verbreken mislukt"
+
+msgid "Could not connect"
+msgstr "Verbinden mislukt"
+
+msgid "Could not remove"
+msgstr "Verwijderen mislukt"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "KNOP A / OOST"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "KNOP B / ZUID"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "KNOP X / NOORD"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "KNOP Y / WEST"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "LINKER STICK"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "RECHTER STICK"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "SNELTOETS ACTIVEREN"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "INGEBOUWDE CONTROLLER"
+
+msgid "GAMEPAD DETECTED"
+msgstr "GAMEPAD GEVONDEN"
+
+msgid "GAMEPADS DETECTED"
+msgstr "GAMEPADS GEVONDEN"
+
+msgid "PRESS B TO CANCEL."
+msgstr "DRUK OP B OM TE ANNULEREN."
+
+msgid "Could not save the controller configuration"
+msgstr "De controllerconfiguratie kon niet worden opgeslagen"
+
+msgid "Controller configuration saved"
+msgstr "Controllerconfiguratie opgeslagen"
+
+msgid "Controller configuration cancelled"
+msgstr "Controllerconfiguratie geannuleerd"
+
+msgid "Controller disconnected"
+msgstr "Controller losgekoppeld"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "BLIJF INDRUKKEN OM TE ANNULEREN"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "HOUD EEN WILLEKEURIGE KNOP 3 SECONDEN INGEDRUKT OM TE ANNULEREN."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "HOUD EEN KNOP INGEDRUKT OM OVER TE SLAAN. BLIJF INDRUKKEN OM TE ANNULEREN."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "ALLE KNOPPEN ZIJN KLAAR"
+
+msgid "set"
+msgstr "ingesteld"
+
+msgid "skipped"
+msgstr "overgeslagen"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "ER IS GEEN SNELTOETS TOEGEWEZEN. DIT IS NODIG OM SPELLEN MET EEN CONTROLLER TE VERLATEN."
+
+msgid "DATE & TIME"
+msgstr "DATUM EN TIJD"
+
+msgid "MONTH"
+msgstr "MAAND"
+
+msgid "DAY"
+msgstr "DAG"
+
+msgid "HOUR"
+msgstr "UUR"
+
+msgid "MINUTE"
+msgstr "MINUUT"
+
+msgid "SET DATE & TIME"
+msgstr "DATUM EN TIJD INSTELLEN"
+
+msgid "Date and time set"
+msgstr "Datum en tijd ingesteld"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Met Wi-Fi wordt de tijd automatisch ingesteld."
+
+msgid "That folder is protected"
+msgstr "Die map is beschermd"
+
+msgid "Outside the allowed folders"
+msgstr "Buiten de toegestane mappen"
+
+msgid "Not enough free space"
+msgstr "Niet genoeg vrije ruimte"
+
+msgid "That name already exists"
+msgstr "Die naam bestaat al"
+
+msgid "Cancelled"
+msgstr "Geannuleerd"
+
+msgid "A folder cannot go into itself"
+msgstr "Een map kan niet in zichzelf worden geplaatst"
+
+msgid "That name is not valid"
+msgstr "Die naam is niet geldig"
+
+msgid "Not found"
+msgstr "Niet gevonden"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Bestand groter dan 4 GB: deze kaart kan het niet bevatten"
+
+msgid "This card does not accept that name"
+msgstr "Deze kaart accepteert die naam niet"
+
+msgid "This location is read-only"
+msgstr "Deze locatie is alleen-lezen"
+
+msgid "An error occurred"
+msgstr "Er is een fout opgetreden"
+
+msgid "%s of %s done"
+msgstr "%s van %s klaar"
+
+msgid "item"
+msgstr "item"
+
+msgid "items"
+msgstr "items"
+
+msgid "link skipped"
+msgstr "link overgeslagen"
+
+msgid "links skipped"
+msgstr "links overgeslagen"
+
+msgid "This can't be undone."
+msgstr "Dit kan niet ongedaan worden gemaakt."
+
+msgid "Files"
+msgstr "Bestanden"
+
+msgid "selected"
+msgstr "geselecteerd"
+
+msgid "Cannot read this folder"
+msgstr "Kan deze map niet lezen"
+
+msgid "This folder is empty"
+msgstr "Deze map is leeg"
+
+msgid "free"
+msgstr "vrij"
+
+msgid "File"
+msgstr "Bestand"
+
+msgid "Folder"
+msgstr "Map"
+
+msgid "Link"
+msgstr "Link"
+
+msgid "Properties"
+msgstr "Eigenschappen"
+
+msgid "Copy"
+msgstr "Kopiëren"
+
+msgid "Move"
+msgstr "Verplaatsen"
+
+msgid "Paste here"
+msgstr "Hier plakken"
+
+msgid "Rename"
+msgstr "Hernoemen"
+
+msgid "New folder"
+msgstr "Nieuwe map"
+
+msgid "Delete"
+msgstr "Verwijderen"
+
+msgid "Select all"
+msgstr "Alles selecteren"
+
+msgid "Clear selection"
+msgstr "Selectie wissen"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Size"
+msgstr "Grootte"
+
+msgid "Sort by"
+msgstr "Sorteren op"
+
+msgid "Hide hidden files"
+msgstr "Verborgen bestanden verbergen"
+
+msgid "Show hidden files"
+msgstr "Verborgen bestanden tonen"
+
+msgid "Actions"
+msgstr "Acties"
+
+msgid "Home"
+msgstr "Thuis"
+
+msgid "Games"
+msgstr "Spellen"
+
+msgid "Game card"
+msgstr "Spelkaart"
+
+msgid "USB drive"
+msgstr "USB-stick"
+
+msgid "Screenshots"
+msgstr "Schermafbeeldingen"
+
+msgid "Go to"
+msgstr "Ga naar"
+
+msgid "Ready to copy"
+msgstr "Klaar om te kopiëren"
+
+msgid "Ready to move"
+msgstr "Klaar om te verplaatsen"
+
+msgid "Warning"
+msgstr "Waarschuwing"
+
+msgid "Cancel"
+msgstr "Annuleren"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Dit is een systeembestand. Hernoemen kan de console kapotmaken."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Dit is een systeembestand. Verwijderen kan de console kapotmaken."
+
+msgid "Wait for the other job"
+msgstr "Wacht op de andere taak"
+
+msgid "Copied"
+msgstr "Gekopieerd"
+
+msgid "Deleted"
+msgstr "Verwijderd"
+
+msgid "Moved"
+msgstr "Verplaatst"
+
+msgid "originals kept"
+msgstr "originelen bewaard"
+
+msgid "Copying"
+msgstr "Kopiëren"
+
+msgid "Deleting"
+msgstr "Verwijderen"
+
+msgid "Moving"
+msgstr "Verplaatsen"
+
+msgid "Calculating..."
+msgstr "Berekenen..."
+
+msgid "Back"
+msgstr "Terug"
+
+msgid "Close"
+msgstr "Sluiten"
+
+msgid "Mark"
+msgstr "Markeren"
+
+msgid "Open"
+msgstr "Openen"
+
+msgid "Page"
+msgstr "Pagina"
+
+msgid "WHILE PLAYING"
+msgstr "TIJDENS HET SPELEN"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "LAATSTE SPEL BIJ OPSTARTEN HERVATTEN"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Start je laatste spel vanaf de automatische opslag bij het opstarten. B annuleert."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "HOMEMENU TIJDENS SPELLEN"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Experimenteel. Houd START en de gekozen schouderknop een seconde ingedrukt terwijl een spel draait om het te pauzeren en een paneel te openen met batterij, helderheid, volume, HERVATTEN en SPEL STOPPEN (SAVE STATE en LOAD STATE alleen met RetroArch-netwerkopdrachten aan)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "HOMEMENU-KNOPPEN"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "De knoppen die samen met START worden ingedrukt om het homemenu te openen. Combinaties met Select worden door RetroArch gebruikt."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "PRESTATIETIPS"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Stelt prestatiemodus voor bij spellen die de GPU-governor afremt."
+
+msgid "PLAY TIME LIMIT"
+msgstr "SPEELTIJDLIMIET"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Speeltijd per dag. Vijf minuten voor het einde verschijnt een bericht (in het spel alleen met RetroArch-netwerkopdrachten aan) en daarna wordt het spel gesloten. De tijd telt vanaf het moment dat dit wordt ingeschakeld."
+
+msgid "SAVED GAMES"
+msgstr "OPGESLAGEN SPELLEN"
+
+msgid "PICTURE AND CONTROL"
+msgstr "BEELD EN BESTURING"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "MOONLIGHT-GAMESTREAMING"
+
+msgid "MORE"
+msgstr "MEER"
+
+msgid "PLAY STATISTICS"
+msgstr "SPEELSTATISTIEKEN"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "OPTIES PER SYSTEEM"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "prestatiemodus"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU en geheugen op volle snelheid tijdens het spelen"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "ONBEKEND SYSTEEM"
+
+msgid "EMULATOR"
+msgstr "EMULATOR"
+
+msgid "The emulator and core that run this."
+msgstr "De emulator en core waarmee dit draait."
+
+msgid "SYSTEM OPTIONS"
+msgstr "SYSTEEMOPTIES"
+
+msgid "DISPLAY"
+msgstr "WEERGAVE"
+
+msgid "GAMEPLAY"
+msgstr "GAMEPLAY"
+
+msgid "ACTIONS"
+msgstr "ACTIES"
+
+msgid "RANDOM GAME"
+msgstr "WILLEKEURIG SPEL"
+
+msgid "COOLING PROFILE"
+msgstr "KOELPROFIEL"
+
+msgid "AGGRESSIVE"
+msgstr "AGRESSIEF"
+
+msgid "MODERATE"
+msgstr "MATIG"
+
+msgid "QUIET"
+msgstr "STIL"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "CPU-SCHALINGSGOVERNOR"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GPU-SCHALINGSGOVERNOR"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "MANGOHUD-OVERLAY"
+
+msgid "UNKNOWN GAME"
+msgstr "ONBEKEND SPEL"
+
+msgid "INVALID DATE"
+msgstr "ONGELDIGE DATUM"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "HET SPEL KON NIET WORDEN VERWIJDERD"
+
+msgid "CONFIG"
+msgstr "CONFIGURATIE"
+
+msgid "CORE PROVIDED"
+msgstr "DOOR CORE GELEVERD"
+
+msgid "FULL"
+msgstr "VOL"
+
+msgid "SQUARE PIXEL"
+msgstr "VIERKANTE PIXEL"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "SCHERMAANPASSING"
+
+msgid "SCREEN & SOUND"
+msgstr "SCHERM EN GELUID"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "ONGEBRUIKT"
+
+msgid "MONITORING"
+msgstr "MONITORING"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "OVERCLOCK EN MONITORING"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "BATTERIJ EN PRESTATIES"
+
+msgid "LIBRARY"
+msgstr "BIBLIOTHEEK"
+
+msgid "CHECK LIBRARY"
+msgstr "BIBLIOTHEEK CONTROLEREN"
+
+msgid "SAVE BACKUPS"
+msgstr "BACK-UPS VAN OPSLAGEN"
+
+msgid "LANGUAGE & TIME"
+msgstr "TAAL EN TIJD"
+
+msgid "HOME MENU"
+msgstr "HOMEMENU"
+
+msgid "CHARGING"
+msgstr "OPLADEN"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "SCHERMHELDERHEID"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "DE SAVE STATE OVERSCHRIJVEN?"
+
+msgid "LOAD STATE"
+msgstr "SAVE STATE LADEN"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "DE SAVE STATE LADEN? NIET-OPGESLAGEN VOORTGANG GAAT VERLOREN."
+
+msgid "RESUME"
+msgstr "HERVATTEN"
+
+msgid "QUIT GAME"
+msgstr "SPEL STOPPEN"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "HET SPEL ECHT STOPPEN?"
+
+msgid "AND MORE"
+msgstr "EN MEER"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "GEEN PROBLEMEN GEVONDEN"
+
+msgid "PROBLEMS FOUND"
+msgstr "PROBLEMEN GEVONDEN"
+
+msgid "MISSING BIOS"
+msgstr "ONTBREKENDE BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "MOGELIJK DEFECTE BESTANDEN"
+
+msgid "DUPLICATES"
+msgstr "DUBBELE BESTANDEN"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "SPELLEN ZONDER AFBEELDING"
+
+msgid "NETWORK"
+msgstr "NETWERK"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "CONTROLLER EN BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Alleen voor ontwikkeling: elke widget van het menuframework."
+
+msgid "WIDGET DEMO"
+msgstr "WIDGETDEMO"
+
+msgid "Unable to connect to server"
+msgstr "Kan geen verbinding maken met de server"
+
+msgid "Succesfully paired with server"
+msgstr "Succesvol gekoppeld met de server"
+
+msgid "QUIT CURRENT GAME"
+msgstr "HUIDIG SPEL STOPPEN"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "MOONLIGHT-SPELLEN BIJWERKEN"
+
+msgid "PAIR WITH SERVER"
+msgstr "KOPPELEN MET SERVER"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "KOPPELING MET SERVER VERBREKEN"
+
+msgid "Unpaired and settings cleared"
+msgstr "Koppeling verbroken en instellingen gewist"
+
+msgid "Unpaired from server"
+msgstr "Koppeling met server verbroken"
+
+msgid "SERVER IP"
+msgstr "SERVER-IP"
+
+msgid "PAIRING PIN"
+msgstr "KOPPELINGSPIN"
+
+msgid "HOST"
+msgstr "HOST"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "DEELNEMEN AAN EEN NETPLAY-SPEL"
+
+msgid "NETPLAY NICKNAME"
+msgstr "NETPLAY-NICKNAME"
+
+msgid "NETPLAY HOST"
+msgstr "NETPLAY-HOST"
+
+msgid "NETPLAY PORT"
+msgstr "NETPLAY-POORT"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Wi-Fi wordt ingeschakeld..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Wi-Fi-configuratiefout"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi staat aan"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi staat uit"
+
+msgid "Wi-Fi region updated"
+msgstr "Wi-Fi-regio bijgewerkt"
+
+msgid "Please wait..."
+msgstr "Even geduld..."
+
+msgid "Local play mode updated"
+msgstr "Lokale speelmodus bijgewerkt"
+
+msgid "The service did not answer"
+msgstr "De service reageerde niet"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "WI-FI-NETWERKEN"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Stelt de radioregels in: de kanalen die je mag gebruiken."
+
+msgid "TRANSFER FILES"
+msgstr "BESTANDEN OVERZETTEN"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Stuur spellen naar de console vanaf een telefoon of computer op dit netwerk."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "BESCHIKBARE IP-ADRESSEN:"
+
+msgid "LOCAL PLAY"
+msgstr "LOKAAL SPELEN"
+
+msgid "LOCAL PLAY MODE"
+msgstr "MODUS LOKAAL SPELEN"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Host een toegangspunt voor netplay met andere consoles."
+
+msgid "1 (HOST)"
+msgstr "1 (HOST)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (CLIENT 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (CLIENT 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (CLIENT 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ID LOKAAL SPELEN"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, cloud, VPN en de naam van de console."
+
+msgid "NETWORK SERVICES"
+msgstr "NETWERKSERVICES"
+
+msgid "ENABLE SSH"
+msgstr "SSH INSCHAKELEN"
+
+msgid "SSH is off"
+msgstr "SSH staat uit"
+
+msgid "SSH is on"
+msgstr "SSH staat aan"
+
+msgid "Remote access to the console over the network."
+msgstr "Toegang op afstand tot de console via het netwerk."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "EENVOUDIGE HTTP-SERVER INSCHAKELEN"
+
+msgid "HTTP server is off"
+msgstr "HTTP-server staat uit"
+
+msgid "HTTP server is on"
+msgstr "HTTP-server staat aan"
+
+msgid "FILE TRANSFER"
+msgstr "BESTANDSOVERDRACHT"
+
+msgid "USB GADGET FUNCTION"
+msgstr "USB-GADGETFUNCTIE"
+
+msgid "USB networking is on. The console is at"
+msgstr "USB-netwerk staat aan. De console staat op"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Wat de console aanbiedt op de USB-C-poort."
+
+msgid "CLOUD SERVICES"
+msgstr "CLOUDSERVICES"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "CLOUDSTATION KOPPELEN"
+
+msgid "Cloud drive mounted"
+msgstr "Cloudstation gekoppeld"
+
+msgid "Cloud drive unmounted"
+msgstr "Cloudstation losgekoppeld"
+
+msgid "VPN SERVICES"
+msgstr "VPN-SERVICES"
+
+msgid "WIREGUARD VPN"
+msgstr "WIREGUARD-VPN"
+
+msgid "WireGuard is off"
+msgstr "WireGuard staat uit"
+
+msgid "WireGuard is on"
+msgstr "WireGuard staat aan"
+
+msgid "TAILSCALE VPN"
+msgstr "TAILSCALE-VPN"
+
+msgid "Tailscale is off"
+msgstr "Tailscale staat uit"
+
+msgid "Tailscale is on"
+msgstr "Tailscale staat aan"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale kon geen verbinding maken"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale vraagt je om in te loggen"
+
+msgid "SHOW LINK"
+msgstr "LINK TONEN"
+
+msgid "TAILSCALE LOGIN"
+msgstr "TAILSCALE-LOGIN"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "TAILSCALE OPNIEUW AUTHENTICEREN:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Gebruik alleen letters, cijfers en streepjes"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Hostnaam opgeslagen. Wordt toegepast bij de volgende start"
+
+msgid "The new name is used at the next boot."
+msgstr "De nieuwe naam wordt bij de volgende start gebruikt."
+
+msgid "WEB FILE TRANSFER"
+msgstr "WEBBESTANDSOVERDRACHT"
+
+msgid "Could not start the web transfer"
+msgstr "De weboverdracht kon niet worden gestart"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Laat een telefoon of computer op dit netwerk spellen naar de console sturen."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "KON NIET STARTEN (POORT BEZET?)"
+
+msgid "WEB ADDRESS"
+msgstr "WEBADRES"
+
+msgid "WEB PIN"
+msgstr "WEBPIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "NETWERKSCHIJF (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "SAMBA INSCHAKELEN"
+
+msgid "Samba is off"
+msgstr "Samba staat uit"
+
+msgid "Samba is on"
+msgstr "Samba staat aan"
+
+msgid "Shares the games folder with other computers."
+msgstr "Deelt de spellenmap met andere computers."
+
+msgid "SAMBA ADDRESS"
+msgstr "SAMBA-ADRES"
+
+msgid "SAMBA USER"
+msgstr "SAMBA-GEBRUIKER"
+
+msgid "SAMBA PASSWORD"
+msgstr "SAMBA-WACHTWOORD"
+
+msgid "Connecting to"
+msgstr "Verbinden met"
+
+msgid "Connected successfully"
+msgstr "Verbinding gelukt"
+
+msgid "Failed to connect"
+msgstr "Verbinden mislukt"
+
+msgid "SAVED"
+msgstr "OPGESLAGEN"
+
+msgid "ENTERPRISE"
+msgstr "ENTERPRISE"
+
+msgid "SECURED"
+msgstr "BEVEILIGD"
+
+msgid "Enterprise networks are not supported"
+msgstr "Enterprise-netwerken worden niet ondersteund"
+
+msgid "Network forgotten"
+msgstr "Netwerk vergeten"
+
+msgid "WI-FI KEY FOR "
+msgstr "WI-FI-SLEUTEL VOOR "
+
+msgid "CONNECTING..."
+msgstr "VERBINDEN..."
+
+msgid "WI-FI SSID"
+msgstr "WI-FI-SSID"
+
+msgid "WI-FI KEY"
+msgstr "WI-FI-SLEUTEL"
+
+msgid "REALLY SUSPEND ?"
+msgstr "ECHT IN SLAAPSTAND ZETTEN?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "ECHT AFSLUITEN?"
+
+msgid "REALLY RESTART?"
+msgstr "ECHT OPNIEUW OPSTARTEN?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "DE FRONTEND ECHT OPNIEUW STARTEN?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "FRONTEND OPNIEUW STARTEN"
+
+msgid "TEST ACCOUNT"
+msgstr "ACCOUNT TESTEN"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Controleert de gebruikersnaam en het wachtwoord bij retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "VERBINDEN MET RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "INGELOGD"
+
+msgid "LED NOTIFICATIONS"
+msgstr "LED-MELDINGEN"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Toon de RetroAchievements-rij in het hoofdmenu."
+
+msgid "NO SAVES FOUND"
+msgstr "GEEN OPSLAGEN GEVONDEN"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "NIET GENOEG VRIJE RUIMTE"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "ER BESTAAT AL EEN BACK-UP VAN DEZE MINUUT"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "DE BACK-UP IS BESCHADIGD OF ONTBREEKT"
+
+msgid "BACKUP DONE"
+msgstr "BACK-UP KLAAR"
+
+msgid "SAVES RESTORED"
+msgstr "OPSLAGEN HERSTELD"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "CLOUDBACK-UP KLAAR"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "CLOUDBACK-UP MISLUKT"
+
+msgid "BEFORE A RESTORE"
+msgstr "VOOR EEN HERSTEL"
+
+msgid "BACK UP SAVES NOW"
+msgstr "NU BACK-UP MAKEN VAN OPSLAGEN"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "SAVEGAMES, SAVE STATES EN PSP-OPSLAGEN, ZONDER ROMS OF MEDIA"
+
+msgid "CLOUD BACKUP"
+msgstr "CLOUDBACK-UP"
+
+msgid "BACKUPS"
+msgstr "BACK-UPS"
+
+msgid "NO BACKUPS YET"
+msgstr "NOG GEEN BACK-UPS"
+
+msgid "BACKUP DELETED"
+msgstr "BACK-UP VERWIJDERD"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "DIT VERVANGT JE HUIDIGE OPSLAGEN DOOR DIE VAN %s. EERST WORDT EEN BACK-UP VAN DE HUIDIGE OPSLAGEN GEMAAKT."
+
+msgid "RESTORE"
+msgstr "HERSTELLEN"
+
+msgid "DELETE BACKUP"
+msgstr "BACK-UP VERWIJDEREN"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "DEZE BACK-UP VERWIJDEREN?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "DEZE BUILD KAN SCREENSCRAPER NIET BEREIKEN"
+
+msgid "ALL GAMES"
+msgstr "ALLE SPELLEN"
+
+msgid "GAMES TO SCRAPE"
+msgstr "TE SCRAPEN SPELLEN"
+
+msgid "WITH MISSING MEDIA"
+msgstr "MET ONTBREKENDE MEDIA"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "ZONDER MEDIA"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Welke spellen van de gekozen systemen worden opgezocht."
+
+msgid "1 DAY"
+msgstr "1 DAG"
+
+msgid "1 MONTH"
+msgstr "1 MAAND"
+
+msgid "1 WEEK"
+msgstr "1 WEEK"
+
+msgid "1 YEAR"
+msgstr "1 JAAR"
+
+msgid "15 DAYS"
+msgstr "15 DAGEN"
+
+msgid "3 MONTHS"
+msgstr "3 MAANDEN"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Spellen die binnen deze tijd zijn gescrapet, worden overgeslagen. Dat bespaart verzoeken."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "ONTBREKENDE MEDIA AUTOMATISCH OPHALEN"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Downloadt ontbrekende covers op de achtergrond als de console niets doet."
+
+msgid "SCRAPER SETTINGS"
+msgstr "SCRAPER-INSTELLINGEN"
+
+msgid "ACCOUNT"
+msgstr "ACCOUNT"
+
+msgid "Choose at least one system."
+msgstr "Kies minstens één systeem."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Zoekt de spellen op bij ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "GEEN SYSTEEM MET SPELLEN DIE SCREENSCRAPER KENT"
+
+msgid "PICTURES"
+msgstr "AFBEELDINGEN"
+
+msgid "IMAGE"
+msgstr "AFBEELDING"
+
+msgid "BOX FRONT"
+msgstr "VOORKANT DOOS"
+
+msgid "TITLE SCREEN"
+msgstr "TITELSCHERM"
+
+msgid "The main picture of each game."
+msgstr "De hoofdafbeelding van elk spel."
+
+msgid "THUMBNAIL"
+msgstr "MINIATUUR"
+
+msgid "The small picture of each game."
+msgstr "De kleine afbeelding van elk spel."
+
+msgid "LOGO"
+msgstr "LOGO"
+
+msgid "The logo of each game."
+msgstr "Het logo van elk spel."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "VOLLEDIGE GROOTTE"
+
+msgid "IMAGE SIZE"
+msgstr "AFBEELDINGSGROOTTE"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper verkleint afbeeldingen voor het verzenden: sneller en lichter."
+
+msgid "AUTOMATIC"
+msgstr "AUTOMATISCH"
+
+msgid "BRAZIL"
+msgstr "BRAZILIË"
+
+msgid "EUROPE"
+msgstr "EUROPA"
+
+msgid "FRANCE"
+msgstr "FRANKRIJK"
+
+msgid "GERMANY"
+msgstr "DUITSLAND"
+
+msgid "ITALY"
+msgstr "ITALIË"
+
+msgid "JAPAN"
+msgstr "JAPAN"
+
+msgid "SPAIN"
+msgstr "SPANJE"
+
+msgid "USA"
+msgstr "VS"
+
+msgid "WORLD"
+msgstr "WERELD"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Voorkeursregio voor namen, datums en afbeeldingen."
+
+msgid "NAMES"
+msgstr "NAMEN"
+
+msgid "Replace the names of the games."
+msgstr "Vervang de namen van de spellen."
+
+msgid "DESCRIPTIONS"
+msgstr "BESCHRIJVINGEN"
+
+msgid "Replace the descriptions."
+msgstr "Vervang de beschrijvingen."
+
+msgid "Download the rating of each game."
+msgstr "Download de beoordeling van elk spel."
+
+msgid "RATINGS"
+msgstr "BEOORDELINGEN"
+
+msgid "EXTRA MEDIA"
+msgstr "EXTRA MEDIA"
+
+msgid "VIDEOS"
+msgstr "VIDEO'S"
+
+msgid "Videos are big and take longer to download."
+msgstr "Video's zijn groot en duren langer om te downloaden."
+
+msgid "MANUALS"
+msgstr "HANDLEIDINGEN"
+
+msgid "PDF manuals."
+msgstr "PDF-handleidingen."
+
+msgid "MAPS"
+msgstr "KAARTEN"
+
+msgid "Maps of the game."
+msgstr "Kaarten van het spel."
+
+msgid "Background pictures."
+msgstr "Achtergrondafbeeldingen."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "ACHTERKANT DOOS"
+
+msgid "The back of the box."
+msgstr "De achterkant van de doos."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Alleen voor \"Alle spellen\": bestaande afbeeldingen worden opnieuw gedownload."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "BESTAANDE MEDIA VERVANGEN"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Optioneel. Zonder account staat ScreenScraper maar heel weinig verzoeken toe."
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB heeft geen account nodig."
+
+msgid "Asks IGDB for an access token."
+msgstr "Vraagt IGDB om een toegangstoken."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Vraagt ScreenScraper om je limieten."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "VERBINDEN MET SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "ANONIEM"
+
+msgid "LOGIN"
+msgstr "INLOGGEN"
+
+msgid "REQUESTS TODAY"
+msgstr "VERZOEKEN VANDAAG"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "VERZOEKEN PER MINUUT"
+
+msgid "STOP"
+msgstr "STOP"
+
+msgid "SCROLL"
+msgstr "SCROLLEN"
+
+msgid "SCRAPE COMPLETE"
+msgstr "SCRAPEN VOLTOOID"
+
+msgid "SCRAPE STOPPED"
+msgstr "SCRAPEN GESTOPT"
+
+msgid "FOUND"
+msgstr "GEVONDEN"
+
+msgid "NOT FOUND"
+msgstr "NIET GEVONDEN"
+
+msgid "ERRORS"
+msgstr "FOUTEN"
+
+msgid "MEDIA FILES"
+msgstr "MEDIABESTANDEN"
+
+msgid "READING GAME LISTS"
+msgstr "SPELLIJSTEN LEZEN"
+
+msgid "STOPPING"
+msgstr "STOPPEN"
+
+msgid "SECONDS"
+msgstr "SECONDEN"
+
+msgid "WAITING"
+msgstr "WACHTEN"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "GESTOPT. WAT GEDAAN IS, IS OPGESLAGEN"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "GEEN SPELLEN OM TE SCRAPEN MET DEZE FILTERS"
+
+msgid "GAMES"
+msgstr "SPELLEN"
+
+msgid "PROBLEMS"
+msgstr "PROBLEMEN"
+
+msgid "MEDIA MISSING"
+msgstr "MEDIA ONTBREEKT"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "SCHAKELAARS EN SCHUIVEN"
+
+msgid "The clock shows in the top right corner."
+msgstr "De klok wordt rechtsboven getoond."
+
+msgid "Volume saved"
+msgstr "Volume opgeslagen"
+
+msgid "LISTS AND TEXT"
+msgstr "LIJSTEN EN TEKST"
+
+msgid "TEXT"
+msgstr "TEKST"
+
+msgid "WI-FI PASSWORD"
+msgstr "WI-FI-WACHTWOORD"
+
+msgid "SHOW A TOAST"
+msgstr "EEN MELDING TONEN"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi verbonden: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "DE VOLUMEBALK TONEN"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "DE HELDERHEIDSBALK TONEN"
+
+msgid "ASK A QUESTION"
+msgstr "EEN VRAAG STELLEN"
+
+msgid "Delete all saved states of this game?"
+msgstr "Alle save states van dit spel verwijderen?"
+
+msgid "SHOW A MESSAGE"
+msgstr "EEN BERICHT TONEN"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "De update is geïnstalleerd. Start de console opnieuw op om hem te gebruiken."
+
+msgid "Restart the system now?"
+msgstr "Het systeem nu opnieuw opstarten?"
+
+msgid "Restarting..."
+msgstr "Opnieuw opstarten..."
+
+msgid "DISABLED ENTRY"
+msgstr "UITGESCHAKELD ITEM"
+
+msgid "SELECTOR STYLE"
+msgstr "SELECTORSTIJL"
+
+msgid "TITLE ALIGNMENT"
+msgstr "UITLIJNING VAN TITELS"
+
+msgid "LIST TEXT CASE"
+msgstr "HOOFDLETTERS IN LIJSTEN"
+
+msgid "TEXT SIZE"
+msgstr "TEKSTGROOTTE"
+
+msgid "HIGH CONTRAST"
+msgstr "HOOG CONTRAST"
+
+msgid "options"
+msgstr "opties"
+
+msgid "AUDIO"
+msgstr "AUDIO"
+
+msgid "Could not change the audio output"
+msgstr "De audio-uitvoer kon niet worden gewijzigd"
+
+msgid "BATTERY WARNING"
+msgstr "BATTERIJWAARSCHUWING"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "HOORBARE BATTERIJWAARSCHUWING INSCHAKELEN"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "DREMPEL VOOR BATTERIJWAARSCHUWING"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Start dit spel wanneer de console opstart, vóór de menu's, één keer per opstart."
+
+msgid "Reboot now"
+msgstr "Nu opnieuw opstarten"
+
+msgid "Later"
+msgstr "Later"
+
+msgid "Default"
+msgstr "Standaard"
+
+msgid "Arm (official)"
+msgstr "Arm (officieel)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Open source (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "RESTERENDE TIJD VANDAAG"
+
+msgid "UPTIME"
+msgstr "DRAAITIJD"
+
+msgid "No information available"
+msgstr "Geen informatie beschikbaar"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "SYSTEEMBEHEER EN RESET"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr ""
+"WEET JE HET ZEKER?\n"
+"\n"
+"DIT KAN NIET ONGEDAAN WORDEN GEMAAKT."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "CONFIGURATIES BACK-UPPEN"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr ""
+"WAARSCHUWING: DIT STARTT DE FRONTEND OPNIEUW!\n"
+"\n"
+"NADAT HET SCRIPT KLAAR IS, KOPIEER JE HET BESTAND /storage/roms/backup/ROCKNIX_BACKUP.zip NAAR EEN VEILIGE PLEK, ANDERS WORDT HET BIJ DE VOLGENDE START VERWIJDERD!\n"
+"\n"
+"HUIDIGE CONFIGURATIE BACK-UPPEN EN OPNIEUW STARTEN?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "HERSTELLEN UIT BACK-UP"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr ""
+"WAARSCHUWING: DIT STARTT JE APPARAAT OPNIEUW OP!\n"
+"\n"
+"JE BESTAANDE CONFIGURATIE WORDT OVERSCHREVEN!\n"
+"\n"
+"HERSTELLEN UIT BACK-UP EN OPNIEUW STARTEN?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "EMULATORBEHEER"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "RETROARCH-CONFIGURATIE TERUGZETTEN NAAR STANDAARD"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr ""
+"WAARSCHUWING: DE RETROARCH-CONFIGURATIE WORDT TERUGGEZET NAAR STANDAARD\n"
+"\n"
+"CONFIGURATIES PER CORE BLIJVEN ONGEWIJZIGD EN ER WORDT GEEN BACK-UP GEMAAKT!\n"
+"\n"
+"RETROARCH-CONFIGURATIE TERUGZETTEN NAAR STANDAARD?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "OVERLAYS RESETTEN (CORES, CHEATS, JOYPADS, ENZ.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr ""
+"WAARSCHUWING: ALLE AANGEPASTE RETROARCH-OVERLAYS WORDEN VERWIJDERD\n"
+"\n"
+"AANGEPASTE CORES, JOYSTICKS, CHEATS, ENZ. ER WORDT GEEN BACK-UP GEMAAKT!\n"
+"\n"
+"RETROARCH-OVERLAYS TERUGZETTEN NAAR STANDAARD?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "RETROARCH VOLLEDIG RESETTEN"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr ""
+"WAARSCHUWING: RETROARCH EN ALLE DOOR DE GEBRUIKER OPGESLAGEN CONFIGURATIES WORDEN TERUGGEZET NAAR STANDAARD\n"
+"\n"
+"CONFIGURATIES PER CORE WORDEN VERWIJDERD EN ER WORDT GEEN BACK-UP GEMAAKT!\n"
+"\n"
+"RETROARCH RESETTEN?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "MEDNAFEN-CONFIGURATIE TERUGZETTEN NAAR STANDAARD"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr ""
+"WAARSCHUWING: DE MEDNAFEN-CONFIGURATIE WORDT TERUGGEZET NAAR STANDAARD\n"
+"\n"
+"ER WORDT GEEN BACK-UP GEMAAKT!\n"
+"\n"
+"MEDNAFEN-CONFIGURATIE TERUGZETTEN NAAR STANDAARD?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "STANDALONE-EMULATORCONFIGURATIES TERUGZETTEN NAAR STANDAARD"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr ""
+"WAARSCHUWING: DE CONFIGURATIES VAN STANDALONE-EMULATORS WORDEN TERUGGEZET NAAR STANDAARD\n"
+"\n"
+"ER WORDT GEEN BACK-UP GEMAAKT!\n"
+"\n"
+"STANDALONE-EMULATORCONFIGURATIES TERUGZETTEN NAAR STANDAARD?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "PORTMASTER VOLLEDIG RESETTEN"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr ""
+"WAARSCHUWING: PORTMASTER WORDT TERUGGEZET NAAR STANDAARD\n"
+"\n"
+"ER WORDT GEEN BACK-UP GEMAAKT!\n"
+"\n"
+"PORTMASTER TERUGZETTEN NAAR STANDAARD?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "SYSTEEMBEHEER"
+
+msgid "AUDIO RESET"
+msgstr "AUDIO RESETTEN"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr ""
+"WAARSCHUWING: DE AUDIO-INSTELLINGEN WORDEN TERUGGEZET NAAR STANDAARD EN HET SYSTEEM STARTT OPNIEUW OP!\n"
+"\n"
+"AUDIO RESETTEN EN OPNIEUW STARTEN?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "BATTERIJMETER RESETTEN"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr ""
+"WAARSCHUWING: DE PMIC-BATTERIJMETER WORDT GERESET EN HET SYSTEEM WORDT UITGESCHAKELD!\n"
+"\n"
+"LAAT DE LADER LOSGEKOPPELD EN ZET HET APPARAAT NA ENKELE SECONDEN WEER AAN. HET BATTERIJNIVEAU WORDT OPNIEUW GESCHAT OP BASIS VAN DE RUSTSPANNING VAN DE BATTERIJ EN WORDT WEER NAUWKEURIG NA EEN VOLLEDIGE LADING.\n"
+"\n"
+"BATTERIJMETER RESETTEN EN UITSCHAKELEN?"
+
+msgid "FACTORY RESET"
+msgstr "FABRIEKSINSTELLINGEN HERSTELLEN"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr ""
+"WAARSCHUWING: JE GEGEVENS EN ALLE ANDERE CONFIGURATIES WORDEN TERUGGEZET NAAR STANDAARD!\n"
+"\n"
+"WIL JE JE INSTELLINGEN BEHOUDEN, MAAK DAN EEN BACK-UP EN BEWAAR DIE OP EEN EXTERNE SCHIJF VOORDAT JE DEZE OPTIE UITVOERT!\n"
+"\n"
+"VERWIJDER JE SPELKAART VOORDAT JE VERDERGAAT!\n"
+"\n"
+"SYSTEEM RESETTEN EN OPNIEUW STARTEN?"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Kies de toetsenbordvariant voor de gekozen indeling (bijvoorbeeld dode toetsen of een alternatieve toetsplaatsing)."
+
+msgid "TIMEZONE"
+msgstr "TIJDZONE"
+
+msgid "Run welcome again"
+msgstr "Welkom opnieuw uitvoeren"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Toont de welkomstpagina van de eerste start opnieuw: taal, WiFi en tijdzone."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "MANGOHUD-OVERLAY INSCHAKELEN"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "TOUCHSCREEN-TOETSENBORD INSCHAKELEN"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "ROCKNIX-SCHERMAFBEELDING INSCHAKELEN"
+
+msgid "SCREEN"
+msgstr "SCHERM"
+
+msgid "CONTRAST"
+msgstr "CONTRAST"
+
+msgid "GAMMA"
+msgstr "GAMMA"
+
+msgid "HUE"
+msgstr "TINT"
+
+msgid "SATURATION"
+msgstr "VERZADIGING"
+
+msgid "LEDS"
+msgstr "LEDS"
+
+msgid "DISABLE POWER LED"
+msgstr "POWER-LED UITSCHAKELEN"
+
+msgid "LED COLOR"
+msgstr "LEDKLEUR"
+
+msgid "JOYSTICK LED"
+msgstr "JOYSTICK-LED"
+
+msgid "MAX"
+msgstr "MAX"
+
+msgid "MID"
+msgstr "MIDDEN"
+
+msgid "MIN"
+msgstr "MIN"
+
+msgid "THIS DEVICE IS"
+msgstr "DIT APPARAAT IS"
+
+msgid "Device will be switched on next reboot"
+msgstr "Het apparaat wordt bij de volgende start omgeschakeld"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "SPELKAART AUTOMATISCH HERKENNEN"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "SAMENGEVOEGDE OPSLAG INSCHAKELEN"
+
+msgid "EXTERNAL"
+msgstr "EXTERN"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "PRIMAIRE KAART VAN SAMENGEVOEGDE OPSLAG"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "WAARSCHUWING: ALS JE DE PRIMAIRE KAART WIJZIGT, KAN DE TOEGANG TOT SPELLEN VERLOREN GAAN EN IS HANDMATIG HERSTEL NODIG. DOORGAAN?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "MICROSD-KAART UITWERPEN"
+
+msgid "You may now remove the card."
+msgstr "Je kunt de kaart nu verwijderen."
+
+msgid "PERFORMANCE"
+msgstr "PRESTATIES"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "STANDAARD SCHALINGSGOVERNOR"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "STANDAARD GPU-SCHALINGSGOVERNOR"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "CPU-OVERCLOCK INSCHAKELEN"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "GPU-OVERCLOCK INSCHAKELEN"
+
+msgid "GPU DRIVER"
+msgstr "GPU-DRIVER"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "De GPU-driver wordt bij de volgende start omgeschakeld"
+
+msgid "Restarting to apply the theme"
+msgstr "Opnieuw starten om het thema toe te passen"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "De frontend start opnieuw om het thema toe te passen"
+
+msgid "Dark"
+msgstr "Donker"
+
+msgid "Light"
+msgstr "Licht"
+
+msgid "Theme default"
+msgstr "Standaard van thema"
+
+msgid "Filled"
+msgstr "Gevuld"
+
+msgid "Outline"
+msgstr "Omlijnd"
+
+msgid "Side bar"
+msgstr "Zijbalk"
+
+msgid "Underline"
+msgstr "Onderstreept"
+
+msgid "Centered"
+msgstr "Gecentreerd"
+
+msgid "Left"
+msgstr "Links"
+
+msgid "Lowercase"
+msgstr "Kleine letters"
+
+msgid "Uppercase"
+msgstr "Hoofdletters"
+
+msgid "EXTRA LARGE"
+msgstr "EXTRA GROOT"
+
+msgid "LARGE"
+msgstr "GROOT"
+
+msgid "SMALL"
+msgstr "KLEIN"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Grootte van de tekst in menu's, dialogen en hulpbalken"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Zuiver witte of zwarte tekst, effen vlakken en een dikkere selector"
+
+msgid "CONTROL OPTIONS"
+msgstr "BESTURINGSOPTIES"
+
+msgid "TOP BAR"
+msgstr "BOVENBALK"
+
+msgid "BEDSIDE CLOCK"
+msgstr "NACHTKLOK"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Toont een grote klok als de oplader is aangesloten en je de console zo lang niet aanraakt, in plaats van de schermbeveiliging. Elke knop sluit hem. Nooit terwijl een spel open is."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "DE DOWNLOAD KON NIET WORDEN GEANNULEERD"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "DOWNLOAD GEANNULEERD"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "DE UPDATE KON NIET WORDEN GEDOWNLOAD. CONTROLEER DE VERBINDING EN PROBEER HET OPNIEUW."
+
+msgid "No update source available"
+msgstr "Geen updatebron beschikbaar"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "VOLGENDE UPDATE FORCEREN"
+
+msgid "UPDATING"
+msgstr "BIJWERKEN"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "DOWNLOAD ANNULEREN"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "DE DOWNLOAD ANNULEREN? HET GEDEELTELIJKE BESTAND WORDT VERWIJDERD."
+
+msgid "Checking..."
+msgstr "Controleren..."
+
+msgid "available"
+msgstr "beschikbaar"
+
+msgid "SKIP ALL"
+msgstr "ALLES OVERSLAAN"
+
+msgid "Welcome"
+msgstr "Welkom"
+
+msgid "of"
+msgstr "van"
+
+msgid "Choose your language"
+msgstr "Kies je taal"
+
+msgid "Language"
+msgstr "Taal"
+
+msgid "You can change it later in System."
+msgstr "Je kunt dit later wijzigen in Systeem."
+
+msgid "Connect to WiFi"
+msgstr "Verbinden met WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Klok, updates en bestandsoverdracht."
+
+msgid "Continue"
+msgstr "Doorgaan"
+
+msgid "Not now"
+msgstr "Niet nu"
+
+msgid "Choose a network"
+msgstr "Kies een netwerk"
+
+msgid "Choose another network"
+msgstr "Kies een ander netwerk"
+
+msgid "Where are you?"
+msgstr "Waar ben je?"
+
+msgid "Time zone"
+msgstr "Tijdzone"
+
+msgid "Sets your local time."
+msgstr "Stelt je lokale tijd in."
+
+msgid "Keep UTC"
+msgstr "UTC behouden"
+
+msgid "LOADING..."
+msgstr "LADEN..."
+
+msgid "All set"
+msgstr "Alles klaar"
+
+msgid "Add games from your phone"
+msgstr "Voeg spellen toe vanaf je telefoon"
+
+msgid "Network"
+msgstr "Netwerk"
+
+msgid "Start opens the menu"
+msgstr "Start opent het menu"
+
+msgid "anywhere"
+msgstr "overal"
+
+msgid "Screen looks wrong?"
+msgstr "Ziet het scherm er verkeerd uit?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Begin met spelen"
+
+msgid "PLAY THEME MUSIC"
+msgstr "THEMAMUZIEK AFSPELEN"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "GEEN NETWERKVERBINDING"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "BATTERIJGEBRUIK (VOLLEDIGE LADING)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "TOTALE SPEELTIJD"
+
+msgid "LAST FIVE WEEKS"
+msgstr "LAATSTE VIJF WEKEN"
+
+msgid "2 WEEKS AGO"
+msgstr "2 WEKEN GELEDEN"
+
+msgid "3 WEEKS AGO"
+msgstr "3 WEKEN GELEDEN"
+
+msgid "4 WEEKS AGO"
+msgstr "4 WEKEN GELEDEN"
+
+msgid "THIS WEEK"
+msgstr "DEZE WEEK"
+
+msgid "MOST PLAYED GAMES"
+msgstr "MEEST GESPEELDE SPELLEN"
+
+msgid "TIME PER SYSTEM"
+msgstr "TIJD PER SYSTEEM"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "NOG NIETS GESPEELD. SPEEL EEN SPEL EN HET VERSCHIJNT HIER."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Nog maar %d minuut speeltijd over vandaag"
+msgstr[1] "Nog maar %d minuten speeltijd over vandaag"
+
+msgid "Power saver on"
+msgstr "Energiebesparing aan"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "ONVERWACHT ANTWOORD VAN RETROACHIEVEMENTS"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "NIET BESCHIKBAAR IN DEZE BUILD"
+
+msgid "%i min ago"
+msgstr "%i min geleden"
+
+msgid "%i h ago"
+msgstr "%i u geleden"
+
+msgid "%i d ago"
+msgstr "%i d geleden"
+
+msgid "CONTINUE PLAYING"
+msgstr "VERDER SPELEN"
+
+msgid "START NOW"
+msgstr "NU STARTEN"
+
+msgid "RESUMING"
+msgstr "HERVATTEN"
+
+msgid "STARTING IN %i"
+msgstr "STARTEN OVER %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacks"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Verticaal"
+
+msgid "recently added"
+msgstr "recent toegevoegd"
+
+msgid "unfinished"
+msgstr "onvoltooid"
+
+msgid "most played this week"
+msgstr "meest gespeeld deze week"
+
+msgid "BOOKS"
+msgstr "BOEKEN"
+
+msgid "screenshots"
+msgstr "schermafbeeldingen"
+
+msgid "media player"
+msgstr "mediaspeler"
+
+msgid "NETWORK ERROR"
+msgstr "NETWERKFOUT"
+
+msgid "SERVER BUSY"
+msgstr "SERVER DRUK BEZET"
+
+msgid "SERVER ERROR"
+msgstr "SERVERFOUT"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "KAN DE GAMELIST NIET SCHRIJVEN"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "INLOGGEN MISLUKT. CONTROLEER JE GEBRUIKERSNAAM EN WACHTWOORD"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER IS MOMENTEEL GESLOTEN VOOR DEZE ACCOUNT"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER IS IN ONDERHOUD"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "DEZE SOFTWARE IS GEBLOKKEERD DOOR SCREENSCRAPER"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "DAGELIJKS SCRAPE-QUOTUM BEREIKT. PROBEER HET MORGEN OPNIEUW"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "TE VEEL ONBEKENDE ROMS VANDAAG. PROBEER HET MORGEN OPNIEUW"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "GEEN RUIMTE MEER OP DE KAART"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "VOER EERST DE IGDB-CLIENT-ID EN HET GEHEIM IN BIJ ACCOUNT"
+
+msgid "SCRAPING STOPPED"
+msgstr "SCRAPEN GESTOPT"
+
+msgid "GAME NOT FOUND"
+msgstr "SPEL NIET GEVONDEN"
+
+msgid "NO OTHER GAME"
+msgstr "GEEN ANDER SPEL"
+
+msgid "Time is up for today"
+msgstr "De tijd voor vandaag is op"
+
+msgid "ACCENTS"
+msgstr "ACCENTEN"
+
+msgid "SHOW"
+msgstr "TONEN"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "VIDEOVOORBEELDEN TONEN"
+
+msgid "Device paired"
+msgstr "Apparaat gekoppeld"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "DIT APPARAAT TOESTAAN?"
+
+msgid "RECEIVED"
+msgstr "ONTVANGEN"
+
+msgid "QR CODE"
+msgstr "QR-CODE"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "NET NU"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d MINUUT GELEDEN"
+msgstr[1] "%d MINUTEN GELEDEN"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d UUR GELEDEN"
+msgstr[1] "%d UUR GELEDEN"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d DAG GELEDEN"
+msgstr[1] "%d DAGEN GELEDEN"
+
+msgid "NO PAIRED DEVICES"
+msgstr "GEEN GEKOPPELDE APPARATEN"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "DIT APPARAAT VERGETEN?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "ALLE APPARATEN VERGETEN"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "ALLE APPARATEN VERGETEN?"
+
+msgid "PAIRED DEVICES"
+msgstr "GEKOPPELDE APPARATEN"
+
+msgid "SHOW QR CODE"
+msgstr "QR-CODE TONEN"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Scan hem met de telefooncamera: de pagina opent en kent de pin."
+
+msgid "Phones that need no PIN."
+msgstr "Telefoons die geen pin nodig hebben."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "OPSLAGEN HERSTELLEN VANAF HET WEB?"
+
+msgid "BUILD ID"
+msgstr "BUILD-ID"
+
+msgid "KERNEL"
+msgstr "KERNEL"
+
+msgid "OPERATING SYSTEM"
+msgstr "BESTURINGSSYSTEEM"
+
+msgid "SYSTEM INFORMATION"
+msgstr "SYSTEEMINFORMATIE"
+
+msgid "BATTERY INFORMATION"
+msgstr "BATTERIJINFORMATIE"
+
+msgid "DISK SPACE"
+msgstr "SCHIJFRUIMTE"
+
+msgid "HOST NAME"
+msgstr "HOSTNAAM"
+
+msgid "NETWORK INFORMATION"
+msgstr "NETWERKINFORMATIE"
+
+msgid "BATTERY HEALTH"
+msgstr "BATTERIJGEZONDHEID"
+
+msgid "BATTERY REMAINING"
+msgstr "BATTERIJ OVER"
+
+msgid "BATTERY STATE"
+msgstr "BATTERIJSTATUS"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "CPU-INFORMATIE"
+
+msgid "CPU TEMPERATURE"
+msgstr "CPU-TEMPERATUUR"
+
+msgid "CPU FAN"
+msgstr "CPU-VENTILATOR"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "GPU HUIDIGE FREQUENTIE"
+
+msgid "GPU INFORMATION"
+msgstr "GPU-INFORMATIE"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "GPU MAXIMALE FREQUENTIE"
+
+msgid "GPU TEMPERATURE"
+msgstr "GPU-TEMPERATUUR"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM BESCHIKBAAR"
+
+msgid "RAM CAPACITY"
+msgstr "RAM-CAPACITEIT"
+
+msgid "RAM INFORMATION"
+msgstr "RAM-INFORMATIE"
+
+msgid "CURRENT FREQUENCY"
+msgstr "HUIDIGE FREQUENTIE"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "MAXIMALE FREQUENTIE"
+
+msgid "DISCHARGING"
+msgstr "ONTLADEN"
+
+msgid "NOT CHARGING"
+msgstr "NIET OPLADEN"
+
+msgid "Follows the language until you choose one here."
+msgstr "Volgt de taal totdat je er hier een kiest."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Geen netwerk. Steek de microSD-kaart in een pc en kopieer elke game naar de map van zijn systeem, in roms (bijvoorbeeld roms/snes). Of maak verbinding met wifi en kom hier terug om games vanaf je telefoon toe te voegen."
+
+msgid "Add games"
+msgstr "Games toevoegen"
+
+msgid "left, in the menus"
+msgstr "over, in de menu's"
+
+msgid "From your phone or microSD"
+msgstr "Vanaf je telefoon of microSD"
+
+msgid "Web transfer turned off"
+msgstr "Webtransfer uitgeschakeld"

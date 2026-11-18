@@ -71,7 +71,7 @@ std::vector<Row> rows_for(const std::vector<estheme::SubsetInfo>& infos) {
 
 bool honored(const std::string& style, const std::string& subset) {
   if (style.empty()) return true;
-  if (style == "iconic") return subset == "color-scheme" || subset == "play-video-previews-of-games" || subset == "show-detailed-game-info";
+  if (style == "iconic") return subset == "play-video-previews-of-games" || subset == "show-detailed-game-info";  // the colour scheme is the MODE row of Appearance
   return false;  // xmb, artbook, techdweeb: nothing of the ES theme's choices reaches their drawing
 }
 

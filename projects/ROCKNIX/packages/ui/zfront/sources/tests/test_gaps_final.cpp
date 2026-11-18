@@ -69,6 +69,53 @@ void make_ctx(Ctx& cx, const std::string& conf_text) {
   cx.systems.push_back(make_system("pc", "dosbox", {"Doom"}));
 }
 
+// ---- a tool launched from a menu with keep_menus: the menu stays, and refreshes when the tool ends ------------------------------
+struct ToolMenu : Screen {
+  int* backs;
+  explicit ToolMenu(int* b) : backs(b) {}
+  Transition handle(Action a, Ctx&) override {
+    if (a != Action::A) return Transition::none();
+    Transition t = Transition::launch("tool.sh");
+    t.keep_menus = true;
+    return t;
+  }
+  void draw(Ctx&, std::vector<Op>&) override {}
+  bool is_menu() const override { return true; }
+  void on_back_from_launch(Ctx&) override { ++*backs; }
+};
+struct PlainMenu : ToolMenu {
+  using ToolMenu::ToolMenu;
+  Transition handle(Action a, Ctx&) override { return a == Action::A ? Transition::launch("game.sh") : Transition::none(); }
+};
+void test_keep_menus_on_launch() {
+  int backs = 0;
+  {
+    Ctx cx;
+    make_ctx(cx, "");
+    auto list = std::make_unique<ListScreen>(0, cx);
+    App app(std::move(cx), std::move(list), make_status_source("/nonexistent"));
+    app.push_screen(std::make_unique<ToolMenu>(&backs));
+    CHECK(app.handle(Action::A).kind == Outcome::Launch);
+    app.after_launch();
+    CHECK_EQ(backs, 1);                                    // refreshed
+    CHECK(app.handle(Action::A).cmd == "tool.sh");         // still on top: A launches the tool again
+    app.after_launch();
+    app.after_launch();                                    // once per launch
+    CHECK_EQ(backs, 2);
+  }
+  {
+    Ctx cx;
+    make_ctx(cx, "");
+    auto list = std::make_unique<ListScreen>(0, cx);
+    App app(std::move(cx), std::move(list), make_status_source("/nonexistent"));
+    app.push_screen(std::make_unique<PlainMenu>(&backs));
+    CHECK(app.handle(Action::A).cmd == "game.sh");
+    app.after_launch();
+    CHECK_EQ(backs, 2);                                    // a normal launch closed the menu: nothing to refresh
+    CHECK(app.handle(Action::A).cmd != "game.sh");         // the list is on top again
+  }
+}
+
 // ---- 1. launching from the savestate manager closes it -------------------------------------------------------------------------
 void test_manager_closes_on_launch() {
   Ctx cx;
@@ -301,7 +348,7 @@ void test_boot_args() {
   CHECK(boot::resolve_theme("", r).empty());  // nothing installed
   touch_layout(r + "/usr/share/themes/es-theme-zenith-dark");
   touch_layout(r + "/usr/share/themes/es-theme-zenith");
-  CHECK_EQ(boot::resolve_theme("", r), r + "/usr/share/themes/es-theme-zenith");  // no setting: the image default, light
+  CHECK_EQ(boot::resolve_theme("", r), r + "/usr/share/themes/es-theme-zenith-dark");  // no setting: Next dark, missing here -> dark
   CHECK_EQ(boot::resolve_theme("es-theme-zenith", r), r + "/usr/share/themes/es-theme-zenith");
   CHECK_EQ(boot::resolve_theme("es-theme-zenith-dark", r), r + "/usr/share/themes/es-theme-zenith-dark");
   CHECK_EQ(boot::resolve_theme("art-book-next", r), r + "/usr/share/themes/es-theme-zenith");  // zfront only has Zenith
@@ -310,7 +357,7 @@ void test_boot_args() {
   touch_layout(r + "/usr/share/zfront/theme-light");
   CHECK_EQ(boot::resolve_theme("es-theme-zenith", r), r + "/usr/share/themes/es-theme-zenith");  // the user/OS folder of that set wins
   CHECK_EQ(boot::resolve_theme("Zenith-Light", r), r + "/usr/share/zfront/theme-light");         // unknown Zenith variant: by name
-  CHECK_EQ(boot::resolve_theme("", r), r + "/usr/share/zfront/theme-light");
+  CHECK_EQ(boot::resolve_theme("", r), r + "/usr/share/zfront/theme-dark");
   CHECK_EQ(boot::resolve_theme("es-theme-zenith-dark", r), r + "/usr/share/themes/es-theme-zenith-dark");
   touch_layout(r + "/storage/.config/emulationstation/themes/es-theme-zenith");
   CHECK_EQ(boot::resolve_theme("es-theme-zenith", r), r + "/storage/.config/emulationstation/themes/es-theme-zenith");
@@ -328,6 +375,7 @@ void test_boot_args() {
   // the two Zeniths have their names in the list, and each folder resolves to itself
   touch_layout(r + "/usr/share/themes/es-theme-zenith-next");
   touch_layout(r + "/usr/share/themes/es-theme-zenith-next-dark");
+  CHECK_EQ(boot::resolve_theme("", r), r + "/usr/share/themes/es-theme-zenith-next-dark");  // no setting: the image default
   CHECK_EQ(boot::resolve_theme("es-theme-zenith-next", r), r + "/usr/share/themes/es-theme-zenith-next");
   CHECK_EQ(boot::resolve_theme("es-theme-zenith-next-dark", r), r + "/usr/share/themes/es-theme-zenith-next-dark");
   std::map<std::string, std::string> labels;
@@ -336,6 +384,46 @@ void test_boot_args() {
   CHECK_EQ(labels["es-theme-zenith-dark"], std::string("Zenith Minimal Dark"));
   CHECK_EQ(labels["es-theme-zenith-next"], std::string("Zenith Next"));
   CHECK_EQ(labels["es-theme-zenith-next-dark"], std::string("Zenith Next Dark"));
+
+  // light and dark are one family: the list folds the "-dark" twins, the mode is the ending of the set
+  CHECK_EQ(boot::theme_family("es-theme-zenith-dark"), std::string("es-theme-zenith"));
+  CHECK_EQ(boot::theme_family("es-theme-zenith-next-dark"), std::string("es-theme-zenith-next"));
+  CHECK_EQ(boot::theme_family("es-theme-zenith"), std::string("es-theme-zenith"));
+  CHECK_EQ(boot::theme_family("dark"), std::string("dark"));  // nothing before the ending: not a mode
+  CHECK_EQ(boot::theme_family("es-theme-x-DARK"), std::string("es-theme-x"));
+  CHECK(boot::theme_is_dark("es-theme-zenith-dark") && boot::theme_is_dark("es-theme-zenith-next-dark"));
+  CHECK(!boot::theme_is_dark("es-theme-zenith") && !boot::theme_is_dark("es-theme-zenith-ember") && !boot::theme_is_dark("dark"));
+  {
+    const std::vector<boot::ThemeChoice> all = boot::list_theme_sets(r);
+    const std::vector<boot::ThemeChoice> fam = boot::theme_families(all);
+    std::map<std::string, std::string> fl;
+    for (const boot::ThemeChoice& s : fam) fl[s.value] = s.label;
+    CHECK(fl.count("es-theme-zenith") == 1 && fl.count("es-theme-zenith-next") == 1 && fl.count("es-theme-zenith-ember") == 1);
+    CHECK(fl.count("es-theme-zenith-dark") == 0 && fl.count("es-theme-zenith-next-dark") == 0);  // folded into their light sibling
+    CHECK_EQ(boot::theme_in_mode("es-theme-zenith", true, all), std::string("es-theme-zenith-dark"));
+    CHECK_EQ(boot::theme_in_mode("es-theme-zenith-next", true, all), std::string("es-theme-zenith-next-dark"));
+    CHECK_EQ(boot::theme_in_mode("es-theme-zenith-next", false, all), std::string("es-theme-zenith-next"));
+    CHECK(boot::theme_in_mode("es-theme-zenith-ember", true, all).empty());  // no dark twin installed: no such mode
+    const std::vector<boot::ThemeChoice> lone = {{"es-theme-x-dark", "X Dark"}};
+    CHECK(boot::theme_families(lone).size() == 1);  // a dark theme without a light one stays in the list
+  }
+
+  // the themes of zfront's own on Iconic's pictures: a ThemeSet without a folder, resolved to Iconic's, listed only when Iconic is there
+  CHECK_EQ(boot::virtual_carousel("zf-swiss"), std::string("swiss"));
+  CHECK(boot::virtual_carousel("es-theme-iconic").empty() && boot::virtual_carousel("zf-nope").empty() && boot::virtual_carousel("").empty());
+  {
+    const std::string vr = g_tmp + "/virtroot";
+    auto has_zf = [&](const std::string& root) {
+      for (const boot::ThemeChoice& t : boot::list_theme_sets(root))
+        if (t.value == "zf-swiss") return true;
+      return false;
+    };
+    CHECK(!has_zf(vr) && boot::resolve_es_theme("zf-swiss", vr).empty());  // no Iconic: no such theme
+    mkdirs(vr + "/usr/share/themes/es-theme-iconic");
+    write_atomic(vr + "/usr/share/themes/es-theme-iconic/theme.xml", "<theme/>");
+    CHECK(has_zf(vr));
+    CHECK_EQ(boot::resolve_es_theme("zf-swiss", vr), vr + "/usr/share/themes/es-theme-iconic");
+  }
 
   // a theme that cannot be drawn falls back to Zenith, and when nothing works the caller is told why
   auto bad = [](const std::string& d, std::string& why) {
@@ -379,6 +467,7 @@ int main() {
   SystemConf::lock_path() = g_tmp + "/lock";
   ::mkdir((g_tmp + "/roms").c_str(), 0755);
   test_manager_closes_on_launch();
+  test_keep_menus_on_launch();
   test_unbound_costs_nothing();
   test_selected_events();
   test_bios_check();

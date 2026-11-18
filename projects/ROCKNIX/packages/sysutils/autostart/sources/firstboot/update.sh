@@ -44,6 +44,8 @@ function Set_system() {
         sed -i -e '/rotate.root.password\=/c\rotate.root.password\=0' ${SYSCFG}
         sed -i -e '/samba.enabled\=/c\samba.enabled\=0' ${SYSCFG}
         [ -e /usr/config/zenith-debug-build ] || sed -i -e '/ssh.enabled\=/c\ssh.enabled\=0' ${SYSCFG}
+        # consolas de depuracion que aun llevan la zona de fabrica antigua (Nueva York): a Madrid
+        [ -e /usr/config/zenith-debug-build ] && sed -i -e 's#^system\.timezone=America/New_York$#system.timezone=Europe/Madrid#' ${SYSCFG}
         sed -i -e '/updates.enabled\=/c\updates.enabled\=0' ${SYSCFG}
         sed -i -e '/system.autohotkeys\=/c\system.autohotkeys\=0' ${SYSCFG}
         sed -i -e '/global.retroarch.menu_driver\=/c\global.retroarch.menu_driver\=ozone' ${SYSCFG}

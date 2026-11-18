@@ -145,7 +145,7 @@ void ConfirmDialog::draw(Ctx& cx, std::vector<Op>& out) {
   card(shapes_, a, out, m_, st_, cx0, cy0, card_w, card_h);
   float y = cy0 + pad;
   if (!o_.title.empty()) {
-    put_text(out, t_title_, cx0 + pad, y + t_title_.h / 2.0f, st_.cyan_dark);
+    put_text(out, t_title_, st_.header_center ? cx0 + std::round((card_w - t_title_.w) / 2.0f) : cx0 + pad, y + t_title_.h / 2.0f, st_.dark ? st_.cyan : st_.cyan_dark);
     y += title_h;
   }
   put_text(out, t_msg_, cx0 + std::round((card_w - t_msg_.w) / 2.0f), y + t_msg_.h / 2.0f, st_.txt);
@@ -162,6 +162,8 @@ void ConfirmDialog::draw(Ctx& cx, std::vector<Op>& out) {
     Color fill = foc ? (red ? st_.danger : st_.cyan) : st_.btn;
     Color txt = foc ? on_color(fill) : (red ? st_.danger : st_.txt);
     shapes_.rrect(a, out, bx, y, bw, bh, st_.radius(bh), fill);
+    // a button without the focus keeps its edge: the fill alone vanishes on a card of nearly its colour
+    if (!foc) shapes_.ring(a, out, bx, y, bw, bh, st_.radius(bh), float(std::max(1, em / 14)), red ? with_alpha(st_.danger, 0.55f) : with_alpha(st_.dim, 0.45f));
     const Txt& t = i == 0 ? t_yes_ : t_no_;
     put_text(out, t, bx + std::round((bw - t.w) / 2.0f), y + bh / 2.0f, txt);
     bx += bw + gap;
@@ -277,7 +279,7 @@ void ChoiceDialog::draw(Ctx& cx, std::vector<Op>& out) {
 
   draw_scrim(m_, st_, out);
   card(shapes_, a, out, m_, st_, card_x_, card_y_, card_w_, card_h_);
-  if (!title_.empty()) put_text(out, t_title_, card_x_ + pad, card_y_ + pad + std::round(1.0f * float(em)), st_.dim);
+  if (!title_.empty()) put_text(out, t_title_, st_.header_center ? card_x_ + std::round((card_w_ - t_title_.w) / 2.0f) : card_x_ + pad, card_y_ + pad + std::round(1.0f * float(em)), st_.dim);
   float rx = card_x_ + pad * 0.5f, rw = card_w_ - pad;
   out.push_back(Op::clip(rx, rows_y_, rw, rows_h_));
   float py = std::round(rows_y_ + sel_y_ - scroll_ + (m_.row_h - m_.pill_h) / 2.0f);
@@ -288,10 +290,10 @@ void ChoiceDialog::draw(Ctx& cx, std::vector<Op>& out) {
   for (int i = first; i <= last; ++i) {
     float cy = std::round(rows_y_ + float(i) * m_.row_h - scroll_ + m_.row_h / 2.0f);
     bool sel = i == cur_;
-    Color c = sel ? st_.cyan_dark : st_.txt;
+    Color c = sel ? st_.sel_ink : st_.txt;
     if (!t_[size_t(i)].alive(a)) t_[size_t(i)].set(a, opts_[size_t(i)].label, em, label_max);  // only the rows in view get their picture
     put_text(out, t_[size_t(i)], rx + text_inset(m_), cy, c);
-    if (i == cur_value_) shapes_.icon(a, out, Icon::Check, rx + rw - text_inset(m_) - float(isz), cy - float(isz) / 2.0f, isz, sel ? st_.cyan_dark : st_.cyan);
+    if (i == cur_value_) shapes_.icon(a, out, Icon::Check, rx + rw - text_inset(m_) - float(isz), cy - float(isz) / 2.0f, isz, sel ? st_.sel_ink : st_.cyan);
   }
   out.push_back(Op::unclip());
   // scrollbar

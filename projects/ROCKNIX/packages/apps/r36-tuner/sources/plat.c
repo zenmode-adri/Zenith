@@ -228,7 +228,7 @@ static int d_write_note(const char *dtb) {
     FILE *f = fopen(tmp, "w");
     if (!f) return -1;
     fprintf(f,
-        "R36 Tuner: recovery from a PC / recuperacion desde un PC\n\n"
+        "R36 Tuner Next: recovery from a PC / recuperacion desde un PC\n\n"
         "English\n"
         "If the console does not boot after changing voltages or frequencies:\n"
         "1. Power off the console and remove the SD card.\n"
@@ -444,6 +444,11 @@ static long long list_max(const char *path, long long below) {
     char b[400];
     char *t[32];
     sys_read(path, b, sizeof(b));
+    if (!strcmp(path, CPU_POLICY "/scaling_available_frequencies") && sys_int(BOOST_FILE) == 1) {  /* Turbo: its steps are listed apart */
+        char more[200];
+        if (!sys_read(CPU_POLICY "/scaling_boost_frequencies", more, sizeof(more)))
+            snprintf(b + strlen(b), sizeof(b) - strlen(b), " %s", more);
+    }
     int n = sys_split(b, t, 32);
     long long best = 0;
     for (int i = 0; i < n; i++) {

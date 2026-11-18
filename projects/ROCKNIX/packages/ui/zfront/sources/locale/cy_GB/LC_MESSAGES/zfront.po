@@ -1,0 +1,3017 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: cy_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "RHESTR GEMAU WEDI'I DIFROD"
+
+msgid "Not available yet"
+msgstr "Ddim ar gael eto"
+
+msgid "Game lists updated"
+msgstr "Rhestrau gemau wedi'u diweddaru"
+
+msgid "COVERS ADDED"
+msgstr "CLORIAU WEDI'U YCHWANEGU"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "GALL MODD PERFFORMIAD HELPU'R GÊM HON"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "GALL Y GÊM HON REDEG YN WELL GYDA MODD PERFFORMIAD"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "TROI MODD PERFFORMIAD YMLAEN AR GYFER Y GÊM HON"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "MODD PERFFORMIAD YMLAEN AR GYFER Y GÊM HON"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Gall y gêm hon redeg yn well gyda modd perfformiad: mae'r GPU a'r cof yn aros ar y cyflymder uchaf wrth chwarae."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "PEIDIO AG AWGRYMU MODD PERFFORMIAD"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Peidio ag awgrymu modd perfformiad ar gyfer y gêm hon eto."
+
+msgid "BATTERY"
+msgstr "BATRI"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "DIM DIGON O DDATA ETO"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Chwaraewch y gêm hon am bum munud neu fwy ar y batri a bydd yr amcangyfrif yn ymddangos yma."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Gyda'r wefr bresennol, ar gyfradd sesiynau diwethaf y gêm hon."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Gyda'r wefr bresennol. Dim sesiynau o'r gêm hon eto: defnyddir cyfartaledd ei system."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Gyda'r wefr bresennol. Dim sesiynau o'r system hon eto: defnyddir cyfartaledd pob gêm."
+
+msgid "Never"
+msgstr "Byth"
+
+msgid "What used the most"
+msgstr "Beth ddefnyddiodd fwyaf"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Ers y wefr lawn ddiwethaf. Amcangyfrif."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Dim wedi'i fesur eto. Mae'n llenwi wrth i chi chwarae."
+
+msgid "Asleep"
+msgstr "Yn cysgu"
+
+msgid "Menus and system"
+msgstr "Dewislenni a system"
+
+msgid "Screen"
+msgstr "Sgrin"
+
+msgid "Charging"
+msgstr "Yn gwefru"
+
+msgid "About"
+msgstr "Tua"
+
+msgid "Since full"
+msgstr "Ers llawn"
+
+msgid "Using now"
+msgstr "Yn defnyddio nawr"
+
+msgid "Last hours"
+msgstr "Oriau diwethaf"
+
+msgid "Now"
+msgstr "Nawr"
+
+msgid "More settings"
+msgstr "Mwy o osodiadau"
+
+msgid "Power saver"
+msgstr "Arbed pŵer"
+
+msgid "Screensaver after"
+msgstr "Arbedwr sgrin ar ôl"
+
+msgid "Turn on by itself at"
+msgstr "Troi ymlaen ei hun ar"
+
+msgid "ADJUST"
+msgstr "ADDASU"
+
+msgid "Action"
+msgstr "Gweithred"
+
+msgid "Adult"
+msgstr "Oedolion"
+
+msgid "Adventure"
+msgstr "Antur"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Casino"
+
+msgid "Casual Game"
+msgstr "Gêm achlysurol"
+
+msgid "Hunting and Fishing"
+msgstr "Hela a physgota"
+
+msgid "Fight"
+msgstr "Ymladd"
+
+msgid "Race, Driving"
+msgstr "Rasio, gyrru"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Pinball"
+
+msgid "Playing cards"
+msgstr "Chwarae cardiau"
+
+msgid "Role playing games"
+msgstr "Gemau chwarae rôl"
+
+msgid "Asiatic board game"
+msgstr "Gêm fwrdd Asiaidd"
+
+msgid "Educational"
+msgstr "Addysgol"
+
+msgid "Music and Dance"
+msgstr "Cerddoriaeth a dawns"
+
+msgid "Platform"
+msgstr "Platfform"
+
+msgid "Puzzle-Game"
+msgstr "Gêm bos"
+
+msgid "Quiz"
+msgstr "Cwis"
+
+msgid "Reflection"
+msgstr "Myfyrio"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Efelychu"
+
+msgid "Sports"
+msgstr "Chwaraeon"
+
+msgid "Sports with Animals"
+msgstr "Chwaraeon ag anifeiliaid"
+
+msgid "Strategy"
+msgstr "Strategaeth"
+
+msgid "Shooter"
+msgstr "Saethu"
+
+msgid "vertical arcade"
+msgstr "arcêd fertigol"
+
+msgid "lightgun games"
+msgstr "gemau gwn golau"
+
+msgid "wheel games"
+msgstr "gemau olwyn"
+
+msgid "trackball games"
+msgstr "gemau pelen lwybr"
+
+msgid "spinner games"
+msgstr "gemau troellwr"
+
+msgid "Not set"
+msgstr "Heb ei osod"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Llun"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Sul"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Maw"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "Mer"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Gwe"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "Sad"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "Iau"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "Ebr"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "Chwef"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "Ion"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "Meh"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "Maw"
+
+msgctxt "date"
+msgid "May"
+msgstr "Mai"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "Awst"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "Rhag"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "Gorff"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "Tach"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "Hyd"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "Medi"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "METHU ARBED DATA'R GÊM"
+
+msgid "THE EMULATOR EXITED UNEXPECTEDLY"
+msgstr "DAETH YR EFELYCHYDD I BEN YN ANNISGWYL"
+
+msgid "BAD COMMAND LINE ARGUMENTS"
+msgstr "ARGUMENTAU LLINELL ORCHMYN ANGYWIR"
+
+msgid "INVALID CONFIGURATION"
+msgstr "CYFLUNIAD ANGYWIR"
+
+msgid "UNKNOWN EMULATOR"
+msgstr "EFELYCHYDD ANHYSBYS"
+
+msgid "EMULATOR IS MISSING"
+msgstr "MAE'R EFELYCHYDD AR GOLL"
+
+msgid "CORE IS MISSING"
+msgstr "MAE'R CRAIDD AR GOLL"
+
+msgid ""
+"WARNING: THE SYSTEM HAS MISSING BIOS FILE(S) AND THE GAME MAY NOT WORK CORRECTLY.\n"
+"DO YOU WANT TO LAUNCH IT ANYWAY?"
+msgstr ""
+"RHYBUDD: MAE FFEIL(IAU) BIOS AR GOLL AR GYFER Y SYSTEM, FELLY EFALLAI NAD YW'R GÊM YN GWEITHIO'N IAWN.\n"
+"HOFFECH CHI EI LANSIO BETH BYNNAG?"
+
+msgid "Could not save the settings"
+msgstr "Methu arbed y gosodiadau"
+
+msgid "IGNORE LEADING ARTICLES WHEN SORTING"
+msgstr "ANWYBYDDU ERTHYGLAU AR Y DECHRAU WRTH DREFNU"
+
+msgid "Ignore 'The' and 'A' if at the start."
+msgstr "Anwybyddu 'The' ac 'A' ar y dechrau."
+
+msgid "FILTER BY"
+msgstr "HIDLO GAN"
+
+msgid "FAVORITES ONLY"
+msgstr "FFEFRYNNAU YN UNIG"
+
+msgid "ALL"
+msgstr "POB UN"
+
+msgid "LIST"
+msgstr "RHESTR"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Methu llwytho'r thema a ddewiswyd: defnyddio Zenith"
+
+msgid "GAME MEDIA"
+msgstr "CYFRYNGAU'R GÊM"
+
+msgid "VIEW GAME MAGAZINE"
+msgstr "GWELD CYLCHGRAWN Y GÊM"
+
+msgid "PAGE"
+msgstr "TUDALEN"
+
+msgid "ZOOM IN"
+msgstr "CHWYDDO I MEWN"
+
+msgid "ZOOM OUT"
+msgstr "CHWYDDO ALLAN"
+
+msgid "Could not show this page"
+msgstr "Methu dangos y dudalen hon"
+
+msgid "SELECT BEZELS TO INSTALL/REMOVE"
+msgstr "DEWIS FFRAMIAU I'W GOSOD/EU TYNNU"
+
+msgid "INSTALLED"
+msgstr "WEDI'I OSOD"
+
+msgid "NO GAMES FOUND"
+msgstr "DIM GEMAU WEDI'U CANFOD"
+
+msgid "PER GENRE"
+msgstr "FESUL GENRE"
+
+msgid "SMART COLLECTIONS"
+msgstr "CASGLIADAU CLYFAR"
+
+msgid "EDIT FILTERS"
+msgstr "GOLYGU HIDLYDDION"
+
+msgid "NO OPTIONS"
+msgstr "DIM OPSIYNAU"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Ydych chi'n siŵr eich bod am ddileu '%s'?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Gosodwch ei hidlyddion wedyn yn Casgliadau gemau personol."
+
+msgid "SHOW EMPTY SYSTEMS"
+msgstr "DANGOS SYSTEMAU GWAG"
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Ailgychwynnwch y blaen-pen i gymhwyso'r newidiadau."
+
+msgid "Could not save the setting"
+msgstr "Methu arbed y gosodiad"
+
+msgid "YOU ARE GOING TO MAP A CONTROLLER. MAP BASED ON THE BUTTON'S POSITION, NOT ITS PHYSICAL LABEL. IF YOU DO NOT HAVE A SPECIAL BUTTON FOR HOTKEY, USE THE SELECT BUTTON. SKIP ALL BUTTONS/STICKS YOU DO NOT HAVE BY HOLDING ANY BUTTON. PRESS THE SOUTH BUTTON TO CONFIRM WHEN DONE."
+msgstr "RYDYCH AR FIN MAPIO RHEOLYDD. MAPIWCH YN ÔL SAFLE'R BOTWM, NID EI LABEL CORFFOROL. OS NAD OES BOTWM ARBENNIG GENNYCH AR GYFER Y BOTWM POETH, DEFNYDDIWCH Y BOTWM SELECT. HEPGOR POB BOTWM/FFON NAD OES GENNYCH TRWY DDAL UNRHYW FOTWM. PWYSWCH Y BOTWM DEHEUOL I GADARNHAU PAN FYDDWCH WEDI GORFFEN."
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "RHOI RHEOLYDDION I CHWARAEWYR"
+
+msgid "P%i'S CONTROLLER"
+msgstr "RHEOLYDD CH%i"
+
+msgid "BLUETOOTH"
+msgstr "BLUETOOTH"
+
+msgid "ENABLE BLUETOOTH"
+msgstr "GALLUOGI BLUETOOTH"
+
+msgid "Could not start Bluetooth"
+msgstr "Methu cychwyn Bluetooth"
+
+msgid "PAIR BLUETOOTH PADS AUTOMATICALLY"
+msgstr "PARU PADIAU BLUETOOTH YN AWTOMATIG"
+
+msgid "Searching..."
+msgstr "Yn chwilio..."
+
+msgid "PAIR A BLUETOOTH DEVICE MANUALLY"
+msgstr "PARU DYFAIS BLUETOOTH Â LLAW"
+
+msgid "BLUETOOTH DEVICE LIST"
+msgstr "RHESTR DYFEISIAU BLUETOOTH"
+
+msgid "CONTROLLERS"
+msgstr "RHEOLYDDION"
+
+msgid "CONTROLLER MAPPING"
+msgstr "MAPIO RHEOLYDD"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "CYFNEWID BOTYMAU CADARNHAU A CHANSLO"
+
+msgid "Switches the South and East buttons' functionality"
+msgstr "Cyfnewid swyddogaeth y botymau De a Dwyrain"
+
+msgid "ENABLE RUMBLE"
+msgstr "GALLUOGI DIRGRYNIAD"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "AWTOGYFLUNIO BYSELLAU POETH RETROARCH"
+
+msgid "SHOW CONTROLLER NOTIFICATIONS"
+msgstr "DANGOS HYSBYSIADAU RHEOLYDD"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "RHEOLYDDION CYSYLLTIEDIG"
+
+msgid "Not configured"
+msgstr "Heb ei gyflunio"
+
+msgid "Unknown controller"
+msgstr "Rheolydd anhysbys"
+
+msgid "PAIR A BLUETOOTH DEVICE"
+msgstr "PARU DYFAIS BLUETOOTH"
+
+msgid "PAIRED"
+msgstr "WEDI'I BARU"
+
+msgid "Could not pair"
+msgstr "Methu paru"
+
+msgid "Connected"
+msgstr "Wedi'i gysylltu"
+
+msgid "BLUETOOTH DEVICES HAVE BEEN DELETED."
+msgstr "MAE DYFEISIAU BLUETOOTH WEDI'U DILEU."
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Tynnu pob dyfais Bluetooth?"
+
+msgid "Could not disconnect"
+msgstr "Methu datgysylltu"
+
+msgid "DISCONNECT"
+msgstr "DATGYSYLLTU"
+
+msgid "ARE YOU SURE YOU WANT TO DISCONNECT '%s' ?"
+msgstr "YDYCH CHI'N SIŴR EICH BOD AM DDATGYSYLLTU '%s'?"
+
+msgid "CONNECT"
+msgstr "CYSYLLTU"
+
+msgid "Could not connect"
+msgstr "Methu cysylltu"
+
+msgid "ARE YOU SURE YOU WANT TO CONNECT TO '%s' ?"
+msgstr "YDYCH CHI'N SIŴR EICH BOD AM GYSYLLTU Â '%s'?"
+
+msgid "Could not remove"
+msgstr "Methu tynnu"
+
+msgid "FORGET"
+msgstr "ANGHOFIO"
+
+msgid "ARE YOU SURE YOU WANT TO FORGET '%s' ?"
+msgstr "YDYCH CHI'N SIŴR EICH BOD AM ANGHOFIO '%s'?"
+
+msgctxt "joystick"
+msgid "D-PAD UP"
+msgstr "CROES-BAD I FYNY"
+
+msgctxt "joystick"
+msgid "D-PAD DOWN"
+msgstr "CROES-BAD I LAWR"
+
+msgctxt "joystick"
+msgid "D-PAD LEFT"
+msgstr "CROES-BAD I'R CHWITH"
+
+msgctxt "joystick"
+msgid "D-PAD RIGHT"
+msgstr "CROES-BAD I'R DDE"
+
+msgctxt "joystick"
+msgid "START"
+msgstr "START"
+
+msgctxt "joystick"
+msgid "SELECT"
+msgstr "SELECT"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "BOTWM A / DWYRAIN"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "BOTWM B / DEHEUDIR"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "BOTWM X / GOGLEDD"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "BOTWM Y / GORLLEWIN"
+
+msgctxt "joystick"
+msgid "LEFT SHOULDER"
+msgstr "YSGWYDD CHWITH"
+
+msgctxt "joystick"
+msgid "RIGHT SHOULDER"
+msgstr "YSGWYDD DDE"
+
+msgctxt "joystick"
+msgid "LEFT TRIGGER"
+msgstr "CLIC CHWITH"
+
+msgctxt "joystick"
+msgid "RIGHT TRIGGER"
+msgstr "CLIC DDE"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "BAWD CHWITH"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "BAWD DDE"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG UP"
+msgstr "ANALOG CHWITH I FYNY"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG DOWN"
+msgstr "ANALOG CHWITH I LAWR"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG LEFT"
+msgstr "ANALOG CHWITH I'R CHWITH"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG RIGHT"
+msgstr "ANALOG CHWITH I'R DDE"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "GALLUOGI BYSELL BOETH"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG UP"
+msgstr "ANALOG DDE I FYNY"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG DOWN"
+msgstr "ANALOG DDE I LAWR"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG LEFT"
+msgstr "ANALOG DDE I'R CHWITH"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG RIGHT"
+msgstr "ANALOG DDE I'R DDE"
+
+msgid "DO NOT ASSIGN HOTKEY"
+msgstr "PEIDIO Â RHOI BYSELL BOETH"
+
+msgid "SET SELECT AS HOTKEY"
+msgstr "GOSOD SELECT FEL BYSELL BOETH"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "RHEOLYDD MEWNBWN"
+
+msgid "GAMEPAD DETECTED"
+msgstr "PAD GÊM WEDI'I GANFOD"
+
+msgid "GAMEPADS DETECTED"
+msgstr "PADIAU GÊM WEDI'U CANFOD"
+
+msgid "PRESS B TO CANCEL."
+msgstr "PWYSWCH B I ANNULIO."
+
+msgid "Could not save the controller configuration"
+msgstr "Methu arbed cyfluniad y rheolydd"
+
+msgid "Controller configuration saved"
+msgstr "Cyfluniad y rheolydd wedi'i arbed"
+
+msgid "Controller configuration cancelled"
+msgstr "Cyfluniad y rheolydd wedi'i ganslo"
+
+msgid "Controller disconnected"
+msgstr "Rheolydd wedi'i ddatgysylltu"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "DAL I DDAL I GANSLO"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "DALIWCH UNRHYW FOTWM AM 3 EILIAD I GANSLO."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "DALIWCH UNRHYW FOTWM I HEPGOR. DALIWCH I DDAL I GANSLO."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "MAE POB BOTWM WEDI'I WNEUD"
+
+msgid "set"
+msgstr "wedi'u gosod"
+
+msgid "skipped"
+msgstr "wedi'u hepgor"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "NID OES BOTWM POETH WEDI'I RHOI. MAE ANGEN HWN I ADAEL GEMAU GYDA RHEOLYDD."
+
+msgid "DATE & TIME"
+msgstr "DYDDIAD AC AMSER"
+
+msgid "MONTH"
+msgstr "MIS"
+
+msgid "DAY"
+msgstr "DIWRNOD"
+
+msgid "HOUR"
+msgstr "AWR"
+
+msgid "MINUTE"
+msgstr "MUNUD"
+
+msgid "SET DATE & TIME"
+msgstr "GOSOD DYDDIAD AC AMSER"
+
+msgid "Date and time set"
+msgstr "Dyddiad ac amser wedi'u gosod"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Gyda Wi-Fi, mae'r amser yn cael ei osod yn awtomatig."
+
+msgid "That folder is protected"
+msgstr "Mae'r ffolder honno wedi'i diogelu"
+
+msgid "Outside the allowed folders"
+msgstr "Y tu allan i'r ffolderi a ganiateir"
+
+msgid "Not enough free space"
+msgstr "Dim digon o le rhydd"
+
+msgid "That name already exists"
+msgstr "Mae'r enw hwnnw'n bodoli eisoes"
+
+msgid "Cancelled"
+msgstr "Wedi'i ganslo"
+
+msgid "A folder cannot go into itself"
+msgstr "Ni all ffolder fynd i mewn iddi hi ei hun"
+
+msgid "That name is not valid"
+msgstr "Nid yw'r enw hwnnw'n ddilys"
+
+msgid "Not found"
+msgstr "Heb ei ganfod"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Ffeil fwy na 4 GB: ni all y cerdyn hwn ei dal"
+
+msgid "This card does not accept that name"
+msgstr "Nid yw'r cerdyn hwn yn derbyn yr enw hwnnw"
+
+msgid "This location is read-only"
+msgstr "Mae'r lleoliad hwn yn ddarllen yn unig"
+
+msgid "An error occurred"
+msgstr "Digwyddodd gwall"
+
+msgid "%s of %s done"
+msgstr "%s o %s wedi'u gwneud"
+
+msgid "item"
+msgstr "eitem"
+
+msgid "items"
+msgstr "eitemau"
+
+msgid "link skipped"
+msgstr "dolen wedi'i hepgor"
+
+msgid "links skipped"
+msgstr "dolenni wedi'u hepgor"
+
+msgid "This can't be undone."
+msgstr "Ni ellir dadwneud hyn."
+
+msgid "Files"
+msgstr "Ffeiliau"
+
+msgid "selected"
+msgstr "wedi'u dewis"
+
+msgid "Cannot read this folder"
+msgstr "Methu darllen y ffolder hon"
+
+msgid "This folder is empty"
+msgstr "Mae'r ffolder hon yn wag"
+
+msgid "free"
+msgstr "rhydd"
+
+msgid "File"
+msgstr "Ffeil"
+
+msgid "Folder"
+msgstr "Ffolder"
+
+msgid "Link"
+msgstr "Dolen"
+
+msgid "Properties"
+msgstr "Priodweddau"
+
+msgid "Copy"
+msgstr "Copïo"
+
+msgid "Move"
+msgstr "Symud"
+
+msgid "Paste here"
+msgstr "Gludo yma"
+
+msgid "Rename"
+msgstr "Ailenwi"
+
+msgid "New folder"
+msgstr "Ffolder newydd"
+
+msgid "Delete"
+msgstr "Dileu"
+
+msgid "Select all"
+msgstr "Dewis popeth"
+
+msgid "Clear selection"
+msgstr "Clirio'r dewis"
+
+msgid "Date"
+msgstr "Dyddiad"
+
+msgid "Size"
+msgstr "Maint"
+
+msgid "Sort by"
+msgstr "Trefnu yn ôl"
+
+msgid "Hide hidden files"
+msgstr "Cuddio ffeiliau cudd"
+
+msgid "Show hidden files"
+msgstr "Dangos ffeiliau cudd"
+
+msgid "Actions"
+msgstr "Gweithredoedd"
+
+msgid "Home"
+msgstr "Hafan"
+
+msgid "Games"
+msgstr "Gemau"
+
+msgid "Game card"
+msgstr "Cerdyn gemau"
+
+msgid "USB drive"
+msgstr "Gyriant USB"
+
+msgid "Screenshots"
+msgstr "Sgrinluniau"
+
+msgid "Go to"
+msgstr "Mynd i"
+
+msgid "Ready to copy"
+msgstr "Barod i gopïo"
+
+msgid "Ready to move"
+msgstr "Barod i symud"
+
+msgid "Warning"
+msgstr "Rhybudd"
+
+msgid "Cancel"
+msgstr "Canslo"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Ffeil system yw hon. Gall ei hailenwi dorri'r consol."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Ffeil system yw hon. Gall ei dileu dorri'r consol."
+
+msgid "Wait for the other job"
+msgstr "Arhoswch am y gwaith arall"
+
+msgid "Copied"
+msgstr "Wedi copïo"
+
+msgid "Deleted"
+msgstr "Wedi dileu"
+
+msgid "Moved"
+msgstr "Wedi symud"
+
+msgid "originals kept"
+msgstr "gwreiddiolion wedi'u cadw"
+
+msgid "Copying"
+msgstr "Yn copïo"
+
+msgid "Deleting"
+msgstr "Yn dileu"
+
+msgid "Moving"
+msgstr "Yn symud"
+
+msgid "Calculating..."
+msgstr "Yn cyfrifo..."
+
+msgid "Back"
+msgstr "Nôl"
+
+msgid "Close"
+msgstr "Cau"
+
+msgid "Mark"
+msgstr "Marcio"
+
+msgid "Open"
+msgstr "Agor"
+
+msgid "Page"
+msgstr "Tudalen"
+
+msgid "GAME SETTINGS"
+msgstr "GOSODIADAU GÊM"
+
+msgid "WHILE PLAYING"
+msgstr "WRTH CHWARAE"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "ADFER Y GÊM DDIWETHAF WRTH GYCHWYN"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Yn dechrau eich gêm ddiwethaf o'i hawtoarbediad wrth gychwyn. Mae B yn canslo."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "DEWISLEN GARTREF YN YSTOD GEMAU"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Arbrofol. Daliwch START a'r botwm ysgwydd a ddewiswyd am eiliad tra bo gêm yn rhedeg i'w seibio ac agor panel gyda batri, disgleirdeb, lefel sain, ADFER a GADAEL Y GÊM (ARBED CYFLWR a LLWYTHO CYFLWR dim ond gyda gorchmynion rhwydwaith RetroArch ymlaen)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "BOTYMAU'R DDEWISLEN GARTREF"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Y botymau a ddelir gyda START i agor y ddewislen gartref. Defnyddir cyfuniadau yn seiliedig ar Select gan RetroArch."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "AWGRYMIADAU PERFFORMIAD"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Yn awgrymu modd perfformiad ar gyfer gemau y mae llywodraethwr y GPU yn eu dal yn ôl."
+
+msgid "PLAY TIME LIMIT"
+msgstr "TERFYN AMSER CHWARAE"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Amser i chwarae bob dydd. Daw neges 5 munud cyn y diwedd (y tu mewn i'r gêm dim ond gyda gorchmynion rhwydwaith RetroArch ymlaen) ac yna caiff y gêm ei chau. Mae'r amser yn dechrau cyfrif pan fydd hwn yn cael ei droi ymlaen."
+
+msgid "SAVED GAMES"
+msgstr "GEMAU WEDI'U HARBED"
+
+msgid "AUTO SAVE/LOAD"
+msgstr "AWTO ARBED/LLWYTHO"
+
+msgid "Load latest savestate on game launch and savestate when exiting game."
+msgstr "Llwytho'r cyflwr arbed diweddaraf wrth lansio gêm ac arbed cyflwr wrth adael y gêm."
+
+msgid "INCREMENTAL SAVESTATES"
+msgstr "CYFLYRAU ARBED YN GYNYDDOL"
+
+msgid "DO NOT INCREMENT"
+msgstr "PEIDIO Â CHYNYDDU"
+
+msgid "INCREMENT PER SAVE"
+msgstr "CYNYDDU AR BOB ARBEDIAD"
+
+msgid "INCREMENT SLOT"
+msgstr "CYNYDDU'R SLOT"
+
+msgid "Never overwrite old savestates, always make new ones."
+msgstr "Peidiwch byth â throsysgrifo hen gyflyrau arbed, crëwch rai newydd bob amser."
+
+msgid "ALWAYS"
+msgstr "BOB AMSER"
+
+msgid "IF NOT EMPTY"
+msgstr "OS NAD YW'N WAG"
+
+msgid "SHOW SAVESTATE MANAGER"
+msgstr "DANGOS RHEOLWR CYFLYRAU ARBED"
+
+msgid "Display savestate manager before launching a game."
+msgstr "Dangos y rheolwr cyflyrau arbed cyn lansio gêm."
+
+msgid "PICTURE AND CONTROL"
+msgstr "DELWEDD A RHEOLAETH"
+
+msgid "Force the game to render in this aspect ratio."
+msgstr "Gorfodi'r gêm i rendro yn y gymhareb agwedd hon."
+
+msgid "GAME ASPECT RATIO"
+msgstr "CYMHAREB AGWEDD Y GÊM"
+
+msgid "SMOOTH GAMES (BILINEAR FILTERING)"
+msgstr "LLYFNHAU GEMAU (HIDLO DWYLINELLOL)"
+
+msgid "Store past states to rewind to in realtime, if the core supports it."
+msgstr "Storio cyflyrau'r gorffennol i ailweindio atynt mewn amser real, os yw'r craidd yn ei gefnogi."
+
+msgid "VIDEO FILTER"
+msgstr "HIDLYDD FIDEO"
+
+msgid "DECORATION SET"
+msgstr "SET ADDURNO"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "FFRYDIO GEMAU MOONLIGHT"
+
+msgid "BIOS SETTINGS"
+msgstr "GOSODIADAU BIOS"
+
+msgid "MORE"
+msgstr "MWY"
+
+msgid "RETROACHIEVEMENTS SETTINGS"
+msgstr "GOSODIADAU RETROACHIEVEMENTS"
+
+msgid "PLAY STATISTICS"
+msgstr "YSTADEGAU CHWARAE"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "OPSIYNAU FESUL SYSTEM"
+
+msgid "ENABLE AI TRANSLATION SERVICE"
+msgstr "GALLUOGI GWASANAETH CYFIEITHU AI"
+
+msgid "AI TRANSLATION SERVICE URL"
+msgstr "URL Y GWASANAETH CYFIEITHU AI"
+
+msgid "NO MISSING BIOS FILES"
+msgstr "DIM FFEILIAU BIOS AR GOLL"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "modd perfformiad"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU a chof ar gyflymder llawn wrth chwarae"
+
+msgid "Current setting"
+msgstr "Y gosodiad presennol"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "SYSTEM ANHYSBYS"
+
+msgid "EMULATOR"
+msgstr "EFELYCHYDD"
+
+msgid "The emulator and core that run this."
+msgstr "Yr efelychydd a'r craidd sy'n rhedeg hwn."
+
+msgid "SYSTEM OPTIONS"
+msgstr "OPSIYNAU'R SYSTEM"
+
+msgid "DISPLAY"
+msgstr "ARDDANGOS"
+
+msgid "GAMEPLAY"
+msgstr "CHWARAE'R GÊM"
+
+msgid "Load latest save state on game launch and save state when exiting game."
+msgstr "Llwytho'r cyflwr arbed diweddaraf wrth lansio gêm ac arbed cyflwr wrth adael y gêm."
+
+msgid "ACTIONS"
+msgstr "GWEITHREDOEDD"
+
+msgid "RANDOM GAME"
+msgstr "GÊM AR HAP"
+
+msgid "COOLING PROFILE"
+msgstr "PROFFIL OERI"
+
+msgid "AGGRESSIVE"
+msgstr "YMOSODOL"
+
+msgid "CUSTOM"
+msgstr "PERSONOL"
+
+msgid "DEFAULT"
+msgstr "RHAGOSODEDIG"
+
+msgid "MODERATE"
+msgstr "CYMEDROL"
+
+msgid "QUIET"
+msgstr "TAWEL"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "LLYWODRAETHWR SGALIO CPU"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "LLYWODRAETHWR SGALIO GPU"
+
+msgid "DISABLED"
+msgstr "WEDI'I ANALLUOGI"
+
+msgid "ENABLED"
+msgstr "WEDI'I ALLUOGI"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "TROSOLWG MANGOHUD"
+
+msgid "High numbers can result in visible jitter."
+msgstr "Gall rhifau uchel achosi ysgwyd gweladwy."
+
+msgid "Can prevent audio skips on button presses."
+msgstr "Gall atal sain rhag neidio wrth wasgu botymau."
+
+msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
+msgstr "DEFNYDDIO AIL ENGHRAIFFT AR GYFER RUN-AHEAD"
+
+msgid "UNKNOWN GAME"
+msgstr "GÊM ANHYSBYS"
+
+msgid "this game's name"
+msgstr "enw'r gêm hon"
+
+msgid "this game's description"
+msgstr "disgrifiad y gêm hon"
+
+msgid "Sort name"
+msgstr "Enw trefnu"
+
+msgid "enter game sort name"
+msgstr "rhowch enw trefnu'r gêm"
+
+msgid "this game's developer"
+msgstr "datblygwr y gêm hon"
+
+msgid "this game's publisher"
+msgstr "cyhoeddwr y gêm hon"
+
+msgid "this game's number of players"
+msgstr "nifer y chwaraewyr yn y gêm hon"
+
+msgid "INVALID DATE"
+msgstr "DYDDIAD ANGYWIR"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "METHWYD DILEU'R GÊM"
+
+msgid "DELETE GAME"
+msgstr "DILEU GÊM"
+
+msgid "CONFIG"
+msgstr "CYFLUNIAD"
+
+msgid "CORE PROVIDED"
+msgstr "A DDARPARWYD GAN Y CRAIDD"
+
+msgid "FULL"
+msgstr "LLAWN"
+
+msgid "SQUARE PIXEL"
+msgstr "BICSEL SGWÂR"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "ADDASU'R PANEL"
+
+msgid "SCREEN & SOUND"
+msgstr "SGRIN A SAIN"
+
+msgid "APPEARANCE"
+msgstr "GOLWG"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "SEGUR"
+
+msgid "MONITORING"
+msgstr "MONITRO"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "GORGLOCIO A MONITRO"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "BATRI A PHERFFORMIAD"
+
+msgid "LIBRARY"
+msgstr "LLYFRGELL"
+
+msgid "CHECK LIBRARY"
+msgstr "GWIRIO'R LLYFRGELL"
+
+msgid "SAVE BACKUPS"
+msgstr "COPÏAU WRTH GEFN ARBED"
+
+msgid "UPDATE GAMELISTS"
+msgstr "DIWEDDARU RHESTRAU GEMAU"
+
+msgid "LANGUAGE & TIME"
+msgstr "IAITH AC AMSER"
+
+msgid "HOME MENU"
+msgstr "DEWISLEN GARTREF"
+
+msgid "CHARGING"
+msgstr "YN GWEFRU"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "DISGLEIRDEB Y SGRIN"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "TROSYSGRIFO'R CYFLWR ARBED?"
+
+msgid "SAVE STATE"
+msgstr "ARBED CYFLWR"
+
+msgid "LOAD STATE"
+msgstr "LLWYTHO CYFLWR"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "LLWYTHO'R CYFLWR ARBED? BYDD CYNNYDD HEB EI ARBED YN CAEL EI GOLLI."
+
+msgid "RESUME"
+msgstr "PARHAU"
+
+msgid "QUIT GAME"
+msgstr "GADAEL Y GÊM"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "GADAEL Y GÊM GO IAWN?"
+
+msgid "AND MORE"
+msgstr "A MWY"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "DIM PROBLEMAU WEDI'U CANFOD"
+
+msgid "PROBLEMS FOUND"
+msgstr "PROBLEMAU WEDI'U CANFOD"
+
+msgid "MISSING BIOS"
+msgstr "BIOS AR GOLL"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "FFEILIAU EFALLAI WEDI'U TORRI"
+
+msgid "DUPLICATES"
+msgstr "DYBLYGIADAU"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "GEMAU HEB DDELWEDD"
+
+msgid "NETWORK"
+msgstr "RHWYDWAITH"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "RHEOLYDD A BLUETOOTH"
+
+msgid "UNLOCK USER INTERFACE MODE"
+msgstr "DATBLOCIO MODD Y RHYNGWYNEB DEFNYDDIWR"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Datblygu yn unig: pob teclyn o fframwaith y ddewislen."
+
+msgid "WIDGET DEMO"
+msgstr "DEMO TECLYNNAU"
+
+msgid "Unable to connect to server"
+msgstr "Methu cysylltu â'r gweinydd"
+
+msgid "Succesfully paired with server"
+msgstr "Wedi paru'n llwyddiannus â'r gweinydd"
+
+msgid "QUIT CURRENT GAME"
+msgstr "GADAEL Y GÊM BRESENNOL"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "DIWEDDARU GEMAU MOONLIGHT"
+
+msgid "PAIR WITH SERVER"
+msgstr "PARU Â'R GWEINYDD"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "DADBARU Â'R GWEINYDD"
+
+msgid "Unpaired and settings cleared"
+msgstr "Wedi dadbaru a chlirio'r gosodiadau"
+
+msgid "Unpaired from server"
+msgstr "Wedi dadbaru o'r gweinydd"
+
+msgid "SERVER IP"
+msgstr "IP Y GWEINYDD"
+
+msgid "PAIRING PIN"
+msgstr "PIN PARU"
+
+msgid "HOST"
+msgstr "GWESTAI"
+
+msgid "MADRID"
+msgstr "MADRID"
+
+msgid "MONTREAL"
+msgstr "MONTREAL"
+
+msgid "NEW YORK"
+msgstr "EFROG NEWYDD"
+
+msgid "SAO PAULO"
+msgstr "SÃO PAULO"
+
+msgid "CUSTOM RELAY SERVER"
+msgstr "GWEINYDD CYFNEWID PERSONOL"
+
+msgid "Relay server games have a higher chance of successful entry."
+msgstr "Mae gan gemau gweinydd cyfnewid well siawns o fynediad llwyddiannus."
+
+msgid "SHOW RELAY SERVER GAMES ONLY"
+msgstr "DANGOS GEMAU GWEINYDD CYFNEWID YN UNIG"
+
+msgid "SHOW UNAVAILABLE GAMES"
+msgstr "DANGOS GEMAU NAD YDYNT AR GAEL"
+
+msgid "Show rooms for games not present on this machine."
+msgstr "Dangos ystafelloedd ar gyfer gemau nad ydynt ar y peiriant hwn."
+
+msgid "Select a game lobby to join"
+msgstr "Dewiswch lobi gêm i ymuno ag ef"
+
+msgid "ONLINE GAMES"
+msgstr "GEMAU AR-LEIN"
+
+msgid "HOST A NETPLAY GAME"
+msgstr "CYNNAL GÊM NETPLAY"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "YMUNO Â GÊM NETPLAY"
+
+msgid "NETPLAY NICKNAME"
+msgstr "LLYSENW NETPLAY"
+
+msgid "PLAYER PASSWORD"
+msgstr "CYFRINAIR CHWARAEWR"
+
+msgid "PUBLICLY ANNOUNCE GAME"
+msgstr "CYHOEDDI'R GÊM YN GYHOEDDUS"
+
+msgid "NETPLAY HOST"
+msgstr "GWESTAI NETPLAY"
+
+msgid "NETPLAY PORT"
+msgstr "PORTH NETPLAY"
+
+msgid "START A NETPLAY GAME"
+msgstr "DECHRAU GÊM NETPLAY"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Yn troi Wi-Fi ymlaen..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Gwall cyfluniad Wi-Fi"
+
+msgid "Wi-Fi is on"
+msgstr "Mae Wi-Fi ymlaen"
+
+msgid "Wi-Fi is off"
+msgstr "Mae Wi-Fi i ffwrdd"
+
+msgid "Wi-Fi region updated"
+msgstr "Rhanbarth Wi-Fi wedi'i ddiweddaru"
+
+msgid "Please wait..."
+msgstr "Arhoswch..."
+
+msgid "Local play mode updated"
+msgstr "Modd chwarae lleol wedi'i ddiweddaru"
+
+msgid "The service did not answer"
+msgstr "Ni atebodd y gwasanaeth"
+
+msgid "N/A"
+msgstr "D/G"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "RHWYDWEITHIAU WI-FI"
+
+msgid "WI-FI COUNTRY"
+msgstr "GWLAD WI-FI"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Yn gosod y rheoliadau radio: y sianeli y cewch eu defnyddio."
+
+msgid "TRANSFER FILES"
+msgstr "TROSGLWYDDO FFEILIAU"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Anfon gemau i'r consol o ffôn neu gyfrifiadur ar y rhwydwaith hwn."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "CYFEIRIADAU IP SYDD AR GAEL:"
+
+msgid "LOCAL PLAY"
+msgstr "CHWARAE LLEOL"
+
+msgid "LOCAL PLAY MODE"
+msgstr "MODD CHWARAE LLEOL"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Yn cynnal pwynt mynediad ar gyfer netplay gyda chonsolau eraill."
+
+msgid "1 (HOST)"
+msgstr "1 (GWESTAI)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (CLEIENT 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (CLEIENT 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (CLEIENT 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ID CHWARAE LLEOL"
+
+msgid "SERVICES"
+msgstr "GWASANAETHAU"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, cwmwl, VPN ac enw'r consol."
+
+msgid "NETWORK SERVICES"
+msgstr "GWASANAETHAU RHWYDWAITH"
+
+msgid "ENABLE SSH"
+msgstr "GALLUOGI SSH"
+
+msgid "SSH is off"
+msgstr "Mae SSH i ffwrdd"
+
+msgid "SSH is on"
+msgstr "Mae SSH ymlaen"
+
+msgid "Remote access to the console over the network."
+msgstr "Mynediad o bell i'r consol dros y rhwydwaith."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "GALLUOGI GWEINYDD HTTP SYML"
+
+msgid "HTTP server is off"
+msgstr "Mae'r gweinydd HTTP i ffwrdd"
+
+msgid "HTTP server is on"
+msgstr "Mae'r gweinydd HTTP ymlaen"
+
+msgid "FILE TRANSFER"
+msgstr "TROSGLWYDDO FFEILIAU"
+
+msgid "USB GADGET FUNCTION"
+msgstr "SWYDDOGAETH GADGET USB"
+
+msgid "USB networking is on. The console is at"
+msgstr "Mae rhwydweithio USB ymlaen. Mae'r consol yn"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Yr hyn y mae'r consol yn ei gynnig ar ei borth USB-C."
+
+msgid "CLOUD SERVICES"
+msgstr "GWASANAETHAU CWMWL"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "MOUNTIO GYRIANT CWMWL"
+
+msgid "Cloud drive mounted"
+msgstr "Gyriant cwmwl wedi'i fowntio"
+
+msgid "Cloud drive unmounted"
+msgstr "Gyriant cwmwl wedi'i ddadfowntio"
+
+msgid "VPN SERVICES"
+msgstr "GWASANAETHAU VPN"
+
+msgid "WIREGUARD VPN"
+msgstr "VPN WIREGUARD"
+
+msgid "WireGuard is off"
+msgstr "Mae WireGuard i ffwrdd"
+
+msgid "WireGuard is on"
+msgstr "Mae WireGuard ymlaen"
+
+msgid "TAILSCALE VPN"
+msgstr "VPN TAILSCALE"
+
+msgid "Tailscale is off"
+msgstr "Mae Tailscale i ffwrdd"
+
+msgid "Tailscale is on"
+msgstr "Mae Tailscale ymlaen"
+
+msgid "Tailscale could not connect"
+msgstr "Methodd Tailscale gysylltu"
+
+msgid "Tailscale needs you to log in"
+msgstr "Mae Tailscale angen i chi fewngofnodi"
+
+msgid "SHOW LINK"
+msgstr "DANGOS Y DOLEN"
+
+msgid "TAILSCALE LOGIN"
+msgstr "MEWNGOFNODI TAILSCALE"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "AILDDILYSU TAILSCALE:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Defnyddiwch lythrennau, digidau a chysylltnodau yn unig"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Enw'r gwesteiwr wedi'i arbed. Mae'n berthnasol ar y cychwyn nesaf"
+
+msgid "The new name is used at the next boot."
+msgstr "Defnyddir yr enw newydd ar y cychwyn nesaf."
+
+msgid "WEB FILE TRANSFER"
+msgstr "TROSGLWYDDO FFEILIAU DRWY'R WE"
+
+msgid "Could not start the web transfer"
+msgstr "Methu cychwyn y trosglwyddo drwy'r we"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Yn gadael i ffôn neu gyfrifiadur ar y rhwydwaith hwn anfon gemau i'r consol."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "METHU CYCHWYN (PORTH YN BRYSUR?)"
+
+msgid "WEB ADDRESS"
+msgstr "CYFEIRIAD GWE"
+
+msgid "WEB PIN"
+msgstr "PIN GWE"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "GYRIANT RHWYDWAITH (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "GALLUOGI SAMBA"
+
+msgid "Samba is off"
+msgstr "Mae Samba i ffwrdd"
+
+msgid "Samba is on"
+msgstr "Mae Samba ymlaen"
+
+msgid "Shares the games folder with other computers."
+msgstr "Yn rhannu'r ffolder gemau â chyfrifiaduron eraill."
+
+msgid "SAMBA ADDRESS"
+msgstr "CYFEIRIAD SAMBA"
+
+msgid "SAMBA USER"
+msgstr "DEFNYDDIWR SAMBA"
+
+msgid "SAMBA PASSWORD"
+msgstr "CYFRINAIR SAMBA"
+
+msgid "Connecting to"
+msgstr "Yn cysylltu â"
+
+msgid "Connected successfully"
+msgstr "Wedi cysylltu'n llwyddiannus"
+
+msgid "Failed to connect"
+msgstr "Methu cysylltu"
+
+msgid "SAVED"
+msgstr "WEDI'I ARBED"
+
+msgid "OPEN"
+msgstr "AGORED"
+
+msgid "ENTERPRISE"
+msgstr "MENTER"
+
+msgid "SECURED"
+msgstr "DIOGELEDIG"
+
+msgid "Enterprise networks are not supported"
+msgstr "Ni chefnogir rhwydweithiau menter"
+
+msgid "Network forgotten"
+msgstr "Rhwydwaith wedi'i anghofio"
+
+msgid "WI-FI KEY FOR "
+msgstr "CYFRINAIR WI-FI AR GYFER "
+
+msgid "CONNECTING..."
+msgstr "YN CYSYLLTU..."
+
+msgid "INPUT MANUALLY"
+msgstr "MEWNBWYNO Â LLAW"
+
+msgid "WI-FI SSID"
+msgstr "SSID WI-FI"
+
+msgid "WI-FI KEY"
+msgstr "CYFRINAIR WI-FI"
+
+msgid "REALLY SUSPEND ?"
+msgstr "ATAL GO IAWN?"
+
+msgid "SUSPEND SYSTEM"
+msgstr "ATAL Y SYSTEM"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "CAU LAWR GO IAWN?"
+
+msgid "REALLY RESTART?"
+msgstr "AILGYCHWYN GO IAWN?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "AILGYCHWYN Y BLAEN-PEN GO IAWN?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "AILGYCHWYN Y BLAEN-PEN"
+
+msgid "Shutdown without saving metadata."
+msgstr "Cau lawr heb arbed metadata."
+
+msgid "TEST ACCOUNT"
+msgstr "PROFI'R CYFRIF"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Yn gwirio'r enw defnyddiwr a'r cyfrinair gyda retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "YN CYSYLLTU Â RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "WEDI MEWNGOFNODI"
+
+msgid "Disable loading states, rewind and cheats for more points."
+msgstr "Analluogi llwytho cyflyrau, ailweindio a thwyllo am fwy o bwyntiau."
+
+msgid "Compete in high-score and best time leaderboards (requires hardcore)."
+msgstr "Cystadlu ar fyrddau arweinwyr sgôr uchel ac amser gorau (mae angen hardcore)."
+
+msgid "Show achievement progression on game launch and other notifications."
+msgstr "Dangos cynnydd cyflawniadau wrth lansio gêm a hysbysiadau eraill."
+
+msgid "RICH PRESENCE"
+msgstr "RICH PRESENCE"
+
+msgid "Automatically take a screenshot when an achievement is earned."
+msgstr "Cymryd sgrinlun yn awtomatig pan enillir cyflawniad."
+
+msgid "CHALLENGE INDICATORS"
+msgstr "DANGOSYDDION HERIAU"
+
+msgid "Shows icons in the bottom right corner when eligible achievements can be earned."
+msgstr "Yn dangos eiconau yn y gornel dde isaf pan ellir ennill cyflawniadau cymwys."
+
+msgid "Enable unlocking of unofficial achievements."
+msgstr "Galluogi datgloi cyflawniadau answyddogol."
+
+msgid "UNOFFICIAL ACHIEVEMENTS"
+msgstr "CYFLAWNIADAU ANSWYDDOGOL"
+
+msgid "UNLOCK SOUND"
+msgstr "SAIN DATGLOI"
+
+msgid "LED NOTIFICATIONS"
+msgstr "HYSBYSIADAU LED"
+
+msgid "SHOW RETROACHIEVEMENTS ENTRY IN MAIN MENU"
+msgstr "DANGOS MYNEDIAD RETROACHIEVEMENTS YN Y BRIF DDEWISLEN"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Dangos rhes RetroAchievements yn y brif ddewislen."
+
+msgid "NO SAVES FOUND"
+msgstr "DIM ARBEDION WEDI'U CANFOD"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "DIM DIGON O LE RHYDD"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "MAE COPI WRTH GEFN O'R MUNUD HWN YN BODOLI EISOES"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "MAE'R COPI WRTH GEFN WEDI'I DDIFROD NEU AR GOLL"
+
+msgid "BACKUP DONE"
+msgstr "COPI WRTH GEFN WEDI'I WNEUD"
+
+msgid "SAVES RESTORED"
+msgstr "ARBEDION WEDI'U HADFER"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "COPI WRTH GEFN CWMWL WEDI'I WNEUD"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "METHODD COPI WRTH GEFN CWMWL"
+
+msgid "BEFORE A RESTORE"
+msgstr "CYN ADFER"
+
+msgid "BACK UP SAVES NOW"
+msgstr "COPÏO ARBEDION WRTH GEFN NAWR"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "ARBEDION GEMAU, CYFLYRAU ARBED AC ARBEDION PSP, HEB ROMAU NA CHYFRYNGAU"
+
+msgid "CLOUD BACKUP"
+msgstr "COPI WRTH GEFN CWMWL"
+
+msgid "BACKUPS"
+msgstr "COPÏAU WRTH GEFN"
+
+msgid "NO BACKUPS YET"
+msgstr "DIM COPÏAU WRTH GEFN ETO"
+
+msgid "BACKUP DELETED"
+msgstr "COPI WRTH GEFN WEDI'I DDILEU"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "BYDD HYN YN DISODLI EICH ARBEDION PRESENNOL GYDA'R RHAI O %s. GWNEIR COPI WRTH GEFN O'R ARBEDION PRESENNOL YN GYNTAF."
+
+msgid "RESTORE"
+msgstr "ADFER"
+
+msgid "DELETE BACKUP"
+msgstr "DILEU COPI WRTH GEFN"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "DILEU'R COPI WRTH GEFN HWN?"
+
+msgid "SAVESTATE MANAGER"
+msgstr "RHEOLWR CYFLYRAU ARBED"
+
+msgid "START NEW AUTO SAVE"
+msgstr "DECHRAU AWTO ARBED NEWYDD"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "NI ALL Y GYMAL HON GYRRAEDD SCREENSCRAPER"
+
+msgid "ALL GAMES"
+msgstr "POB GÊM"
+
+msgid "GAMES TO SCRAPE"
+msgstr "GEMAU I'W CRAFU"
+
+msgid "WITH MISSING MEDIA"
+msgstr "GYDA CHYFRYNGAU AR GOLL"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "HEB UNRHYW GYFRYNGAU"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Pa gemau o'r systemau a ddewiswyd a chwilir amdanynt."
+
+msgid "IGNORE RECENTLY SCRAPED GAMES"
+msgstr "ANWYBYDDU GEMAU A GRAFWYD YN DDIWEDDAR"
+
+msgid "1 DAY"
+msgstr "1 DIWRNOD"
+
+msgid "1 MONTH"
+msgstr "1 MIS"
+
+msgid "1 WEEK"
+msgstr "1 WYTHNOS"
+
+msgid "1 YEAR"
+msgstr "1 FLWYDDYN"
+
+msgid "15 DAYS"
+msgstr "15 DIWRNOD"
+
+msgid "3 MONTHS"
+msgstr "3 MIS"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Hepgorir gemau a grafwyd o fewn yr amser hwn, gan arbed ceisiadau."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "NÔL CYFRYNGAU AR GOLL YN AWTOMATIG"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Yn llwytho cloriau coll i lawr yn y cefndir pan fo'n segur."
+
+msgid "SCRAPER SETTINGS"
+msgstr "GOSODIADAU'R CRAFWR"
+
+msgid "ACCOUNT"
+msgstr "CYFRIF"
+
+msgid "Choose at least one system."
+msgstr "Dewiswch o leiaf un system."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Yn chwilio am y gemau ar ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "DIM SYSTEM GYDA GEMAU Y MAE SCREENSCRAPER YN EU HADNABOD"
+
+msgid "PICTURES"
+msgstr "DELWEDDAU"
+
+msgid "IMAGE"
+msgstr "DELWEDD"
+
+msgid "BOX FRONT"
+msgstr "BLAEN Y BLWCH"
+
+msgid "TITLE SCREEN"
+msgstr "SGRIN DEITL"
+
+msgid "The main picture of each game."
+msgstr "Prif ddelwedd pob gêm."
+
+msgid "THUMBNAIL"
+msgstr "BAWDLUN"
+
+msgid "The small picture of each game."
+msgstr "Delwedd fach pob gêm."
+
+msgid "LOGO"
+msgstr "LOGO"
+
+msgid "The logo of each game."
+msgstr "Logo pob gêm."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "MAINT LLAWN"
+
+msgid "IMAGE SIZE"
+msgstr "MAINT Y DDELWEDD"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "Mae ScreenScraper yn crebachu delweddau cyn eu hanfon: yn gyflymach ac yn ysgafnach."
+
+msgid "AUTOMATIC"
+msgstr "AWTOMATIG"
+
+msgid "BRAZIL"
+msgstr "BRASIL"
+
+msgid "EUROPE"
+msgstr "EWROP"
+
+msgid "FRANCE"
+msgstr "FFRAINC"
+
+msgid "GERMANY"
+msgstr "YR ALMAEN"
+
+msgid "ITALY"
+msgstr "YR EIDAL"
+
+msgid "JAPAN"
+msgstr "JAPAN"
+
+msgid "SPAIN"
+msgstr "SBAEN"
+
+msgid "USA"
+msgstr "UDA"
+
+msgid "WORLD"
+msgstr "Y BYD"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Rhanbarth dewisol ar gyfer enwau, dyddiadau a delweddau."
+
+msgid "NAMES"
+msgstr "ENWAU"
+
+msgid "Replace the names of the games."
+msgstr "Disodli enwau'r gemau."
+
+msgid "DESCRIPTIONS"
+msgstr "DISGRIFIADAU"
+
+msgid "Replace the descriptions."
+msgstr "Disodli'r disgrifiadau."
+
+msgid "SHORT NAME"
+msgstr "ENW BYR"
+
+msgid "Download the rating of each game."
+msgstr "Llwytho sgôr pob gêm i lawr."
+
+msgid "RATINGS"
+msgstr "SGORIAU"
+
+msgid "EXTRA MEDIA"
+msgstr "CYFRYNGAU YCHWANEGOL"
+
+msgid "VIDEOS"
+msgstr "FIDEOS"
+
+msgid "Videos are big and take longer to download."
+msgstr "Mae fideos yn fawr ac yn cymryd mwy o amser i'w llwytho i lawr."
+
+msgid "MANUALS"
+msgstr "LLYFRAU CYFARWYDDYD"
+
+msgid "PDF manuals."
+msgstr "Llyfrau cyfarwyddyd PDF."
+
+msgid "MAPS"
+msgstr "MAPIAU"
+
+msgid "Maps of the game."
+msgstr "Mapiau o'r gêm."
+
+msgid "Background pictures."
+msgstr "Delweddau cefndir."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "CEFN Y BLWCH"
+
+msgid "The back of the box."
+msgstr "Cefn y blwch."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Ar gyfer \"Pob gêm\" yn unig: caiff delweddau sydd eisoes yno eu llwytho i lawr eto."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "DISODLI CYFRYNGAU PRESENNOL"
+
+msgid "SCREENSCRAPER"
+msgstr "SCREENSCRAPER"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Dewisol. Heb gyfrif mae ScreenScraper yn caniatáu ychydig iawn o geisiadau."
+
+msgid "IGDB"
+msgstr "IGDB"
+
+msgid "CLIENT ID"
+msgstr "ID CLEIENT"
+
+msgid "CLIENT SECRET"
+msgstr "CYFRINACH CLEIENT"
+
+msgid "ArcadeDB needs no account."
+msgstr "Nid oes angen cyfrif ar ArcadeDB."
+
+msgid "Asks IGDB for an access token."
+msgstr "Yn gofyn i IGDB am docyn mynediad."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Yn gofyn i ScreenScraper am eich terfynau."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "YN CYSYLLTU Â SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "ANHYSBYS"
+
+msgid "LOGIN"
+msgstr "MEWNGOFNODI"
+
+msgid "REQUESTS TODAY"
+msgstr "CEISIADAU HEDDIW"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "CEISIADAU Y MUNUD"
+
+msgid "STOP"
+msgstr "STOPIO"
+
+msgid "SCROLL"
+msgstr "SGROLIO"
+
+msgid "SCRAPE COMPLETE"
+msgstr "CRAFU WEDI'I GWBLHAU"
+
+msgid "SCRAPE STOPPED"
+msgstr "CRAFU WEDI'I STOPIO"
+
+msgid "FOUND"
+msgstr "WEDI'U CANFOD"
+
+msgid "NOT FOUND"
+msgstr "HEB EU CANFOD"
+
+msgid "ERRORS"
+msgstr "GWALLAU"
+
+msgid "MEDIA FILES"
+msgstr "FFEILIAU CYFRYNGAU"
+
+msgid "READING GAME LISTS"
+msgstr "YN DARLLEN RHESTRAU GEMAU"
+
+msgid "STOPPING"
+msgstr "YN STOPIO"
+
+msgid "SECONDS"
+msgstr "EILIADAU"
+
+msgid "WAITING"
+msgstr "YN AROS"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "WEDI STOPIO. MAE'R HYN A WNAED WEDI'I ARBED"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "DIM GEMAU I'W CRAFU GYDA'R HIDLYDDION HYN"
+
+msgid "GAMES"
+msgstr "GEMAU"
+
+msgid "PROBLEMS"
+msgstr "PROBLEMAU"
+
+msgid "MEDIA MISSING"
+msgstr "CYFRYNGAU AR GOLL"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "SWITSHIS A SLEIDYDDION"
+
+msgid "The clock shows in the top right corner."
+msgstr "Mae'r cloc yn ymddangos yn y gornel dde uchaf."
+
+msgid "Volume saved"
+msgstr "Lefel sain wedi'i harbed"
+
+msgid "LISTS AND TEXT"
+msgstr "RHESTRAU A THESTUN"
+
+msgid "TEXT"
+msgstr "TESTUN"
+
+msgid "TIME ZONE"
+msgstr "PARTH AMSER"
+
+msgid "WI-FI PASSWORD"
+msgstr "CYFRINAIR WI-FI"
+
+msgid "SHOW A TOAST"
+msgstr "DANGOS HYSBYSIAD"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi wedi'i gysylltu: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "DANGOS Y BAR LEFEL SAIN"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "DANGOS Y BAR DISGLEIRDEB"
+
+msgid "ASK A QUESTION"
+msgstr "GOFYN CWESTIWN"
+
+msgid "Delete all saved states of this game?"
+msgstr "Dileu holl gyflyrau arbed y gêm hon?"
+
+msgid "SHOW A MESSAGE"
+msgstr "DANGOS NEGES"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Gosodwyd y diweddariad. Ailgychwynnwch y consol i'w ddefnyddio."
+
+msgid "Restart the system now?"
+msgstr "Ailgychwyn y system nawr?"
+
+msgid "Restarting..."
+msgstr "Yn ailgychwyn..."
+
+msgid "DISABLED ENTRY"
+msgstr "MYNEDIAD ANABLEDIG"
+
+msgid "SELECTOR STYLE"
+msgstr "ARDDULL Y DEWISYDD"
+
+msgid "TITLE ALIGNMENT"
+msgstr "ALINIO'R TEITL"
+
+msgid "LIST TEXT CASE"
+msgstr "PRIF LYTHRENNAU RHESTRAU"
+
+msgid "TEXT SIZE"
+msgstr "MAINT TESTUN"
+
+msgid "HIGH CONTRAST"
+msgstr "CYFERBYNIAD UCHEL"
+
+msgid "SHOW CLOCK IN 12-HOUR FORMAT"
+msgstr "DANGOS Y CLOC YN FFORMAT 12 AWR"
+
+msgid "options"
+msgstr "opsiynau"
+
+msgid "AUDIO"
+msgstr "SAIN"
+
+msgid "Could not change the audio output"
+msgstr "Methu newid yr allbwn sain"
+
+msgid "AUDIO PROFILE"
+msgstr "PROFFIL SAIN"
+
+msgid "Available options can change depending on current audio output."
+msgstr "Gall yr opsiynau sydd ar gael newid yn dibynnu ar yr allbwn sain presennol."
+
+msgid "BATTERY WARNING"
+msgstr "RHYBUDD BATRI"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "GALLUOGI RHYBUDD BATRI CLYWADWY"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "TROTHWY RHYBUDD BATRI"
+
+msgid "LAUNCH THIS GAME AT STARTUP"
+msgstr "LANSIO'R GÊM HON WRTH GYCHWYN"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Yn dechrau'r gêm hon pan fydd y consol yn cychwyn, cyn y dewislenni, unwaith bob cychwyn."
+
+msgid "STOP LAUNCHING THIS GAME AT STARTUP"
+msgstr "PEIDIO Â LANSIO'R GÊM HON WRTH GYCHWYN"
+
+msgid "Reboot now"
+msgstr "Ailgychwyn nawr"
+
+msgid "Later"
+msgstr "Yn nes ymlaen"
+
+msgid "Default"
+msgstr "Rhagosodedig"
+
+msgid "Arm (official)"
+msgstr "Arm (swyddogol)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Ffynhonnell agored (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "AMSER AR ÔL HEDDIW"
+
+msgid "UPTIME"
+msgstr "AMSER YMLAEN"
+
+msgid "No information available"
+msgstr "Dim gwybodaeth ar gael"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "RHEOLI'R SYSTEM AC AILOSOD"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr ""
+"YDYCH CHI'N SIŴR?\n"
+"\n"
+"NI ELLIR DADWNEUD HYN."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "COPÏO CYFLUNIADAU WRTH GEFN"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr ""
+"RHYBUDD: BYDD HYN YN AILGYCHWYN Y BLAEN-PEN!\n"
+"\n"
+"PAN FYDD Y SGRIPT WEDI GORFFEN, COFIWCH GOPÏO'R FFEIL /storage/roms/backup/ROCKNIX_BACKUP.zip I LE DIOGEL NEU CAIFF EI DDILEU AR YR AILGYCHWYN NESAF!\n"
+"\n"
+"COPÏO'R CYFLUNIAD PRESENNOL WRTH GEFN AC AILGYCHWYN?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "ADFER O GOPI WRTH GEFN"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr ""
+"RHYBUDD: BYDD HYN YN AILGYCHWYN EICH DYFAIS!\n"
+"\n"
+"BYDD EICH CYFLUNIAD PRESENNOL YN CAEL EI DROSYSGRIFO!\n"
+"\n"
+"ADFER O GOPI WRTH GEFN AC AILGYCHWYN?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "RHEOLI EFELYCHWYR"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "AILOSOD CYFLUNIAD RETROARCH I'R RHAGOSODEDIG"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr ""
+"RHYBUDD: BYDD CYFLUNIAD RETROARCH YN AILOSOD I'R RHAGOSODEDIG\n"
+"\n"
+"NI EFFEITHIR AR GYFLUNIADAU PER CRAIDD AC NI CHREIR COPI WRTH GEFN!\n"
+"\n"
+"AILOSOD CYFLUNIAD RETROARCH I'R RHAGOSODEDIG?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "AILOSOD TROSOLWG (CRAIDD, TWYLLO, PADIAU, ETC)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr ""
+"RHYBUDD: BYDD POB TROSOLWG RETROARCH PERSONOL YN CAEL EI DYNNU\n"
+"\n"
+"CRAIDD PERSONOL, FFYNNAU REOLI, TWYLLO, ETC. NI CHREIR COPI WRTH GEFN!\n"
+"\n"
+"AILOSOD TROSOLWG RETROARCH I'R RHAGOSODEDIG?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "AILOSOD RETROARCH YN LLWYR"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr ""
+"RHYBUDD: BYDD RETROARCH A POB CYFLUNIAD A ARBEDWYD GAN Y DEFNYDDIWR YN AILOSOD I'R RHAGOSODEDIG\n"
+"\n"
+"CAIFF CYFLUNIADAU PER CRAIDD EU TYNNU AC NI CHREIR COPI WRTH GEFN!\n"
+"\n"
+"AILOSOD RETROARCH?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "AILOSOD CYFLUNIAD MEDNAFEN I'R RHAGOSODEDIG"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr ""
+"RHYBUDD: BYDD CYFLUNIAD MEDNAFEN YN AILOSOD I'R RHAGOSODEDIG\n"
+"\n"
+"NI CHREIR COPI WRTH GEFN!\n"
+"\n"
+"AILOSOD CYFLUNIAD MEDNAFEN I'R RHAGOSODEDIG?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "AILOSOD CYFLUNIADAU EFELYCHWYR ANNIBYNNOL I'R RHAGOSODEDIG"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr ""
+"RHYBUDD: BYDD CYFLUNIADAU EFELYCHWYR ANNIBYNNOL YN AILOSOD I'R RHAGOSODEDIG\n"
+"\n"
+"NI CHREIR COPI WRTH GEFN!\n"
+"\n"
+"AILOSOD CYFLUNIADAU EFELYCHWYR ANNIBYNNOL I'R RHAGOSODEDIG?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "AILOSOD PORTMASTER YN LLWYR"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr ""
+"RHYBUDD: BYDD PORTMASTER YN AILOSOD I'R RHAGOSODEDIG\n"
+"\n"
+"NI CHREIR COPI WRTH GEFN!\n"
+"\n"
+"AILOSOD PORTMASTER I'R RHAGOSODEDIG?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "RHEOLI'R SYSTEM"
+
+msgid "AUDIO RESET"
+msgstr "AILOSOD SAIN"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr ""
+"RHYBUDD: BYDD GOSODIADAU SAIN YN AILOSOD I'R RHAGOSODIADAU A BYDD Y SYSTEM YN AILGYCHWYN!\n"
+"\n"
+"AILOSOD SAIN AC AILGYCHWYN?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "AILOSOD MESURYDD BATRI"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr ""
+"RHYBUDD: BYDD MESURYDD PMIC YN CAEL EI AILOSOD A BYDD Y SYSTEM YN DIFFODD!\n"
+"\n"
+"GADEWCH Y GWEFRYDD HEB EI GYSYLLTU A THROWCH Y DDYFAIS YMLAEN ETO AR ÔL RHAI EILIADAU. MAE LEFEL Y BATRI YN CAEL EI HAMCANGYFRIFO ETO O FOLTEDD Y BATRI MEWN SEGURWCH AC YN DOD YN GYWIR ETO AR ÔL GWEFR LAWN.\n"
+"\n"
+"AILOSOD Y MESURYDD A DIFFODD?"
+
+msgid "FACTORY RESET"
+msgstr "AILOSOD I OSODIADAU'R FFATRI"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr ""
+"RHYBUDD: BYDD EICH DATA A POB CYFLUNIAD ARALL YN AILOSOD I'R RHAGOSODIADAU!\n"
+"\n"
+"OS YDYCH EISIAU CADW EICH GOSODIADAU, GWNEWCH GOPI WRTH GEFN AC ARBEDWCH EF AR YRIANT ALLANOL CYN RHEDEG Y OPSIWN HWN!\n"
+"\n"
+"TYNNWCH EICH CERDYN GEMAU CYN PARHAU!\n"
+"\n"
+"AILOSOD Y SYSTEM AC AILGYCHWYN?"
+
+msgid "LANGUAGE (REGION)"
+msgstr "IAITH (RHANBARTH)"
+
+msgid "KEYBOARD LAYOUT"
+msgstr "TREFNIAD Y BYSELLFWRDD"
+
+msgid "KEYBOARD VARIANT"
+msgstr "AMRYWIAD Y BYSELLFWRDD"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Dewiswch amrywiad y bysellfwrdd ar gyfer y trefniad a ddewiswyd (er enghraifft, bysellau marw neu leoliad bysellau amgen)."
+
+msgid "TIMEZONE"
+msgstr "PARTH AMSER"
+
+msgid "Run welcome again"
+msgstr "Rhedeg y croeso eto"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Yn dangos croeso'r cychwyn cyntaf eto: iaith, WiFi a pharth amser."
+
+msgid "USER INTERFACE MODE"
+msgstr "MODD Y RHYNGWYNEB DEFNYDDIWR"
+
+msgid "Lock down certain config menus for use with guest users/kids."
+msgstr "Cloi rhai dewislenni cyfluniad i'w defnyddio gyda defnyddwyr gwadd/plant."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "GALLUOGI TROSOLWG MANGOHUD"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "GALLUOGI BYSELLFWRDD SGRIN GYFFWRDD"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "GALLUOGI SGRINLUN ROCKNIX"
+
+msgid "SCREEN"
+msgstr "SGRIN"
+
+msgid "CONTRAST"
+msgstr "CYFERBYNIAD"
+
+msgid "GAMMA"
+msgstr "GAMA"
+
+msgid "HUE"
+msgstr "LLIW"
+
+msgid "SATURATION"
+msgstr "DIRLAWNDER"
+
+msgid "LEDS"
+msgstr "LEDAU"
+
+msgid "DISABLE POWER LED"
+msgstr "ANALLUOGI LED PŴER"
+
+msgid "LED COLOR"
+msgstr "LLIW'R LED"
+
+msgid "JOYSTICK LED"
+msgstr "LED Y FFON REOLI"
+
+msgid "LED BRIGHTNESS"
+msgstr "DISGLEIRDEB Y LED"
+
+msgid "MAX"
+msgstr "UCHAF"
+
+msgid "MID"
+msgstr "CANOLIG"
+
+msgid "MIN"
+msgstr "ISAF"
+
+msgid "POWER LED COLOR"
+msgstr "LLIW LED PŴER"
+
+msgid "DEVICE"
+msgstr "DYFAIS"
+
+msgid "THIS DEVICE IS"
+msgstr "Y DDYFAIS HON YW"
+
+msgid "Device will be switched on next reboot"
+msgstr "Bydd y ddyfais yn cael ei newid ar yr ailgychwyn nesaf"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "AWTO-ADNABOD CERDYN GEMAU"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "GALLUOGI STORFA WEDI'I CHYFUNO"
+
+msgid "EXTERNAL"
+msgstr "ALLANOL"
+
+msgid "INTERNAL"
+msgstr "MEWNOL"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "PRIF GERDYN STORFA WEDI'I CHYFUNO"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "RHYBUDD: GALL NEWID Y PRIF GERDYN ACHOSI COLLI MYNEDIAD I GEMAU, GAN ARWAIN AT YMYRRAETH Â LLAW I'W GYWIRO. PARHAU?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "TAFLU CERDYN MICROSD ALLAN"
+
+msgid "You may now remove the card."
+msgstr "Gallwch dynnu'r cerdyn nawr."
+
+msgid "PERFORMANCE"
+msgstr "PERFFORMIAD"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "LLYWODRAETHWR SGALIO RHAGOSODEDIG"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "LLYWODRAETHWR SGALIO GPU RHAGOSODEDIG"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "GALLUOGI GORGLOCIO CPU"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "GALLUOGI GORGLOCIO GPU"
+
+msgid "GPU DRIVER"
+msgstr "GYRRWR GPU"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "Bydd y gyrrwr GPU yn cael ei newid ar yr ailgychwyn nesaf"
+
+msgid "Restarting to apply the theme"
+msgstr "Yn ailgychwyn i gymhwyso'r thema"
+
+msgid "RESET CUSTOMIZATIONS"
+msgstr "AILOSOD ADDASIADAU"
+
+msgid "USER INTERFACE SETTINGS"
+msgstr "GOSODIADAU'R RHYNGWYNEB DEFNYDDIWR"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Mae'r blaen-pen yn ailgychwyn i gymhwyso'r thema"
+
+msgid "Dark"
+msgstr "Tywyll"
+
+msgid "Light"
+msgstr "Golau"
+
+msgid "MODE"
+msgstr "MODD"
+
+msgid "Theme default"
+msgstr "Rhagosodiad y thema"
+
+msgid "Filled"
+msgstr "Llawn"
+
+msgid "Outline"
+msgstr "Amlinell"
+
+msgid "Side bar"
+msgstr "Bar ochr"
+
+msgid "Underline"
+msgstr "Tanlinellu"
+
+msgid "Centered"
+msgstr "Wedi'i ganoli"
+
+msgid "Left"
+msgstr "Chwith"
+
+msgid "Lowercase"
+msgstr "Llythrennau bach"
+
+msgid "Uppercase"
+msgstr "Priflythrennau"
+
+msgid "EXTRA LARGE"
+msgstr "MAWR IAWN"
+
+msgid "LARGE"
+msgstr "MAWR"
+
+msgid "NORMAL"
+msgstr "NORMAL"
+
+msgid "SMALL"
+msgstr "BACH"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Maint y testun mewn dewislenni, deialogau a bariau cymorth"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Testun gwyn neu ddu pur, paneli solet a dewisydd mwy trwchus"
+
+msgid "CONTROL OPTIONS"
+msgstr "OPSIYNAU RHEOLI"
+
+msgid "TOP BAR"
+msgstr "BAR UCHAF"
+
+msgid "BEDSIDE CLOCK"
+msgstr "CLOC GWELY"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Gyda'r gwefrydd wedi'i gysylltu, yn dangos cloc mawr ar ôl yr amser hwn heb gyffwrdd â'r consol, yn lle'r arbedwr sgrin. Mae unrhyw fotwm yn ei gau. Byth tra bo gêm ar agor."
+
+msgid ""
+"You are changing the user interface to a restricted mode:\n"
+"This will hide most menu options to prevent changes to the system.\n"
+"To unlock and return to the full user interface, enter this code:"
+msgstr ""
+"Rydych yn newid y rhyngwyneb defnyddiwr i fodd cyfyngedig:\n"
+"Bydd hyn yn cuddio'r rhan fwyaf o opsiynau'r ddewislen i atal newidiadau i'r system.\n"
+"I ddatgloi a dychwelyd i'r rhyngwyneb defnyddiwr llawn, rhowch y cod hwn:"
+
+msgid "ENTER THE CODE NOW TO UNLOCK"
+msgstr "RHOWCH Y COD NAWR I DDATGLOI"
+
+msgid ""
+"YOU ARE CURRENTLY USING VERSION %s\n"
+"DO YOU WANT TO UPDATE TO VERSION %s?"
+msgstr ""
+"RYDYCH YN DEFNYDDIO FERSIWN %s AR Y FUNUD\n"
+"HOFFECH CHI DDIWEDDARU I FERSIWN %s?"
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "METHU CANSLO'R LLWYTHO I LAWR"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "LLWYTHO I LAWR WEDI'I GANSLO"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "METHWYD LLWYTHO'R DIWEDDARIAD I LAWR. GWIRIWCH Y CYSYLLTIAD A CHEISIO ETO."
+
+msgid "No update source available"
+msgstr "Dim ffynhonnell diweddaru ar gael"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "GORFODI'R DIWEDDARIAD NESAF"
+
+msgid "UPDATING"
+msgstr "YN DIWEDDARU"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "CANSLO'R LLWYTHO I LAWR"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "CANSLO'R LLWYTHO I LAWR? CAIFF Y FFEIL RANNOL EI DILEU."
+
+msgid "REBOOT TO APPLY"
+msgstr "AILGYCHWYN I GYMHWYSO"
+
+msgid "Checking..."
+msgstr "Yn gwirio..."
+
+msgid "available"
+msgstr "ar gael"
+
+msgid "SKIP ALL"
+msgstr "HEPGOR POPETH"
+
+msgid "Welcome"
+msgstr "Croeso"
+
+msgid "of"
+msgstr "o"
+
+msgid "Choose your language"
+msgstr "Dewiswch eich iaith"
+
+msgid "Language"
+msgstr "Iaith"
+
+msgid "You can change it later in System."
+msgstr "Gallwch ei newid yn nes ymlaen yn System."
+
+msgid "Connect to WiFi"
+msgstr "Cysylltu â WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Cloc, diweddariadau a throsglwyddo ffeiliau."
+
+msgid "Continue"
+msgstr "Parhau"
+
+msgid "Not now"
+msgstr "Nid nawr"
+
+msgid "Choose a network"
+msgstr "Dewiswch rwydwaith"
+
+msgid "Choose another network"
+msgstr "Dewiswch rwydwaith arall"
+
+msgid "Where are you?"
+msgstr "Ble ydych chi?"
+
+msgid "Time zone"
+msgstr "Parth amser"
+
+msgid "Sets your local time."
+msgstr "Yn gosod eich amser lleol."
+
+msgid "Keep UTC"
+msgstr "Cadw UTC"
+
+msgid "LOADING..."
+msgstr "YN LLWYTHO..."
+
+msgid "All set"
+msgstr "Popeth yn barod"
+
+msgid "Add games from your phone"
+msgstr "Ychwanegu gemau o'ch ffôn"
+
+msgid "Network"
+msgstr "Rhwydwaith"
+
+msgid "Start opens the menu"
+msgstr "Mae Start yn agor y ddewislen"
+
+msgid "anywhere"
+msgstr "unrhyw le"
+
+msgid "Screen looks wrong?"
+msgstr "Sgrin yn edrych yn anghywir?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Dechrau chwarae"
+
+msgid "PLAY THEME MUSIC"
+msgstr "CHWARAE CERDDORIAETH Y THEMA"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "DIM CYSYLLTIAD RHWYDWAITH"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "DEFNYDD BATRI (GWEFR LAWN)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "CYFANSWM YR AMSER A CHWARAEWYD"
+
+msgid "LAST FIVE WEEKS"
+msgstr "Y PUM WYTHNOS DIWETHAF"
+
+msgid "2 WEEKS AGO"
+msgstr "2 WYTHNOS YN ÔL"
+
+msgid "3 WEEKS AGO"
+msgstr "3 WYTHNOS YN ÔL"
+
+msgid "4 WEEKS AGO"
+msgstr "4 WYTHNOS YN ÔL"
+
+msgid "LAST WEEK"
+msgstr "WYTHNOS DIWETHAF"
+
+msgid "THIS WEEK"
+msgstr "YR WYTHNOS HON"
+
+msgid "MOST PLAYED GAMES"
+msgstr "Y GEMAU A CHWARAEWYD FWYAF"
+
+msgid "TIME PER SYSTEM"
+msgstr "AMSER FESUL SYSTEM"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "DIM WEDI'I CHWARAE ETO. CHWARAEWCH GÊM A BYDD YN YMDDANGOS YMA."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Dim ond %d munud o amser chwarae ar ôl heddiw"
+msgstr[1] "Dim ond %d funud o amser chwarae ar ôl heddiw"
+msgstr[2] "Dim ond %d munud o amser chwarae ar ôl heddiw"
+msgstr[3] "Dim ond %d munud o amser chwarae ar ôl heddiw"
+
+msgid "Power saver on"
+msgstr "Arbed pŵer ymlaen"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "ATEB ANNISGWYL GAN RETROACHIEVEMENTS"
+
+msgid "UNABLE TO ACTIVATE RETROACHIEVEMENTS:"
+msgstr "METHU ACTIFADU RETROACHIEVEMENTS:"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "NID YW AR GAEL YN Y GYMAL HON"
+
+msgid "%i min ago"
+msgstr "%i munud yn ôl"
+
+msgid "%i h ago"
+msgstr "%i awr yn ôl"
+
+msgid "%i d ago"
+msgstr "%i diwrnod yn ôl"
+
+msgid "CONTINUE PLAYING"
+msgstr "PARHAU I CHWARAE"
+
+msgid "START NOW"
+msgstr "DECHRAU NAWR"
+
+msgid "RESUMING"
+msgstr "YN ADFER"
+
+msgid "STARTING IN %i"
+msgstr "YN DECHRAU MEWN %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacs"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Fertigol"
+
+msgid "recently added"
+msgstr "ychwanegwyd yn ddiweddar"
+
+msgid "unfinished"
+msgstr "anorffenedig"
+
+msgid "most played this week"
+msgstr "a chwaraewyd fwyaf yr wythnos hon"
+
+msgid "BOOKS"
+msgstr "LLYFRAU"
+
+msgid "screenshots"
+msgstr "sgrinluniau"
+
+msgid "media player"
+msgstr "chwaraewr cyfryngau"
+
+msgid "NETWORK ERROR"
+msgstr "GWALL RHWYDWAITH"
+
+msgid "SERVER BUSY"
+msgstr "GWEINYDD YN BRYSUR"
+
+msgid "SERVER ERROR"
+msgstr "GWALL GWEINYDD"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "METHU YSGRIFENNU'R RHESTR GEMAU"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "METHWYD MEWNGOFNODI. GWIRIWCH EICH ENW DEFNYDDIWR A'CH CYFRINAIR"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "MAE SCREENSCRAPER AR GAU I'R CYFRIF HWN AR HYN O BRYD"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "MAE SCREENSCRAPER YN CAEL EI GYNNAL A'I GADW"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "MAE SCREENSCRAPER WEDI BLOCIO'R MEDDALWEDD HWN"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "CYRRAEDDWYD Y CWOTA CRAFU DYDDIOL. CEISIWCH ETO YFORY"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "GORMOD O ROMAU HEB EU HADNABOD HEDDIW. CEISIWCH ETO YFORY"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "DIM LLE AR ÔL AR Y CERDYN"
+
+msgid "INVALID CREDENTIALS"
+msgstr "CYMWYSTERAU ANGYWIR"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "TEIPIWCH ID A CHYFRINACH CLEIENT IGDB YN CYFRIF YN GYNTAF"
+
+msgid "SCRAPING STOPPED"
+msgstr "CRAFU WEDI'I STOPIO"
+
+msgid "GAME NOT FOUND"
+msgstr "GÊM HEB EI CHANFOD"
+
+msgid "NO OTHER GAME"
+msgstr "DIM GÊM ARALL"
+
+msgid "%s connected"
+msgstr "%s wedi'i gysylltu"
+
+msgid "%s disconnected"
+msgstr "%s wedi'i ddatgysylltu"
+
+msgid "Time is up for today"
+msgstr "Mae'r amser ar ben am heddiw"
+
+msgid "VIDEO DURATION (SECS)"
+msgstr "HYD Y FIDEO (EIL)"
+
+msgid "SHOW DATE TIME"
+msgstr "DANGOS DYDDIAD AC AMSER"
+
+msgid "DATE FORMAT"
+msgstr "FFORMAT DYDDIAD"
+
+msgid "TIME FORMAT"
+msgstr "FFORMAT AMSER"
+
+msgid "STRETCH VIDEOS"
+msgstr "YMESTYN FIDEOS"
+
+msgid "USE VIDEOS IN SUBFOLDERS OF CUSTOM DIRECTORY"
+msgstr "DEFNYDDIO FIDEOS MEWN ISFFOLDERI'R CYFEIRIADUR PERSONOL"
+
+msgid "CUSTOM VIDEO FILE EXTENSIONS"
+msgstr "ESTYNIADAU FFEIL FIDEO PERSONOL"
+
+msgid "USE IMAGES IN SUBFOLDERS OF CUSTOM DIRECTORY"
+msgstr "DEFNYDDIO DELWEDDAU MEWN ISFFOLDERI'R CYFEIRIADUR PERSONOL"
+
+msgid "CUSTOM IMAGE FILE EXTENSIONS"
+msgstr "ESTYNIADAU FFEIL DDELWEDD PERSONOL"
+
+msgid "ACCENTS"
+msgstr "ACENION"
+
+msgid "SHOW"
+msgstr "DANGOS"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "DANGOS RHAGOLYGON FIDEO"
+
+msgid "Device paired"
+msgstr "Dyfais wedi'i pharu"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "CANIATÁU'R DDYFAIS HON?"
+
+msgid "RECEIVED"
+msgstr "DERBYNIWYD"
+
+msgid "QR CODE"
+msgstr "COD QR"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "NEWYDD FOD"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "%d MUNUD YN ÔL"
+msgstr[1] "%d MUNUD YN ÔL"
+msgstr[2] "%d MUNUD YN ÔL"
+msgstr[3] "%d MUNUD YN ÔL"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "%d AWR YN ÔL"
+msgstr[1] "%d AWR YN ÔL"
+msgstr[2] "%d AWR YN ÔL"
+msgstr[3] "%d AWR YN ÔL"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "%d DIWRNOD YN ÔL"
+msgstr[1] "%d DIWRNOD YN ÔL"
+msgstr[2] "%d DIWRNOD YN ÔL"
+msgstr[3] "%d DIWRNOD YN ÔL"
+
+msgid "NO PAIRED DEVICES"
+msgstr "DIM DYFEISIAU WEDI'U PARU"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "ANGHOFIO'R DDYFAIS HON?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "ANGHOFIO POB DYFAIS"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "ANGHOFIO POB DYFAIS?"
+
+msgid "PAIRED DEVICES"
+msgstr "DYFEISIAU WEDI'U PARU"
+
+msgid "SHOW QR CODE"
+msgstr "DANGOS COD QR"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Sganiwch ef gyda chamera'r ffôn: mae'r dudalen yn agor ac yn gwybod y PIN."
+
+msgid "Phones that need no PIN."
+msgstr "Ffonau nad oes angen PIN arnynt."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "ID YR ADEILAD"
+
+msgid "KERNEL"
+msgstr "CNEWYLLYN"
+
+msgid "OPERATING SYSTEM"
+msgstr "SYSTEM WEITHREDU"
+
+msgid "SYSTEM INFORMATION"
+msgstr "GWYBODAETH Y SYSTEM"
+
+msgid "BATTERY INFORMATION"
+msgstr "GWYBODAETH Y BATRI"
+
+msgid "DISK SPACE"
+msgstr "GOFOD DISG"
+
+msgid "HOST NAME"
+msgstr "ENW'R GWESTAI"
+
+msgid "NETWORK INFORMATION"
+msgstr "GWYBODAETH RHWYDWAITH"
+
+msgid "BATTERY HEALTH"
+msgstr "IECHYD Y BATRI"
+
+msgid "BATTERY REMAINING"
+msgstr "BATRI AR ÔL"
+
+msgid "BATTERY STATE"
+msgstr "CYFLWR Y BATRI"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "GWYBODAETH CPU"
+
+msgid "CPU TEMPERATURE"
+msgstr "TYMHEREDD CPU"
+
+msgid "CPU FAN"
+msgstr "FFAN CPU"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "AMLDER GPU CYFREDOL"
+
+msgid "GPU INFORMATION"
+msgstr "GWYBODAETH GPU"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "AMLDER GPU UCHAFSWM"
+
+msgid "GPU TEMPERATURE"
+msgstr "TYMHEREDD GPU"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM AR GAEL"
+
+msgid "RAM CAPACITY"
+msgstr "CAPASITI RAM"
+
+msgid "RAM INFORMATION"
+msgstr "GWYBODAETH RAM"
+
+msgid "BUILD ID"
+msgstr "ID ADEILADU"
+
+msgid "CURRENT FREQUENCY"
+msgstr "AMLDER CYFREDOL"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "AMLDER UCHAFSWM"
+
+msgid "DISCHARGING"
+msgstr "YN DADWEFRU"
+
+msgid "NOT CHARGING"
+msgstr "HEB WEFRU"
+
+msgid "Follows the language until you choose one here."
+msgstr "Mae'n dilyn yr iaith nes i chi ddewis un yma."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Dim rhwydwaith. Rhowch y cerdyn microSD mewn PC a chopïwch bob gêm i ffolder ei system, y tu mewn i roms (er enghraifft roms/snes). Neu cysylltwch â WiFi a dewch yn ôl yma i ychwanegu gemau o'ch ffôn."
+
+msgid "Add games"
+msgstr "Ychwanegu gemau"
+
+msgid "left, in the menus"
+msgstr "ar ôl, yn y dewislenni"
+
+msgid "From your phone or microSD"
+msgstr "O'ch ffôn neu'r microSD"
+
+msgid "Web transfer turned off"
+msgstr "Trosglwyddo ar y we wedi'i ddiffodd"

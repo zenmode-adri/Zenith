@@ -15,6 +15,11 @@
 
 . /etc/profile
 
+# The system profile sets SDL_AUDIODRIVER=pipewire,pulseaudio, but ports may bundle an SDL2
+# older than 2.0.16 that does not understand a comma-separated driver list (and has no
+# PipeWire backend). Keep plain pulseaudio for ports, as before the global change.
+export SDL_AUDIODRIVER=pulseaudio
+
 directory="roms"
 controlfolder="/$directory/ports/PortMaster"
 ESUDO=""

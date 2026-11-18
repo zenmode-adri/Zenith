@@ -1,0 +1,2374 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: sk_SK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "POŠKODENÝ ZOZNAM HIER"
+
+msgid "Not available yet"
+msgstr "Zatiaľ nie je k dispozícii"
+
+msgid "Game lists updated"
+msgstr "Zoznamy hier aktualizované"
+
+msgid "COVERS ADDED"
+msgstr "OBALY PRIDANÉ"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "VÝKONNOSTNÝ REŽIM MÔŽE TÚTO HRU ZRÝCHLIŤ"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "TÁTO HRA MÔŽE BEŽAŤ LEPŠIE VO VÝKONNOSTNOM REŽIME"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "ZAPNÚŤ VÝKONNOSTNÝ REŽIM PRE TÚTO HRU"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "VÝKONNOSTNÝ REŽIM PRE TÚTO HRU ZAPNUTÝ"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Táto hra môže bežať lepšie vo výkonnostnom režime: GPU a pamäť bežia počas hrania naplno."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "NENAVRHOVAŤ VÝKONNOSTNÝ REŽIM"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Už nenavrhovať výkonnostný režim pre túto hru."
+
+msgid "BATTERY"
+msgstr "BATÉRIA"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "ZATIAĽ MÁLO ÚDAJOV"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Hrajte túto hru aspoň päť minút na batérii a odhad sa zobrazí tu."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Pri aktuálnom nabití, tempom posledných relácií tejto hry."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Pri aktuálnom nabití. Zatiaľ žiadne relácie tejto hry: použitý priemer jej systému."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Pri aktuálnom nabití. Zatiaľ žiadne relácie tohto systému: použitý priemer všetkých hier."
+
+msgid "Never"
+msgstr "Nikdy"
+
+msgid "What used the most"
+msgstr "Čo spotrebovalo najviac"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Od posledného plného nabitia. Odhad."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Zatiaľ nič nenameraného. Dopĺňa sa počas hrania."
+
+msgid "Asleep"
+msgstr "V režime spánku"
+
+msgid "Menus and system"
+msgstr "Ponuky a systém"
+
+msgid "Screen"
+msgstr "Obrazovka"
+
+msgid "Charging"
+msgstr "Nabíjanie"
+
+msgid "About"
+msgstr "Informácie"
+
+msgid "Since full"
+msgstr "Od plného nabitia"
+
+msgid "Using now"
+msgstr "Teraz spotrebúva"
+
+msgid "Last hours"
+msgstr "Posledné hodiny"
+
+msgid "Now"
+msgstr "Teraz"
+
+msgid "More settings"
+msgstr "Ďalšie nastavenia"
+
+msgid "Power saver"
+msgstr "Úspora energie"
+
+msgid "Screensaver after"
+msgstr "Šetrič obrazovky po"
+
+msgid "Turn on by itself at"
+msgstr "Zapnúť samo o"
+
+msgid "ADJUST"
+msgstr "UPRAVIŤ"
+
+msgid "Action"
+msgstr "Akčná"
+
+msgid "Adult"
+msgstr "Pre dospelých"
+
+msgid "Adventure"
+msgstr "Dobrodružná"
+
+msgid "Beat'em Up"
+msgstr "Bojovka (beat'em up)"
+
+msgid "Casino"
+msgstr "Kasíno"
+
+msgid "Casual Game"
+msgstr "Nenáročná hra"
+
+msgid "Hunting and Fishing"
+msgstr "Lov a rybolov"
+
+msgid "Fight"
+msgstr "Súboje"
+
+msgid "Race, Driving"
+msgstr "Preteky, šoférovanie"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Pinball"
+
+msgid "Playing cards"
+msgstr "Karty"
+
+msgid "Role playing games"
+msgstr "Hry na hrdinov"
+
+msgid "Asiatic board game"
+msgstr "Ázijská stolová hra"
+
+msgid "Educational"
+msgstr "Vzdelávacia"
+
+msgid "Music and Dance"
+msgstr "Hudba a tanec"
+
+msgid "Platform"
+msgstr "Plošinovka"
+
+msgid "Puzzle-Game"
+msgstr "Logická hra"
+
+msgid "Quiz"
+msgstr "Kvíz"
+
+msgid "Reflection"
+msgstr "Postreh"
+
+msgid "Shoot'em Up"
+msgstr "Strieľačka (shoot'em up)"
+
+msgid "Simulation"
+msgstr "Simulácia"
+
+msgid "Sports"
+msgstr "Športová"
+
+msgid "Sports with Animals"
+msgstr "Športy so zvieratami"
+
+msgid "Strategy"
+msgstr "Stratégia"
+
+msgid "Shooter"
+msgstr "Strieľačka"
+
+msgid "Not set"
+msgstr "Nenastavené"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "Po"
+
+msgctxt "date"
+msgid "Sun"
+msgstr "Ne"
+
+msgctxt "date"
+msgid "Tue"
+msgstr "Ut"
+
+msgctxt "date"
+msgid "Wed"
+msgstr "St"
+
+msgctxt "date"
+msgid "Fri"
+msgstr "Pi"
+
+msgctxt "date"
+msgid "Sat"
+msgstr "So"
+
+msgctxt "date"
+msgid "Thu"
+msgstr "Št"
+
+msgctxt "date"
+msgid "Apr"
+msgstr "apr"
+
+msgctxt "date"
+msgid "Feb"
+msgstr "feb"
+
+msgctxt "date"
+msgid "Jan"
+msgstr "jan"
+
+msgctxt "date"
+msgid "Jun"
+msgstr "jún"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "mar"
+
+msgctxt "date"
+msgid "May"
+msgstr "máj"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "aug"
+
+msgctxt "date"
+msgid "Dec"
+msgstr "dec"
+
+msgctxt "date"
+msgid "Jul"
+msgstr "júl"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "nov"
+
+msgctxt "date"
+msgid "Oct"
+msgstr "okt"
+
+msgctxt "date"
+msgid "Sep"
+msgstr "sep"
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "ÚDAJE HRY SA NEPODARILO ULOŽIŤ"
+
+msgid "Could not save the settings"
+msgstr "Nastavenia sa nepodarilo uložiť"
+
+msgid "FILTER BY"
+msgstr "FILTROVAŤ PODĽA"
+
+msgid "FAVORITES ONLY"
+msgstr "LEN OBĽÚBENÉ"
+
+msgid "LIST"
+msgstr "ZOZNAM"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Vybranú tému sa nepodarilo načítať: použitá Zenith"
+
+msgid "PAGE"
+msgstr "STRANA"
+
+msgid "Could not show this page"
+msgstr "Túto stránku sa nepodarilo zobraziť"
+
+msgid "INSTALLED"
+msgstr "NAINŠTALOVANÉ"
+
+msgid "SMART COLLECTIONS"
+msgstr "INTELIGENTNÉ KOLEKCIE"
+
+msgid "EDIT FILTERS"
+msgstr "UPRAVIŤ FILTRE"
+
+msgid "NO OPTIONS"
+msgstr "ŽIADNE MOŽNOSTI"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Naozaj chcete vymazať „%s“?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Filtre nastavíte potom vo Vlastných kolekciách hier."
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Na použitie zmien reštartujte frontend."
+
+msgid "Could not save the setting"
+msgstr "Nastavenie sa nepodarilo uložiť"
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "PRIRADIŤ OVLÁDAČE HRÁČOM"
+
+msgid "Could not start Bluetooth"
+msgstr "Bluetooth sa nepodarilo spustiť"
+
+msgid "Searching..."
+msgstr "Hľadanie..."
+
+msgid "CONTROLLERS"
+msgstr "OVLÁDAČE"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "VYMENIŤ TLAČIDLÁ POTVRDIŤ A ZRUŠIŤ"
+
+msgid "ENABLE RUMBLE"
+msgstr "ZAPNÚŤ VIBRÁCIE"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "AUTOMATICKY NASTAVIŤ KLÁVESOVÉ SKRATKY RETROARCH"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "PRIPOJENÉ OVLÁDAČE"
+
+msgid "Not configured"
+msgstr "Nenastavený"
+
+msgid "Unknown controller"
+msgstr "Neznámy ovládač"
+
+msgid "PAIRED"
+msgstr "SPÁROVANÉ"
+
+msgid "Could not pair"
+msgstr "Spárovanie sa nepodarilo"
+
+msgid "Connected"
+msgstr "Pripojené"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Odstrániť všetky zariadenia Bluetooth?"
+
+msgid "Could not disconnect"
+msgstr "Odpojenie sa nepodarilo"
+
+msgid "Could not connect"
+msgstr "Pripojenie sa nepodarilo"
+
+msgid "Could not remove"
+msgstr "Odstránenie sa nepodarilo"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "TLAČIDLO A / VÝCHOD"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "TLAČIDLO B / JUH"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "TLAČIDLO X / SEVER"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "TLAČIDLO Y / ZÁPAD"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "ĽAVÁ PÁČKA"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "PRAVÁ PÁČKA"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "AKTIVÁCIA HOTKEY"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "VSTAVANÝ OVLÁDAČ"
+
+msgid "GAMEPAD DETECTED"
+msgstr "ZISTENÝ GAMEPAD"
+
+msgid "GAMEPADS DETECTED"
+msgstr "ZISTENÉ GAMEPADY"
+
+msgid "PRESS B TO CANCEL."
+msgstr "ZRUŠÍTE STLAČENÍM B."
+
+msgid "Could not save the controller configuration"
+msgstr "Konfiguráciu ovládača sa nepodarilo uložiť"
+
+msgid "Controller configuration saved"
+msgstr "Konfigurácia ovládača uložená"
+
+msgid "Controller configuration cancelled"
+msgstr "Konfigurácia ovládača zrušená"
+
+msgid "Controller disconnected"
+msgstr "Ovládač odpojený"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "NA ZRUŠENIE DRŽTE ĎALEJ"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "NA ZRUŠENIE DRŽTE ĽUBOVOĽNÉ TLAČIDLO 3 SEKUNDY."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "NA PRESKOČENIE DRŽTE ĽUBOVOĽNÉ TLAČIDLO. NA ZRUŠENIE DRŽTE ĎALEJ."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "VŠETKY TLAČIDLÁ HOTOVÉ"
+
+msgid "set"
+msgstr "nastavené"
+
+msgid "skipped"
+msgstr "preskočené"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "NIE JE PRIRADENÉ TLAČIDLO HOTKEY. JE POTREBNÉ NA UKONČENIE HIER OVLÁDAČOM."
+
+msgid "DATE & TIME"
+msgstr "DÁTUM A ČAS"
+
+msgid "MONTH"
+msgstr "MESIAC"
+
+msgid "DAY"
+msgstr "DEŇ"
+
+msgid "HOUR"
+msgstr "HODINA"
+
+msgid "MINUTE"
+msgstr "MINÚTA"
+
+msgid "SET DATE & TIME"
+msgstr "NASTAVIŤ DÁTUM A ČAS"
+
+msgid "Date and time set"
+msgstr "Dátum a čas nastavené"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "S Wi-Fi sa čas nastaví automaticky."
+
+msgid "That folder is protected"
+msgstr "Tento priečinok je chránený"
+
+msgid "Outside the allowed folders"
+msgstr "Mimo povolených priečinkov"
+
+msgid "Not enough free space"
+msgstr "Nedostatok voľného miesta"
+
+msgid "That name already exists"
+msgstr "Tento názov už existuje"
+
+msgid "Cancelled"
+msgstr "Zrušené"
+
+msgid "A folder cannot go into itself"
+msgstr "Priečinok nemožno vložiť do seba samého"
+
+msgid "That name is not valid"
+msgstr "Tento názov nie je platný"
+
+msgid "Not found"
+msgstr "Nenájdené"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Súbor väčší ako 4 GB: táto karta ho nepojme"
+
+msgid "This card does not accept that name"
+msgstr "Táto karta tento názov neprijíma"
+
+msgid "This location is read-only"
+msgstr "Toto umiestnenie je iba na čítanie"
+
+msgid "An error occurred"
+msgstr "Nastala chyba"
+
+msgid "%s of %s done"
+msgstr "%s z %s hotovo"
+
+msgid "item"
+msgstr "položka"
+
+msgid "items"
+msgstr "položiek"
+
+msgid "link skipped"
+msgstr "odkaz preskočený"
+
+msgid "links skipped"
+msgstr "odkazy preskočené"
+
+msgid "This can't be undone."
+msgstr "Toto sa nedá vrátiť späť."
+
+msgid "Files"
+msgstr "Súbory"
+
+msgid "selected"
+msgstr "vybrané"
+
+msgid "Cannot read this folder"
+msgstr "Tento priečinok sa nedá prečítať"
+
+msgid "This folder is empty"
+msgstr "Tento priečinok je prázdny"
+
+msgid "free"
+msgstr "voľné"
+
+msgid "File"
+msgstr "Súbor"
+
+msgid "Folder"
+msgstr "Priečinok"
+
+msgid "Link"
+msgstr "Odkaz"
+
+msgid "Properties"
+msgstr "Vlastnosti"
+
+msgid "Copy"
+msgstr "Kopírovať"
+
+msgid "Move"
+msgstr "Presunúť"
+
+msgid "Paste here"
+msgstr "Vložiť sem"
+
+msgid "Rename"
+msgstr "Premenovať"
+
+msgid "New folder"
+msgstr "Nový priečinok"
+
+msgid "Delete"
+msgstr "Vymazať"
+
+msgid "Select all"
+msgstr "Vybrať všetko"
+
+msgid "Clear selection"
+msgstr "Zrušiť výber"
+
+msgid "Date"
+msgstr "Dátum"
+
+msgid "Size"
+msgstr "Veľkosť"
+
+msgid "Sort by"
+msgstr "Zoradiť podľa"
+
+msgid "Hide hidden files"
+msgstr "Skryť skryté súbory"
+
+msgid "Show hidden files"
+msgstr "Zobraziť skryté súbory"
+
+msgid "Actions"
+msgstr "Akcie"
+
+msgid "Home"
+msgstr "Domov"
+
+msgid "Games"
+msgstr "Hry"
+
+msgid "Game card"
+msgstr "Karta s hrami"
+
+msgid "USB drive"
+msgstr "Disk USB"
+
+msgid "Screenshots"
+msgstr "Snímky obrazovky"
+
+msgid "Go to"
+msgstr "Prejsť na"
+
+msgid "Ready to copy"
+msgstr "Pripravené na kopírovanie"
+
+msgid "Ready to move"
+msgstr "Pripravené na presun"
+
+msgid "Warning"
+msgstr "Upozornenie"
+
+msgid "Cancel"
+msgstr "Zrušiť"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Toto je systémový súbor. Jeho premenovaním môžete konzolu poškodiť."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Toto je systémový súbor. Jeho vymazaním môžete konzolu poškodiť."
+
+msgid "Wait for the other job"
+msgstr "Počkajte na dokončenie druhej úlohy"
+
+msgid "Copied"
+msgstr "Skopírované"
+
+msgid "Deleted"
+msgstr "Vymazané"
+
+msgid "Moved"
+msgstr "Presunuté"
+
+msgid "originals kept"
+msgstr "originály zachované"
+
+msgid "Copying"
+msgstr "Kopírovanie"
+
+msgid "Deleting"
+msgstr "Mazanie"
+
+msgid "Moving"
+msgstr "Presúvanie"
+
+msgid "Calculating..."
+msgstr "Počítanie..."
+
+msgid "Back"
+msgstr "Späť"
+
+msgid "Close"
+msgstr "Zatvoriť"
+
+msgid "Mark"
+msgstr "Označiť"
+
+msgid "Open"
+msgstr "Otvoriť"
+
+msgid "Page"
+msgstr "Strana"
+
+msgid "WHILE PLAYING"
+msgstr "POČAS HRY"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "PRI ŠTARTE POKRAČOVAŤ POSLEDNOU HROU"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Pri spustení zapne vašu poslednú hru z jej automatického uloženia. B zruší."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "DOMOVSKÁ PONUKA POČAS HIER"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Experimentálne. Podržte START a zvolené horné tlačidlo na jednu sekundu počas hry, aby ste ju pozastavili a otvorili panel s batériou, jasom, hlasitosťou, POKRAČOVAŤ a UKONČIŤ HRU (ULOŽIŤ STAV a NAČÍTAŤ STAV iba so zapnutými sieťovými príkazmi RetroArch)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "TLAČIDLÁ DOMOVSKEJ PONUKY"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Tlačidlá držané so STARTOM na otvorenie domovskej ponuky. Kombinácie so SELECT používa RetroArch."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "NÁVRHY VÝKONU"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Navrhne výkonnostný režim pri hrách, ktoré regulátor GPU brzdí."
+
+msgid "PLAY TIME LIMIT"
+msgstr "LIMIT ČASU HRANIA"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Čas hrania na každý deň. Správa príde 5 minút pred koncom (v hre iba so zapnutými sieťovými príkazmi RetroArch) a potom sa hra zavrie. Čas sa počíta od zapnutia tejto voľby."
+
+msgid "SAVED GAMES"
+msgstr "ULOŽENÉ HRY"
+
+msgid "PICTURE AND CONTROL"
+msgstr "OBRAZ A OVLÁDANIE"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "STREAMOVANIE HIER MOONLIGHT"
+
+msgid "MORE"
+msgstr "VIAC"
+
+msgid "PLAY STATISTICS"
+msgstr "ŠTATISTIKY HRANIA"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "MOŽNOSTI PRE SYSTÉM"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "výkonnostný režim"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU a pamäť naplno počas hrania"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "NEZNÁMY SYSTÉM"
+
+msgid "EMULATOR"
+msgstr "EMULÁTOR"
+
+msgid "The emulator and core that run this."
+msgstr "Emulátor a jadro, ktoré to spúšťa."
+
+msgid "SYSTEM OPTIONS"
+msgstr "MOŽNOSTI SYSTÉMU"
+
+msgid "DISPLAY"
+msgstr "ZOBRAZENIE"
+
+msgid "GAMEPLAY"
+msgstr "HRANIE"
+
+msgid "ACTIONS"
+msgstr "AKCIE"
+
+msgid "RANDOM GAME"
+msgstr "NÁHODNÁ HRA"
+
+msgid "COOLING PROFILE"
+msgstr "PROFIL CHLADENIA"
+
+msgid "AGGRESSIVE"
+msgstr "AGRESÍVNY"
+
+msgid "MODERATE"
+msgstr "MIERNY"
+
+msgid "QUIET"
+msgstr "TICHÝ"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "REGULÁTOR TAKTU CPU"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "REGULÁTOR TAKTU GPU"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "PREKRYTIE MANGOHUD"
+
+msgid "UNKNOWN GAME"
+msgstr "NEZNÁMA HRA"
+
+msgid "INVALID DATE"
+msgstr "NEPLATNÝ DÁTUM"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "HRU SA NEPODARILO VYMAZAŤ"
+
+msgid "CONFIG"
+msgstr "KONFIGURÁCIA"
+
+msgid "CORE PROVIDED"
+msgstr "POSKYTUJE JADRO"
+
+msgid "FULL"
+msgstr "PLNÝ"
+
+msgid "SQUARE PIXEL"
+msgstr "ŠTVORCOVÝ PIXEL"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "ÚPRAVA PANELU"
+
+msgid "SCREEN & SOUND"
+msgstr "OBRAZ A ZVUK"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "POKOJ"
+
+msgid "MONITORING"
+msgstr "MONITOROVANIE"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "PRETAKTOVANIE A MONITOROVANIE"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "BATÉRIA A VÝKON"
+
+msgid "LIBRARY"
+msgstr "KNIŽNICA"
+
+msgid "CHECK LIBRARY"
+msgstr "SKONTROLOVAŤ KNIŽNICU"
+
+msgid "SAVE BACKUPS"
+msgstr "ZÁLOHY ULOŽENÝCH HIER"
+
+msgid "LANGUAGE & TIME"
+msgstr "JAZYK A ČAS"
+
+msgid "HOME MENU"
+msgstr "DOMOVSKÁ PONUKA"
+
+msgid "CHARGING"
+msgstr "NABÍJANIE"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "JAS OBRAZOVKY"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "PREPÍSAŤ ULOŽENÝ STAV?"
+
+msgid "LOAD STATE"
+msgstr "NAČÍTAŤ STAV"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "NAČÍTAŤ ULOŽENÝ STAV? NEULOŽENÝ POSTUP BUDE STRATENÝ."
+
+msgid "RESUME"
+msgstr "POKRAČOVAŤ"
+
+msgid "QUIT GAME"
+msgstr "UKONČIŤ HRU"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "NAOZAJ UKONČIŤ HRU?"
+
+msgid "AND MORE"
+msgstr "A ĎALŠIE"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "ŽIADNE PROBLÉMY NENÁJDENÉ"
+
+msgid "PROBLEMS FOUND"
+msgstr "NÁJDENÉ PROBLÉMY"
+
+msgid "MISSING BIOS"
+msgstr "CHÝBAJÚCE BIOS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "POTENCIÁLNE POŠKODENÉ SÚBORY"
+
+msgid "DUPLICATES"
+msgstr "DUPLIKÁTY"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "HRY BEZ OBRÁZKA"
+
+msgid "NETWORK"
+msgstr "SIEŤ"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "OVLÁDAČ A BLUETOOTH"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Iba pre vývoj: každý widget menu frameworku."
+
+msgid "WIDGET DEMO"
+msgstr "UKÁŽKA WIDGETOV"
+
+msgid "Unable to connect to server"
+msgstr "Nedá sa pripojiť k serveru"
+
+msgid "Succesfully paired with server"
+msgstr "Úspešne spárované so serverom"
+
+msgid "QUIT CURRENT GAME"
+msgstr "UKONČIŤ AKTUÁLNU HRU"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "AKTUALIZOVAŤ HRY MOONLIGHT"
+
+msgid "PAIR WITH SERVER"
+msgstr "SPÁROVAŤ SO SERVEROM"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "ZRUŠIŤ SPÁROVANIE SO SERVEROM"
+
+msgid "Unpaired and settings cleared"
+msgstr "Spárovanie zrušené a nastavenia vymazané"
+
+msgid "Unpaired from server"
+msgstr "Spárovanie so serverom zrušené"
+
+msgid "SERVER IP"
+msgstr "IP SERVERA"
+
+msgid "PAIRING PIN"
+msgstr "PIN PÁROVANIA"
+
+msgid "HOST"
+msgstr "HOSTITEĽ"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "PRIPOJIŤ SA K HRE NETPLAY"
+
+msgid "NETPLAY NICKNAME"
+msgstr "PREZÝVKA NETPLAY"
+
+msgid "NETPLAY HOST"
+msgstr "HOSTITEĽ NETPLAY"
+
+msgid "NETPLAY PORT"
+msgstr "PORT NETPLAY"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Zapínanie Wi-Fi..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Chyba konfigurácie Wi-Fi"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi je zapnutá"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi je vypnutá"
+
+msgid "Wi-Fi region updated"
+msgstr "Región Wi-Fi aktualizovaný"
+
+msgid "Please wait..."
+msgstr "Prosím, čakajte..."
+
+msgid "Local play mode updated"
+msgstr "Režim miestnej hry aktualizovaný"
+
+msgid "The service did not answer"
+msgstr "Služba neodpovedala"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "SIETE WI-FI"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Nastavuje rádiové predpisy: kanály, ktoré smiete používať."
+
+msgid "TRANSFER FILES"
+msgstr "PRENOS SÚBOROV"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Posielajte hry do konzoly z telefónu alebo počítača v tejto sieti."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "DOSTUPNÉ ADRESY IP:"
+
+msgid "LOCAL PLAY"
+msgstr "MIESTNA HRA"
+
+msgid "LOCAL PLAY MODE"
+msgstr "REŽIM MIESTNEJ HRY"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Vytvorí prístupový bod pre netplay s ďalšími konzolami."
+
+msgid "1 (HOST)"
+msgstr "1 (HOSTITEĽ)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (KLIENT 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (KLIENT 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (KLIENT 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ID MIESTNEJ HRY"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, cloud, VPN a názov konzoly."
+
+msgid "NETWORK SERVICES"
+msgstr "SIEŤOVÉ SLUŽBY"
+
+msgid "ENABLE SSH"
+msgstr "ZAPNÚŤ SSH"
+
+msgid "SSH is off"
+msgstr "SSH je vypnuté"
+
+msgid "SSH is on"
+msgstr "SSH je zapnuté"
+
+msgid "Remote access to the console over the network."
+msgstr "Vzdialený prístup ku konzole cez sieť."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "ZAPNÚŤ JEDNODUCHÝ SERVER HTTP"
+
+msgid "HTTP server is off"
+msgstr "Server HTTP je vypnutý"
+
+msgid "HTTP server is on"
+msgstr "Server HTTP je zapnutý"
+
+msgid "FILE TRANSFER"
+msgstr "PRENOS SÚBOROV"
+
+msgid "USB GADGET FUNCTION"
+msgstr "FUNKCIA USB GADGET"
+
+msgid "USB networking is on. The console is at"
+msgstr "Sieť cez USB je zapnutá. Konzola je na adrese"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Čo konzola ponúka na svojom porte USB-C."
+
+msgid "CLOUD SERVICES"
+msgstr "SLUŽBY CLOUDU"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "PRIPOJIŤ DISK CLOUDU"
+
+msgid "Cloud drive mounted"
+msgstr "Disk cloudu pripojený"
+
+msgid "Cloud drive unmounted"
+msgstr "Disk cloudu odpojený"
+
+msgid "VPN SERVICES"
+msgstr "SLUŽBY VPN"
+
+msgid "WIREGUARD VPN"
+msgstr "VPN WIREGUARD"
+
+msgid "WireGuard is off"
+msgstr "WireGuard je vypnutý"
+
+msgid "WireGuard is on"
+msgstr "WireGuard je zapnutý"
+
+msgid "TAILSCALE VPN"
+msgstr "VPN TAILSCALE"
+
+msgid "Tailscale is off"
+msgstr "Tailscale je vypnutý"
+
+msgid "Tailscale is on"
+msgstr "Tailscale je zapnutý"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale sa nepodarilo pripojiť"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale vyžaduje prihlásenie"
+
+msgid "SHOW LINK"
+msgstr "ZOBRAZIŤ ODKAZ"
+
+msgid "TAILSCALE LOGIN"
+msgstr "PRIHLÁSENIE DO TAILSCALE"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "ZNOVU OVERIŤ TAILSCALE:"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Používajte iba písmená, číslice a pomlčky"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Názov hostiteľa uložený. Použije sa pri ďalšom štarte"
+
+msgid "The new name is used at the next boot."
+msgstr "Nový názov sa použije pri ďalšom štarte."
+
+msgid "WEB FILE TRANSFER"
+msgstr "WEBOVÝ PRENOS SÚBOROV"
+
+msgid "Could not start the web transfer"
+msgstr "Webový prenos sa nepodarilo spustiť"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Umožní telefónu alebo počítaču v tejto sieti posielať hry do konzoly."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "NEPODARILO SA SPUSTIŤ (PORT OBSADENÝ?)"
+
+msgid "WEB ADDRESS"
+msgstr "WEBOVÁ ADRESA"
+
+msgid "WEB PIN"
+msgstr "WEBOVÝ PIN"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "SIEŤOVÝ DISK (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "ZAPNÚŤ SAMBU"
+
+msgid "Samba is off"
+msgstr "Samba je vypnutá"
+
+msgid "Samba is on"
+msgstr "Samba je zapnutá"
+
+msgid "Shares the games folder with other computers."
+msgstr "Zdieľa priečinok s hrami s ostatnými počítačmi."
+
+msgid "SAMBA ADDRESS"
+msgstr "ADRESA SAMBY"
+
+msgid "SAMBA USER"
+msgstr "POUŽÍVATEĽ SAMBY"
+
+msgid "SAMBA PASSWORD"
+msgstr "HESLO SAMBY"
+
+msgid "Connecting to"
+msgstr "Pripájanie k"
+
+msgid "Connected successfully"
+msgstr "Úspešne pripojené"
+
+msgid "Failed to connect"
+msgstr "Pripojenie sa nepodarilo"
+
+msgid "SAVED"
+msgstr "ULOŽENÁ"
+
+msgid "ENTERPRISE"
+msgstr "ENTERPRISE"
+
+msgid "SECURED"
+msgstr "ZABEZPEČENÁ"
+
+msgid "Enterprise networks are not supported"
+msgstr "Siete Enterprise nie sú podporované"
+
+msgid "Network forgotten"
+msgstr "Sieť zabudnutá"
+
+msgid "WI-FI KEY FOR "
+msgstr "KĽÚČ WI-FI PRE "
+
+msgid "CONNECTING..."
+msgstr "PRIPÁJANIE..."
+
+msgid "WI-FI SSID"
+msgstr "SSID WI-FI"
+
+msgid "WI-FI KEY"
+msgstr "KĽÚČ WI-FI"
+
+msgid "REALLY SUSPEND ?"
+msgstr "NAOZAJ USPAŤ?"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "NAOZAJ VYPNÚŤ?"
+
+msgid "REALLY RESTART?"
+msgstr "NAOZAJ REŠTARTOVAŤ?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "NAOZAJ REŠTARTOVAŤ FRONTEND?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "REŠTARTOVAŤ FRONTEND"
+
+msgid "TEST ACCOUNT"
+msgstr "OTESTOVAŤ ÚČET"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Overí používateľské meno a heslo na retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "PRIPÁJANIE K RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "PRIHLÁSENÝ"
+
+msgid "LED NOTIFICATIONS"
+msgstr "OZNÁMENIA LED"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Zobraziť riadok RetroAchievements v hlavnej ponuke."
+
+msgid "NO SAVES FOUND"
+msgstr "ŽIADNE ULOŽENÉ HRY NENÁJDENÉ"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "NEDOSTATOK VOĽNÉHO MIESTA"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "ZÁLOHA Z TEJTO MINÚTY UŽ EXISTUJE"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "ZÁLOHA JE POŠKODENÁ ALEBO CHÝBA"
+
+msgid "BACKUP DONE"
+msgstr "ZÁLOHA HOTOVÁ"
+
+msgid "SAVES RESTORED"
+msgstr "ULOŽENÉ HRY OBNOVENÉ"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "ZÁLOHA DO CLOUDU HOTOVÁ"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "ZÁLOHA DO CLOUDU SA NEPODARILA"
+
+msgid "BEFORE A RESTORE"
+msgstr "PRED OBNOVENÍM"
+
+msgid "BACK UP SAVES NOW"
+msgstr "ZÁLOHOVAŤ ULOŽENÉ HRY TERAZ"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "SAVEGAMY, SAVESTATY A ULOŽENÉ HRY PSP, BEZ ROMIEK A MÉDIÍ"
+
+msgid "CLOUD BACKUP"
+msgstr "ZÁLOHA DO CLOUDU"
+
+msgid "BACKUPS"
+msgstr "ZÁLOHY"
+
+msgid "NO BACKUPS YET"
+msgstr "ZATIAĽ ŽIADNE ZÁLOHY"
+
+msgid "BACKUP DELETED"
+msgstr "ZÁLOHA VYMAZANÁ"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "TÝMTO SA VAŠE AKTUÁLNE ULOŽENÉ HRY NAHRADIA TÝMI Z %s. NAJPRV SA VYTVORÍ ZÁLOHA AKTUÁLNYCH ULOŽENÝCH HIER."
+
+msgid "RESTORE"
+msgstr "OBNOVIŤ"
+
+msgid "DELETE BACKUP"
+msgstr "VYMAZAŤ ZÁLOHU"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "VYMAZAŤ TÚTO ZÁLOHU?"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "TÁTO VERZIA SA NEMÔŽE SPOJIŤ SO SCREENSCRAPER"
+
+msgid "ALL GAMES"
+msgstr "VŠETKY HRY"
+
+msgid "GAMES TO SCRAPE"
+msgstr "HRY NA STIAHNUTIE ÚDAJOV"
+
+msgid "WITH MISSING MEDIA"
+msgstr "S CHÝBAJÚCIMI MÉDIAMI"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "BEZ AKÝCHKOĽVEK MÉDIÍ"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Ktoré hry vybraných systémov sa vyhľadávajú."
+
+msgid "1 DAY"
+msgstr "1 DEŇ"
+
+msgid "1 MONTH"
+msgstr "1 MESIAC"
+
+msgid "1 WEEK"
+msgstr "1 TÝŽDEŇ"
+
+msgid "1 YEAR"
+msgstr "1 ROK"
+
+msgid "15 DAYS"
+msgstr "15 DNÍ"
+
+msgid "3 MONTHS"
+msgstr "3 MESIACE"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Hry stiahnuté v tomto čase sa preskočia, čím sa šetria požiadavky."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "AUTOMATICKY SŤAHOVAŤ CHÝBAJÚCE MÉDIÁ"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Sťahuje chýbajúce obaly na pozadí, keď je konzola nečinná."
+
+msgid "SCRAPER SETTINGS"
+msgstr "NASTAVENIA VYHĽADÁVAČA"
+
+msgid "ACCOUNT"
+msgstr "ÚČET"
+
+msgid "Choose at least one system."
+msgstr "Vyberte aspoň jeden systém."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Vyhľadá hry na ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "ŽIADNY SYSTÉM S HRAMI, KTORÉ SCREENSCRAPER POZNÁ"
+
+msgid "PICTURES"
+msgstr "OBRÁZKY"
+
+msgid "IMAGE"
+msgstr "OBRÁZOK"
+
+msgid "BOX FRONT"
+msgstr "PREDNÁ STRANA OBALU"
+
+msgid "TITLE SCREEN"
+msgstr "ÚVODNÁ OBRAZOVKA"
+
+msgid "The main picture of each game."
+msgstr "Hlavný obrázok každej hry."
+
+msgid "THUMBNAIL"
+msgstr "NÁHĽAD"
+
+msgid "The small picture of each game."
+msgstr "Malý obrázok každej hry."
+
+msgid "LOGO"
+msgstr "LOGO"
+
+msgid "The logo of each game."
+msgstr "Logo každej hry."
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "PLNÁ VEĽKOSŤ"
+
+msgid "IMAGE SIZE"
+msgstr "VEĽKOSŤ OBRÁZKA"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper obrázky pred odoslaním zmenšuje: rýchlejšie a ľahšie."
+
+msgid "AUTOMATIC"
+msgstr "AUTOMATICKY"
+
+msgid "BRAZIL"
+msgstr "BRAZÍLIA"
+
+msgid "EUROPE"
+msgstr "EURÓPA"
+
+msgid "FRANCE"
+msgstr "FRANCÚZSKO"
+
+msgid "GERMANY"
+msgstr "NEMECKO"
+
+msgid "ITALY"
+msgstr "TALIANSKO"
+
+msgid "JAPAN"
+msgstr "JAPONSKO"
+
+msgid "SPAIN"
+msgstr "ŠPANIELSKO"
+
+msgid "USA"
+msgstr "USA"
+
+msgid "WORLD"
+msgstr "SVET"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Preferovaný región názvov, dátumov a obrázkov."
+
+msgid "NAMES"
+msgstr "NÁZVY"
+
+msgid "Replace the names of the games."
+msgstr "Nahradiť názvy hier."
+
+msgid "DESCRIPTIONS"
+msgstr "POPISY"
+
+msgid "Replace the descriptions."
+msgstr "Nahradiť popisy."
+
+msgid "Download the rating of each game."
+msgstr "Stiahnuť hodnotenie každej hry."
+
+msgid "RATINGS"
+msgstr "HODNOTENIA"
+
+msgid "EXTRA MEDIA"
+msgstr "ĎALŠIE MÉDIÁ"
+
+msgid "VIDEOS"
+msgstr "VIDEÁ"
+
+msgid "Videos are big and take longer to download."
+msgstr "Videá sú veľké a sťahujú sa dlhšie."
+
+msgid "MANUALS"
+msgstr "NÁVODY"
+
+msgid "PDF manuals."
+msgstr "Návody v PDF."
+
+msgid "MAPS"
+msgstr "MAPY"
+
+msgid "Maps of the game."
+msgstr "Mapy hry."
+
+msgid "Background pictures."
+msgstr "Obrázky pozadia."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "ZADNÁ STRANA OBALU"
+
+msgid "The back of the box."
+msgstr "Zadná strana obalu."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Len pre „Všetky hry“: už existujúce obrázky sa stiahnu znova."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "NAHRADIŤ EXISTUJÚCE MÉDIÁ"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Voliteľné. Bez účtu ScreenScraper povoľuje veľmi málo požiadaviek."
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB účet nepotrebuje."
+
+msgid "Asks IGDB for an access token."
+msgstr "Vyžiada si od IGDB prístupový token."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Opýta sa ScreenScraper na vaše limity."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "PRIPÁJANIE KU SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "ANONYMNE"
+
+msgid "LOGIN"
+msgstr "PRIHLÁSENIE"
+
+msgid "REQUESTS TODAY"
+msgstr "POŽIADAVKY DNES"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "POŽIADAVKY ZA MINÚTU"
+
+msgid "STOP"
+msgstr "ZASTAVIŤ"
+
+msgid "SCROLL"
+msgstr "POSUN"
+
+msgid "SCRAPE COMPLETE"
+msgstr "SŤAHOVANIE DOKONČENÉ"
+
+msgid "SCRAPE STOPPED"
+msgstr "SŤAHOVANIE ZASTAVENÉ"
+
+msgid "FOUND"
+msgstr "NÁJDENÉ"
+
+msgid "NOT FOUND"
+msgstr "NENÁJDENÉ"
+
+msgid "ERRORS"
+msgstr "CHYBY"
+
+msgid "MEDIA FILES"
+msgstr "SÚBORY MÉDIÍ"
+
+msgid "READING GAME LISTS"
+msgstr "ČÍTANIE ZOZNAMOV HIER"
+
+msgid "STOPPING"
+msgstr "ZASTAVOVANIE"
+
+msgid "SECONDS"
+msgstr "SEKUNDY"
+
+msgid "WAITING"
+msgstr "ČAKANIE"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "ZASTAVENÉ. ČO BOLO HOTOVÉ, JE ULOŽENÉ"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "ŽIADNE HRY NA STIAHNUTIE S TÝMITO FILTRAMI"
+
+msgid "GAMES"
+msgstr "HRY"
+
+msgid "PROBLEMS"
+msgstr "PROBLÉMY"
+
+msgid "MEDIA MISSING"
+msgstr "CHÝBAJÚCE MÉDIÁ"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "PREPÍNAČE A POSUVNÍKY"
+
+msgid "The clock shows in the top right corner."
+msgstr "Hodiny sa zobrazujú v pravom hornom rohu."
+
+msgid "Volume saved"
+msgstr "Hlasitosť uložená"
+
+msgid "LISTS AND TEXT"
+msgstr "ZOZNAMY A TEXT"
+
+msgid "TEXT"
+msgstr "TEXT"
+
+msgid "WI-FI PASSWORD"
+msgstr "HESLO WI-FI"
+
+msgid "SHOW A TOAST"
+msgstr "ZOBRAZIŤ OZNÁMENIE"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi pripojená: Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "ZOBRAZIŤ LIŠTU HLASITOSTI"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "ZOBRAZIŤ LIŠTU JASU"
+
+msgid "ASK A QUESTION"
+msgstr "POLOŽIŤ OTÁZKU"
+
+msgid "Delete all saved states of this game?"
+msgstr "Vymazať všetky uložené stavy tejto hry?"
+
+msgid "SHOW A MESSAGE"
+msgstr "ZOBRAZIŤ SPRÁVU"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "Aktualizácia bola nainštalovaná. Reštartujte konzolu, aby ste ju použili."
+
+msgid "Restart the system now?"
+msgstr "Reštartovať systém teraz?"
+
+msgid "Restarting..."
+msgstr "Reštartovanie..."
+
+msgid "DISABLED ENTRY"
+msgstr "ZAKÁZANÁ POLOŽKA"
+
+msgid "SELECTOR STYLE"
+msgstr "ŠTÝL VÝBERU"
+
+msgid "TITLE ALIGNMENT"
+msgstr "ZAROVNANIE NÁZVU"
+
+msgid "LIST TEXT CASE"
+msgstr "VEĽKOSŤ PÍSMEN V ZOZNAME"
+
+msgid "TEXT SIZE"
+msgstr "VEĽKOSŤ TEXTU"
+
+msgid "HIGH CONTRAST"
+msgstr "VYSOKÝ KONTRAST"
+
+msgid "options"
+msgstr "možnosti"
+
+msgid "AUDIO"
+msgstr "ZVUK"
+
+msgid "Could not change the audio output"
+msgstr "Zvukový výstup sa nepodarilo zmeniť"
+
+msgid "BATTERY WARNING"
+msgstr "UPOZORNENIE NA BATÉRIU"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "ZAPNÚŤ ZVUKOVÉ UPOZORNENIE NA BATÉRIU"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "PRAH UPOZORNENIA NA BATÉRIU"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Spustí túto hru pri štarte konzoly, pred ponukou, raz za spustenie."
+
+msgid "Reboot now"
+msgstr "Reštartovať teraz"
+
+msgid "Later"
+msgstr "Neskôr"
+
+msgid "Default"
+msgstr "Predvolené"
+
+msgid "Arm (official)"
+msgstr "Arm (oficiálne)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Open source (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "DNES ZOSTÁVA"
+
+msgid "UPTIME"
+msgstr "DOBA PREVÁDZKY"
+
+msgid "No information available"
+msgstr "Informácie nie sú k dispozícii"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "SPRÁVA SYSTÉMU A RESET"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr "STE SI ISTÍ?\n\nTOTO SA NEDÁ VRÁTIŤ SPÄŤ."
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "ZÁLOHA KONFIGURÁCIE"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr "POZOR, TÝMTO SA REŠTARTUJE FRONTEND!\n\nPO DOKONČENÍ SKRIPTU NEZABUDNITE SKOPÍROVAŤ SÚBOR /storage/roms/backup/ROCKNIX_BACKUP.zip NA BEZPEČNÉ MIESTO, INAK SA PRI ĎALŠOM REŠTARTE VYMAŽE!\n\nZÁLOHOVAŤ AKTUÁLNU KONFIGURÁCIU A REŠTARTOVAŤ?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "OBNOVIŤ ZO ZÁLOHY"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr "POZOR, TÝMTO SA ZARIADENIE REŠTARTUJE!\n\nEXISTUJÚCA KONFIGURÁCIA BUDE PREPÍSANÁ!\n\nOBNOVIŤ ZO ZÁLOHY A REŠTARTOVAŤ?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "SPRÁVA EMULÁTOROV"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "OBNOVIŤ PREDVOLENÚ KONFIGURÁCIU RETROARCH"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr "POZOR: KONFIGURÁCIA RETROARCH SA OBNOVÍ NA PREDVOLENÚ\n\nKONFIGURÁCIE JEDNOTLIVÝCH JADIER ZOSTANÚ BEZ ZMENY A ZÁLOHA SA NEVYTVORÍ!\n\nOBNOVIŤ PREDVOLENÚ KONFIGURÁCIU RETROARCH?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "RESETOVAŤ OVERLAYE (JADRÁ, CHEATY, OVLÁDAČE ATĎ.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr "POZOR: VŠETKY VLASTNÉ OVERLAYE RETROARCH BUDÚ ODSTRÁNENÉ\n\nVLASTNÉ JADRÁ, JOYSTICKY, CHEATY ATĎ. ZÁLOHA SA NEVYTVORÍ!\n\nOBNOVIŤ PREDVOLENÉ OVERLAYE RETROARCH?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "ÚPLNÝ RESET RETROARCH"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr "POZOR: RETROARCH A VŠETKY POUŽÍVATEĽOM ULOŽENÉ KONFIGURÁCIE SA OBNOVIA NA PREDVOLENÉ\n\nKONFIGURÁCIE JEDNOTLIVÝCH JADIER BUDÚ ODSTRÁNENÉ A ZÁLOHA SA NEVYTVORÍ!\n\nRESETOVAŤ RETROARCH?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "OBNOVIŤ PREDVOLENÚ KONFIGURÁCIU MEDNAFEN"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr "POZOR: KONFIGURÁCIA MEDNAFEN SA OBNOVÍ NA PREDVOLENÚ\n\nZÁLOHA SA NEVYTVORÍ!\n\nOBNOVIŤ PREDVOLENÚ KONFIGURÁCIU MEDNAFEN?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "OBNOVIŤ PREDVOLENÉ KONFIGURÁCIE SAMOSTATNÝCH EMULÁTOROV"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr "POZOR: KONFIGURÁCIE SAMOSTATNÝCH EMULÁTOROV SA OBNOVIA NA PREDVOLENÉ\n\nZÁLOHA SA NEVYTVORÍ!\n\nOBNOVIŤ PREDVOLENÉ KONFIGURÁCIE SAMOSTATNÝCH EMULÁTOROV?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "ÚPLNÝ RESET PORTMASTER"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr "POZOR: PORTMASTER SA OBNOVÍ NA PREDVOLENÝ\n\nZÁLOHA SA NEVYTVORÍ!\n\nRESETOVAŤ PORTMASTER?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "SPRÁVA SYSTÉMU"
+
+msgid "AUDIO RESET"
+msgstr "RESET ZVUKU"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr "POZOR: NASTAVENIA ZVUKU SA OBNOVIA NA PREDVOLENÉ A SYSTÉM SA REŠTARTUJE!\n\nRESETOVAŤ ZVUK A REŠTARTOVAŤ?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "RESET UKAZOVATEĽA BATÉRIE"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr "POZOR: UKAZOVATEĽ BATÉRIE PMIC SA RESETUJE A SYSTÉM SA VYPNE!\n\nNECHAJTE NABÍJAČKU ODPOJENÚ A ZARIADENIE PO NIEKOĽKÝCH SEKUNDÁCH ZNOVA ZAPNITE. ÚROVEŇ BATÉRIE SA ZNOVA ODHADNE Z KĽUDOVÉHO NAPÄTIA BATÉRIE A PO PLNOM NABITÍ SA OPÄŤ STANE PRESNOU.\n\nRESETOVAŤ UKAZOVATEĽ A VYPNÚŤ?"
+
+msgid "FACTORY RESET"
+msgstr "TOVÁRENSKÉ NASTAVENIA"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr "POZOR: VAŠE ÚDAJE A VŠETKY OSTATNÉ KONFIGURÁCIE SA OBNOVIA NA PREDVOLENÉ!\n\nAK CHCETE ZACHOVAŤ SVOJE NASTAVENIA, PRED POUŽITÍM TEJTO VOĽBY UROBTE ZÁLOHU A ULOŽTE JU NA EXTERNÝ DISK!\n\nPRED POKRAČOVANÍM VYBERTE KARTU S HRAMI!\n\nRESETOVAŤ SYSTÉM A REŠTARTOVAŤ?"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Vyberte variant klávesnice pre zvolené rozloženie (napríklad mŕtve klávesy alebo alternatívne rozmiestnenie klávesov)."
+
+msgid "TIMEZONE"
+msgstr "ČASOVÉ PÁSMO"
+
+msgid "Run welcome again"
+msgstr "Spustiť uvítanie znova"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Znova zobrazí uvítanie pri prvom spustení: jazyk, WiFi a časové pásmo."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "ZAPNÚŤ PREKRYTIE MANGOHUD"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "ZAPNÚŤ DOTYKOVÚ KLÁVESNICU"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "ZAPNÚŤ SNÍMKY OBRAZOVKY ROCKNIX"
+
+msgid "SCREEN"
+msgstr "OBRAZOVKA"
+
+msgid "CONTRAST"
+msgstr "KONTRAST"
+
+msgid "GAMMA"
+msgstr "GAMA"
+
+msgid "HUE"
+msgstr "ODTIEŇ"
+
+msgid "SATURATION"
+msgstr "SYTOSŤ"
+
+msgid "LEDS"
+msgstr "LED DIÓDY"
+
+msgid "DISABLE POWER LED"
+msgstr "VYPNÚŤ LED NAPÁJANIA"
+
+msgid "LED COLOR"
+msgstr "FARBA LED"
+
+msgid "JOYSTICK LED"
+msgstr "LED JOYSTICKU"
+
+msgid "MAX"
+msgstr "MAX"
+
+msgid "MID"
+msgstr "STR."
+
+msgid "MIN"
+msgstr "MIN"
+
+msgid "THIS DEVICE IS"
+msgstr "TOTO ZARIADENIE JE"
+
+msgid "Device will be switched on next reboot"
+msgstr "Zariadenie sa prepne pri ďalšom reštarte"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "AUTOMATICKY ROZPOZNAŤ KARTU S HRAMI"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "ZAPNÚŤ ZLÚČENÉ ÚLOŽISKO"
+
+msgid "EXTERNAL"
+msgstr "EXTERNÁ"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "HLAVNÁ KARTA ZLÚČENÉHO ÚLOŽISKA"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "POZOR: ZMENA HLAVNEJ KARTY MÔŽE VIESŤ K STRATE PRÍSTUPU K HRÁM A VYŽADOVAŤ RUČNÝ ZÁSAH. POKRAČOVAŤ?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "VYSUNÚŤ KARTU MICROSD"
+
+msgid "You may now remove the card."
+msgstr "Kartu môžete teraz vybrať."
+
+msgid "PERFORMANCE"
+msgstr "VÝKON"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "PREDVOLENÝ REGULÁTOR TAKTU"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "PREDVOLENÝ REGULÁTOR TAKTU GPU"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "ZAPNÚŤ PRETAKTOVANIE CPU"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "ZAPNÚŤ PRETAKTOVANIE GPU"
+
+msgid "GPU DRIVER"
+msgstr "OVLÁDAČ GPU"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "Ovládač GPU sa prepne pri ďalšom reštarte"
+
+msgid "Restarting to apply the theme"
+msgstr "Reštartovanie na použitie témy"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "Frontend sa reštartuje, aby použil tému"
+
+msgid "Dark"
+msgstr "Tmavá"
+
+msgid "Light"
+msgstr "Svetlá"
+
+msgid "Theme default"
+msgstr "Podľa témy"
+
+msgid "Filled"
+msgstr "Vyplnený"
+
+msgid "Outline"
+msgstr "Obrys"
+
+msgid "Side bar"
+msgstr "Bočný panel"
+
+msgid "Underline"
+msgstr "Podčiarknutie"
+
+msgid "Centered"
+msgstr "Na stred"
+
+msgid "Left"
+msgstr "Vľavo"
+
+msgid "Lowercase"
+msgstr "Malé písmená"
+
+msgid "Uppercase"
+msgstr "Veľké písmená"
+
+msgid "EXTRA LARGE"
+msgstr "VEĽMI VEĽKÉ"
+
+msgid "LARGE"
+msgstr "VEĽKÉ"
+
+msgid "SMALL"
+msgstr "MALÉ"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Veľkosť textu v ponukách, dialógoch a lištách pomocníka"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Čisto biely alebo čierny text, plné panely a hrubší výber"
+
+msgid "CONTROL OPTIONS"
+msgstr "MOŽNOSTI OVLÁDANIA"
+
+msgid "TOP BAR"
+msgstr "HORNÁ LIŠTA"
+
+msgid "BEDSIDE CLOCK"
+msgstr "NOČNÉ HODINY"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "S pripojenou nabíjačkou zobrazí po tomto čase bez dotyku konzoly veľké hodiny namiesto šetriča obrazovky. Zavrie ich ľubovoľné tlačidlo. Nikdy pri otvorenej hre."
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "SŤAHOVANIE SA NEPODARILO ZRUŠIŤ"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "SŤAHOVANIE ZRUŠENÉ"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "AKTUALIZÁCIU SA NEPODARILO STIAHNUŤ. SKONTROLUJTE PRIPOJENIE A SKÚSTE TO ZNOVA."
+
+msgid "No update source available"
+msgstr "Žiadny zdroj aktualizácií nie je k dispozícii"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "VYNÚTIŤ ĎALŠIU AKTUALIZÁCIU"
+
+msgid "UPDATING"
+msgstr "AKTUALIZÁCIA"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "ZRUŠIŤ SŤAHOVANIE"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "ZRUŠIŤ SŤAHOVANIE? ČIASTOČNÝ SÚBOR BUDE VYMAZANÝ."
+
+msgid "Checking..."
+msgstr "Kontrola..."
+
+msgid "available"
+msgstr "k dispozícii"
+
+msgid "SKIP ALL"
+msgstr "PRESKOČIŤ VŠETKO"
+
+msgid "Welcome"
+msgstr "Vitajte"
+
+msgid "of"
+msgstr "z"
+
+msgid "Choose your language"
+msgstr "Vyberte jazyk"
+
+msgid "Language"
+msgstr "Jazyk"
+
+msgid "You can change it later in System."
+msgstr "Môžete to neskôr zmeniť v Systéme."
+
+msgid "Connect to WiFi"
+msgstr "Pripojiť k WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Hodiny, aktualizácie a prenos súborov."
+
+msgid "Continue"
+msgstr "Pokračovať"
+
+msgid "Not now"
+msgstr "Teraz nie"
+
+msgid "Choose a network"
+msgstr "Vyberte sieť"
+
+msgid "Choose another network"
+msgstr "Vyberte inú sieť"
+
+msgid "Where are you?"
+msgstr "Kde ste?"
+
+msgid "Time zone"
+msgstr "Časové pásmo"
+
+msgid "Sets your local time."
+msgstr "Nastaví váš miestny čas."
+
+msgid "Keep UTC"
+msgstr "Ponechať UTC"
+
+msgid "LOADING..."
+msgstr "NAČÍTAVANIE..."
+
+msgid "All set"
+msgstr "Všetko pripravené"
+
+msgid "Add games from your phone"
+msgstr "Pridajte hry z telefónu"
+
+msgid "Network"
+msgstr "Sieť"
+
+msgid "Start opens the menu"
+msgstr "Štart otvorí ponuku"
+
+msgid "anywhere"
+msgstr "kdekoľvek"
+
+msgid "Screen looks wrong?"
+msgstr "Obrazovka vyzerá zle?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Začať hrať"
+
+msgid "PLAY THEME MUSIC"
+msgstr "PREHRÁVAŤ HUDBU TÉMY"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "ŽIADNE PRIPOJENIE K SIETI"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "SPOTREBA BATÉRIE (PLNÉ NABITIE)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "CELKOVÝ ČAS HRANIA"
+
+msgid "LAST FIVE WEEKS"
+msgstr "POSLEDNÝCH PÄŤ TÝŽDŇOV"
+
+msgid "2 WEEKS AGO"
+msgstr "PRED 2 TÝŽDŇAMI"
+
+msgid "3 WEEKS AGO"
+msgstr "PRED 3 TÝŽDŇAMI"
+
+msgid "4 WEEKS AGO"
+msgstr "PRED 4 TÝŽDŇAMI"
+
+msgid "THIS WEEK"
+msgstr "TENTO TÝŽDEŇ"
+
+msgid "MOST PLAYED GAMES"
+msgstr "NAJHRANEJŠIE HRY"
+
+msgid "TIME PER SYSTEM"
+msgstr "ČAS PODĽA SYSTÉMU"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "ZATIAĽ SA NIČ NEHRALO. ZAHRAJTE SI A OBJAVÍ SA TO TU."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Dnes zostáva iba %d minúta hrania"
+msgstr[1] "Dnes zostávajú iba %d minúty hrania"
+msgstr[2] "Dnes zostáva iba %d minút hrania"
+
+msgid "Power saver on"
+msgstr "Úspora energie zapnutá"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "NEOČAKÁVANÁ ODPOVEĎ OD RETROACHIEVEMENTS"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "V TEJTO VERZII NIE JE K DISPOZÍCII"
+
+msgid "%i min ago"
+msgstr "pred %i min"
+
+msgid "%i h ago"
+msgstr "pred %i h"
+
+msgid "%i d ago"
+msgstr "pred %i d"
+
+msgid "CONTINUE PLAYING"
+msgstr "POKRAČOVAŤ V HRE"
+
+msgid "START NOW"
+msgstr "SPUSTIŤ TERAZ"
+
+msgid "RESUMING"
+msgstr "POKRAČOVANIE"
+
+msgid "STARTING IN %i"
+msgstr "ŠTART ZA %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacky"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Zvislé"
+
+msgid "recently added"
+msgstr "nedávno pridané"
+
+msgid "unfinished"
+msgstr "nedokončené"
+
+msgid "most played this week"
+msgstr "najhranejšie tento týždeň"
+
+msgid "BOOKS"
+msgstr "KNIHY"
+
+msgid "screenshots"
+msgstr "snímky obrazovky"
+
+msgid "media player"
+msgstr "prehrávač médií"
+
+msgid "NETWORK ERROR"
+msgstr "CHYBA SIETE"
+
+msgid "SERVER BUSY"
+msgstr "SERVER JE VYŤAŽENÝ"
+
+msgid "SERVER ERROR"
+msgstr "CHYBA SERVERA"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "NEDÁ SA ZAPÍSAŤ GAMELIST"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "PRIHLÁSENIE SA NEPODARILO. SKONTROLUJTE POUŽÍVATEĽSKÉ MENO A HESLO"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER JE PRE TENTO ÚČET MOMENTÁLNE UZAVRETÝ"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER JE V ÚDRŽBE"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "TENTO SOFTVÉR JE SCREENSCRAPER ZABLOKOVANÝ"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "DENNÝ LIMIT SŤAHOVANIA DOSIAHNUTÝ. SKÚSTE TO ZAJTRA"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "DNES PRÍLIŠ VEĽA NEROZPOZNANÝCH ROMIEK. SKÚSTE TO ZAJTRA"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "NA KARTE NIE JE MIESTO"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "NAJPRV ZADAJTE CLIENT ID A SECRET IGDB V ÚČTE"
+
+msgid "SCRAPING STOPPED"
+msgstr "SŤAHOVANIE ZASTAVENÉ"
+
+msgid "GAME NOT FOUND"
+msgstr "HRA NENÁJDENÁ"
+
+msgid "NO OTHER GAME"
+msgstr "ŽIADNA INÁ HRA"
+
+msgid "Time is up for today"
+msgstr "Čas na dnešok vypršal"
+
+msgid "ACCENTS"
+msgstr "DIAKRITIKA"
+
+msgid "SHOW"
+msgstr "ZOBRAZIŤ"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "ZOBRAZIŤ NÁHĽADY VIDEÍ"
+
+msgid "Device paired"
+msgstr "Zariadenie spárované"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "POVOLIŤ TOTO ZARIADENIE?"
+
+msgid "RECEIVED"
+msgstr "PRIJATÉ"
+
+msgid "QR CODE"
+msgstr "QR KÓD"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "PRÁVE TERAZ"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "PRED %d MINÚTOU"
+msgstr[1] "PRED %d MINÚTAMI"
+msgstr[2] "PRED %d MINÚTAMI"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "PRED %d HODINOU"
+msgstr[1] "PRED %d HODINAMI"
+msgstr[2] "PRED %d HODINAMI"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "PRED %d DŇOM"
+msgstr[1] "PRED %d DŇAMI"
+msgstr[2] "PRED %d DŇAMI"
+
+msgid "NO PAIRED DEVICES"
+msgstr "ŽIADNE SPÁROVANÉ ZARIADENIA"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "ZABUDNÚŤ TOTO ZARIADENIE?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "ZABUDNÚŤ VŠETKY ZARIADENIA"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "ZABUDNÚŤ VŠETKY ZARIADENIA?"
+
+msgid "PAIRED DEVICES"
+msgstr "SPÁROVANÉ ZARIADENIA"
+
+msgid "SHOW QR CODE"
+msgstr "ZOBRAZIŤ QR KÓD"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Naskenujte ho fotoaparátom telefónu: stránka sa otvorí a bude poznať PIN."
+
+msgid "Phones that need no PIN."
+msgstr "Telefóny, ktoré PIN nepotrebujú."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "OBNOVIŤ ULOŽENÉ HRY Z WEBU?"
+
+msgid "BUILD ID"
+msgstr "ID ZOSTAVY"
+
+msgid "KERNEL"
+msgstr "JADRO"
+
+msgid "OPERATING SYSTEM"
+msgstr "OPERAČNÝ SYSTÉM"
+
+msgid "SYSTEM INFORMATION"
+msgstr "INFORMÁCIE O SYSTÉME"
+
+msgid "BATTERY INFORMATION"
+msgstr "INFORMÁCIE O BATÉRII"
+
+msgid "DISK SPACE"
+msgstr "MIESTO NA DISKU"
+
+msgid "HOST NAME"
+msgstr "NÁZOV HOSTITEĽA"
+
+msgid "NETWORK INFORMATION"
+msgstr "INFORMÁCIE O SIETI"
+
+msgid "BATTERY HEALTH"
+msgstr "STAV BATÉRIE"
+
+msgid "BATTERY REMAINING"
+msgstr "ZVYŠNÁ BATÉRIA"
+
+msgid "BATTERY STATE"
+msgstr "STAV NABITIA"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "INFORMÁCIE O CPU"
+
+msgid "CPU TEMPERATURE"
+msgstr "TEPLOTA CPU"
+
+msgid "CPU FAN"
+msgstr "VENTILÁTOR CPU"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "AKTUÁLNA FREKVENCIA GPU"
+
+msgid "GPU INFORMATION"
+msgstr "INFORMÁCIE O GPU"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "MAXIMÁLNA FREKVENCIA GPU"
+
+msgid "GPU TEMPERATURE"
+msgstr "TEPLOTA GPU"
+
+msgid "RAM AVAILABLE"
+msgstr "DOSTUPNÁ RAM"
+
+msgid "RAM CAPACITY"
+msgstr "KAPACITA RAM"
+
+msgid "RAM INFORMATION"
+msgstr "INFORMÁCIE O RAM"
+
+msgid "CURRENT FREQUENCY"
+msgstr "AKTUÁLNA FREKVENCIA"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "MAXIMÁLNA FREKVENCIA"
+
+msgid "DISCHARGING"
+msgstr "VYBÍJANIE"
+
+msgid "NOT CHARGING"
+msgstr "NENABÍJA SA"
+
+msgid "Follows the language until you choose one here."
+msgstr "Riadi sa jazykom, kým tu nevyberiete iné."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Žiadna sieť. Vložte kartu microSD do PC a skopírujte každú hru do priečinka jej systému v priečinku roms (napríklad roms/snes). Alebo sa pripojte k WiFi a vráťte sa sem pridať hry z telefónu."
+
+msgid "Add games"
+msgstr "Pridať hry"
+
+msgid "left, in the menus"
+msgstr "zostáva, v ponukách"
+
+msgid "From your phone or microSD"
+msgstr "Z telefónu alebo z microSD"
+
+msgid "Web transfer turned off"
+msgstr "Webový prenos vypnutý"

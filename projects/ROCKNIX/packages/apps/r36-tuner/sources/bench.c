@@ -254,7 +254,7 @@ static int result_page(const char *title, const char *type, const char *big, con
 void bench_cpu(void) {
     const char *title = _("CPU benchmark");
     const char *bin = bench_path("r36_cpubench");
-    if (!sys_exists(bin) && access(bin, 1)) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner."), 0); return; }
+    if (!sys_exists(bin) && access(bin, 1)) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner Next."), 0); return; }
     for (;;) {
         char gov[32];
         sys_read(CPU_POLICY "/scaling_governor", gov, sizeof(gov));
@@ -268,7 +268,7 @@ void bench_cpu(void) {
         sys_write(CPU_POLICY "/scaling_governor", gov);
         if (c || !ui_running) return;
         long long mops = atoll(j.out) / 1000000;
-        if (mops <= 0) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner."), 0); return; }
+        if (mops <= 0) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner Next."), 0); return; }
         double before = last_score("CPU");
         char big[32], det[80], cmp[100];
         snprintf(big, sizeof(big), "%lld", mops);
@@ -285,7 +285,7 @@ void bench_cpu(void) {
 void bench_ram(void) {
     const char *title = _("Memory benchmark");
     const char *bin = bench_path("r36_rambench");
-    if (!sys_exists(bin) && access(bin, 1)) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner."), 0); return; }
+    if (!sys_exists(bin) && access(bin, 1)) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner Next."), 0); return; }
     for (;;) {
         char gov[32];
         sys_read(DMC_DEVFREQ "/governor", gov, sizeof(gov));
@@ -301,7 +301,7 @@ void bench_ram(void) {
         if (c || !ui_running) return;
         long long wr = 0, cp = 0;
         sscanf(j.out, "%lld %lld", &wr, &cp);
-        if (wr <= 0) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner."), 0); return; }
+        if (wr <= 0) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner Next."), 0); return; }
         double before = last_score("RAM");
         char a[24], b[24], det[96], cmp[100], u1[48], u2[48];
         snprintf(a, sizeof(a), "%lld", wr);
@@ -431,7 +431,7 @@ static int stress_status(const char *out, int *active, int *errs, int *cooling) 
 void bench_stability(void) {
     const char *title = _("Stability test");
     const char *bin = bench_path("r36_stress");
-    if (!sys_exists(bin) && access(bin, 1)) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner."), 0); return; }
+    if (!sys_exists(bin) && access(bin, 1)) { page_info(title, _("Benchmark program not found. Reinstall R36 Tuner Next."), 0); return; }
     Row m[3];
     memset(m, 0, sizeof(m));
     snprintf(m[0].label, sizeof(m[0].label), "%s", _("Quick: 5 minutes"));

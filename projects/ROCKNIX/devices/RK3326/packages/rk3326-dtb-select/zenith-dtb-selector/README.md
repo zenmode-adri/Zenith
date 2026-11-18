@@ -16,7 +16,7 @@ and rewrites `extlinux/extlinux.conf` on the SD card of a Zenith image. Interfac
 * No network access: it only listens on `127.0.0.1` with a random per-run token and exits when its window closes.
 
 ## Use
-Windows: double-click `ZenithDtbSelector.exe` in the root of the card (or from anywhere). Linux/macOS: run the binary.
+Windows: double-click `!Zenith DTB Selector.exe` in the root of the card (or from anywhere). Linux/macOS: run the binary.
 Command line: `--list` lists the models; `--boot E:\ --apply <id> [--show-boot]` applies one without the window.
 
 ## Test mode ("Not sure which model you have?")
@@ -43,6 +43,6 @@ The POWER button is deliberately not used (it can trigger suspend). How long one
 ## Build
 `./build.sh` (needs Go >= 1.22). The Windows exe goes to `../prebuilt/ZenithDtbSelector-win64.exe`, which IS committed
 (rebuild and commit it whenever the sources change) so every image build ships it: `package.mk` installs it and
-`mkimage` copies it to the FAT root as `ZenithDtbSelector.exe`. Linux/macOS binaries land in `dist/`.
+`mkimage` copies it to the FAT root as `!Zenith DTB Selector.exe`. Linux/macOS binaries land in `dist/`.
 The catalog (`web/catalog.json`) is generated from the legacy `../dtb_selector.py` by `tools/gen_catalog.py`;
 edit that script to add models.

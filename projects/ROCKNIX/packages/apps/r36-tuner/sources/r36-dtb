@@ -95,7 +95,7 @@ write_recovery() {
   [ "$(current_fdt "${tmp}")" = "${fac}" ] || { rm -f "${tmp}"; return 1; }
   mv -f "${tmp}" "${RESTORE}" || return 1
   cat >"${NOTE}.tmp" <<EOF || return 1
-R36 Tuner: recovery from a PC / recuperacion desde un PC
+R36 Tuner Next: recovery from a PC / recuperacion desde un PC
 
 English
 If the console does not boot after changing voltages or frequencies:

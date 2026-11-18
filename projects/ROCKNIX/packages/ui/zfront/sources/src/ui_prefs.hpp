@@ -44,6 +44,9 @@ void apply_access(const EsSettings& es);
 bool has_battery();
 /// The battery as the status bar read it (before the preferences hid it): what a screen about the battery must agree with.
 std::optional<Battery> raw_battery();
+/// The time as the clock of the status bar would show it ("HH:MM", or 12-hour with AM / PM) but whatever "SHOW CLOCK" says: the bedside clock
+/// (dock_screen.cpp) always shows it. Empty while the clock is not set. A reference to a string kept here (no copy per frame).
+const std::string& bedside_time();
 /// WiFi as the source reports it, whatever "SHOW NETWORK INDICATOR" hides in `cx.status`; `fallback` before the first status.
 bool raw_wifi(bool fallback);
 /// The battery percentage is drawn next to the icon (`ShowBattery` = text). Read by `status_bar`.

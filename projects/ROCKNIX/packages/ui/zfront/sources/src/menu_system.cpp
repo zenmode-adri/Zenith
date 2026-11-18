@@ -169,9 +169,43 @@ void put(Ctx& cx, const std::string& key, const std::string& value, bool keep_de
 
 void put_bool(Ctx& cx, const std::string& key, bool v) { put(cx, key, v ? "1" : "0", true); }
 
+void set_timezone(Ctx& cx, const std::string& zone) {
+  cx.sv->cmd.run("ln -sf " + shell_quote("/usr/share/zoneinfo/" + zone) + " $(readlink /etc/localtime)");
+  put(cx, "system.timezone", zone, true);
+}
+
 std::string get(Ctx& cx, const std::string& key, const std::string& def) { return cx.conf.get_or(key, def); }
 
 bool get_bool(Ctx& cx, const std::string& key, bool def) { return cx.conf.get_bool(key, def); }
+
+std::string keyboard_for_language(const std::string& lang) {
+  // Only layouts whose letters and digits sit where the US ones do. swaymsg applies the layout to every keyboard, the virtual
+  // ones of PortMaster's gptokeyb included, and many SDL ports read the key by its symbol: German (Y/Z swapped), French (A/Q,
+  // Z/W, digits with Shift), Czech/Slovak/Hungarian (accented letters on the digits) or Turkish (dotless i) would break the
+  // controls of a port the user never touched. Those stay on "us"; KEYBOARD LAYOUT can still choose them.
+  static const char* const kFull[][2] = {{"pt_BR", "br"}, {"pt_PT", "pt"}, {"en_GB", "gb"}, {"es_MX", "latam"}};
+  for (const auto& f : kFull)
+    if (lang == f[0]) return f[1];
+  const std::string two = lang.substr(0, lang.find('_'));
+  static const char* const kLang[][2] = {{"es", "es"}, {"ca", "es"}, {"eu", "es"}, {"gl", "es"}, {"it", "it"}, {"pt", "pt"},
+                                         {"cy", "gb"}, {"fi", "fi"}, {"nb", "no"}, {"nn", "no"}, {"pl", "pl"}, {"ro", "ro"},
+                                         {"sv", "se"}};
+  for (const auto& l : kLang)
+    if (two == l[0]) return l[1];
+  return "us";
+}
+
+void keyboard_follow_language(Ctx& cx, const std::string& lang) {
+  if (!have_bin("rocknix-keyboard") || cx.conf.get_bool("zfront.kblayout_manual", false)) return;
+  const std::string layout = keyboard_for_language(lang);
+  const std::string now = cx.conf.get_or("system.kblayout", "us");
+  if (layout == now) return;
+  // chosen by hand before zfront kept the mark: anything that is neither "us" nor what the current language gives
+  if (now != "us" && now != keyboard_for_language(cx.conf.get_or("system.language", ""))) return;
+  cx.sv->cmd.spawn("/usr/bin/rocknix-keyboard set " + shell_quote(layout) + " none");  // it saves both keys itself
+  put(cx, "system.kblayout", layout, true);
+  put(cx, "system.kbvariant", "none", true);
+}
 
 bool sysfs_write(Ctx& cx, const std::string& abs, const std::string& text) {
   if (cx.sv->cmd.dry_run) {
@@ -182,6 +216,17 @@ bool sysfs_write(Ctx& cx, const std::string& abs, const std::string& text) {
   if (!f) return false;
   f << text << "\n";
   return bool(f);
+}
+
+namespace {
+const char* const kPowerLedFile = "/sys/class/leds/blue:power/brightness";
+}  // namespace
+
+bool set_power_led(Ctx& cx, const std::string& on_or_off) { return sysfs_write(cx, kPowerLedFile, on_or_off == "off" ? "0" : "1"); }
+
+void restore_power_led(Ctx& cx) {
+  const std::string v = get(cx, "option_powerled");
+  if ((v == "on" || v == "off") && exists(kPowerLedFile)) set_power_led(cx, v);
 }
 
 void do_reboot(Ctx& cx) {
@@ -240,10 +285,34 @@ void post(Ctx& cx, std::function<void()> work, std::function<void()> done, bool 
   else cx.sv->jobs.post(std::move(work), std::move(done));
 }
 
+std::string value_label(const std::string& value) {
+  if (value == "default") return tr("Default");
+  return value;
+}
+
+std::vector<Option> label_values(std::vector<Option> v) {
+  for (Option& o : v)
+    if (o.value == "default") o.label = value_label(o.value);
+  return v;
+}
+
 std::vector<Option> options_or_current(const LazyList& l, const std::string& current) {
-  if (l.loaded && !l.opts.empty()) return l.opts;
+  if (l.loaded && !l.opts.empty()) return label_values(l.opts);
   std::vector<Option> v;
   v.push_back({current, current.empty() ? std::string("...") : current});
+  return label_values(std::move(v));
+}
+
+std::string gpu_driver_label(const std::string& value) {
+  if (value == "libmali") return tr("Arm (official)");
+  if (value == "panfrost") return tr("Open source (Panfrost / PanVK)");
+  return value;
+}
+
+std::vector<Option> gpu_driver_options(const LazyList& l, const std::string& current) {
+  std::vector<Option> v = options_or_current(l, current);
+  for (Option& o : v)
+    if (!o.value.empty()) o.label = gpu_driver_label(o.value);
   return v;
 }
 

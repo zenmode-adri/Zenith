@@ -162,8 +162,46 @@ function wait_lock() {
   done
 }
 
+### Copia atomica de los ficheros de una carpeta (claves del WiFi de iwd): cada fichero va a un temporal en la MISMA carpeta
+### de destino, se hace sync y se renombra sobre el nombre final. Un corte nunca deja un fichero de 0 bytes en el destino.
+### Un origen vacio no pisa un destino con contenido; un destino vacio (corte antiguo) se repara con el origen. Permisos 0600.
+function copy_dir_atomic() {
+  local src="${1}" dst="${2}" f b t rc=0
+  [ -d "${src}" ] || return 0
+  mkdir -p "${dst}" || return 1
+  for f in "${src}"/*
+  do
+    [ -f "${f}" ] || continue
+    b="${f##*/}"
+    if [ ! -s "${f}" ] && [ -s "${dst}/${b}" ]
+    then
+      continue
+    fi
+    t="$(mktemp "${dst}/.${b}.XXXXXX")" || { rc=1; continue; }
+    if cat "${f}" >"${t}" && chmod 600 "${t}" && sync
+    then
+      mv -f "${t}" "${dst}/${b}" || { rm -f "${t}"; rc=1; }
+    else
+      rm -f "${t}"
+      rc=1
+    fi
+  done
+  sync
+  return ${rc}
+}
+
+### Escribe en ${J_CONF}.new el system.cfg sin las lineas de la clave ${1} (literal, no expresion regular). Requiere el bloqueo.
+function _settings_drop_key() {
+  : >"${J_CONF}.new" || return 1
+  chmod --reference="${J_CONF}" "${J_CONF}.new" 2>/dev/null
+  if [ -e "${J_CONF}" ]
+  then
+    SETTING_KEY="${1}=" awk 'index($0, ENVIRON["SETTING_KEY"]) != 1' "${J_CONF}" >"${J_CONF}.new" || return 1
+  fi
+}
+
 function del_setting() {
-  ### Si la clave no esta en el fichero no hay nada que borrar: sin bloqueo, sin sed (runemu lo llama en cada juego)
+  ### Si la clave no esta en el fichero no hay nada que borrar: sin bloqueo, sin awk (runemu lo llama en cada juego)
   local _c
   if [[ "${1}" =~ ^[[:alnum:]] ]] && [ -r "${J_CONF}" ]
   then
@@ -173,7 +211,12 @@ function del_setting() {
   wait_lock
   if [[ "${1}" =~ ^[[:alnum:]] ]]
   then
-    sed -i "/^${1}=/d" "${J_CONF}"
+    if _settings_drop_key "${1}"
+    then
+      mv -f "${J_CONF}.new" "${J_CONF}"
+    else
+      rm -f "${J_CONF}.new"
+    fi
   fi
   rm -f "${J_CONF_LOCK}"
   GS_LOADED=0
@@ -202,24 +245,30 @@ function set_kill() {
 
 function set_setting() {
 
-  if [ ! -d "/storage/.config/system/configs" ]
+  if [ ! -d "${J_CONF%/*}" ]
   then
-    mkdir -p /storage/.config/system/configs
+    mkdir -p "${J_CONF%/*}"
   fi
-  if [ ! -e "/storage/.config/system/configs/system.cfg" ]
+  if [ ! -e "${J_CONF}" ] && [ -e "/usr/config/system/configs/system.cfg" ]
   then
-    cp -f /usr/config/system/configs/system.cfg /storage/.config/system/configs/system.cfg
+    cp -f /usr/config/system/configs/system.cfg "${J_CONF}"
   fi
 
   if [[ "${1}" =~ ^[[:alnum:]] ]]
   then
-    del_setting "${1}"
-    if [ ! "${2}" = "default" ]
+    ### Una sola sustitucion visible: se genera el fichero completo (sin la clave + la clave nueva al final) y se renombra.
+    wait_lock
+    if _settings_drop_key "${1}"
     then
-      wait_lock
-      echo "${1}=${2}" >> "${J_CONF}"
-      rm -f "${J_CONF_LOCK}"
+      if [ ! "${2}" = "default" ]
+      then
+        printf '%s=%s\n' "${1}" "${2}" >>"${J_CONF}.new"
+      fi
+      mv -f "${J_CONF}.new" "${J_CONF}"
+    else
+      rm -f "${J_CONF}.new"
     fi
+    rm -f "${J_CONF_LOCK}"
   fi
   GS_LOADED=0
 }

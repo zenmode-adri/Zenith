@@ -198,7 +198,14 @@ check_rclone_config() {
 # Uses ping to google.com as a connectivity test
 check_internet() {
     log_message "Checking internet connectivity..." "false"
-    ONLINESTATUS=`ping -q -c1 google.com &>/dev/null && echo online || echo offline`
+    # several ways, so a network that blocks ping (or only one site) is not taken for "offline"
+    ONLINESTATUS="offline"
+    for host in 1.1.1.1 8.8.8.8 google.com; do
+        if ping -q -c1 -W3 "${host}" &>/dev/null; then ONLINESTATUS="online"; break; fi
+    done
+    if [ "${ONLINESTATUS}" == "offline" ] && command -v curl &>/dev/null; then
+        curl -s -o /dev/null --max-time 6 https://www.google.com && ONLINESTATUS="online"
+    fi
     if [ "${ONLINESTATUS}" == "offline" ]; then
         log_message "You're not currently connected to the internet.\nPlease verify your settings and then try again." "true" "ERROR"
         sleep 3
@@ -236,8 +243,15 @@ load_config() {
         done
         dupe_message="${dupe_message}\n\nWould you like to automatically clean up duplicates?"
         
-        controller_confirm "$dupe_message" 0
-        local cleanup_choice=$?
+        # without a screen and a pad to answer (zfront runs this with no terminal) the question would wait for ever:
+        # go on without cleaning (the last value of each repeated variable is the one that counts when the file is read)
+        local cleanup_choice=1
+        if [ -t 0 ] && [ -t 1 ]; then
+            controller_confirm "$dupe_message" 0
+            cleanup_choice=$?
+        else
+            log_message "Duplicate variables in cloud_sync.conf and no screen to ask: continuing without cleanup" "false" "WARN"
+        fi
         log_message "Cleanup choice returned: $cleanup_choice" "false"
         
         if [ $cleanup_choice -eq 0 ]; then
@@ -508,7 +522,7 @@ main() {
     
     # Use the first configured remote in rclone
     # Note: This assumes at least one remote is configured and the first one should be used
-    REMOTENAME=`rclone listremotes | head -1`
+    REMOTENAME=`rclone listremotes | grep -x 'zenith:' || rclone listremotes | head -1`  # the cloud set up from the web page is called zenith
     
     # Begin main script operations with user-friendly header
     log_message "=> ${OS_NAME} CLOUD BACKUP UTILITY\n"

@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <atomic>
 #include <cctype>
 #include <cerrno>
 #include <cstdio>
@@ -35,6 +36,7 @@ const char* Status::wifi_icon() const { return wifi ? "network-icon-on.svg" : nu
 Status Status::demo(const std::string& time) {
   Status s;
   s.time = time;
+  s.date = "15/11";  // the day the XMB hashes were made
   s.battery = Battery{100, true};
   s.wifi = true;
   return s;
@@ -153,7 +155,10 @@ class BatteryFiles {
     char buf[32];
     ssize_t n = st_ >= 0 ? ::pread(st_, buf, sizeof buf - 1, 0) : -1;
     const std::string_view s = n > 0 ? trim(std::string_view(buf, size_t(n))) : std::string_view();
+    b.plugged = s == "Charging" || s == "Full";
     if (std::optional<bool> on = plugged()) {
+      b.from_charger = true;
+      b.plugged = b.plugged || *on;
       // a charger is known: plugged in is what the bolt shows (the status of the battery wanders while plugged: "Full", then
       // "Charging" again for the top-off, "Not charging" for a moment; seen on the R36 Ultra)
       b.charging = *on;
@@ -239,6 +244,8 @@ class RealStatusSource : public StatusSource {
     clock_deadline_ = next_slow_ = TimePoint{};
     net_until_ = Clock::now() + seconds(20);
   }
+  unsigned battery_reads() const override { return reads_; }
+  void reread() override { next_slow_ = TimePoint{}; }
   void freeze(const Status& s) override {
     s_ = s;
     frozen_ = true;
@@ -264,6 +271,7 @@ class RealStatusSource : public StatusSource {
     if (due_clock || now >= next_slow_ || power) {  // a charger plugged or pulled shows at once, not at the next half minute
       if (!bat_.resolved()) bat_.resolve(sysfs_);
       std::optional<Battery> b = bat_.read();
+      ++reads_;
       bool w = p_.wifi();
       bool bt = p_.bluetooth ? p_.bluetooth() : probe_bluetooth(sysfs_);
       changed |= !(b == s_.battery) || w != s_.wifi || bt != s_.bluetooth;
@@ -315,6 +323,7 @@ class RealStatusSource : public StatusSource {
   std::string scratch_;
   TimePoint next_slow_, clock_deadline_, net_until_{};
   bool frozen_ = false;
+  unsigned reads_ = 0;
 };
 }  // namespace
 
@@ -327,6 +336,12 @@ bool probe_wifi() {
   freeifaddrs(ifa);
   return found;
 }
+
+namespace {
+std::atomic<bool> g_refresh{false};
+}  // namespace
+void request_status_refresh() { g_refresh.store(true); }
+bool take_status_refresh() { return g_refresh.exchange(false); }
 
 bool probe_bluetooth(const std::string& sysfs_root) {
   const auto has_entries = [](const std::string& dir, const std::function<bool(const char*)>& pick) {
@@ -344,6 +359,11 @@ bool probe_bluetooth(const std::string& sysfs_root) {
     return found;
   };
   if (!has_entries(sysfs_root + "/class/bluetooth", [](const char*) { return true; })) return false;
+  // Some boards (R36S with its Realtek USB combo dongle) have the adapter and an unblocked radio all the time, even with
+  // Bluetooth switched off: the switch only starts/stops the bluetooth service, which owns a control group while it runs.
+  if (!file_exists(sysfs_root + "/fs/cgroup/systemd/system.slice/bluetooth.service") &&  // cgroup v1 (this image)
+      !file_exists(sysfs_root + "/fs/cgroup/system.slice/bluetooth.service"))            // cgroup v2
+    return false;
   const std::string rf = sysfs_root + "/class/rfkill/";
   return has_entries(rf, [&](const char* name) {
     std::string type, state;

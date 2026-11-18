@@ -168,8 +168,8 @@ struct Struct {
   void publish() { webtransfer::publish(app->cx.systems); }
 
   Struct() {
-    char t[] = "/tmp/zf-webmanage-XXXXXX";
-    root = ::mkdtemp(t);
+    std::string t = zt::tmp_base() + "/zf-webmanage-XXXXXX";
+    root = ::mkdtemp(&t[0]);
     dir = root + "/roms/gb";
     states = root + "/roms/savestates/gb";
     string cmd = "mkdir -p " + dir + "/images " + dir + "/sub " + states;
@@ -420,7 +420,7 @@ void test_rename() {
   Struct f;
   const string q = "/files/game/rename?id=" + f.id("Foo.gb");
   CHECK_EQ(status_of(f.post(q)), 400);  // no name
-  for (const char* bad : {"a%2Fb.gb", "..%2Fx.gb", "a..b.gb", ".hidden.gb", "x%5Cy.gb", "x%01y.gb", "Foo.gb", "New.sfc", "New", "New.GBC"})
+  for (const char* bad : {"a%2Fb.gb", "..%2Fx.gb", "..", ".hidden.gb", "x%5Cy.gb", "x%01y.gb", "Foo.gb", "New.sfc", "New", "New.GBC"})
     CHECK_EQ(status_of(f.post(q + "&name=" + bad)), 400);
   CHECK_EQ(status_of(f.post(q + "&name=" + pct(string(300, 'a') + ".gb"))), 400);
   CHECK_EQ(status_of(f.post(q + "&name=Bar.gb")), 409);  // never overwrites
@@ -479,6 +479,80 @@ void test_rename() {
   CHECK_EQ(slurp(f.dir + "/sub/Qux.gb"), string("baz rom"));
   CHECK(f.in_memory("sub/Qux.gb") != nullptr && f.in_memory("sub/Baz.gb") == nullptr);
   CHECK(!has(slurp(f.xml), "Qux"));
+
+  // the page always sends the name: the same name with a new title changes the title only
+  const string qb = "/files/game/rename?id=" + f.id("Bar.gb");
+  CHECK_EQ(status_of(f.post(qb + "&name=Bar.gb&title=")), 400);  // an empty title is not a title
+  CHECK_EQ(status_of(f.post(qb + "&name=Bar.gb")), 400);         // nothing to change
+  CHECK_EQ(status_of(f.post(qb + "&name=Bar.gb&title=" + pct("Bar Deluxe"))), 202);
+  f.settle();
+  CHECK(exists(f.dir + "/Bar.gb") && has(slurp(f.xml), "<name>Bar Deluxe</name>") && !has(slurp(f.xml), "Bar Game") && has(slurp(f.xml), "<path>./Bar.gb</path>"));
+  const Game* gb = f.in_memory("Bar.gb");
+  CHECK(gb != nullptr);
+  if (gb) CHECK_EQ(gb->name, string("Bar Deluxe"));
+  // dots inside a name are fine
+  CHECK_EQ(status_of(f.post(qb + "&name=" + pct("Bar... (USA).gb"))), 202);
+  f.settle();
+  CHECK(exists(f.dir + "/Bar... (USA).gb") && !exists(f.dir + "/Bar.gb"));
+}
+
+// a new name has to leave room for the files named after it (saves, states, pictures): the limit is 255 bytes for each of them
+void test_rename_long() {
+  Struct f;
+  const string q = "/files/game/rename?id=" + f.id("Bar.gb");
+  const string refused = f.post(q + "&name=" + pct(string(237, 'x') + ".gb"));  // 240 bytes: "<name>.state.auto" would not fit
+  CHECK_EQ(status_of(refused), 400);
+  CHECK(has(refused, "name too long"));
+  CHECK(exists(f.dir + "/Bar.gb"));
+  const string over = f.post(q + "&name=" + pct(string(300, 'a') + ".gb"));
+  CHECK_EQ(status_of(over), 400);
+  CHECK(has(over, "name too long"));
+  CHECK_EQ(status_of(f.post(q + "&name=" + pct(string(227, 'x') + ".gb"))), 202);  // 230 bytes: room left
+  f.settle();
+  CHECK(exists(f.dir + "/" + string(227, 'x') + ".gb") && !exists(f.dir + "/Bar.gb"));
+}
+
+// a game that is a folder (ScummVM, ports): the file actions say so instead of "the file is not there", and the list marks it
+void test_folder_game() {
+  Struct f;
+  ::mkdir((f.dir + "/Dungeon.gb").c_str(), 0755);
+  Game g;
+  g.name = "Dungeon";
+  g.path = f.dir + "/Dungeon.gb";
+  f.app->cx.systems[0].games.push_back(g);
+  f.publish();
+  const string id = f.id("Dungeon.gb"), msg = "this game is a folder: manage it from the console";
+  for (const string& r : {f.post("/files/game/trash?id=" + id), f.post("/files/game/rename?id=" + id + "&name=Other.gb"),
+                          f.post("/files/game/picture?id=" + id, kPng), f.post("/files/game/find?id=" + id), f.get("/files/game/info?id=" + id)}) {
+    CHECK_EQ(status_of(r), 400);
+    CHECK(has(r, msg));
+  }
+  CHECK(exists(f.dir + "/Dungeon.gb"));
+  const string lst = f.get("/files/games?system=gb");
+  size_t n = 0;
+  for (size_t at = lst.find("\"dir\":true"); at != string::npos; at = lst.find("\"dir\":true", at + 1)) ++n;
+  CHECK_EQ(n, size_t(1));  // only the folder
+  const string html = webtransfer::page_html();
+  CHECK(has(html, "g.dir"));
+}
+
+// a finished upload from the phone puts a toast on the console (the last file of a batch only), through the main thread
+void test_received_toast() {
+  Struct f;
+  auto toasts = [&] {
+    string all;
+    for (const Toast& t : f.app->cx.sv->toasts.items()) all += t.text + "|";
+    return all;
+  };
+  CHECK_EQ(status_of(f.post("/files/put?system=gb&path=A.gb&offset=0&total=7", "new rom")), 200);  // not the last of a batch
+  CHECK(toasts().empty());
+  CHECK_EQ(status_of(f.post("/files/put?system=gb&path=B.gb&offset=0&total=7&final=1", "new rom")), 200);
+  CHECK(has(toasts(), "RECEIVED: B.gb"));
+  const string before = toasts();
+  CHECK_EQ(status_of(f.post("/files/put?system=gb&path=B.gb&offset=0&total=7&final=1", "new rom")), 409);  // a failure says nothing
+  CHECK_EQ(toasts(), before);
+  CHECK_EQ(status_of(f.post("/files/put?system=gb&path=Dir%2Ftrack.bin&offset=0&total=7&final=1", "new rom")), 200);
+  CHECK(has(toasts(), "RECEIVED: Dir"));  // a folder is named by its top folder
 }
 
 void test_picture() {
@@ -563,6 +637,9 @@ int main() {
   test_trash_restore_empty();
   test_trash_without_entry();
   test_rename();
+  test_rename_long();
+  test_folder_game();
+  test_received_toast();
   test_picture();
   test_find();
   test_page();

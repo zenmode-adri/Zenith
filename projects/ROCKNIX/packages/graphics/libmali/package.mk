@@ -4,7 +4,7 @@
 # Copyright (C) 2024 ROCKNIX (https://github.com/ROCKNIX)
 
 PKG_NAME="libmali"
-PKG_LICENSE="nonfree"
+PKG_LICENSE="Arm-Mali-EULA"
 PKG_SITE="https://github.com/ROCKNIX/libmali"
 PKG_VERSION="0fe30426b822699f0a660268a6040fdafce229d1"
 # zip format makes extract very fast (<1s). tgz takes 20 seconds to scan the whole file

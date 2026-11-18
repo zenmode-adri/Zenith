@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zfront\n"
 "Report-Msgid-Bugs-To: https://github.com/zenmode-adri/Zenith\n"
-"POT-Creation-Date: 2026-11-11 03:46+0100\n"
+"POT-Creation-Date: 2026-11-18 00:52+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +18,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: src/app.cpp:58
+#: src/addgames.cpp:18 src/menu_network.cpp:585
+msgid "Could not start the web transfer"
+msgstr ""
+
+#: src/addgames.cpp:28
+msgid ""
+"No network. Put the microSD card in a PC and copy each game into the folder "
+"of its system, inside roms (for example roms/snes). Or connect to WiFi and "
+"come back here to add games from your phone."
+msgstr ""
+
+#: src/addgames.cpp:33
+msgid "Add games"
+msgstr ""
+
+#: src/addgames.cpp:34
+msgid "From your phone or microSD"
+msgstr ""
+
+#: src/app.cpp:61
 msgid "DAMAGED GAME LIST"
 msgstr ""
 
-#: src/app.cpp:165 src/ui_dialogs.cpp:58
+#: src/app.cpp:168 src/ui_dialogs.cpp:58
 msgid "Not available yet"
 msgstr ""
 
-#: src/app.cpp:367 src/menu_moonlight.cpp:156
+#: src/app.cpp:319
+msgid "Web transfer turned off"
+msgstr ""
+
+#: src/app.cpp:431 src/menu_moonlight.cpp:156
 msgid "Game lists updated"
 msgstr ""
 
@@ -65,11 +88,10 @@ msgid "Do not suggest performance mode for this game again."
 msgstr ""
 
 #: src/batest.cpp:118 src/batest.cpp:123 src/batest.cpp:124 src/batest.cpp:125
-#: src/menu_home.cpp:94
 msgid "BATTERY"
 msgstr ""
 
-#: src/batest.cpp:118 src/play_stats_screen.cpp:76
+#: src/batest.cpp:118 src/play_stats_screen.cpp:88
 msgid "NOT ENOUGH DATA YET"
 msgstr ""
 
@@ -95,103 +117,112 @@ msgid ""
 "games is used."
 msgstr ""
 
-#: src/battery_screen.cpp:26 src/battery_screen.cpp:323
+#: src/battery_screen.cpp:42 src/battery_screen.cpp:399
 msgid "Never"
 msgstr ""
 
-#: src/battery_screen.cpp:107 src/battery_screen.cpp:292
+#: src/battery_screen.cpp:135 src/battery_screen.cpp:363
+#: src/battery_screen.cpp:366
 msgid "What used the most"
 msgstr ""
 
-#: src/battery_screen.cpp:112
+#: src/battery_screen.cpp:140
 msgid "Since the last full charge. Estimated."
 msgstr ""
 
-#: src/battery_screen.cpp:115 src/battery_screen.cpp:319
+#: src/battery_screen.cpp:143 src/battery_screen.cpp:395
 msgid "Nothing measured yet. It fills in as you play."
 msgstr ""
 
-#: src/battery_screen.cpp:141
+#: src/battery_screen.cpp:171
 msgid "Asleep"
 msgstr ""
 
-#: src/battery_screen.cpp:141
+#: src/battery_screen.cpp:171
 msgid "Menus and system"
 msgstr ""
 
-#: src/battery_screen.cpp:141
+#: src/battery_screen.cpp:171
 msgid "Screen"
 msgstr ""
 
-#: src/battery_screen.cpp:164 src/battery_screen.cpp:363 src/menu.cpp:29
+#: src/battery_screen.cpp:194 src/battery_screen.cpp:444 src/menu.cpp:29
 #: src/menu.cpp:30 src/menu.cpp:31 src/menu.cpp:32 src/menu.cpp:33
-#: src/menu_savestates.cpp:33 src/menu_savestates.cpp:34
-#: src/menu_scraper.cpp:258 src/menu_uimode.cpp:63
-#: src/play_stats_screen.cpp:253 src/scene.cpp:254 src/scene.cpp:258
-#: src/webqr_screen.cpp:138
+#: src/menu_home.cpp:391 src/menu_savestates.cpp:33 src/menu_savestates.cpp:34
+#: src/menu_scraper.cpp:258 src/menu_skin.cpp:632 src/menu_skin.cpp:633
+#: src/menu_skin.cpp:634 src/menu_skin.cpp:635 src/menu_skin.cpp:636
+#: src/menu_uimode.cpp:63 src/menu_welcome.cpp:140 src/menu_welcome.cpp:141
+#: src/menu_welcome.cpp:142 src/play_stats_screen.cpp:284 src/scene.cpp:257
+#: src/scene.cpp:261 src/webqr_screen.cpp:139
 msgid "BACK"
 msgstr ""
 
-#: src/battery_screen.cpp:164 src/battery_screen.cpp:363 src/menu.cpp:29
+#: src/battery_screen.cpp:194 src/battery_screen.cpp:444 src/menu.cpp:29
 #: src/menu.cpp:30 src/menu.cpp:31 src/menu.cpp:32 src/menu.cpp:33
-#: src/play_stats_screen.cpp:253 src/scene.cpp:250 src/scene.cpp:254
+#: src/menu_skin.cpp:632 src/menu_skin.cpp:633 src/menu_skin.cpp:634
+#: src/menu_skin.cpp:635 src/menu_skin.cpp:636 src/play_stats_screen.cpp:284
+#: src/scene.cpp:253 src/scene.cpp:257
 msgid "CHOOSE"
 msgstr ""
 
-#: src/battery_screen.cpp:225
-msgid "Battery and power"
+#: src/battery_screen.cpp:258 src/menu_groups.cpp:132 src/menu_main.cpp:19
+msgid "BATTERY & PERFORMANCE"
 msgstr ""
 
-#: src/battery_screen.cpp:244
+#: src/battery_screen.cpp:290 src/dock_screen.cpp:247
 msgid "Charging"
 msgstr ""
 
-#: src/battery_screen.cpp:246
+#: src/battery_screen.cpp:293
 msgid "About"
 msgstr ""
 
-#: src/battery_screen.cpp:247
-msgid "left, at this rate"
+#: src/battery_screen.cpp:294
+msgid "left, in the menus"
 msgstr ""
 
-#: src/battery_screen.cpp:257
-msgid "Using now"
-msgstr ""
-
-#: src/battery_screen.cpp:269
+#: src/battery_screen.cpp:325
 msgid "Since full"
 msgstr ""
 
-#: src/battery_screen.cpp:291
+#: src/battery_screen.cpp:330
+msgid "Using now"
+msgstr ""
+
+#: src/battery_screen.cpp:365
 msgid "Last hours"
 msgstr ""
 
-#: src/battery_screen.cpp:317
+#: src/battery_screen.cpp:393
 msgid "Now"
 msgstr ""
 
-#: src/battery_screen.cpp:329
+#: src/battery_screen.cpp:405
 msgid "More settings"
 msgstr ""
 
-#: src/battery_screen.cpp:329
+#: src/battery_screen.cpp:405
 msgid "Power saver"
 msgstr ""
 
-#: src/battery_screen.cpp:329
-msgid "Screen off after"
+#: src/battery_screen.cpp:405
+msgid "Screensaver after"
 msgstr ""
 
-#: src/battery_screen.cpp:329
+#: src/battery_screen.cpp:405
 msgid "Turn on by itself at"
 msgstr ""
 
-#: src/battery_screen.cpp:363 src/menu.cpp:31
+#: src/battery_screen.cpp:444 src/menu.cpp:31 src/menu_home.cpp:390
+#: src/menu_skin.cpp:635
 msgid "ADJUST"
 msgstr ""
 
-#: src/battery_screen.cpp:363 src/menu.cpp:29 src/menu.cpp:32 src/scene.cpp:250
-#: src/ui_dialogs.cpp:323 src/ui_dialogs.cpp:327
+#: src/battery_screen.cpp:444 src/menu.cpp:29 src/menu.cpp:32
+#: src/menu_home.cpp:388 src/menu_skin.cpp:633 src/menu_skin.cpp:636
+#: src/menu_welcome.cpp:139 src/menu_welcome.cpp:140 src/menu_welcome.cpp:141
+#: src/menu_welcome.cpp:142 src/scene.cpp:253 src/ui_dialogs.cpp:325
+#: src/ui_dialogs.cpp:329
 msgid "SELECT"
 msgstr ""
 
@@ -303,11 +334,11 @@ msgstr ""
 msgid "Shooter"
 msgstr ""
 
-#: src/collections.cpp:160 src/scene.cpp:112
+#: src/collections.cpp:160 src/scene.cpp:113
 msgid "all games"
 msgstr ""
 
-#: src/collections.cpp:161 src/scene.cpp:113
+#: src/collections.cpp:161 src/scene.cpp:114
 msgid "last played"
 msgstr ""
 
@@ -323,7 +354,7 @@ msgstr ""
 msgid "4 players"
 msgstr ""
 
-#: src/collections.cpp:165 src/scene.cpp:114 src/smartcol.cpp:159
+#: src/collections.cpp:165 src/scene.cpp:115 src/smartcol.cpp:159
 msgid "never played"
 msgstr ""
 
@@ -355,32 +386,36 @@ msgstr ""
 msgid "spinner games"
 msgstr ""
 
-#: src/collections.cpp:442 src/menu_collections.cpp:312
-#: src/menu_collections.cpp:449
+#: src/collections.cpp:442 src/menu_collections.cpp:311
+#: src/menu_collections.cpp:419
 #, c-format
 msgid "Added '%s' to '%s'"
 msgstr ""
 
-#: src/collections.cpp:442 src/menu_collections.cpp:434
-#: src/menu_game_cfg.cpp:473 src/scene.cpp:111
+#: src/collections.cpp:442 src/menu_collections.cpp:404
+#: src/menu_game_cfg.cpp:473 src/scene.cpp:112
 msgid "FAVORITES"
 msgstr ""
 
-#: src/collections.cpp:442 src/menu_collections.cpp:275
-#: src/menu_collections.cpp:449
+#: src/collections.cpp:442 src/menu_collections.cpp:274
+#: src/menu_collections.cpp:419
 #, c-format
 msgid "Removed '%s' from '%s'"
 msgstr ""
 
-#: src/detailed.cpp:350 src/detailed.cpp:363 src/menu_game_edit.cpp:126
+#: src/datetime_set.cpp:34
+msgid "Not set"
+msgstr ""
+
+#: src/detailed.cpp:350 src/detailed.cpp:363 src/menu_game_edit.cpp:125
 msgid "Genre"
 msgstr ""
 
-#: src/detailed.cpp:350 src/detailed.cpp:363 src/menu_game_edit.cpp:130
+#: src/detailed.cpp:350 src/detailed.cpp:363 src/menu_game_edit.cpp:129
 msgid "Players"
 msgstr ""
 
-#: src/detailed.cpp:350 src/detailed.cpp:378 src/menu_game_edit.cpp:147
+#: src/detailed.cpp:350 src/detailed.cpp:378 src/menu_game_edit.cpp:146
 msgid "Rating"
 msgstr ""
 
@@ -388,10 +423,105 @@ msgstr ""
 msgid "Released"
 msgstr ""
 
+#: src/dock_screen.cpp:139
+msgctxt "date"
+msgid "Mon"
+msgstr ""
+
+#: src/dock_screen.cpp:139
+msgctxt "date"
+msgid "Sun"
+msgstr ""
+
+#: src/dock_screen.cpp:139
+msgctxt "date"
+msgid "Tue"
+msgstr ""
+
+#: src/dock_screen.cpp:139
+msgctxt "date"
+msgid "Wed"
+msgstr ""
+
+#: src/dock_screen.cpp:140
+msgctxt "date"
+msgid "Fri"
+msgstr ""
+
+#: src/dock_screen.cpp:140
+msgctxt "date"
+msgid "Sat"
+msgstr ""
+
+#: src/dock_screen.cpp:140
+msgctxt "date"
+msgid "Thu"
+msgstr ""
+
+#: src/dock_screen.cpp:141
+msgctxt "date"
+msgid "Apr"
+msgstr ""
+
+#: src/dock_screen.cpp:141
+msgctxt "date"
+msgid "Feb"
+msgstr ""
+
+#: src/dock_screen.cpp:141
+msgctxt "date"
+msgid "Jan"
+msgstr ""
+
+#: src/dock_screen.cpp:141
+msgctxt "date"
+msgid "Jun"
+msgstr ""
+
+#: src/dock_screen.cpp:141
+msgctxt "date"
+msgid "Mar"
+msgstr ""
+
+#: src/dock_screen.cpp:141
+msgctxt "date"
+msgid "May"
+msgstr ""
+
+#: src/dock_screen.cpp:142
+msgctxt "date"
+msgid "Aug"
+msgstr ""
+
+#: src/dock_screen.cpp:142
+msgctxt "date"
+msgid "Dec"
+msgstr ""
+
+#: src/dock_screen.cpp:142
+msgctxt "date"
+msgid "Jul"
+msgstr ""
+
+#: src/dock_screen.cpp:142
+msgctxt "date"
+msgid "Nov"
+msgstr ""
+
+#: src/dock_screen.cpp:142
+msgctxt "date"
+msgid "Oct"
+msgstr ""
+
+#: src/dock_screen.cpp:142
+msgctxt "date"
+msgid "Sep"
+msgstr ""
+
 #: src/gamemeta.cpp:93 src/gamemeta.cpp:122 src/gamemeta.cpp:271
 #: src/gamemeta.cpp:410 src/menu_collections.cpp:153
-#: src/menu_collections.cpp:277 src/menu_collections.cpp:308
-#: src/menu_collections.cpp:446 src/webmanage.cpp:357 src/webmanage.cpp:604
+#: src/menu_collections.cpp:276 src/menu_collections.cpp:307
+#: src/menu_collections.cpp:416 src/webmanage.cpp:357 src/webmanage.cpp:609
 msgid "COULD NOT SAVE GAME DATA"
 msgstr ""
 
@@ -419,12 +549,13 @@ msgstr ""
 msgid "CORE IS MISSING"
 msgstr ""
 
-#: src/launch.cpp:778 src/menu_bezel.cpp:111 src/menu_bezel.cpp:140
-#: src/menu_bezel.cpp:171 src/menu_moonlight.cpp:112 src/menu_savebackup.cpp:40
+#: src/launch.cpp:790 src/menu_bezel.cpp:111 src/menu_bezel.cpp:140
+#: src/menu_bezel.cpp:171 src/menu_datetime.cpp:70 src/menu_datetime.cpp:78
+#: src/menu_game.cpp:224 src/menu_moonlight.cpp:112 src/menu_savebackup.cpp:40
 #: src/menu_savebackup.cpp:182 src/menu_savestates.cpp:372
-#: src/menu_savestates.cpp:383 src/menu_system_main.cpp:290
-#: src/menu_system_main.cpp:437 src/menu_system_main.cpp:485
-#: src/menu_system_main.cpp:536 src/menu_system_main.cpp:557 src/ra.cpp:98
+#: src/menu_savestates.cpp:383 src/menu_system_main.cpp:302
+#: src/menu_system_main.cpp:458 src/menu_system_main.cpp:506
+#: src/menu_system_main.cpp:557 src/menu_system_main.cpp:573 src/ra.cpp:98
 #: src/websaves.cpp:362
 msgid "AN ERROR OCCURRED"
 msgstr ""
@@ -437,9 +568,10 @@ msgid ""
 msgstr ""
 
 #: src/listopts.cpp:37 src/menu_collections.cpp:38 src/menu_scraper.cpp:57
-#: src/menu_theme_cfg.cpp:254 src/menu_theme_cfg.cpp:268 src/menu_ui.cpp:161
-#: src/menu_ui.cpp:190 src/menu_ui.cpp:251 src/power.cpp:337
-#: src/ssmedia_menu.cpp:30 src/vpreview.cpp:97 src/vpreview.cpp:107
+#: src/menu_theme_cfg.cpp:254 src/menu_theme_cfg.cpp:268 src/menu_ui.cpp:163
+#: src/menu_ui.cpp:184 src/menu_ui.cpp:296 src/menu_welcome.cpp:135
+#: src/menu_welcome.cpp:295 src/power.cpp:353 src/ssmedia_menu.cpp:30
+#: src/vpreview.cpp:97 src/vpreview.cpp:107
 msgid "Could not save the settings"
 msgstr ""
 
@@ -508,7 +640,7 @@ msgid "GAME TIME, DESCENDING"
 msgstr ""
 
 #: src/listopts.cpp:161 src/listopts.cpp:178 src/listopts.cpp:179
-#: src/menu_game_cfg.cpp:555 src/menu_groups.cpp:110
+#: src/menu_game_cfg.cpp:555 src/menu_groups.cpp:147
 msgid "GAMELIST OPTIONS"
 msgstr ""
 
@@ -556,7 +688,7 @@ msgstr ""
 msgid "LIST"
 msgstr ""
 
-#: src/main.cpp:446
+#: src/main.cpp:464
 msgid "The chosen theme could not be loaded: using Zenith"
 msgstr ""
 
@@ -600,11 +732,11 @@ msgstr ""
 msgid "Could not show this page"
 msgstr ""
 
-#: src/manual.cpp:217 src/menu_system_info.cpp:77
+#: src/manual.cpp:217 src/menu_system_info.cpp:96
 msgid "Loading..."
 msgstr ""
 
-#: src/menu.cpp:30 src/menu.cpp:32
+#: src/menu.cpp:30 src/menu.cpp:32 src/menu_skin.cpp:634 src/menu_skin.cpp:636
 msgid "CHANGE"
 msgstr ""
 
@@ -642,10 +774,10 @@ msgstr ""
 
 #: src/menu_bezel.cpp:167 src/menu_controllers_bt.cpp:80
 #: src/menu_controllers_bt.cpp:148 src/menu_controllers_bt.cpp:204
-#: src/menu_game.cpp:197 src/menu_library_doctor.cpp:40
-#: src/menu_moonlight.cpp:164 src/menu_netplay.cpp:200
+#: src/menu_game.cpp:210 src/menu_library_doctor.cpp:40
+#: src/menu_moonlight.cpp:164 src/menu_netplay.cpp:196
 #: src/menu_savebackup.cpp:124 src/menu_savebackup.cpp:167
-#: src/menu_savebackup.cpp:174 src/play_stats_screen.cpp:163
+#: src/menu_savebackup.cpp:174 src/play_stats_screen.cpp:177
 msgid "PLEASE WAIT"
 msgstr ""
 
@@ -653,17 +785,17 @@ msgstr ""
 msgid "INSTALLED"
 msgstr ""
 
-#: src/menu_bezel.cpp:185 src/menu_netplay.cpp:209
+#: src/menu_bezel.cpp:185 src/menu_netplay.cpp:205
 msgid "NO GAMES FOUND"
 msgstr ""
 
 #: src/menu_collections.cpp:76 src/menu_collections.cpp:77
-#: src/menu_collections.cpp:345
+#: src/menu_collections.cpp:344
 msgid "SYSTEMS DISPLAYED"
 msgstr ""
 
 #: src/menu_collections.cpp:101 src/menu_collections.cpp:102
-#: src/menu_collections.cpp:346
+#: src/menu_collections.cpp:345
 msgid "AUTOMATIC GAME COLLECTIONS"
 msgstr ""
 
@@ -690,7 +822,7 @@ msgid "SYSTEMS"
 msgstr ""
 
 #: src/menu_collections.cpp:227 src/menu_collections.cpp:228
-#: src/menu_collections.cpp:347
+#: src/menu_collections.cpp:346
 msgid "CUSTOM GAME COLLECTIONS"
 msgstr ""
 
@@ -706,159 +838,115 @@ msgstr ""
 msgid "EDIT FILTERS"
 msgstr ""
 
-#: src/menu_collections.cpp:252 src/menu_collections.cpp:253
-#: src/menu_collections.cpp:261 src/menu_collections.cpp:262
+#: src/menu_collections.cpp:252 src/menu_collections.cpp:260
+#: src/menu_collections.cpp:261
 msgid "DELETE COLLECTION"
 msgstr ""
 
-#: src/menu_collections.cpp:265 src/menu_game.cpp:121 src/menu_game_cfg.cpp:571
+#: src/menu_collections.cpp:264 src/menu_game.cpp:133 src/menu_game_cfg.cpp:571
 #: src/menu_game_cfg.cpp:608 src/menu_game_cfg.cpp:631
 msgid "NO OPTIONS"
 msgstr ""
 
-#: src/menu_collections.cpp:275 src/menu_collections.cpp:312
-#: src/menu_collections.cpp:428 src/menu_collections.cpp:429
-#: src/menu_game_cfg.cpp:553 src/scene.cpp:118
+#: src/menu_collections.cpp:274 src/menu_collections.cpp:311
+#: src/menu_collections.cpp:398 src/menu_collections.cpp:399
+#: src/menu_game_cfg.cpp:553 src/scene.cpp:119
 msgid "COLLECTIONS"
 msgstr ""
 
-#: src/menu_collections.cpp:282
+#: src/menu_collections.cpp:281
 #, c-format
 msgid "Are you sure you want to delete '%s'?"
 msgstr ""
 
-#: src/menu_collections.cpp:301
+#: src/menu_collections.cpp:300
 msgid "New Collection Name"
 msgstr ""
 
-#: src/menu_collections.cpp:321 src/menu_collections.cpp:322
-#: src/menu_groups.cpp:108
+#: src/menu_collections.cpp:320 src/menu_collections.cpp:321
+#: src/menu_groups.cpp:145
 msgid "GAME COLLECTION SETTINGS"
 msgstr ""
 
-#: src/menu_collections.cpp:344
+#: src/menu_collections.cpp:343
 msgid "COLLECTIONS TO DISPLAY"
 msgstr ""
 
-#: src/menu_collections.cpp:349
+#: src/menu_collections.cpp:348
 msgid "CREATE CUSTOM COLLECTION"
 msgstr ""
 
-#: src/menu_collections.cpp:351
+#: src/menu_collections.cpp:350
 msgid "CREATE NEW EDITABLE COLLECTION"
 msgstr ""
 
-#: src/menu_collections.cpp:352
+#: src/menu_collections.cpp:351
 msgid "CREATE NEW DYNAMIC COLLECTION"
 msgstr ""
 
-#: src/menu_collections.cpp:353
+#: src/menu_collections.cpp:352
 msgid "Set its filters afterwards in Custom game collections."
 msgstr ""
 
-#: src/menu_collections.cpp:355 src/menu_netplay.cpp:62
-#: src/menu_netplay.cpp:269 src/menu_ra.cpp:67
+#: src/menu_collections.cpp:354 src/menu_netplay.cpp:63
+#: src/menu_netplay.cpp:265 src/menu_ra.cpp:67
 msgid "OPTIONS"
 msgstr ""
 
-#: src/menu_collections.cpp:356
+#: src/menu_collections.cpp:355
 msgid "ALPHABETICALLY"
 msgstr ""
 
-#: src/menu_collections.cpp:356 src/menu_game.cpp:49 src/menu_game_edit.cpp:71
-#: src/menu_scraper.cpp:122 src/menu_screens.cpp:49 src/menu_ui.cpp:335
-#: src/ui_dialogs.cpp:134
+#: src/menu_collections.cpp:355 src/menu_game.cpp:61 src/menu_game_edit.cpp:70
+#: src/menu_home.cpp:386 src/menu_scraper.cpp:122 src/menu_screens.cpp:49
+#: src/menu_ui.cpp:380 src/ui_dialogs.cpp:134
 msgid "NO"
 msgstr ""
 
-#: src/menu_collections.cpp:356
+#: src/menu_collections.cpp:355
 msgid "SORT SYSTEMS"
 msgstr ""
 
-#: src/menu_collections.cpp:366 src/menu_game_cfg.cpp:68
-#: src/menu_game_cfg.cpp:74 src/menu_game_cfg.cpp:80 src/menu_game_cfg.cpp:536
-#: src/menu_game_cfg.cpp:676 src/menu_netplay.cpp:66 src/menu_ra.cpp:78
-#: src/menu_scraper.cpp:140 src/menu_scraper.cpp:184 src/menu_scraper.cpp:186
-#: src/menu_system_main.cpp:307
-msgid "NONE"
-msgstr ""
-
-#: src/menu_collections.cpp:366
-msgid "RESTORE LAST SELECTED"
-msgstr ""
-
-#: src/menu_collections.cpp:369
-msgid "START ON SYSTEM"
-msgstr ""
-
-#: src/menu_collections.cpp:377
-msgid "START ON GAMELIST"
-msgstr ""
-
-#: src/menu_collections.cpp:380 src/menu_game.cpp:49
-msgid "ALWAYS"
-msgstr ""
-
-#: src/menu_collections.cpp:380
-msgid "GROUP CUSTOM COLLECTIONS"
-msgstr ""
-
-#: src/menu_collections.cpp:380
-msgid "NEVER"
-msgstr ""
-
-#: src/menu_collections.cpp:380
-msgid "UNTHEMED"
-msgstr ""
-
-#: src/menu_collections.cpp:386
-msgid "SHOW SYSTEM NAME IN COLLECTIONS"
-msgstr ""
-
-#: src/menu_collections.cpp:391
-msgid "SHOW GAMES OF HIDDEN SYSTEMS IN COLLECTIONS"
-msgstr ""
-
-#: src/menu_collections.cpp:395
+#: src/menu_collections.cpp:365
 msgid "SHOW EMPTY SYSTEMS"
 msgstr ""
 
-#: src/menu_collections.cpp:403 src/menu_groups.cpp:117
+#: src/menu_collections.cpp:373 src/menu_groups.cpp:154
 msgid "Restart the front-end to apply the changes."
 msgstr ""
 
-#: src/menu_collections.cpp:434 src/menu_collections.cpp:442
+#: src/menu_collections.cpp:404 src/menu_collections.cpp:412
 #: src/menu_game_cfg.cpp:473
 #, c-format
 msgid "ADD TO %s"
 msgstr ""
 
-#: src/menu_collections.cpp:434 src/menu_collections.cpp:442
+#: src/menu_collections.cpp:404 src/menu_collections.cpp:412
 #: src/menu_game_cfg.cpp:473
 #, c-format
 msgid "REMOVE FROM %s"
 msgstr ""
 
-#: src/menu_controllers.cpp:63 src/menu_controllers.cpp:69
-#: src/menu_controllers.cpp:134 src/menu_game.cpp:94 src/menu_game_src.cpp:243
+#: src/menu_controllers.cpp:64 src/menu_controllers.cpp:70
+#: src/menu_controllers.cpp:135 src/menu_game.cpp:106 src/menu_game_src.cpp:243
 #: src/menu_netplay.cpp:35 src/menu_ra.cpp:104 src/menu_sound.cpp:129
 #: src/menu_system.cpp:166 src/music.cpp:602
 msgid "Could not save the setting"
 msgstr ""
 
-#: src/menu_controllers.cpp:93 src/menu_controllers_wiz.cpp:69
-#: src/ui_dialogs.cpp:133 src/ui_dialogs.cpp:323 src/ui_dialogs.cpp:327
-#: src/ui_dialogs.cpp:366
+#: src/menu_controllers.cpp:94 src/menu_controllers_wiz.cpp:69
+#: src/ui_dialogs.cpp:133 src/ui_dialogs.cpp:325 src/ui_dialogs.cpp:329
+#: src/ui_dialogs.cpp:368
 msgid "OK"
 msgstr ""
 
-#: src/menu_controllers.cpp:94 src/menu_controllers_wiz.cpp:69
+#: src/menu_controllers.cpp:95 src/menu_controllers_wiz.cpp:69
 #: src/menu_controllers_wiz.cpp:70 src/menu_controllers_wiz.cpp:123
-#: src/resume_last.cpp:76 src/ui_dialogs.cpp:323 src/ui_dialogs.cpp:327
+#: src/resume_last.cpp:76 src/ui_dialogs.cpp:325 src/ui_dialogs.cpp:329
 msgid "CANCEL"
 msgstr ""
 
-#: src/menu_controllers.cpp:96
+#: src/menu_controllers.cpp:97
 msgid ""
 "YOU ARE GOING TO MAP A CONTROLLER. MAP BASED ON THE BUTTON'S POSITION, NOT "
 "ITS PHYSICAL LABEL. IF YOU DO NOT HAVE A SPECIAL BUTTON FOR HOTKEY, USE THE "
@@ -866,102 +954,107 @@ msgid ""
 "BUTTON. PRESS THE SOUTH BUTTON TO CONFIRM WHEN DONE."
 msgstr ""
 
-#: src/menu_controllers.cpp:107 src/menu_controllers.cpp:108
-#: src/menu_controllers.cpp:239
+#: src/menu_controllers.cpp:108 src/menu_controllers.cpp:109
+#: src/menu_controllers.cpp:246
 msgid "ASSIGN CONTROLLERS TO PLAYERS"
 msgstr ""
 
-#: src/menu_controllers.cpp:119
+#: src/menu_controllers.cpp:120
 msgid "default"
 msgstr ""
 
-#: src/menu_controllers.cpp:122
+#: src/menu_controllers.cpp:123
 #, c-format
 msgid "P%i'S CONTROLLER"
 msgstr ""
 
-#: src/menu_controllers.cpp:146 src/menu_controllers.cpp:147
+#: src/menu_controllers.cpp:147 src/menu_controllers.cpp:148
 msgid "CONTROLLER & BLUETOOTH SETTINGS"
 msgstr ""
 
-#: src/menu_controllers.cpp:159
+#: src/menu_controllers.cpp:149 src/menu_controllers.cpp:150
+#: src/menu_main.cpp:23
+msgid "CONTROLLER & BLUETOOTH"
+msgstr ""
+
+#: src/menu_controllers.cpp:162
 msgid "BLUETOOTH"
 msgstr ""
 
-#: src/menu_controllers.cpp:161
+#: src/menu_controllers.cpp:164
 msgid "ENABLE BLUETOOTH"
 msgstr ""
 
-#: src/menu_controllers.cpp:171
+#: src/menu_controllers.cpp:176
 msgid "Could not start Bluetooth"
 msgstr ""
 
-#: src/menu_controllers.cpp:176
+#: src/menu_controllers.cpp:183
 msgid "PAIR BLUETOOTH PADS AUTOMATICALLY"
 msgstr ""
 
-#: src/menu_controllers.cpp:178 src/menu_controllers.cpp:189
+#: src/menu_controllers.cpp:185 src/menu_controllers.cpp:196
 msgid "BLUETOOTH SCAN IS ALREADY RUNNING."
 msgstr ""
 
-#: src/menu_controllers.cpp:183 src/menu_controllers_bt.cpp:72
+#: src/menu_controllers.cpp:190 src/menu_controllers_bt.cpp:72
 msgid "SCANNING BLUETOOTH"
 msgstr ""
 
-#: src/menu_controllers.cpp:183
+#: src/menu_controllers.cpp:190
 msgid "Searching for devices..."
 msgstr ""
 
-#: src/menu_controllers.cpp:186
+#: src/menu_controllers.cpp:193
 msgid "Searching..."
 msgstr ""
 
-#: src/menu_controllers.cpp:187
+#: src/menu_controllers.cpp:194
 msgid "PAIR A BLUETOOTH DEVICE MANUALLY"
 msgstr ""
 
-#: src/menu_controllers.cpp:194 src/menu_controllers_bt.cpp:142
+#: src/menu_controllers.cpp:201 src/menu_controllers_bt.cpp:142
 #: src/menu_controllers_bt.cpp:143
 msgid "BLUETOOTH DEVICE LIST"
 msgstr ""
 
-#: src/menu_controllers.cpp:198
+#: src/menu_controllers.cpp:205
 msgid "CONTROLLERS"
 msgstr ""
 
-#: src/menu_controllers.cpp:199
+#: src/menu_controllers.cpp:206
 msgid "CONTROLLER MAPPING"
 msgstr ""
 
-#: src/menu_controllers.cpp:202 src/menu_ui.cpp:294
+#: src/menu_controllers.cpp:209 src/menu_ui.cpp:339
 msgid "SWITCH CONFIRM & CANCEL BUTTONS"
 msgstr ""
 
-#: src/menu_controllers.cpp:207 src/menu_ui.cpp:300
+#: src/menu_controllers.cpp:214 src/menu_ui.cpp:345
 msgid "Switches the South and East buttons' functionality"
 msgstr ""
 
-#: src/menu_controllers.cpp:210
+#: src/menu_controllers.cpp:217
 msgid "ENABLE RUMBLE"
 msgstr ""
 
-#: src/menu_controllers.cpp:216
+#: src/menu_controllers.cpp:223
 msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
 msgstr ""
 
-#: src/menu_controllers.cpp:218
+#: src/menu_controllers.cpp:225
 msgid "SHOW CONTROLLER NOTIFICATIONS"
 msgstr ""
 
-#: src/menu_controllers.cpp:224
+#: src/menu_controllers.cpp:231
 msgid "CONNECTED CONTROLLERS"
 msgstr ""
 
-#: src/menu_controllers.cpp:227
+#: src/menu_controllers.cpp:234
 msgid "Not configured"
 msgstr ""
 
-#: src/menu_controllers.cpp:228
+#: src/menu_controllers.cpp:235
 msgid "Unknown controller"
 msgstr ""
 
@@ -981,7 +1074,7 @@ msgstr ""
 msgid "NO BLUETOOTH DEVICES FOUND"
 msgstr ""
 
-#: src/menu_controllers_bt.cpp:157
+#: src/menu_controllers_bt.cpp:157 src/menu_welcome.cpp:323
 msgid "Connected"
 msgstr ""
 
@@ -1010,7 +1103,7 @@ msgstr ""
 msgid "ARE YOU SURE YOU WANT TO DISCONNECT '%s' ?"
 msgstr ""
 
-#: src/menu_controllers_bt.cpp:219 src/menu_network.cpp:777
+#: src/menu_controllers_bt.cpp:219 src/menu_network.cpp:769
 #: src/menu_network.cpp:865
 msgid "CONNECT"
 msgstr ""
@@ -1028,7 +1121,7 @@ msgstr ""
 msgid "Could not remove"
 msgstr ""
 
-#: src/menu_controllers_bt.cpp:222 src/menu_network.cpp:777
+#: src/menu_controllers_bt.cpp:222 src/menu_network.cpp:769
 msgid "FORGET"
 msgstr ""
 
@@ -1256,28 +1349,337 @@ msgid ""
 "A CONTROLLER."
 msgstr ""
 
-#: src/menu_game.cpp:24 src/menu_game.cpp:25 src/menu_main.cpp:17
-#: src/menu_scraper.cpp:495
-msgid "GAMES"
+#: src/menu_datetime.cpp:48 src/menu_datetime.cpp:49
+#: src/menu_system_main.cpp:344
+msgid "DATE & TIME"
 msgstr ""
 
-#: src/menu_game.cpp:32
-msgid "WHILE PLAYING"
+#: src/menu_datetime.cpp:53
+msgid "YEAR"
+msgstr ""
+
+#: src/menu_datetime.cpp:58
+msgid "MONTH"
+msgstr ""
+
+#: src/menu_datetime.cpp:63
+msgid "DAY"
+msgstr ""
+
+#: src/menu_datetime.cpp:65
+msgid "HOUR"
+msgstr ""
+
+#: src/menu_datetime.cpp:66
+msgid "MINUTE"
+msgstr ""
+
+#: src/menu_datetime.cpp:67
+msgid "SET DATE & TIME"
+msgstr ""
+
+#: src/menu_datetime.cpp:78
+msgid "Date and time set"
+msgstr ""
+
+#: src/menu_datetime.cpp:80 src/menu_system_main.cpp:346
+msgid "With Wi-Fi the time is set automatically."
+msgstr ""
+
+#: src/menu_files.cpp:134
+msgid "That folder is protected"
+msgstr ""
+
+#: src/menu_files.cpp:135
+msgid "Outside the allowed folders"
+msgstr ""
+
+#: src/menu_files.cpp:136
+msgid "Not enough free space"
+msgstr ""
+
+#: src/menu_files.cpp:137
+msgid "That name already exists"
+msgstr ""
+
+#: src/menu_files.cpp:138
+msgid "Cancelled"
+msgstr ""
+
+#: src/menu_files.cpp:139
+msgid "A folder cannot go into itself"
+msgstr ""
+
+#: src/menu_files.cpp:140
+msgid "That name is not valid"
+msgstr ""
+
+#: src/menu_files.cpp:141
+msgid "Not found"
+msgstr ""
+
+#: src/menu_files.cpp:142
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr ""
+
+#: src/menu_files.cpp:143
+msgid "This card does not accept that name"
+msgstr ""
+
+#: src/menu_files.cpp:144
+msgid "This location is read-only"
+msgstr ""
+
+#: src/menu_files.cpp:145
+msgid "An error occurred"
+msgstr ""
+
+#: src/menu_files.cpp:159
+#, c-format
+msgid "%s of %s done"
+msgstr ""
+
+#: src/menu_files.cpp:163
+msgid "item"
+msgstr ""
+
+#: src/menu_files.cpp:163 src/menu_skin.cpp:278
+msgid "items"
+msgstr ""
+
+#: src/menu_files.cpp:165
+msgid "link skipped"
+msgstr ""
+
+#: src/menu_files.cpp:165
+msgid "links skipped"
+msgstr ""
+
+#: src/menu_files.cpp:169
+msgid "This can't be undone."
+msgstr ""
+
+#: src/menu_files.cpp:305
+msgid "Files"
+msgstr ""
+
+#: src/menu_files.cpp:305
+msgid "selected"
+msgstr ""
+
+#: src/menu_files.cpp:368
+msgid "Cannot read this folder"
+msgstr ""
+
+#: src/menu_files.cpp:368
+msgid "This folder is empty"
+msgstr ""
+
+#: src/menu_files.cpp:371
+msgid "free"
+msgstr ""
+
+#: src/menu_files.cpp:502
+msgid "File"
+msgstr ""
+
+#: src/menu_files.cpp:502
+msgid "Folder"
+msgstr ""
+
+#: src/menu_files.cpp:502
+msgid "Link"
+msgstr ""
+
+#: src/menu_files.cpp:514 src/menu_files.cpp:528
+msgid "Properties"
+msgstr ""
+
+#: src/menu_files.cpp:521
+msgid "Copy"
+msgstr ""
+
+#: src/menu_files.cpp:522
+msgid "Move"
+msgstr ""
+
+#: src/menu_files.cpp:524
+msgid "Paste here"
+msgstr ""
+
+#: src/menu_files.cpp:525 src/menu_files.cpp:575 src/menu_files.cpp:584
+msgid "Rename"
+msgstr ""
+
+#: src/menu_files.cpp:526 src/menu_files.cpp:590
+msgid "New folder"
+msgstr ""
+
+#: src/menu_files.cpp:527 src/menu_files.cpp:599 src/menu_files.cpp:600
+msgid "Delete"
+msgstr ""
+
+#: src/menu_files.cpp:529
+msgid "Select all"
+msgstr ""
+
+#: src/menu_files.cpp:530
+msgid "Clear selection"
+msgstr ""
+
+#: src/menu_files.cpp:531
+msgid "Date"
+msgstr ""
+
+#: src/menu_files.cpp:531 src/menu_game_edit.cpp:123
+msgid "Name"
+msgstr ""
+
+#: src/menu_files.cpp:531
+msgid "Size"
+msgstr ""
+
+#: src/menu_files.cpp:531
+msgid "Sort by"
+msgstr ""
+
+#: src/menu_files.cpp:532
+msgid "Hide hidden files"
+msgstr ""
+
+#: src/menu_files.cpp:532
+msgid "Show hidden files"
+msgstr ""
+
+#: src/menu_files.cpp:533 src/menu_files.cpp:719
+msgid "Actions"
+msgstr ""
+
+#: src/menu_files.cpp:543 src/menu_files.cpp:552
+msgid "Home"
+msgstr ""
+
+#: src/menu_files.cpp:545
+msgid "Games"
+msgstr ""
+
+#: src/menu_files.cpp:546
+msgid "Game card"
+msgstr ""
+
+#: src/menu_files.cpp:550
+msgid "USB drive"
+msgstr ""
+
+#: src/menu_files.cpp:551
+msgid "Screenshots"
+msgstr ""
+
+#: src/menu_files.cpp:555 src/menu_files.cpp:719
+msgid "Go to"
+msgstr ""
+
+#: src/menu_files.cpp:565
+msgid "Ready to copy"
+msgstr ""
+
+#: src/menu_files.cpp:565
+msgid "Ready to move"
+msgstr ""
+
+#: src/menu_files.cpp:583 src/menu_files.cpp:614
+msgid "Warning"
+msgstr ""
+
+#: src/menu_files.cpp:585 src/menu_files.cpp:601 src/menu_files.cpp:718
+msgid "Cancel"
+msgstr ""
+
+#: src/menu_files.cpp:587
+msgid "This is a system file. Renaming it can break the console."
+msgstr ""
+
+#: src/menu_files.cpp:616
+msgid "This is a system file. Deleting it can break the console."
+msgstr ""
+
+#: src/menu_files.cpp:640
+msgid "Wait for the other job"
+msgstr ""
+
+#: src/menu_files.cpp:659
+msgid "Copied"
+msgstr ""
+
+#: src/menu_files.cpp:659
+msgid "Deleted"
+msgstr ""
+
+#: src/menu_files.cpp:659
+msgid "Moved"
+msgstr ""
+
+#: src/menu_files.cpp:661
+msgid "originals kept"
+msgstr ""
+
+#: src/menu_files.cpp:683
+msgid "Copying"
+msgstr ""
+
+#: src/menu_files.cpp:683
+msgid "Deleting"
+msgstr ""
+
+#: src/menu_files.cpp:683
+msgid "Moving"
+msgstr ""
+
+#: src/menu_files.cpp:689
+msgid "Calculating..."
+msgstr ""
+
+#: src/menu_files.cpp:719
+msgid "Back"
+msgstr ""
+
+#: src/menu_files.cpp:719
+msgid "Close"
+msgstr ""
+
+#: src/menu_files.cpp:719
+msgid "Mark"
+msgstr ""
+
+#: src/menu_files.cpp:719
+msgid "Open"
+msgstr ""
+
+#: src/menu_files.cpp:719
+msgid "Page"
+msgstr ""
+
+#: src/menu_game.cpp:25 src/menu_game.cpp:26 src/menu_main.cpp:17
+msgid "GAME SETTINGS"
 msgstr ""
 
 #: src/menu_game.cpp:33
-msgid "RESUME LAST GAME AT STARTUP"
+msgid "WHILE PLAYING"
 msgstr ""
 
 #: src/menu_game.cpp:34
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr ""
+
+#: src/menu_game.cpp:35
 msgid "Starts your last game from its autosave at boot. B cancels."
 msgstr ""
 
-#: src/menu_game.cpp:36
+#: src/menu_game.cpp:39
 msgid "HOME MENU DURING GAMES"
 msgstr ""
 
-#: src/menu_game.cpp:37
+#: src/menu_game.cpp:44
 msgid ""
 "Experimental. Hold START and the chosen shoulder button for one second while "
 "a game runs to pause it and open a panel with battery, brightness, volume, "
@@ -1285,178 +1687,199 @@ msgid ""
 "commands on)."
 msgstr ""
 
-#: src/menu_game.cpp:38
+#: src/menu_game.cpp:46
 msgid "HOME MENU BUTTONS"
 msgstr ""
 
-#: src/menu_game.cpp:39
+#: src/menu_game.cpp:47
 msgid ""
 "The buttons held with START to open the home menu. Select based chords are "
 "used by RetroArch."
 msgstr ""
 
-#: src/menu_game.cpp:40
+#: src/menu_game.cpp:48
 msgid "PERFORMANCE SUGGESTIONS"
 msgstr ""
 
-#: src/menu_game.cpp:41
+#: src/menu_game.cpp:49
 msgid "Suggests performance mode for games the GPU governor holds back."
 msgstr ""
 
-#: src/menu_game.cpp:44
-msgid "SAVED GAMES"
+#: src/menu_game.cpp:51
+msgid "PLAY TIME LIMIT"
 msgstr ""
 
-#: src/menu_game.cpp:45
-msgid "AUTO SAVE/LOAD"
-msgstr ""
-
-#: src/menu_game.cpp:45
-msgid "Load latest savestate on game launch and savestate when exiting game."
-msgstr ""
-
-#: src/menu_game.cpp:46
-msgid "INCREMENTAL SAVESTATES"
-msgstr ""
-
-#: src/menu_game.cpp:47
-msgid "DO NOT INCREMENT"
-msgstr ""
-
-#: src/menu_game.cpp:47
-msgid "INCREMENT PER SAVE"
-msgstr ""
-
-#: src/menu_game.cpp:47
-msgid "INCREMENT SLOT"
-msgstr ""
-
-#: src/menu_game.cpp:48
-msgid "Never overwrite old savestates, always make new ones."
-msgstr ""
-
-#: src/menu_game.cpp:49
-msgid "IF NOT EMPTY"
-msgstr ""
-
-#: src/menu_game.cpp:49
-msgid "SHOW SAVESTATE MANAGER"
-msgstr ""
-
-#: src/menu_game.cpp:50
-msgid "Display savestate manager before launching a game."
+#: src/menu_game.cpp:52 src/menu_game_cfg.cpp:33 src/menu_game_cfg.cpp:232
+#: src/menu_game_cfg.cpp:315 src/menu_game_cfg.cpp:316
+#: src/menu_game_cfg.cpp:678 src/menu_network.cpp:407
+#: src/menu_system_main.cpp:435 src/menu_ui.cpp:447
+msgid "OFF"
 msgstr ""
 
 #: src/menu_game.cpp:53
+msgid ""
+"Time to play each day. A message comes 5 minutes before the end (inside the "
+"game only with RetroArch network commands on) and then the game is closed. "
+"Time starts counting when this is turned on."
+msgstr ""
+
+#: src/menu_game.cpp:56
+msgid "SAVED GAMES"
+msgstr ""
+
+#: src/menu_game.cpp:57
+msgid "AUTO SAVE/LOAD"
+msgstr ""
+
+#: src/menu_game.cpp:57
+msgid "Load latest savestate on game launch and savestate when exiting game."
+msgstr ""
+
+#: src/menu_game.cpp:58
+msgid "INCREMENTAL SAVESTATES"
+msgstr ""
+
+#: src/menu_game.cpp:59
+msgid "DO NOT INCREMENT"
+msgstr ""
+
+#: src/menu_game.cpp:59
+msgid "INCREMENT PER SAVE"
+msgstr ""
+
+#: src/menu_game.cpp:59
+msgid "INCREMENT SLOT"
+msgstr ""
+
+#: src/menu_game.cpp:60
+msgid "Never overwrite old savestates, always make new ones."
+msgstr ""
+
+#: src/menu_game.cpp:61
+msgid "ALWAYS"
+msgstr ""
+
+#: src/menu_game.cpp:61
+msgid "IF NOT EMPTY"
+msgstr ""
+
+#: src/menu_game.cpp:61
+msgid "SHOW SAVESTATE MANAGER"
+msgstr ""
+
+#: src/menu_game.cpp:62
+msgid "Display savestate manager before launching a game."
+msgstr ""
+
+#: src/menu_game.cpp:65
 msgid "PICTURE AND CONTROL"
 msgstr ""
 
-#: src/menu_game.cpp:57 src/menu_game_cfg.cpp:517
+#: src/menu_game.cpp:69 src/menu_game_cfg.cpp:517
 msgid "Force the game to render in this aspect ratio."
 msgstr ""
 
-#: src/menu_game.cpp:57 src/menu_game_cfg.cpp:517
+#: src/menu_game.cpp:69 src/menu_game_cfg.cpp:517
 msgid "GAME ASPECT RATIO"
 msgstr ""
 
-#: src/menu_game.cpp:59 src/menu_game_cfg.cpp:519
+#: src/menu_game.cpp:71 src/menu_game_cfg.cpp:519
 msgid "SMOOTH GAMES (BILINEAR FILTERING)"
 msgstr ""
 
-#: src/menu_game.cpp:60 src/menu_game_cfg.cpp:520
+#: src/menu_game.cpp:72 src/menu_game_cfg.cpp:520
 msgid "INTEGER SCALING (PIXEL PERFECT)"
 msgstr ""
 
-#: src/menu_game.cpp:61 src/menu_game_cfg.cpp:542
+#: src/menu_game.cpp:73 src/menu_game_cfg.cpp:542
 msgid "REWIND"
 msgstr ""
 
-#: src/menu_game.cpp:61 src/menu_game_cfg.cpp:542
+#: src/menu_game.cpp:73 src/menu_game_cfg.cpp:542
 msgid "Store past states to rewind to in realtime, if the core supports it."
 msgstr ""
 
-#: src/menu_game.cpp:62 src/menu_game_cfg.cpp:545 src/menu_game_cfg.cpp:673
+#: src/menu_game.cpp:74 src/menu_game_cfg.cpp:545 src/menu_game_cfg.cpp:673
 #: src/menu_game_cfg.cpp:674
 msgid "LATENCY REDUCTION"
 msgstr ""
 
-#: src/menu_game.cpp:65 src/menu_game_cfg.cpp:524
+#: src/menu_game.cpp:77 src/menu_game_cfg.cpp:524
 msgid "SHADER SET"
 msgstr ""
 
-#: src/menu_game.cpp:70 src/menu_game_cfg.cpp:528
+#: src/menu_game.cpp:82 src/menu_game_cfg.cpp:528
 msgid "VIDEO FILTER"
 msgstr ""
 
-#: src/menu_game.cpp:74 src/menu_game_cfg.cpp:533
+#: src/menu_game.cpp:86 src/menu_game_cfg.cpp:533
 msgid "DECORATION SET"
 msgstr ""
 
-#: src/menu_game.cpp:77 src/menu_game_cfg.cpp:547 src/menu_game_cfg.cpp:606
+#: src/menu_game.cpp:89 src/menu_game_cfg.cpp:547 src/menu_game_cfg.cpp:606
 #: src/menu_game_cfg.cpp:607 src/menu_moonlight.cpp:172 src/menu_netplay.cpp:55
-#: src/menu_network.cpp:573 src/menu_ra.cpp:32
+#: src/menu_network.cpp:560 src/menu_ra.cpp:32
 msgid "SETTINGS"
 msgstr ""
 
-#: src/menu_game.cpp:80 src/menu_moonlight.cpp:127 src/menu_theme_cfg.cpp:304
-#: src/scene.cpp:110
+#: src/menu_game.cpp:92 src/menu_moonlight.cpp:127 src/menu_theme_cfg.cpp:304
+#: src/scene.cpp:111
 msgid "TOOLS"
 msgstr ""
 
-#: src/menu_game.cpp:81 src/menu_moonlight.cpp:122 src/menu_moonlight.cpp:123
+#: src/menu_game.cpp:93 src/menu_moonlight.cpp:122 src/menu_moonlight.cpp:123
 msgid "MOONLIGHT GAME STREAMING"
 msgstr ""
 
-#: src/menu_game.cpp:82 src/menu_netplay.cpp:47 src/menu_netplay.cpp:48
+#: src/menu_game.cpp:94 src/menu_netplay.cpp:47 src/menu_netplay.cpp:48
 msgid "NETPLAY SETTINGS"
 msgstr ""
 
-#: src/menu_game.cpp:87
+#: src/menu_game.cpp:99
 msgid "BIOS SETTINGS"
 msgstr ""
 
-#: src/menu_game.cpp:88 src/menu_game.cpp:193 src/menu_game.cpp:194
-#: src/menu_library_doctor.cpp:56
+#: src/menu_game.cpp:100 src/menu_game.cpp:206 src/menu_game.cpp:207
 msgid "MISSING BIOS CHECK"
 msgstr ""
 
-#: src/menu_game.cpp:90
+#: src/menu_game.cpp:102
 msgid "CHECK BIOS FILES BEFORE RUNNING A GAME"
 msgstr ""
 
-#: src/menu_game.cpp:99
+#: src/menu_game.cpp:111
 msgid "MORE"
 msgstr ""
 
-#: src/menu_game.cpp:100 src/menu_ra.cpp:114 src/menu_ra.cpp:115
+#: src/menu_game.cpp:112 src/menu_ra.cpp:114 src/menu_ra.cpp:115
 msgid "RETROACHIEVEMENTS SETTINGS"
 msgstr ""
 
-#: src/menu_game.cpp:101 src/menu_game.cpp:128 src/menu_game.cpp:129
+#: src/menu_game.cpp:113 src/menu_game.cpp:140 src/menu_game.cpp:141
 msgid "AI GAME TRANSLATION"
 msgstr ""
 
-#: src/menu_game.cpp:102 src/play_stats_screen.cpp:159
+#: src/menu_game.cpp:114 src/play_stats_screen.cpp:173
 msgid "PLAY STATISTICS"
 msgstr ""
 
-#: src/menu_game.cpp:103 src/menu_game.cpp:111 src/menu_game.cpp:112
+#: src/menu_game.cpp:115 src/menu_game.cpp:123 src/menu_game.cpp:124
 msgid "PER SYSTEM OPTIONS"
 msgstr ""
 
-#: src/menu_game.cpp:132
+#: src/menu_game.cpp:144
 msgid "ENABLE AI TRANSLATION SERVICE"
 msgstr ""
 
-#: src/menu_game.cpp:141
+#: src/menu_game.cpp:153
 msgid "TARGET LANGUAGE"
 msgstr ""
 
-#: src/menu_game.cpp:148
+#: src/menu_game.cpp:160
 msgid "AI TRANSLATION SERVICE URL"
 msgstr ""
 
-#: src/menu_game.cpp:211
+#: src/menu_game.cpp:224
 msgid "NO MISSING BIOS FILES"
 msgstr ""
 
@@ -1465,20 +1888,21 @@ msgstr ""
 #: src/menu_game_cfg.cpp:291 src/menu_game_cfg.cpp:398
 #: src/menu_game_cfg.cpp:536 src/menu_game_cfg.cpp:658
 #: src/menu_game_cfg.cpp:676 src/menu_game_cfg.cpp:678
-#: src/menu_game_src.cpp:227 src/menu_system_main.cpp:494
+#: src/menu_game_src.cpp:227 src/menu_system_main.cpp:515
 msgid "AUTO"
 msgstr ""
 
 #: src/menu_game_cfg.cpp:33 src/menu_game_cfg.cpp:232 src/menu_game_cfg.cpp:315
-#: src/menu_game_cfg.cpp:316 src/menu_game_cfg.cpp:678 src/menu_network.cpp:382
-#: src/menu_system_main.cpp:414 src/menu_ui.cpp:377
-msgid "OFF"
+#: src/menu_game_cfg.cpp:316 src/menu_game_cfg.cpp:678 src/menu_network.cpp:407
+#: src/menu_system_main.cpp:435
+msgid "ON"
 msgstr ""
 
-#: src/menu_game_cfg.cpp:33 src/menu_game_cfg.cpp:232 src/menu_game_cfg.cpp:315
-#: src/menu_game_cfg.cpp:316 src/menu_game_cfg.cpp:678 src/menu_network.cpp:382
-#: src/menu_system_main.cpp:414
-msgid "ON"
+#: src/menu_game_cfg.cpp:68 src/menu_game_cfg.cpp:74 src/menu_game_cfg.cpp:80
+#: src/menu_game_cfg.cpp:536 src/menu_game_cfg.cpp:676 src/menu_netplay.cpp:66
+#: src/menu_ra.cpp:78 src/menu_scraper.cpp:140 src/menu_scraper.cpp:184
+#: src/menu_scraper.cpp:186 src/menu_system_main.cpp:319
+msgid "NONE"
 msgstr ""
 
 #: src/menu_game_cfg.cpp:124
@@ -1499,7 +1923,7 @@ msgstr ""
 msgid "UNKNOWN SYSTEM"
 msgstr ""
 
-#: src/menu_game_cfg.cpp:479 src/menu_game_edit.cpp:161
+#: src/menu_game_cfg.cpp:479
 msgid "SCRAPE"
 msgstr ""
 
@@ -1548,29 +1972,29 @@ msgstr ""
 msgid "ADVANCED SYSTEM OPTIONS"
 msgstr ""
 
-#: src/menu_game_cfg.cpp:657 src/menu_system_main.cpp:493
+#: src/menu_game_cfg.cpp:657 src/menu_system_main.cpp:514
 msgid "COOLING PROFILE"
 msgstr ""
 
-#: src/menu_game_cfg.cpp:658 src/menu_system_main.cpp:494
+#: src/menu_game_cfg.cpp:658 src/menu_system_main.cpp:515
 msgid "AGGRESSIVE"
 msgstr ""
 
 #: src/menu_game_cfg.cpp:658 src/menu_game_src.cpp:230 src/menu_netplay.cpp:68
-#: src/menu_system_main.cpp:494
+#: src/menu_system_main.cpp:515
 msgid "CUSTOM"
 msgstr ""
 
 #: src/menu_game_cfg.cpp:658 src/menu_game_cfg.cpp:665
-#: src/menu_system_main.cpp:460
+#: src/menu_system_main.cpp:481
 msgid "DEFAULT"
 msgstr ""
 
-#: src/menu_game_cfg.cpp:658 src/menu_system_main.cpp:494
+#: src/menu_game_cfg.cpp:658 src/menu_system_main.cpp:515
 msgid "MODERATE"
 msgstr ""
 
-#: src/menu_game_cfg.cpp:658 src/menu_system_main.cpp:494
+#: src/menu_game_cfg.cpp:658 src/menu_system_main.cpp:515
 msgid "QUIET"
 msgstr ""
 
@@ -1582,7 +2006,7 @@ msgstr ""
 msgid "GPU SCALING GOVERNOR"
 msgstr ""
 
-#: src/menu_game_cfg.cpp:665 src/menu_network.cpp:458
+#: src/menu_game_cfg.cpp:665 src/menu_network.cpp:475
 msgid "DISABLED"
 msgstr ""
 
@@ -1610,118 +2034,109 @@ msgstr ""
 msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
 msgstr ""
 
-#: src/menu_game_edit.cpp:71
+#: src/menu_game_edit.cpp:70
 msgid "SAVE CHANGES?"
 msgstr ""
 
-#: src/menu_game_edit.cpp:71 src/ui_dialogs.cpp:133
+#: src/menu_game_edit.cpp:70 src/menu_home.cpp:385 src/ui_dialogs.cpp:133
 msgid "YES"
 msgstr ""
 
-#: src/menu_game_edit.cpp:107 src/netplay.cpp:387
+#: src/menu_game_edit.cpp:106 src/netplay.cpp:387
 msgid "UNKNOWN GAME"
 msgstr ""
 
-#: src/menu_game_edit.cpp:124
-msgid "Name"
-msgstr ""
-
-#: src/menu_game_edit.cpp:124
+#: src/menu_game_edit.cpp:123
 msgid "this game's name"
 msgstr ""
 
-#: src/menu_game_edit.cpp:125
+#: src/menu_game_edit.cpp:124
 msgid "Description"
 msgstr ""
 
-#: src/menu_game_edit.cpp:125
+#: src/menu_game_edit.cpp:124
 msgid "this game's description"
 msgstr ""
 
-#: src/menu_game_edit.cpp:126
+#: src/menu_game_edit.cpp:125
 msgid "enter game genre"
 msgstr ""
 
-#: src/menu_game_edit.cpp:127
+#: src/menu_game_edit.cpp:126
 msgid "Sort name"
 msgstr ""
 
-#: src/menu_game_edit.cpp:127
+#: src/menu_game_edit.cpp:126
 msgid "enter game sort name"
 msgstr ""
 
-#: src/menu_game_edit.cpp:128
+#: src/menu_game_edit.cpp:127
 msgid "Developer"
 msgstr ""
 
-#: src/menu_game_edit.cpp:128
+#: src/menu_game_edit.cpp:127
 msgid "this game's developer"
 msgstr ""
 
-#: src/menu_game_edit.cpp:129
+#: src/menu_game_edit.cpp:128
 msgid "Publisher"
 msgstr ""
 
-#: src/menu_game_edit.cpp:129
+#: src/menu_game_edit.cpp:128
 msgid "this game's publisher"
 msgstr ""
 
-#: src/menu_game_edit.cpp:130
+#: src/menu_game_edit.cpp:129
 msgid "this game's number of players"
 msgstr ""
 
-#: src/menu_game_edit.cpp:133
+#: src/menu_game_edit.cpp:132
 msgid "Release date"
 msgstr ""
 
-#: src/menu_game_edit.cpp:135
+#: src/menu_game_edit.cpp:134
 msgid "enter release date"
 msgstr ""
 
-#: src/menu_game_edit.cpp:139
+#: src/menu_game_edit.cpp:138
 msgid "INVALID DATE"
 msgstr ""
 
-#: src/menu_game_edit.cpp:152
+#: src/menu_game_edit.cpp:151
 msgid "Favorite"
 msgstr ""
 
-#: src/menu_game_edit.cpp:153
+#: src/menu_game_edit.cpp:152
 msgid "Hidden"
 msgstr ""
 
-#: src/menu_game_edit.cpp:154
+#: src/menu_game_edit.cpp:153
 msgid "Kidgame"
 msgstr ""
 
-#: src/menu_game_edit.cpp:156
+#: src/menu_game_edit.cpp:155
 msgid "SAVE"
 msgstr ""
 
-#: src/menu_game_edit.cpp:167 src/menu_savestates.cpp:34 src/ui_dialogs.cpp:323
-#: src/ui_dialogs.cpp:327 src/ui_dialogs.cpp:365
-msgid "DELETE"
+#: src/menu_game_edit.cpp:169 src/webmanage.cpp:499
+msgid "THE GAME COULD NOT BE DELETED"
 msgstr ""
 
-#: src/menu_game_edit.cpp:169 src/menu_game_edit.cpp:191
+#: src/menu_game_edit.cpp:177
+msgid "EDIT THIS GAME'S METADATA"
+msgstr ""
+
+#: src/menu_game_edit.cpp:178
+msgid "DELETE GAME"
+msgstr ""
+
+#: src/menu_game_edit.cpp:180
 msgid ""
 "THIS WILL DELETE THE ACTUAL GAME FILE(S)!\n"
 "ARE YOU SURE?"
 msgstr ""
 
-#: src/menu_game_edit.cpp:180 src/webmanage.cpp:494
-msgid "THE GAME COULD NOT BE DELETED"
-msgstr ""
-
-#: src/menu_game_edit.cpp:188
-msgid "EDIT THIS GAME'S METADATA"
-msgstr ""
-
-#: src/menu_game_edit.cpp:189
-msgid "DELETE GAME"
-msgstr ""
-
-#: src/menu_game_edit.cpp:200 src/menu_game_edit.cpp:201
+#: src/menu_game_edit.cpp:189 src/menu_game_edit.cpp:190
 msgid "EDIT METADATA"
 msgstr ""
 
@@ -1733,7 +2148,7 @@ msgstr ""
 msgid "CORE PROVIDED"
 msgstr ""
 
-#: src/menu_game_src.cpp:230
+#: src/menu_game_src.cpp:230 src/menu_system_info.cpp:84
 msgid "FULL"
 msgstr ""
 
@@ -1741,113 +2156,118 @@ msgstr ""
 msgid "SQUARE PIXEL"
 msgstr ""
 
-#: src/menu_groups.cpp:73 src/menu_groups.cpp:84 src/menu_system_main.cpp:372
+#: src/menu_groups.cpp:92 src/menu_groups.cpp:103 src/menu_system_main.cpp:393
 msgid "PANEL ADJUSTMENT"
 msgstr ""
 
-#: src/menu_groups.cpp:76 src/menu_main.cpp:20
+#: src/menu_groups.cpp:95 src/menu_main.cpp:20
 msgid "SCREEN & SOUND"
 msgstr ""
 
-#: src/menu_groups.cpp:80 src/menu_main.cpp:24 src/menu_ui.cpp:183
-#: src/menu_ui.cpp:202 src/menu_ui.cpp:229 src/menu_ui.cpp:235
+#: src/menu_groups.cpp:99 src/menu_main.cpp:24 src/menu_ui.cpp:176
+#: src/menu_ui.cpp:197 src/menu_ui.cpp:238 src/menu_ui.cpp:274
+#: src/menu_ui.cpp:280
 msgid "APPEARANCE"
 msgstr ""
 
-#: src/menu_groups.cpp:93
+#: src/menu_groups.cpp:116
+msgid "R36 Tuner Next"
+msgstr ""
+
+#: src/menu_groups.cpp:122
 msgid "IDLE"
 msgstr ""
 
-#: src/menu_groups.cpp:97 src/menu_groups.cpp:101
+#: src/menu_groups.cpp:129 src/menu_groups.cpp:137
+msgid "MONITORING"
+msgstr ""
+
+#: src/menu_groups.cpp:129 src/menu_groups.cpp:138
 msgid "OVERCLOCK & MONITORING"
 msgstr ""
 
-#: src/menu_groups.cpp:98 src/menu_main.cpp:19
-msgid "BATTERY & PERFORMANCE"
-msgstr ""
-
-#: src/menu_groups.cpp:106 src/menu_main.cpp:22
+#: src/menu_groups.cpp:143 src/menu_main.cpp:22
 msgid "LIBRARY"
 msgstr ""
 
-#: src/menu_groups.cpp:109 src/menu_library_doctor.cpp:84
+#: src/menu_groups.cpp:146 src/menu_library_doctor.cpp:83
 #: src/menu_scraper.cpp:551
 msgid "SCRAPER"
 msgstr ""
 
-#: src/menu_groups.cpp:111 src/menu_library_doctor.cpp:91
-#: src/menu_library_doctor.cpp:92
+#: src/menu_groups.cpp:148 src/menu_library_doctor.cpp:90
+#: src/menu_library_doctor.cpp:91
 msgid "CHECK LIBRARY"
 msgstr ""
 
-#: src/menu_groups.cpp:112 src/menu_savebackup.cpp:120
+#: src/menu_groups.cpp:149 src/menu_savebackup.cpp:120
 #: src/menu_savebackup.cpp:121
 msgid "SAVE BACKUPS"
 msgstr ""
 
-#: src/menu_groups.cpp:115
+#: src/menu_groups.cpp:152
 msgid "UPDATE GAMELISTS"
 msgstr ""
 
-#: src/menu_groups.cpp:133 src/menu_groups.cpp:142
+#: src/menu_groups.cpp:170 src/menu_groups.cpp:179
 msgid "LANGUAGE & TIME"
 msgstr ""
 
-#: src/menu_groups.cpp:134 src/menu_updates.cpp:189 src/menu_updates.cpp:190
+#: src/menu_groups.cpp:171 src/menu_updates.cpp:189 src/menu_updates.cpp:190
 msgid "UPDATES & DOWNLOADS"
 msgstr ""
 
-#: src/menu_groups.cpp:137 src/menu_groups.cpp:145 src/menu_system_main.cpp:552
+#: src/menu_groups.cpp:174 src/menu_groups.cpp:182 src/menu_system_main.cpp:568
 msgid "ADVANCED"
 msgstr ""
 
-#: src/menu_groups.cpp:138 src/menu_main.cpp:25 src/menu_system_info.cpp:90
-#: src/menu_system_main.cpp:249
+#: src/menu_groups.cpp:175 src/menu_main.cpp:25 src/menu_system_info.cpp:111
+#: src/menu_system_main.cpp:252
 msgid "SYSTEM"
 msgstr ""
 
-#: src/menu_home.cpp:90 src/menu_home.cpp:91
-msgid "HOME MENU"
-msgstr ""
-
-#: src/menu_home.cpp:94
-msgid "CHARGING"
-msgstr ""
-
-#: src/menu_home.cpp:97 src/menu_screens.cpp:44 src/menu_system_main.cpp:354
-#: src/menu_ui.cpp:309
-msgid "SCREEN BRIGHTNESS"
-msgstr ""
-
-#: src/menu_home.cpp:102 src/menu_screens.cpp:40 src/menu_sound.cpp:164
-msgid "SYSTEM VOLUME"
-msgstr ""
-
-#: src/menu_home.cpp:105
-msgid "OVERWRITE THE SAVE STATE?"
-msgstr ""
-
-#: src/menu_home.cpp:105
-msgid "SAVE STATE"
-msgstr ""
-
-#: src/menu_home.cpp:106
-msgid "LOAD STATE"
-msgstr ""
-
-#: src/menu_home.cpp:106
-msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
-msgstr ""
-
-#: src/menu_home.cpp:108
+#: src/menu_home.cpp:359 src/menu_home.cpp:389
 msgid "RESUME"
 msgstr ""
 
-#: src/menu_home.cpp:109
+#: src/menu_home.cpp:360
+msgid "SAVE STATE"
+msgstr ""
+
+#: src/menu_home.cpp:361
+msgid "LOAD STATE"
+msgstr ""
+
+#: src/menu_home.cpp:362 src/menu_screens.cpp:44 src/menu_system_main.cpp:375
+#: src/menu_ui.cpp:354
+msgid "SCREEN BRIGHTNESS"
+msgstr ""
+
+#: src/menu_home.cpp:363 src/menu_screens.cpp:40 src/menu_sound.cpp:164
+msgid "SYSTEM VOLUME"
+msgstr ""
+
+#: src/menu_home.cpp:364
 msgid "QUIT GAME"
 msgstr ""
 
-#: src/menu_home.cpp:109
+#: src/menu_home.cpp:368
+msgid "HOME MENU"
+msgstr ""
+
+#: src/menu_home.cpp:372 src/menu_system_info.cpp:82
+msgid "CHARGING"
+msgstr ""
+
+#: src/menu_home.cpp:382
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr ""
+
+#: src/menu_home.cpp:383
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr ""
+
+#: src/menu_home.cpp:384
 msgid "REALLY QUIT THE GAME?"
 msgstr ""
 
@@ -1867,15 +2287,15 @@ msgstr ""
 msgid "MISSING BIOS"
 msgstr ""
 
-#: src/menu_library_doctor.cpp:59
+#: src/menu_library_doctor.cpp:58
 msgid "POSSIBLY BROKEN FILES"
 msgstr ""
 
-#: src/menu_library_doctor.cpp:68
+#: src/menu_library_doctor.cpp:67
 msgid "DUPLICATES"
 msgstr ""
 
-#: src/menu_library_doctor.cpp:77
+#: src/menu_library_doctor.cpp:76
 msgid "GAMES WITHOUT A PICTURE"
 msgstr ""
 
@@ -1883,13 +2303,9 @@ msgstr ""
 msgid "RETROACHIEVEMENTS"
 msgstr ""
 
-#: src/menu_main.cpp:21 src/menu_network.cpp:458 src/menu_network.cpp:655
-#: src/menu_network.cpp:656
+#: src/menu_main.cpp:21 src/menu_network.cpp:475 src/menu_network.cpp:644
+#: src/menu_network.cpp:645
 msgid "NETWORK"
-msgstr ""
-
-#: src/menu_main.cpp:23
-msgid "CONTROLLER & BLUETOOTH"
 msgstr ""
 
 #: src/menu_main.cpp:26 src/menu_main.cpp:36 src/menu_quit.cpp:42
@@ -1897,9 +2313,9 @@ msgstr ""
 msgid "QUIT"
 msgstr ""
 
-#: src/menu_main.cpp:34 src/menu_network.cpp:386 src/menu_scraper.cpp:198
-#: src/menu_screens.cpp:62 src/menu_system_info.cpp:73
-#: src/menu_system_info.cpp:74 src/menu_system_main.cpp:250
+#: src/menu_main.cpp:34 src/menu_network.cpp:411 src/menu_scraper.cpp:198
+#: src/menu_screens.cpp:62 src/menu_system_info.cpp:92
+#: src/menu_system_info.cpp:93 src/menu_system_main.cpp:253
 msgid "INFORMATION"
 msgstr ""
 
@@ -1965,8 +2381,8 @@ msgstr ""
 msgid "YOU ARE NOT CONNECTED TO A NETWORK"
 msgstr ""
 
-#: src/menu_netplay.cpp:53 src/menu_netplay.cpp:162 src/menu_netplay.cpp:163
-#: src/menu_netplay.cpp:189 src/menu_netplay.cpp:190
+#: src/menu_netplay.cpp:53 src/menu_netplay.cpp:158 src/menu_netplay.cpp:159
+#: src/menu_netplay.cpp:185 src/menu_netplay.cpp:186
 msgid "CONNECT TO NETPLAY"
 msgstr ""
 
@@ -2011,504 +2427,453 @@ msgid "CUSTOM RELAY SERVER"
 msgstr ""
 
 #: src/menu_netplay.cpp:76
-msgid "AUTOMATICALLY CREATE LOBBY"
-msgstr ""
-
-#: src/menu_netplay.cpp:76
-msgid "Automatically creates a Netplay lobby when starting a game."
-msgstr ""
-
-#: src/menu_netplay.cpp:77
 msgid "Relay server games have a higher chance of successful entry."
 msgstr ""
 
-#: src/menu_netplay.cpp:77
+#: src/menu_netplay.cpp:76
 msgid "SHOW RELAY SERVER GAMES ONLY"
 msgstr ""
 
-#: src/menu_netplay.cpp:78
+#: src/menu_netplay.cpp:77
 msgid "SHOW UNAVAILABLE GAMES"
 msgstr ""
 
-#: src/menu_netplay.cpp:78
+#: src/menu_netplay.cpp:77
 msgid "Show rooms for games not present on this machine."
 msgstr ""
 
-#: src/menu_netplay.cpp:81
-msgid "GAME INDEXES"
-msgstr ""
-
-#: src/menu_netplay.cpp:82
-msgid "INDEX NEW GAMES AT STARTUP"
-msgstr ""
-
-#: src/menu_netplay.cpp:129 src/netplay.cpp:334 src/netplay.cpp:352
+#: src/menu_netplay.cpp:125 src/netplay.cpp:334 src/netplay.cpp:352
 msgid "FAILED"
 msgstr ""
 
-#: src/menu_netplay.cpp:172
+#: src/menu_netplay.cpp:168
 msgid "JOIN GAME"
 msgstr ""
 
-#: src/menu_netplay.cpp:177
+#: src/menu_netplay.cpp:173
 msgid "WATCH GAME"
 msgstr ""
 
-#: src/menu_netplay.cpp:194
+#: src/menu_netplay.cpp:190
 msgid "Select a game lobby to join"
 msgstr ""
 
-#: src/menu_netplay.cpp:195 src/menu_network.cpp:826
+#: src/menu_netplay.cpp:191 src/menu_network.cpp:818
 msgid "REFRESH"
 msgstr ""
 
-#: src/menu_netplay.cpp:212
+#: src/menu_netplay.cpp:208
 msgid "AVAILABLE GAMES"
 msgstr ""
 
-#: src/menu_netplay.cpp:212
+#: src/menu_netplay.cpp:208
 msgid "ONLINE GAMES"
 msgstr ""
 
-#: src/menu_netplay.cpp:212
+#: src/menu_netplay.cpp:208
 msgid "UNAVAILABLE GAMES"
 msgstr ""
 
-#: src/menu_netplay.cpp:246 src/menu_netplay.cpp:247
+#: src/menu_netplay.cpp:242 src/menu_netplay.cpp:243
 msgid "NETPLAY"
 msgstr ""
 
-#: src/menu_netplay.cpp:251
+#: src/menu_netplay.cpp:247
 msgid "START GAME"
 msgstr ""
 
-#: src/menu_netplay.cpp:252
+#: src/menu_netplay.cpp:248
 msgid "HOST A NETPLAY GAME"
 msgstr ""
 
-#: src/menu_netplay.cpp:259
+#: src/menu_netplay.cpp:255
 msgid "JOIN A NETPLAY GAME"
 msgstr ""
 
-#: src/menu_netplay.cpp:270
+#: src/menu_netplay.cpp:266
 msgid "NETPLAY NICKNAME"
 msgstr ""
 
-#: src/menu_netplay.cpp:271
+#: src/menu_netplay.cpp:267
 msgid "PLAYER PASSWORD"
 msgstr ""
 
-#: src/menu_netplay.cpp:273
+#: src/menu_netplay.cpp:269
 msgid "PUBLICLY ANNOUNCE GAME"
 msgstr ""
 
-#: src/menu_netplay.cpp:274
+#: src/menu_netplay.cpp:270
 msgid "NETPLAY HOST"
 msgstr ""
 
-#: src/menu_netplay.cpp:275
+#: src/menu_netplay.cpp:271
 msgid "NETPLAY PORT"
 msgstr ""
 
-#: src/menu_netplay.cpp:288
+#: src/menu_netplay.cpp:284
 msgid "START A NETPLAY GAME"
 msgstr ""
 
-#: src/menu_network.cpp:180
+#: src/menu_network.cpp:179
 msgid "Turning Wi-Fi on..."
 msgstr ""
 
-#: src/menu_network.cpp:183 src/menu_network.cpp:189 src/menu_network.cpp:205
-#: src/menu_network.cpp:228
+#: src/menu_network.cpp:182 src/menu_network.cpp:188 src/menu_network.cpp:204
+#: src/menu_network.cpp:250
 msgid "Wi-Fi configuration error"
 msgstr ""
 
-#: src/menu_network.cpp:183
+#: src/menu_network.cpp:182
 msgid "Wi-Fi is on"
 msgstr ""
 
-#: src/menu_network.cpp:189
+#: src/menu_network.cpp:188
 msgid "Wi-Fi is off"
 msgstr ""
 
-#: src/menu_network.cpp:205
+#: src/menu_network.cpp:204
 msgid "Wi-Fi region updated"
 msgstr ""
 
-#: src/menu_network.cpp:222
+#: src/menu_network.cpp:244
 msgid "Please wait..."
 msgstr ""
 
-#: src/menu_network.cpp:228
+#: src/menu_network.cpp:250
 msgid "Local play mode updated"
 msgstr ""
 
-#: src/menu_network.cpp:241 src/menu_network.cpp:799
+#: src/menu_network.cpp:263 src/menu_network.cpp:791
 msgid "The service did not answer"
 msgstr ""
 
-#: src/menu_network.cpp:336 src/menu_network.cpp:342
+#: src/menu_network.cpp:361 src/menu_network.cpp:367
 msgid "N/A"
 msgstr ""
 
-#: src/menu_network.cpp:365
+#: src/menu_network.cpp:390
 msgid "WI-FI"
 msgstr ""
 
-#: src/menu_network.cpp:366
+#: src/menu_network.cpp:391
 msgid "ENABLE WI-FI"
 msgstr ""
 
-#: src/menu_network.cpp:368 src/menu_network.cpp:833 src/menu_network.cpp:834
+#: src/menu_network.cpp:393 src/menu_network.cpp:826 src/menu_network.cpp:827
 msgid "WI-FI NETWORKS"
 msgstr ""
 
-#: src/menu_network.cpp:370 src/menu_network.cpp:371
+#: src/menu_network.cpp:395 src/menu_network.cpp:396
 msgid "WI-FI COUNTRY"
 msgstr ""
 
-#: src/menu_network.cpp:375
+#: src/menu_network.cpp:400
 msgid "Sets the radio regulations: the channels you may use."
 msgstr ""
 
-#: src/menu_network.cpp:381 src/menu_network.cpp:638 src/menu_network.cpp:639
+#: src/menu_network.cpp:406 src/menu_network.cpp:627 src/menu_network.cpp:628
 msgid "TRANSFER FILES"
 msgstr ""
 
-#: src/menu_network.cpp:383
+#: src/menu_network.cpp:408
 msgid "Send games to the console from a phone or computer on this network."
 msgstr ""
 
-#: src/menu_network.cpp:391
+#: src/menu_network.cpp:416
 msgid "AVAILABLE IP ADDRESSES:"
 msgstr ""
 
-#: src/menu_network.cpp:391 src/menu_network.cpp:394 src/menu_screens.cpp:63
+#: src/menu_network.cpp:416 src/menu_network.cpp:419 src/menu_screens.cpp:63
+#: src/menu_system_info.cpp:75
 msgid "IP ADDRESS"
 msgstr ""
 
-#: src/menu_network.cpp:394 src/menu_network.cpp:396 src/menu_network.cpp:608
-#: src/menu_network.cpp:629 src/webqr_screen.cpp:83
+#: src/menu_network.cpp:419 src/menu_network.cpp:421 src/menu_network.cpp:597
+#: src/menu_network.cpp:618 src/webqr_screen.cpp:84
 msgid "NOT CONNECTED"
 msgstr ""
 
-#: src/menu_network.cpp:396 src/menu_network.cpp:749
+#: src/menu_network.cpp:421 src/menu_network.cpp:740
 msgid "CONNECTED"
 msgstr ""
 
-#: src/menu_network.cpp:396
+#: src/menu_network.cpp:421
 msgid "INTERNET STATUS"
 msgstr ""
 
-#: src/menu_network.cpp:397
-msgid "SHOW NETWORK INDICATOR"
-msgstr ""
-
-#: src/menu_network.cpp:405
+#: src/menu_network.cpp:424
 msgid "LOCAL PLAY"
 msgstr ""
 
-#: src/menu_network.cpp:408
+#: src/menu_network.cpp:427
 msgid "LOCAL PLAY MODE"
 msgstr ""
 
-#: src/menu_network.cpp:409
+#: src/menu_network.cpp:428
 msgid "Hosts an access point for netplay with other consoles."
 msgstr ""
 
-#: src/menu_network.cpp:412
+#: src/menu_network.cpp:431
 msgid "1 (HOST)"
 msgstr ""
 
-#: src/menu_network.cpp:412
+#: src/menu_network.cpp:431
 msgid "2 (CLIENT 1)"
 msgstr ""
 
-#: src/menu_network.cpp:412
+#: src/menu_network.cpp:431
 msgid "3 (CLIENT 2)"
 msgstr ""
 
-#: src/menu_network.cpp:412
+#: src/menu_network.cpp:431
 msgid "4 (CLIENT 3)"
 msgstr ""
 
-#: src/menu_network.cpp:412
+#: src/menu_network.cpp:431
 msgid "LOCAL PLAY ID"
 msgstr ""
 
-#: src/menu_network.cpp:421 src/menu_network.cpp:647 src/menu_network.cpp:648
+#: src/menu_network.cpp:440 src/menu_network.cpp:636 src/menu_network.cpp:637
 msgid "SERVICES"
 msgstr ""
 
-#: src/menu_network.cpp:421
+#: src/menu_network.cpp:440
 msgid "SSH, USB, cloud, VPN and the console's name."
 msgstr ""
 
-#: src/menu_network.cpp:438
+#: src/menu_network.cpp:455
 msgid "NETWORK SERVICES"
 msgstr ""
 
-#: src/menu_network.cpp:440
+#: src/menu_network.cpp:457
 msgid "ENABLE SSH"
 msgstr ""
 
-#: src/menu_network.cpp:446
+#: src/menu_network.cpp:463
 msgid "SSH is off"
 msgstr ""
 
-#: src/menu_network.cpp:446
+#: src/menu_network.cpp:463
 msgid "SSH is on"
 msgstr ""
 
-#: src/menu_network.cpp:448
+#: src/menu_network.cpp:465
 msgid "Remote access to the console over the network."
 msgstr ""
 
-#: src/menu_network.cpp:450
+#: src/menu_network.cpp:467
 msgid "ENABLE SIMPLE HTTP SERVER"
 msgstr ""
 
-#: src/menu_network.cpp:454
+#: src/menu_network.cpp:471
 msgid "HTTP server is off"
 msgstr ""
 
-#: src/menu_network.cpp:454
+#: src/menu_network.cpp:471
 msgid "HTTP server is on"
 msgstr ""
 
-#: src/menu_network.cpp:458
+#: src/menu_network.cpp:475
 msgid "FILE TRANSFER"
 msgstr ""
 
-#: src/menu_network.cpp:458
+#: src/menu_network.cpp:475
 msgid "USB GADGET FUNCTION"
 msgstr ""
 
-#: src/menu_network.cpp:472
+#: src/menu_network.cpp:489
 msgid "USB networking is on. The console is at"
 msgstr ""
 
-#: src/menu_network.cpp:477
+#: src/menu_network.cpp:494
 msgid "What the console offers on its USB-C port."
 msgstr ""
 
-#: src/menu_network.cpp:480
+#: src/menu_network.cpp:498
 msgid "CLOUD SERVICES"
 msgstr ""
 
-#: src/menu_network.cpp:482
-msgid "ENABLE SYNCTHING"
-msgstr ""
-
-#: src/menu_network.cpp:485
-msgid "Syncthing is off"
-msgstr ""
-
-#: src/menu_network.cpp:485
-msgid "Syncthing is on"
-msgstr ""
-
-#: src/menu_network.cpp:488
+#: src/menu_network.cpp:500
 msgid "MOUNT CLOUD DRIVE"
 msgstr ""
 
-#: src/menu_network.cpp:498
+#: src/menu_network.cpp:510
 msgid "Cloud drive mounted"
 msgstr ""
 
-#: src/menu_network.cpp:498
+#: src/menu_network.cpp:510
 msgid "Cloud drive unmounted"
 msgstr ""
 
-#: src/menu_network.cpp:504
+#: src/menu_network.cpp:516
 msgid "VPN SERVICES"
 msgstr ""
 
-#: src/menu_network.cpp:506
+#: src/menu_network.cpp:518
 msgid "WIREGUARD VPN"
 msgstr ""
 
-#: src/menu_network.cpp:512
+#: src/menu_network.cpp:524
 msgid "WireGuard is off"
 msgstr ""
 
-#: src/menu_network.cpp:512
+#: src/menu_network.cpp:524
 msgid "WireGuard is on"
 msgstr ""
 
-#: src/menu_network.cpp:515
+#: src/menu_network.cpp:527
 msgid "TAILSCALE VPN"
 msgstr ""
 
-#: src/menu_network.cpp:536
+#: src/menu_network.cpp:548
 msgid "Tailscale is off"
 msgstr ""
 
-#: src/menu_network.cpp:537
+#: src/menu_network.cpp:549
 msgid "Tailscale is on"
 msgstr ""
 
-#: src/menu_network.cpp:538
+#: src/menu_network.cpp:550
 msgid "Tailscale could not connect"
 msgstr ""
 
-#: src/menu_network.cpp:538
+#: src/menu_network.cpp:550
 msgid "Tailscale needs you to log in"
 msgstr ""
 
-#: src/menu_network.cpp:545
+#: src/menu_network.cpp:557
 msgid "SHOW LINK"
 msgstr ""
 
-#: src/menu_network.cpp:545
+#: src/menu_network.cpp:557
 msgid "TAILSCALE LOGIN"
 msgstr ""
 
-#: src/menu_network.cpp:545
+#: src/menu_network.cpp:557
 msgid "TAILSCALE REAUTHENTICATE:"
 msgstr ""
 
-#: src/menu_network.cpp:549
-msgid "ZeroTier One"
-msgstr ""
-
-#: src/menu_network.cpp:567
-msgid "ZeroTier could not connect"
-msgstr ""
-
-#: src/menu_network.cpp:567
-msgid "ZeroTier is off"
-msgstr ""
-
-#: src/menu_network.cpp:567
-msgid "ZeroTier is on"
-msgstr ""
-
-#: src/menu_network.cpp:574 src/menu_screens.cpp:53
+#: src/menu_network.cpp:561 src/menu_screens.cpp:53
 msgid "HOSTNAME"
 msgstr ""
 
-#: src/menu_network.cpp:578
+#: src/menu_network.cpp:565
 msgid "Use letters, digits and dashes only"
 msgstr ""
 
-#: src/menu_network.cpp:582
+#: src/menu_network.cpp:569
 msgid "Hostname saved. It applies at the next boot"
 msgstr ""
 
-#: src/menu_network.cpp:584
+#: src/menu_network.cpp:571
 msgid "The new name is used at the next boot."
 msgstr ""
 
-#: src/menu_network.cpp:590
+#: src/menu_network.cpp:578
 msgid "WEB FILE TRANSFER"
 msgstr ""
 
-#: src/menu_network.cpp:596
-msgid "Could not start the web transfer"
-msgstr ""
-
-#: src/menu_network.cpp:600
+#: src/menu_network.cpp:589
 msgid "Lets a phone or computer on this network send games to the console."
 msgstr ""
 
-#: src/menu_network.cpp:603
+#: src/menu_network.cpp:592
 msgid "COULD NOT START (PORT BUSY?)"
 msgstr ""
 
-#: src/menu_network.cpp:603 src/menu_network.cpp:608
+#: src/menu_network.cpp:592 src/menu_network.cpp:597
 msgid "WEB ADDRESS"
 msgstr ""
 
-#: src/menu_network.cpp:609
+#: src/menu_network.cpp:598
 msgid "WEB PIN"
 msgstr ""
 
-#: src/menu_network.cpp:615
+#: src/menu_network.cpp:604
 msgid "NETWORK DRIVE (SAMBA)"
 msgstr ""
 
-#: src/menu_network.cpp:616
+#: src/menu_network.cpp:605
 msgid "ENABLE SAMBA"
 msgstr ""
 
-#: src/menu_network.cpp:622
+#: src/menu_network.cpp:611
 msgid "Samba is off"
 msgstr ""
 
-#: src/menu_network.cpp:622
+#: src/menu_network.cpp:611
 msgid "Samba is on"
 msgstr ""
 
-#: src/menu_network.cpp:625
+#: src/menu_network.cpp:614
 msgid "Shares the games folder with other computers."
 msgstr ""
 
-#: src/menu_network.cpp:629
+#: src/menu_network.cpp:618
 msgid "SAMBA ADDRESS"
 msgstr ""
 
-#: src/menu_network.cpp:630
+#: src/menu_network.cpp:619
 msgid "SAMBA USER"
 msgstr ""
 
-#: src/menu_network.cpp:631
+#: src/menu_network.cpp:620
 msgid "SAMBA PASSWORD"
 msgstr ""
 
-#: src/menu_network.cpp:728
+#: src/menu_network.cpp:719
 msgid "Connecting to"
 msgstr ""
 
-#: src/menu_network.cpp:742
+#: src/menu_network.cpp:733
 msgid "Connected successfully"
 msgstr ""
 
-#: src/menu_network.cpp:742
+#: src/menu_network.cpp:733
 msgid "Failed to connect"
 msgstr ""
 
-#: src/menu_network.cpp:750 src/menu_savestates.cpp:383
+#: src/menu_network.cpp:741 src/menu_savestates.cpp:383
 msgid "SAVED"
 msgstr ""
 
-#: src/menu_network.cpp:751
+#: src/menu_network.cpp:742
 msgid "OPEN"
 msgstr ""
 
-#: src/menu_network.cpp:752
+#: src/menu_network.cpp:743
 msgid "ENTERPRISE"
 msgstr ""
 
-#: src/menu_network.cpp:753
+#: src/menu_network.cpp:744
 msgid "SECURED"
 msgstr ""
 
-#: src/menu_network.cpp:771
+#: src/menu_network.cpp:763
 msgid "Enterprise networks are not supported"
 msgstr ""
 
-#: src/menu_network.cpp:799
+#: src/menu_network.cpp:791
 msgid "Network forgotten"
 msgstr ""
 
-#: src/menu_network.cpp:806
+#: src/menu_network.cpp:798
 msgid "WI-FI KEY FOR "
 msgstr ""
 
-#: src/menu_network.cpp:816
+#: src/menu_network.cpp:808
 msgid "SEARCHING WI-FI NETWORKS"
 msgstr ""
 
-#: src/menu_network.cpp:820
+#: src/menu_network.cpp:812
 msgid "CONNECTING..."
 msgstr ""
 
-#: src/menu_network.cpp:821
+#: src/menu_network.cpp:813
 msgid "NO WI-FI NETWORKS FOUND"
 msgstr ""
 
-#: src/menu_network.cpp:827 src/menu_network.cpp:854 src/menu_network.cpp:855
+#: src/menu_network.cpp:819 src/menu_network.cpp:854 src/menu_network.cpp:855
 msgid "INPUT MANUALLY"
 msgstr ""
 
@@ -2749,13 +3114,18 @@ msgstr ""
 msgid "DELETE THIS BACKUP?"
 msgstr ""
 
-#: src/menu_savestates.cpp:33 src/menu_savestates.cpp:34 src/scene.cpp:254
-#: src/scene.cpp:258
+#: src/menu_savestates.cpp:33 src/menu_savestates.cpp:34 src/scene.cpp:257
+#: src/scene.cpp:261
 msgid "LAUNCH"
 msgstr ""
 
 #: src/menu_savestates.cpp:34
 msgid "COPY TO FREE SLOT"
+msgstr ""
+
+#: src/menu_savestates.cpp:34 src/ui_dialogs.cpp:325 src/ui_dialogs.cpp:329
+#: src/ui_dialogs.cpp:367
+msgid "DELETE"
 msgstr ""
 
 #: src/menu_savestates.cpp:141
@@ -2958,7 +3328,7 @@ msgstr ""
 msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
 msgstr ""
 
-#: src/menu_scraper.cpp:195
+#: src/menu_scraper.cpp:195 src/menu_welcome.cpp:141 src/menu_welcome.cpp:395
 msgid "REGION"
 msgstr ""
 
@@ -3202,6 +3572,10 @@ msgstr ""
 msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
 msgstr ""
 
+#: src/menu_scraper.cpp:495
+msgid "GAMES"
+msgstr ""
+
 #: src/menu_scraper.cpp:499
 msgid "PROBLEMS"
 msgstr ""
@@ -3214,7 +3588,7 @@ msgstr ""
 msgid "SWITCHES AND SLIDERS"
 msgstr ""
 
-#: src/menu_screens.cpp:38 src/menu_ui.cpp:319
+#: src/menu_screens.cpp:38 src/menu_skin.cpp:43 src/menu_ui.cpp:364
 msgid "SHOW CLOCK"
 msgstr ""
 
@@ -3222,7 +3596,7 @@ msgstr ""
 msgid "The clock shows in the top right corner."
 msgstr ""
 
-#: src/menu_screens.cpp:39 src/menu_ui.cpp:362
+#: src/menu_screens.cpp:39 src/menu_ui.cpp:415
 msgid "ON-SCREEN HELP"
 msgstr ""
 
@@ -3234,11 +3608,11 @@ msgstr ""
 msgid "LISTS AND TEXT"
 msgstr ""
 
-#: src/menu_screens.cpp:49 src/menu_ui.cpp:335
+#: src/menu_screens.cpp:49 src/menu_ui.cpp:380
 msgid "ICON"
 msgstr ""
 
-#: src/menu_screens.cpp:49 src/menu_ui.cpp:335
+#: src/menu_screens.cpp:49 src/menu_skin.cpp:45 src/menu_ui.cpp:380
 msgid "SHOW BATTERY STATUS"
 msgstr ""
 
@@ -3298,12 +3672,44 @@ msgstr ""
 msgid "Restarting..."
 msgstr ""
 
-#: src/menu_screens.cpp:64
+#: src/menu_screens.cpp:64 src/menu_system_info.cpp:74
 msgid "VERSION"
 msgstr ""
 
 #: src/menu_screens.cpp:66
 msgid "DISABLED ENTRY"
+msgstr ""
+
+#: src/menu_skin.cpp:38 src/menu_ui.cpp:305
+msgid "SELECTOR STYLE"
+msgstr ""
+
+#: src/menu_skin.cpp:39 src/menu_ui.cpp:307
+msgid "TITLE ALIGNMENT"
+msgstr ""
+
+#: src/menu_skin.cpp:40 src/menu_ui.cpp:308
+msgid "LIST TEXT CASE"
+msgstr ""
+
+#: src/menu_skin.cpp:41 src/menu_ui.cpp:312
+msgid "TEXT SIZE"
+msgstr ""
+
+#: src/menu_skin.cpp:42 src/menu_ui.cpp:326
+msgid "HIGH CONTRAST"
+msgstr ""
+
+#: src/menu_skin.cpp:44 src/menu_ui.cpp:372
+msgid "SHOW CLOCK IN 12-HOUR FORMAT"
+msgstr ""
+
+#: src/menu_skin.cpp:46 src/menu_ui.cpp:403
+msgid "CAROUSEL TRANSITIONS"
+msgstr ""
+
+#: src/menu_skin.cpp:278
+msgid "options"
 msgstr ""
 
 #: src/menu_sound.cpp:155
@@ -3367,44 +3773,168 @@ msgstr ""
 msgid "STOP LAUNCHING THIS GAME AT STARTUP"
 msgstr ""
 
-#: src/menu_system.cpp:198 src/menu_system_main.cpp:245
+#: src/menu_system.cpp:243 src/menu_system_main.cpp:248
 #: src/menu_updates.cpp:225
 msgid "Reboot now"
 msgstr ""
 
-#: src/menu_system.cpp:199 src/menu_updates.cpp:226
+#: src/menu_system.cpp:244 src/menu_updates.cpp:226
 msgid "Later"
 msgstr ""
 
-#: src/menu_system_info.cpp:86 src/menu_system_info.cpp:94
+#: src/menu_system.cpp:289
+msgid "Default"
+msgstr ""
+
+#: src/menu_system.cpp:307
+msgid "Arm (official)"
+msgstr ""
+
+#: src/menu_system.cpp:308
+msgid "Open source (Panfrost / PanVK)"
+msgstr ""
+
+#: src/menu_system_info.cpp:74
+msgid "BUILD ID"
+msgstr ""
+
+#: src/menu_system_info.cpp:74 src/menu_system_main.cpp:443
+msgid "DEVICE"
+msgstr ""
+
+#: src/menu_system_info.cpp:74
+msgid "KERNEL"
+msgstr ""
+
+#: src/menu_system_info.cpp:74
+msgid "OPERATING SYSTEM"
+msgstr ""
+
+#: src/menu_system_info.cpp:74
+msgid "SYSTEM INFORMATION"
+msgstr ""
+
+#: src/menu_system_info.cpp:75
+msgid "BATTERY INFORMATION"
+msgstr ""
+
+#: src/menu_system_info.cpp:75
+msgid "DISK SPACE"
+msgstr ""
+
+#: src/menu_system_info.cpp:75
+msgid "HOST NAME"
+msgstr ""
+
+#: src/menu_system_info.cpp:75
+msgid "NETWORK INFORMATION"
+msgstr ""
+
+#: src/menu_system_info.cpp:76
+msgid "BATTERY HEALTH"
+msgstr ""
+
+#: src/menu_system_info.cpp:76
+msgid "BATTERY REMAINING"
+msgstr ""
+
+#: src/menu_system_info.cpp:76
+msgid "BATTERY STATE"
+msgstr ""
+
+#: src/menu_system_info.cpp:76
+msgid "CPU"
+msgstr ""
+
+#: src/menu_system_info.cpp:76
+msgid "CPU INFORMATION"
+msgstr ""
+
+#: src/menu_system_info.cpp:76
+msgid "CPU TEMPERATURE"
+msgstr ""
+
+#: src/menu_system_info.cpp:77
+msgid "CPU FAN"
+msgstr ""
+
+#: src/menu_system_info.cpp:77
+msgid "GPU CURRENT FREQUENCY"
+msgstr ""
+
+#: src/menu_system_info.cpp:77
+msgid "GPU INFORMATION"
+msgstr ""
+
+#: src/menu_system_info.cpp:77
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr ""
+
+#: src/menu_system_info.cpp:77
+msgid "GPU TEMPERATURE"
+msgstr ""
+
+#: src/menu_system_info.cpp:78
+msgid "CURRENT FREQUENCY"
+msgstr ""
+
+#: src/menu_system_info.cpp:78
+msgid "MAXIMUM FREQUENCY"
+msgstr ""
+
+#: src/menu_system_info.cpp:78
+msgid "RAM AVAILABLE"
+msgstr ""
+
+#: src/menu_system_info.cpp:78
+msgid "RAM CAPACITY"
+msgstr ""
+
+#: src/menu_system_info.cpp:78
+msgid "RAM INFORMATION"
+msgstr ""
+
+#: src/menu_system_info.cpp:83
+msgid "DISCHARGING"
+msgstr ""
+
+#: src/menu_system_info.cpp:85
+msgid "NOT CHARGING"
+msgstr ""
+
+#: src/menu_system_info.cpp:100
+msgid "TIME LEFT TODAY"
+msgstr ""
+
+#: src/menu_system_info.cpp:107 src/menu_system_info.cpp:115
 msgid "UPTIME"
 msgstr ""
 
-#: src/menu_system_info.cpp:95
+#: src/menu_system_info.cpp:116
 msgid "No information available"
 msgstr ""
 
-#: src/menu_system_info.cpp:122 src/menu_system_info.cpp:123
-#: src/menu_system_main.cpp:564
+#: src/menu_system_info.cpp:144 src/menu_system_info.cpp:145
+#: src/menu_system_main.cpp:580
 msgid "SYSTEM MANAGEMENT AND RESET"
 msgstr ""
 
-#: src/menu_system_info.cpp:133
+#: src/menu_system_info.cpp:155
 msgid ""
 "ARE YOU SURE?\n"
 "\n"
 "THIS CANNOT BE UNDONE."
 msgstr ""
 
-#: src/menu_system_info.cpp:141
+#: src/menu_system_info.cpp:163
 msgid "DATA MANAGEMENT"
 msgstr ""
 
-#: src/menu_system_info.cpp:142
+#: src/menu_system_info.cpp:164
 msgid "BACKUP CONFIGURATIONS"
 msgstr ""
 
-#: src/menu_system_info.cpp:143
+#: src/menu_system_info.cpp:165
 msgid ""
 "WARNING THIS WILL RESTART THE FRONTEND!\n"
 "\n"
@@ -3414,11 +3944,11 @@ msgid ""
 "BACKUP CURRENT CONFIG AND RESTART?"
 msgstr ""
 
-#: src/menu_system_info.cpp:146
+#: src/menu_system_info.cpp:168
 msgid "RESTORE FROM BACKUP"
 msgstr ""
 
-#: src/menu_system_info.cpp:146
+#: src/menu_system_info.cpp:168
 msgid ""
 "WARNING THIS WILL REBOOT YOUR DEVICE!\n"
 "\n"
@@ -3427,15 +3957,15 @@ msgid ""
 "RESTORE FROM BACKUP AND RESTART?"
 msgstr ""
 
-#: src/menu_system_info.cpp:149
+#: src/menu_system_info.cpp:171
 msgid "EMULATOR MANAGEMENT"
 msgstr ""
 
-#: src/menu_system_info.cpp:150
+#: src/menu_system_info.cpp:172
 msgid "RESET RETROARCH CONFIG TO DEFAULT"
 msgstr ""
 
-#: src/menu_system_info.cpp:151
+#: src/menu_system_info.cpp:173
 msgid ""
 "WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
 "\n"
@@ -3444,11 +3974,11 @@ msgid ""
 "RESET RETROARCH CONFIG TO DEFAULT?"
 msgstr ""
 
-#: src/menu_system_info.cpp:154
+#: src/menu_system_info.cpp:176
 msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
 msgstr ""
 
-#: src/menu_system_info.cpp:155
+#: src/menu_system_info.cpp:177
 msgid ""
 "WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
 "\n"
@@ -3457,11 +3987,11 @@ msgid ""
 "RESET RETROARCH OVERLAYS TO DEFAULT?"
 msgstr ""
 
-#: src/menu_system_info.cpp:158
+#: src/menu_system_info.cpp:180
 msgid "FULLY RESET RETROARCH"
 msgstr ""
 
-#: src/menu_system_info.cpp:159
+#: src/menu_system_info.cpp:181
 msgid ""
 "WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
 "\n"
@@ -3470,11 +4000,11 @@ msgid ""
 "RESET RETROARCH?"
 msgstr ""
 
-#: src/menu_system_info.cpp:162
+#: src/menu_system_info.cpp:184
 msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
 msgstr ""
 
-#: src/menu_system_info.cpp:163
+#: src/menu_system_info.cpp:185
 msgid ""
 "WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
 "\n"
@@ -3483,11 +4013,11 @@ msgid ""
 "RESET MEDNAFEN CONFIG TO DEFAULT?"
 msgstr ""
 
-#: src/menu_system_info.cpp:164
+#: src/menu_system_info.cpp:186
 msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
 msgstr ""
 
-#: src/menu_system_info.cpp:165
+#: src/menu_system_info.cpp:187
 msgid ""
 "WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
 "\n"
@@ -3496,11 +4026,11 @@ msgid ""
 "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
 msgstr ""
 
-#: src/menu_system_info.cpp:167
+#: src/menu_system_info.cpp:189
 msgid "FULLY RESET PORTMASTER"
 msgstr ""
 
-#: src/menu_system_info.cpp:167
+#: src/menu_system_info.cpp:189
 msgid ""
 "WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
 "\n"
@@ -3509,15 +4039,15 @@ msgid ""
 "RESET PORTMASTER TO DEFAULT?"
 msgstr ""
 
-#: src/menu_system_info.cpp:170
+#: src/menu_system_info.cpp:192
 msgid "SYSTEM MANAGEMENT"
 msgstr ""
 
-#: src/menu_system_info.cpp:171
+#: src/menu_system_info.cpp:193
 msgid "AUDIO RESET"
 msgstr ""
 
-#: src/menu_system_info.cpp:171
+#: src/menu_system_info.cpp:193
 msgid ""
 "WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL "
 "REBOOT!\n"
@@ -3525,11 +4055,11 @@ msgid ""
 "RESET AUDIO AND RESTART?"
 msgstr ""
 
-#: src/menu_system_info.cpp:174
+#: src/menu_system_info.cpp:196
 msgid "RESET BATTERY FUEL GAUGE"
 msgstr ""
 
-#: src/menu_system_info.cpp:175
+#: src/menu_system_info.cpp:197
 msgid ""
 "WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
 "\n"
@@ -3540,11 +4070,11 @@ msgid ""
 "RESET FUEL GAUGE AND POWER OFF?"
 msgstr ""
 
-#: src/menu_system_info.cpp:178
+#: src/menu_system_info.cpp:200
 msgid "FACTORY RESET"
 msgstr ""
 
-#: src/menu_system_info.cpp:179
+#: src/menu_system_info.cpp:201
 msgid ""
 "WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
 "\n"
@@ -3556,231 +4086,224 @@ msgid ""
 "RESET SYSTEM AND RESTART?"
 msgstr ""
 
-#: src/menu_system_main.cpp:245 src/menu_system_main.cpp:285
-#: src/menu_system_main.cpp:636
+#: src/menu_system_main.cpp:248 src/menu_system_main.cpp:652
 msgid "REBOOT REQUIRED TO APPLY THE NEW CONFIGURATION"
 msgstr ""
 
-#: src/menu_system_main.cpp:265 src/menu_ui.cpp:186
+#: src/menu_system_main.cpp:268 src/menu_ui.cpp:179
 msgid "LANGUAGE (REGION)"
 msgstr ""
 
-#: src/menu_system_main.cpp:300
+#: src/menu_system_main.cpp:312
 msgid "KEYBOARD LAYOUT"
 msgstr ""
 
-#: src/menu_system_main.cpp:306
-msgid ""
-"Select the physical keyboard layout. A reboot may be required for changes to "
-"take full effect."
+#: src/menu_system_main.cpp:318
+msgid "Follows the language until you choose one here."
 msgstr ""
 
-#: src/menu_system_main.cpp:312
+#: src/menu_system_main.cpp:324
 msgid "KEYBOARD VARIANT"
 msgstr ""
 
-#: src/menu_system_main.cpp:315
+#: src/menu_system_main.cpp:327
 msgid ""
 "Select the keyboard variant for the chosen layout (for example, dead keys or "
 "alternative key placement)."
 msgstr ""
 
-#: src/menu_system_main.cpp:320
+#: src/menu_system_main.cpp:332
 msgid "TIMEZONE"
 msgstr ""
 
-#: src/menu_system_main.cpp:331 src/menu_uimode.cpp:51 src/menu_uimode.cpp:52
+#: src/menu_system_main.cpp:347
+msgid "Run welcome again"
+msgstr ""
+
+#: src/menu_system_main.cpp:347
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr ""
+
+#: src/menu_system_main.cpp:352 src/menu_uimode.cpp:51 src/menu_uimode.cpp:52
 msgid "USER INTERFACE MODE"
 msgstr ""
 
-#: src/menu_system_main.cpp:332 src/menu_uimode.cpp:55
+#: src/menu_system_main.cpp:353 src/menu_uimode.cpp:55
 msgid "Full"
 msgstr ""
 
-#: src/menu_system_main.cpp:332 src/menu_uimode.cpp:57
+#: src/menu_system_main.cpp:353 src/menu_uimode.cpp:57
 msgid "Kid"
 msgstr ""
 
-#: src/menu_system_main.cpp:332 src/menu_uimode.cpp:56
+#: src/menu_system_main.cpp:353 src/menu_uimode.cpp:56
 msgid "Kiosk"
 msgstr ""
 
-#: src/menu_system_main.cpp:333
+#: src/menu_system_main.cpp:354
 msgid "Lock down certain config menus for use with guest users/kids."
 msgstr ""
 
-#: src/menu_system_main.cpp:337
+#: src/menu_system_main.cpp:358
 msgid "ENABLE MANGOHUD OVERLAY"
 msgstr ""
 
-#: src/menu_system_main.cpp:342
+#: src/menu_system_main.cpp:363
 msgid "ENABLE TOUCHSCREEN KEYBOARD"
 msgstr ""
 
-#: src/menu_system_main.cpp:349
+#: src/menu_system_main.cpp:370
 msgid "ENABLE ROCKNIX SCREENSHOT"
 msgstr ""
 
-#: src/menu_system_main.cpp:352
+#: src/menu_system_main.cpp:373
 msgid "HARDWARE"
 msgstr ""
 
-#: src/menu_system_main.cpp:352
+#: src/menu_system_main.cpp:373
 msgid "SCREEN"
 msgstr ""
 
-#: src/menu_system_main.cpp:373
+#: src/menu_system_main.cpp:394
 msgid "CONTRAST"
 msgstr ""
 
-#: src/menu_system_main.cpp:373
+#: src/menu_system_main.cpp:394
 msgid "GAMMA"
 msgstr ""
 
-#: src/menu_system_main.cpp:373
+#: src/menu_system_main.cpp:394
 msgid "HUE"
 msgstr ""
 
-#: src/menu_system_main.cpp:373
+#: src/menu_system_main.cpp:394
 msgid "SATURATION"
 msgstr ""
 
-#: src/menu_system_main.cpp:384
+#: src/menu_system_main.cpp:405
 msgid "LEDS"
 msgstr ""
 
-#: src/menu_system_main.cpp:386
+#: src/menu_system_main.cpp:407
 msgid "DISABLE POWER LED"
 msgstr ""
 
-#: src/menu_system_main.cpp:389
+#: src/menu_system_main.cpp:410
 msgid "LED COLOR"
 msgstr ""
 
-#: src/menu_system_main.cpp:396
+#: src/menu_system_main.cpp:417
 msgid "JOYSTICK LED"
 msgstr ""
 
-#: src/menu_system_main.cpp:408
+#: src/menu_system_main.cpp:429
 msgid "LED BRIGHTNESS"
 msgstr ""
 
-#: src/menu_system_main.cpp:408
+#: src/menu_system_main.cpp:429
 msgid "MAX"
 msgstr ""
 
-#: src/menu_system_main.cpp:408
+#: src/menu_system_main.cpp:429
 msgid "MID"
 msgstr ""
 
-#: src/menu_system_main.cpp:408
+#: src/menu_system_main.cpp:429
 msgid "MIN"
 msgstr ""
 
-#: src/menu_system_main.cpp:414
+#: src/menu_system_main.cpp:435
 msgid "POWER LED COLOR"
 msgstr ""
 
-#: src/menu_system_main.cpp:422
-msgid "DEVICE"
-msgstr ""
-
-#: src/menu_system_main.cpp:423
+#: src/menu_system_main.cpp:444
 msgid "THIS DEVICE IS"
 msgstr ""
 
-#: src/menu_system_main.cpp:434
+#: src/menu_system_main.cpp:455
 msgid "Device will be switched on next reboot"
 msgstr ""
 
-#: src/menu_system_main.cpp:447
+#: src/menu_system_main.cpp:468
 msgid "STORAGE"
 msgstr ""
 
-#: src/menu_system_main.cpp:449
+#: src/menu_system_main.cpp:470
 msgid "AUTODETECT GAMES CARD"
 msgstr ""
 
-#: src/menu_system_main.cpp:454
+#: src/menu_system_main.cpp:475
 msgid "ENABLE MERGED STORAGE"
 msgstr ""
 
-#: src/menu_system_main.cpp:460
+#: src/menu_system_main.cpp:481
 msgid "EXTERNAL"
 msgstr ""
 
-#: src/menu_system_main.cpp:460
+#: src/menu_system_main.cpp:481
 msgid "INTERNAL"
 msgstr ""
 
-#: src/menu_system_main.cpp:464 src/menu_system_main.cpp:470
+#: src/menu_system_main.cpp:485 src/menu_system_main.cpp:491
 msgid "MERGED STORAGE PRIMARY CARD"
 msgstr ""
 
-#: src/menu_system_main.cpp:468
+#: src/menu_system_main.cpp:489
 msgid ""
 "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, "
 "REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
 msgstr ""
 
-#: src/menu_system_main.cpp:479
+#: src/menu_system_main.cpp:500
 msgid "EJECT MICROSD CARD"
 msgstr ""
 
-#: src/menu_system_main.cpp:485
+#: src/menu_system_main.cpp:506
 msgid "You may now remove the card."
 msgstr ""
 
-#: src/menu_system_main.cpp:491
+#: src/menu_system_main.cpp:512
 msgid "PERFORMANCE"
 msgstr ""
 
-#: src/menu_system_main.cpp:500
+#: src/menu_system_main.cpp:521
 msgid "DEFAULT SCALING GOVERNOR"
 msgstr ""
 
-#: src/menu_system_main.cpp:506
+#: src/menu_system_main.cpp:527
 msgid "DEFAULT GPU SCALING GOVERNOR"
 msgstr ""
 
-#: src/menu_system_main.cpp:512
+#: src/menu_system_main.cpp:533
 msgid "ENABLE CPU OVERCLOCK"
 msgstr ""
 
-#: src/menu_system_main.cpp:517
+#: src/menu_system_main.cpp:538
 msgid "ENABLE GPU OVERCLOCK"
 msgstr ""
 
-#: src/menu_system_main.cpp:522
+#: src/menu_system_main.cpp:543
 msgid "GPU DRIVER"
 msgstr ""
 
-#: src/menu_system_main.cpp:533
+#: src/menu_system_main.cpp:554
 msgid "GPU driver will be switched on next reboot"
 msgstr ""
 
-#: src/menu_system_main.cpp:544
-msgid "SUSPEND"
-msgstr ""
-
-#: src/menu_system_main.cpp:545
-msgid "DEVICE SUSPEND MODE"
-msgstr ""
-
-#: src/menu_system_main.cpp:555
+#: src/menu_system_main.cpp:571
 msgid "ROOT PASSWORD"
 msgstr ""
 
-#: src/menu_system_main.cpp:583 src/menu_system_main.cpp:584
+#: src/menu_system_main.cpp:599 src/menu_system_main.cpp:600
 msgid "SYSTEM SETTINGS"
 msgstr ""
 
-#: src/menu_theme_cfg.cpp:257 src/menu_theme_cfg.cpp:271 src/menu_ui.cpp:174
-#: src/menu_ui.cpp:220
+#: src/menu_theme_cfg.cpp:257 src/menu_theme_cfg.cpp:271 src/menu_ui.cpp:223
+#: src/menu_ui.cpp:264
 msgid "Restarting to apply the theme"
 msgstr ""
 
-#: src/menu_theme_cfg.cpp:282 src/menu_theme_cfg.cpp:283 src/menu_ui.cpp:231
+#: src/menu_theme_cfg.cpp:282 src/menu_theme_cfg.cpp:283 src/menu_ui.cpp:276
 msgid "THEME CONFIGURATION"
 msgstr ""
 
@@ -3796,144 +4319,135 @@ msgstr ""
 msgid "RESET CUSTOMIZATIONS"
 msgstr ""
 
-#: src/menu_ui.cpp:166 src/menu_ui.cpp:167
+#: src/menu_ui.cpp:168 src/menu_ui.cpp:169
 msgid "USER INTERFACE SETTINGS"
 msgstr ""
 
-#: src/menu_ui.cpp:207
+#: src/menu_ui.cpp:202
 msgid "THEME SET"
 msgstr ""
 
-#: src/menu_ui.cpp:224 src/menu_ui.cpp:257
+#: src/menu_ui.cpp:227 src/menu_ui.cpp:268
 msgid "The frontend restarts to apply the theme"
 msgstr ""
 
-#: src/menu_ui.cpp:238
+#: src/menu_ui.cpp:240
+msgid "Dark"
+msgstr ""
+
+#: src/menu_ui.cpp:240
+msgid "Light"
+msgstr ""
+
+#: src/menu_ui.cpp:242
+msgid "MODE"
+msgstr ""
+
+#: src/menu_ui.cpp:283
 msgid "Theme default"
 msgstr ""
 
-#: src/menu_ui.cpp:259
-msgid "SELECTOR STYLE"
-msgstr ""
-
-#: src/menu_ui.cpp:260
+#: src/menu_ui.cpp:306
 msgid "Filled"
 msgstr ""
 
-#: src/menu_ui.cpp:260
+#: src/menu_ui.cpp:306
 msgid "Outline"
 msgstr ""
 
-#: src/menu_ui.cpp:260
+#: src/menu_ui.cpp:306
 msgid "Side bar"
 msgstr ""
 
-#: src/menu_ui.cpp:260
+#: src/menu_ui.cpp:306
 msgid "Underline"
 msgstr ""
 
-#: src/menu_ui.cpp:261
+#: src/menu_ui.cpp:307
 msgid "Centered"
 msgstr ""
 
-#: src/menu_ui.cpp:261
+#: src/menu_ui.cpp:307
 msgid "Left"
 msgstr ""
 
-#: src/menu_ui.cpp:261
-msgid "TITLE ALIGNMENT"
-msgstr ""
-
-#: src/menu_ui.cpp:262
-msgid "CAROUSEL CARDS"
-msgstr ""
-
-#: src/menu_ui.cpp:263
-msgid "LIST TEXT CASE"
-msgstr ""
-
-#: src/menu_ui.cpp:263
+#: src/menu_ui.cpp:308
 msgid "Lowercase"
 msgstr ""
 
-#: src/menu_ui.cpp:263
+#: src/menu_ui.cpp:308
 msgid "Uppercase"
 msgstr ""
 
-#: src/menu_ui.cpp:267
+#: src/menu_ui.cpp:312
 msgid "EXTRA LARGE"
 msgstr ""
 
-#: src/menu_ui.cpp:267
+#: src/menu_ui.cpp:312
 msgid "LARGE"
 msgstr ""
 
-#: src/menu_ui.cpp:267
+#: src/menu_ui.cpp:312
 msgid "NORMAL"
 msgstr ""
 
-#: src/menu_ui.cpp:267
+#: src/menu_ui.cpp:312
 msgid "SMALL"
 msgstr ""
 
-#: src/menu_ui.cpp:267
-msgid "TEXT SIZE"
-msgstr ""
-
-#: src/menu_ui.cpp:279
+#: src/menu_ui.cpp:324
 msgid "Size of the text in menus, dialogs and help bars"
 msgstr ""
 
-#: src/menu_ui.cpp:281
-msgid "HIGH CONTRAST"
-msgstr ""
-
-#: src/menu_ui.cpp:287
+#: src/menu_ui.cpp:332
 msgid "Pure white or black text, solid panels and a thicker selector"
 msgstr ""
 
-#: src/menu_ui.cpp:292
+#: src/menu_ui.cpp:337
 msgid "CONTROL OPTIONS"
 msgstr ""
 
-#: src/menu_ui.cpp:304
+#: src/menu_ui.cpp:349
 msgid "DISPLAY OPTIONS"
 msgstr ""
 
-#: src/menu_ui.cpp:305
+#: src/menu_ui.cpp:350
 msgid "TOP BAR"
 msgstr ""
 
-#: src/menu_ui.cpp:327
-msgid "SHOW CLOCK IN 12-HOUR FORMAT"
-msgstr ""
-
-#: src/menu_ui.cpp:335
+#: src/menu_ui.cpp:380
 msgid "ICON AND TEXT"
 msgstr ""
 
-#: src/menu_ui.cpp:348
+#: src/menu_ui.cpp:394
+msgid "SHOW NETWORK INDICATOR"
+msgstr ""
+
+#: src/menu_ui.cpp:401
 msgid "NAVIGATION"
 msgstr ""
 
-#: src/menu_ui.cpp:350
-msgid "CAROUSEL TRANSITIONS"
-msgstr ""
-
-#: src/menu_ui.cpp:356
+#: src/menu_ui.cpp:409
 msgid "QUICK SYSTEM SELECT"
 msgstr ""
 
-#: src/menu_ui.cpp:373
+#: src/menu_ui.cpp:426
 msgid "SCREENSAVER SETTINGS"
 msgstr ""
 
-#: src/menu_ui.cpp:375
-msgid "START SCREENSAVER AFTER"
+#: src/menu_ui.cpp:433
+msgid "SCREENSAVER TYPE"
 msgstr ""
 
-#: src/menu_ui.cpp:385
-msgid "SCREENSAVER TYPE"
+#: src/menu_ui.cpp:447
+msgid "BEDSIDE CLOCK"
+msgstr ""
+
+#: src/menu_ui.cpp:457
+msgid ""
+"With the charger plugged in, shows a large clock after this long without "
+"touching the console, instead of the screensaver. Any button closes it. "
+"Never while a game is open."
 msgstr ""
 
 #: src/menu_uimode.cpp:40
@@ -4030,7 +4544,115 @@ msgstr ""
 msgid "available"
 msgstr ""
 
-#: src/music.cpp:609 src/scene.cpp:109
+#: src/menu_welcome.cpp:139 src/menu_welcome.cpp:140 src/menu_welcome.cpp:141
+msgid "SKIP ALL"
+msgstr ""
+
+#: src/menu_welcome.cpp:148
+msgid "Welcome"
+msgstr ""
+
+#: src/menu_welcome.cpp:148
+msgid "of"
+msgstr ""
+
+#: src/menu_welcome.cpp:281 src/menu_welcome.cpp:282
+msgid "Choose your language"
+msgstr ""
+
+#: src/menu_welcome.cpp:283 src/menu_welcome.cpp:284
+msgid "Language"
+msgstr ""
+
+#: src/menu_welcome.cpp:301
+msgid "You can change it later in System."
+msgstr ""
+
+#: src/menu_welcome.cpp:311 src/menu_welcome.cpp:312
+msgid "Connect to WiFi"
+msgstr ""
+
+#: src/menu_welcome.cpp:313 src/menu_welcome.cpp:314
+msgid "WiFi"
+msgstr ""
+
+#: src/menu_welcome.cpp:321
+msgid "Clock, updates and file transfer."
+msgstr ""
+
+#: src/menu_welcome.cpp:327
+msgid "Continue"
+msgstr ""
+
+#: src/menu_welcome.cpp:327
+msgid "Not now"
+msgstr ""
+
+#: src/menu_welcome.cpp:331
+msgid "Choose a network"
+msgstr ""
+
+#: src/menu_welcome.cpp:331
+msgid "Choose another network"
+msgstr ""
+
+#: src/menu_welcome.cpp:354 src/menu_welcome.cpp:355
+msgid "Where are you?"
+msgstr ""
+
+#: src/menu_welcome.cpp:356 src/menu_welcome.cpp:357
+msgid "Time zone"
+msgstr ""
+
+#: src/menu_welcome.cpp:388
+msgid "Sets your local time."
+msgstr ""
+
+#: src/menu_welcome.cpp:410
+msgid "Keep UTC"
+msgstr ""
+
+#: src/menu_welcome.cpp:412
+msgid "LOADING..."
+msgstr ""
+
+#: src/menu_welcome.cpp:425 src/menu_welcome.cpp:426
+msgid "All set"
+msgstr ""
+
+#: src/menu_welcome.cpp:436 src/menu_welcome.cpp:441 src/webqr_screen.cpp:71
+msgid "Add games from your phone"
+msgstr ""
+
+#: src/menu_welcome.cpp:439 src/webqr_screen.cpp:194
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr ""
+
+#: src/menu_welcome.cpp:441
+msgid "Network"
+msgstr ""
+
+#: src/menu_welcome.cpp:444
+msgid "Start opens the menu"
+msgstr ""
+
+#: src/menu_welcome.cpp:444
+msgid "anywhere"
+msgstr ""
+
+#: src/menu_welcome.cpp:445
+msgid "Screen looks wrong?"
+msgstr ""
+
+#: src/menu_welcome.cpp:445
+msgid "Zenith DTB Selector"
+msgstr ""
+
+#: src/menu_welcome.cpp:447
+msgid "Start playing"
+msgstr ""
+
+#: src/music.cpp:609 src/scene.cpp:110
 msgid "MUSIC"
 msgstr ""
 
@@ -4055,7 +4677,7 @@ msgid "ONLY PLAY SYSTEM-SPECIFIC MUSIC FOLDER"
 msgstr ""
 
 #: src/music.cpp:632
-msgid "PLAY SYSTEM-SPECIFIC MUSIC"
+msgid "PLAY THEME MUSIC"
 msgstr ""
 
 #: src/music.cpp:637
@@ -4087,51 +4709,58 @@ msgstr ""
 msgid "NO NETWORK CONNECTION"
 msgstr ""
 
-#: src/play_stats_screen.cpp:73
+#: src/play_stats_screen.cpp:85
 msgid "BATTERY USE (FULL CHARGE)"
 msgstr ""
 
-#: src/play_stats_screen.cpp:98
+#: src/play_stats_screen.cpp:110
 msgid "TOTAL TIME PLAYED"
 msgstr ""
 
-#: src/play_stats_screen.cpp:101
+#: src/play_stats_screen.cpp:113
 msgid "LAST FIVE WEEKS"
 msgstr ""
 
-#: src/play_stats_screen.cpp:102
+#: src/play_stats_screen.cpp:114
 msgid "2 WEEKS AGO"
 msgstr ""
 
-#: src/play_stats_screen.cpp:102
+#: src/play_stats_screen.cpp:114
 msgid "3 WEEKS AGO"
 msgstr ""
 
-#: src/play_stats_screen.cpp:102
+#: src/play_stats_screen.cpp:114
 msgid "4 WEEKS AGO"
 msgstr ""
 
-#: src/play_stats_screen.cpp:102
+#: src/play_stats_screen.cpp:114
 msgid "LAST WEEK"
 msgstr ""
 
-#: src/play_stats_screen.cpp:102
+#: src/play_stats_screen.cpp:114
 msgid "THIS WEEK"
 msgstr ""
 
-#: src/play_stats_screen.cpp:105
+#: src/play_stats_screen.cpp:117
 msgid "MOST PLAYED GAMES"
 msgstr ""
 
-#: src/play_stats_screen.cpp:109
+#: src/play_stats_screen.cpp:121
 msgid "TIME PER SYSTEM"
 msgstr ""
 
-#: src/play_stats_screen.cpp:165
+#: src/play_stats_screen.cpp:179
 msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
 msgstr ""
 
-#: src/power.cpp:351
+#: src/playtime_game.cpp:86
+#, c-format
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/power.cpp:367
 msgid "Power saver on"
 msgstr ""
 
@@ -4168,14 +4797,14 @@ msgstr ""
 msgid "%i d ago"
 msgstr ""
 
-#: src/remake.cpp:256 src/scene.cpp:159
+#: src/remake.cpp:280 src/scene.cpp:160
 #, c-format
 msgid "%i GAME"
 msgid_plural "%i GAMES"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/remake.cpp:595 src/remake.cpp:1871 src/scene.cpp:558
+#: src/remake.cpp:666 src/remake.cpp:2773 src/scene.cpp:561
 msgid "CONTINUE PLAYING"
 msgstr ""
 
@@ -4192,67 +4821,63 @@ msgstr ""
 msgid "STARTING IN %i"
 msgstr ""
 
-#: src/scene.cpp:80
+#: src/scene.cpp:81
 msgid "DSiWare"
 msgstr ""
 
-#: src/scene.cpp:80
+#: src/scene.cpp:81
 msgid "Hacks"
 msgstr ""
 
-#: src/scene.cpp:80
+#: src/scene.cpp:81
 msgid "Homebrew"
 msgstr ""
 
-#: src/scene.cpp:80
+#: src/scene.cpp:81
 msgid "Minis"
 msgstr ""
 
-#: src/scene.cpp:80
+#: src/scene.cpp:81
 msgid "Vertical"
 msgstr ""
 
-#: src/scene.cpp:80
+#: src/scene.cpp:81
 msgid "Video"
 msgstr ""
 
-#: src/scene.cpp:115 src/smartcol.cpp:32
+#: src/scene.cpp:116 src/smartcol.cpp:32
 msgid "recently added"
 msgstr ""
 
-#: src/scene.cpp:116 src/smartcol.cpp:33
+#: src/scene.cpp:117 src/smartcol.cpp:33
 msgid "unfinished"
 msgstr ""
 
-#: src/scene.cpp:117 src/smartcol.cpp:34
+#: src/scene.cpp:118 src/smartcol.cpp:34
 msgid "most played this week"
 msgstr ""
 
-#: src/scene.cpp:119
+#: src/scene.cpp:120
 msgid "BOOKS"
 msgstr ""
 
-#: src/scene.cpp:120
+#: src/scene.cpp:121
 msgid "screenshots"
 msgstr ""
 
-#: src/scene.cpp:121
+#: src/scene.cpp:122
 msgid "media player"
 msgstr ""
 
-#: src/scene.cpp:250
+#: src/scene.cpp:253
 msgid "MENU"
 msgstr ""
 
-#: src/scene.cpp:250
-msgid "RANDOM"
-msgstr ""
-
-#: src/scene.cpp:258
+#: src/scene.cpp:261
 msgid "GAME OPTIONS"
 msgstr ""
 
-#: src/scene.cpp:258 src/screens.cpp:733
+#: src/scene.cpp:261 src/screens.cpp:739
 msgid "SEARCH"
 msgstr ""
 
@@ -4316,22 +4941,26 @@ msgstr ""
 msgid "SCRAPING FINISHED"
 msgstr ""
 
-#: src/screens.cpp:170 src/screens.cpp:703
+#: src/screens.cpp:172 src/screens.cpp:708
 msgid "GAME NOT FOUND"
 msgstr ""
 
-#: src/screens.cpp:619
+#: src/screens.cpp:622
 msgid "NO OTHER GAME"
 msgstr ""
 
-#: src/sdlr.cpp:519
+#: src/sdlr.cpp:521
 #, c-format
 msgid "%s connected"
 msgstr ""
 
-#: src/sdlr.cpp:519
+#: src/sdlr.cpp:521
 #, c-format
 msgid "%s disconnected"
+msgstr ""
+
+#: src/sdlr.cpp:704 src/sdlr.cpp:801
+msgid "Time is up for today"
 msgstr ""
 
 #: src/ssmedia_menu.cpp:71
@@ -4426,19 +5055,19 @@ msgstr ""
 msgid "CUSTOM IMAGE FILE EXTENSIONS"
 msgstr ""
 
-#: src/ui_dialogs.cpp:323 src/ui_dialogs.cpp:327
+#: src/ui_dialogs.cpp:325 src/ui_dialogs.cpp:329
 msgid "ACCENTS"
 msgstr ""
 
-#: src/ui_dialogs.cpp:323 src/ui_dialogs.cpp:327 src/ui_dialogs.cpp:362
+#: src/ui_dialogs.cpp:325 src/ui_dialogs.cpp:329 src/ui_dialogs.cpp:364
 msgid "SHIFT"
 msgstr ""
 
-#: src/ui_dialogs.cpp:323 src/ui_dialogs.cpp:364
+#: src/ui_dialogs.cpp:325 src/ui_dialogs.cpp:366
 msgid "SPACE"
 msgstr ""
 
-#: src/ui_dialogs.cpp:327
+#: src/ui_dialogs.cpp:329
 msgid "SHOW"
 msgstr ""
 
@@ -4458,68 +5087,68 @@ msgstr ""
 msgid "ALLOW THIS DEVICE?"
 msgstr ""
 
-#: src/webqr_screen.cpp:70
+#: src/webput.cpp:154
+msgid "RECEIVED"
+msgstr ""
+
+#: src/webqr_screen.cpp:71
 msgid "QR CODE"
 msgstr ""
 
-#: src/webqr_screen.cpp:106
+#: src/webqr_screen.cpp:107
 msgid "PIN"
 msgstr ""
 
-#: src/webqr_screen.cpp:149
+#: src/webqr_screen.cpp:151
 msgid "JUST NOW"
 msgstr ""
 
-#: src/webqr_screen.cpp:151
+#: src/webqr_screen.cpp:153
 #, c-format
 msgid "%d MINUTE AGO"
 msgid_plural "%d MINUTES AGO"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/webqr_screen.cpp:152
+#: src/webqr_screen.cpp:154
 #, c-format
 msgid "%d HOUR AGO"
 msgid_plural "%d HOURS AGO"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/webqr_screen.cpp:153
+#: src/webqr_screen.cpp:155
 #, c-format
 msgid "%d DAY AGO"
 msgid_plural "%d DAYS AGO"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/webqr_screen.cpp:161
+#: src/webqr_screen.cpp:163
 msgid "NO PAIRED DEVICES"
 msgstr ""
 
-#: src/webqr_screen.cpp:172
+#: src/webqr_screen.cpp:174
 msgid "FORGET THIS DEVICE?"
 msgstr ""
 
-#: src/webqr_screen.cpp:175
+#: src/webqr_screen.cpp:177
 msgid "FORGET ALL DEVICES"
 msgstr ""
 
-#: src/webqr_screen.cpp:180
+#: src/webqr_screen.cpp:182
 msgid "FORGET ALL DEVICES?"
 msgstr ""
 
-#: src/webqr_screen.cpp:185 src/webqr_screen.cpp:193
+#: src/webqr_screen.cpp:187 src/webqr_screen.cpp:195
 msgid "PAIRED DEVICES"
 msgstr ""
 
-#: src/webqr_screen.cpp:192
+#: src/webqr_screen.cpp:194
 msgid "SHOW QR CODE"
 msgstr ""
 
-#: src/webqr_screen.cpp:192
-msgid "Scan it with the phone camera: the page opens and knows the PIN."
-msgstr ""
-
-#: src/webqr_screen.cpp:193
+#: src/webqr_screen.cpp:195
 msgid "Phones that need no PIN."
 msgstr ""
 

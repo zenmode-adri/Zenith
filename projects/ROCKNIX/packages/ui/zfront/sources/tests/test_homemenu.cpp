@@ -288,7 +288,127 @@ void test_panel_child_exit_code() {
   set_panel_args("", {});
 }
 
-// ---- helpers ---------------------------------------------------------------------------------------------------------------------
+// ---- the panel: rows, arguments, the picture of the paused game ----------------------------------------------------------------------
+
+void test_panel_rows() {
+  using R = RowId;
+  // with the states, a backlight: RESUME first (the cursor starts there), SAVE / LOAD, line, the two sliders, line, QUIT GAME last
+  CHECK((panel_rows(true, true) == std::vector<R>{R::Resume, R::SaveState, R::LoadState, R::Separator, R::Brightness, R::Volume, R::Separator, R::Quit}));
+  // without the states (not RetroArch, or its network commands off): the two rows are not there at all
+  CHECK((panel_rows(false, true) == std::vector<R>{R::Resume, R::Separator, R::Brightness, R::Volume, R::Separator, R::Quit}));
+  // a device without a backlight node: no brightness slider
+  CHECK((panel_rows(false, false) == std::vector<R>{R::Resume, R::Separator, R::Volume, R::Separator, R::Quit}));
+  CHECK((panel_rows(true, false) == std::vector<R>{R::Resume, R::SaveState, R::LoadState, R::Separator, R::Volume, R::Separator, R::Quit}));
+  for (bool st : {false, true})
+    for (bool bl : {false, true}) {
+      const std::vector<R> v = panel_rows(st, bl);
+      CHECK(v.front() == R::Resume);
+      CHECK(v.back() == R::Quit);
+      CHECK(v[v.size() - 2] == R::Separator);  // QUIT GAME is apart
+    }
+}
+
+void test_panel_args() {
+  PanelInfo none;
+  CHECK((panel_args_tail(false, none) == std::vector<std::string>{"--home-panel"}));
+  CHECK((panel_args_tail(true, none) == std::vector<std::string>{"--home-panel", "--home-states"}));
+  PanelInfo all{"/run/zfront/home-shot.png", "Super Mario World", "Super Nintendo Entertainment System"};
+  CHECK((panel_args_tail(true, all) == std::vector<std::string>{"--home-panel", "--home-states", "--home-shot", "/run/zfront/home-shot.png", "--home-title", "Super Mario World",
+                                                               "--home-sub", "Super Nintendo Entertainment System"}));
+  // a name is ONE argument whatever it holds (spaces, quotes, a leading dash); empty ones are left out
+  PanelInfo odd{"", "--odd \"title\" 'x' $HOME", ""};
+  const std::vector<std::string> v = panel_args_tail(false, odd);
+  CHECK_EQ(v.size(), size_t(3));
+  CHECK(v[1] == "--home-title" && v[2] == "--odd \"title\" 'x' $HOME");
+  PanelInfo shot_only{"/x.png", "", ""};
+  CHECK((panel_args_tail(false, shot_only) == std::vector<std::string>{"--home-panel", "--home-shot", "/x.png"}));
+  PanelInfo left{"", "", ""};
+  left.left_min = 160;
+  CHECK((panel_args_tail(false, left) == std::vector<std::string>{"--home-panel", "--home-left", "160"}));
+  // the capture command: grim at compression level 0 (the picture is only a backdrop, speed matters)
+  CHECK((grim_argv("grim", "/run/zfront/home-shot.png") == std::vector<std::string>{"grim", "-l", "0", "/run/zfront/home-shot.png"}));
+}
+
+std::string write_script(const std::string& path, const std::string& body) {
+  std::ofstream(path) << "#!/bin/sh\n" << body << "\n";
+  ::chmod(path.c_str(), 0755);
+  return path;
+}
+bool exists_nonempty(const std::string& p) {
+  struct stat sb;
+  return ::stat(p.c_str(), &sb) == 0 && sb.st_size > 0;
+}
+
+void test_capture_shot() {
+  const std::string shot = "/tmp/zf_home_shot_test.png";
+  const auto never = [] { return false; };
+  const std::string ok = write_script("/tmp/zf_home_grim_ok.sh", "echo png > \"$3\"");  // the file is the 4th word: grim -l 0 FILE
+  CHECK(capture_shot(ok, shot, 2000, never));
+  CHECK(exists_nonempty(shot));
+  ::unlink(shot.c_str());
+  // the tool runs but writes nothing: no picture, and nothing left behind
+  CHECK(!capture_shot(write_script("/tmp/zf_home_grim_empty.sh", "exit 0"), shot, 2000, never));
+  CHECK(!exists_nonempty(shot));
+  // an empty file is no picture
+  CHECK(!capture_shot(write_script("/tmp/zf_home_grim_zero.sh", ": > \"$3\""), shot, 2000, never));
+  CHECK(::access(shot.c_str(), F_OK) != 0);
+  // the tool fails, or does not exist
+  CHECK(!capture_shot("/bin/false", shot, 2000, never));
+  CHECK(!capture_shot("/nonexistent/grim", shot, 2000, never));
+  // too slow: killed at the deadline, the panel goes on without a picture (and the game is never left waiting for it)
+  TimePoint t = Clock::now();
+  CHECK(!capture_shot(write_script("/tmp/zf_home_grim_slow.sh", "sleep 30; echo png > \"$3\""), shot, 300, never));
+  CHECK(Clock::now() - t < milliseconds(3000));
+  CHECK(::access(shot.c_str(), F_OK) != 0);
+  // a SIGTERM for the game while the picture is being taken: it stops at once
+  t = Clock::now();
+  CHECK(!capture_shot("/tmp/zf_home_grim_slow.sh", shot, 5000, [] { return true; }));
+  CHECK(Clock::now() - t < milliseconds(3000));
+  // a leftover of an earlier game is never taken for a new picture
+  std::ofstream(shot) << "old";
+  CHECK(!capture_shot("/bin/true", shot, 2000, never));
+  CHECK(::access(shot.c_str(), F_OK) != 0);
+}
+
+void test_panel_child_arguments() {
+  const std::string shot = "/tmp/zf_home_shot_child.png", rec = "/tmp/zf_home_child_args.txt";
+  ::unlink(rec.c_str());
+  set_game_info("Super Mario World", "Super Nintendo");
+  set_panel_args("/bin/sh", {"-c", "echo \"$@\" > " + rec + "; [ -s " + shot + " ] && echo SHOT-THERE >> " + rec + "; exit 0", "zfront"});
+  // with a picture: the child gets it and both names; the file is gone when the child has ended
+  set_capture_for_test(write_script("/tmp/zf_home_grim_ok.sh", "echo png > \"$3\""), shot);
+  CHECK(run_panel_child(true, [] { return false; }) == PanelResult::Resume);
+  std::string text;
+  CHECK(read_file(rec, text));
+  CHECK(text.find("--home-panel --home-states --home-shot " + shot + " --home-title Super Mario World --home-sub Super Nintendo") != std::string::npos);
+  CHECK(text.find("SHOT-THERE") != std::string::npos);  // it existed while the child ran
+  CHECK(::access(shot.c_str(), F_OK) != 0);             // and was removed after
+  // the capture fails: no --home-shot, the panel still opens
+  set_capture_for_test("/bin/false", shot);
+  CHECK(run_panel_child(false, [] { return false; }) == PanelResult::Resume);
+  CHECK(read_file(rec, text));
+  CHECK(text.find("--home-shot") == std::string::npos);
+  CHECK(text.find("--home-states") == std::string::npos);
+  CHECK(text.find("--home-title Super Mario World") != std::string::npos);
+  // a child that is killed or fails: the picture is removed all the same
+  set_capture_for_test(write_script("/tmp/zf_home_grim_ok.sh", "echo png > \"$3\""), shot);
+  set_panel_args("/bin/sh", {"-c", "kill -SEGV $$", "zfront"});
+  CHECK(run_panel_child(false, [] { return false; }) == PanelResult::Failed);
+  CHECK(::access(shot.c_str(), F_OK) != 0);
+  set_panel_args("/nonexistent/zfront", {});
+  CHECK(run_panel_child(false, [] { return false; }) == PanelResult::Failed);
+  CHECK(::access(shot.c_str(), F_OK) != 0);
+  // unknown game (no names): no title arguments
+  set_game_info({}, {});
+  set_panel_args("/bin/sh", {"-c", "echo \"$@\" > " + rec + "; exit 0", "zfront"});
+  CHECK(run_panel_child(false, [] { return false; }) == PanelResult::Resume);
+  CHECK(read_file(rec, text));
+  CHECK(text.find("--home-title") == std::string::npos && text.find("--home-sub") == std::string::npos);
+  set_capture_for_test("", "");
+  set_panel_args("", {});
+}
+
+// ---- helpers -------------------------------------------------------------------------------------------------------------------------
 
 void test_find_pids() {
   char tmpl[] = "/tmp/zf_home_procXXXXXX";
@@ -303,6 +423,13 @@ void test_find_pids() {
   mk("202", "PPSSPPSDL");
   mk("203", "runemu.sh");
   mk("204", "mupen64plus-gui");  // the kernel cuts comm at 15 characters: the long name below must still match it
+  // PPSSPP after changing its backend: execv("/proc/self/exe") keeps the pid, comm becomes "exe"; found by the binary or by argv[0]
+  mk("205", "exe");
+  CHECK(::symlink("/usr/bin/ppsspp", (root + "/205/exe").c_str()) == 0);
+  mk("206", "exe");
+  { std::ofstream c(root + "/206/cmdline"); c << "/usr/bin/ppsspp" << '\0' << "--fullscreen" << '\0'; }
+  mk("207", "exe");  // another program restarted the same way: not ours
+  CHECK(::symlink("/usr/bin/foo", (root + "/207/exe").c_str()) == 0);
   mk("self", "retroarch");                  // not a pid
   std::vector<int> got = find_pids_by_name({"retroarch", "retroarch32"}, 999, root);
   CHECK(got == (std::vector<int>{200, 201}));
@@ -311,6 +438,8 @@ void test_find_pids() {
   got = find_pids_by_name({"mupen64plus-gui-extra-long"}, 999, root);
   CHECK(got == (std::vector<int>{204}));
   CHECK(find_pids_by_name({"nothing"}, 999, root).empty());
+  got = find_pids_by_name({"ppsspp"}, 999, root);
+  CHECK(got == (std::vector<int>{205, 206}));
   CHECK(find_pids_by_name({"retroarch"}, 999, "/nonexistent").empty());
   std::string cmd = "rm -rf " + root;
   CHECK(std::system(cmd.c_str()) == 0);
@@ -433,6 +562,7 @@ void test_off_by_default() {
 }  // namespace
 
 int main() {
+  set_capture_for_test("/bin/false", "/tmp/zf_home_shot_unused.png");  // the older tests do not take pictures
   test_off_by_default();
   test_combo_setting();
   test_detector_timing();
@@ -451,6 +581,10 @@ int main() {
   test_panel_exit_codes();
   test_panel_child_without_args();
   test_panel_child_exit_code();
+  test_panel_rows();
+  test_panel_args();
+  test_capture_shot();
+  test_panel_child_arguments();
   test_find_pids();
   test_retroarch_net();
   test_stopped_file();

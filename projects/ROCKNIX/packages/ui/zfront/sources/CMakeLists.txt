@@ -101,6 +101,10 @@ else()
 endif()
 add_custom_target(zf_locale ALL DEPENDS ${ZF_MO})
 install(DIRECTORY ${CMAKE_BINARY_DIR}/locale/ DESTINATION share/zfront/locale OPTIONAL)
+# the faces of the menus and carousels of Aurora, Swiss and Industrial (SIL OFL: docs/licenses/OFL-*.txt)
+install(DIRECTORY fonts/ DESTINATION share/zfront/fonts FILES_MATCHING PATTERN "*.ttf" PATTERN "*.svg")
+file(GLOB ZF_OFL_FONTS CONFIGURE_DEPENDS docs/licenses/OFL-SpaceGrotesk.txt docs/licenses/OFL-JetBrainsMono.txt docs/licenses/OFL-Inter.txt docs/licenses/OFL-Sora.txt)
+install(FILES ${ZF_OFL_FONTS} DESTINATION share/zfront/licenses)
 
 # ---- install: `cmake --install <build> --prefix /usr [--strip]` (DESTDIR works) puts on the target
 #   bin/zfront                     the frontend
@@ -164,5 +168,7 @@ foreach(t ${ZF_TESTS})
                              ZF_LOCALE_BUILD="${CMAKE_BINARY_DIR}/locale")
   add_dependencies(${n} zf_locale)
   add_test(NAME ${n} COMMAND ${n} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+  # the skins' faces live in the source tree until zfront is installed
+  set_tests_properties(${n} PROPERTIES ENVIRONMENT "ZF_SKIN_FONTS=${CMAKE_CURRENT_SOURCE_DIR}/fonts")
 endforeach()
 endif()

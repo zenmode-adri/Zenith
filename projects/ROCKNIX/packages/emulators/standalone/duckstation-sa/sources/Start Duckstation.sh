@@ -18,8 +18,11 @@ CONF_FILE="${CONF_DIR}/settings.ini"
 
 #Link config dir to where appimage can find it
 mkdir -p /storage/.local/share
-rm -rf "${APPIMAGE_CONF_DIR}"
-ln -sfv "${CONF_DIR}" "${APPIMAGE_CONF_DIR}"
+# if it is a real folder (not our link), move it aside instead of deleting it: it may hold the user's saves
+if [ -d "${APPIMAGE_CONF_DIR}" ] && [ ! -L "${APPIMAGE_CONF_DIR}" ]; then
+  mv "${APPIMAGE_CONF_DIR}" "${APPIMAGE_CONF_DIR}.old-$(date +%s)"
+fi
+ln -sfnv "${CONF_DIR}" "${APPIMAGE_CONF_DIR}"
 
 #Init config file if required
 [ ! -f "${CONF_FILE}" ] && cp ${IMMUTABLE_CONF_FILE} ${CONF_FILE}

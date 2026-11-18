@@ -446,9 +446,38 @@ http::Response route(const http::Request& req, const webtransfer::Env& env) {
   return restore_route(req, env);
 }
 
+/// What a phone makes of a file it already has ("saves-20261109-1430 (1).tar.gz", or "saves-20261109-1430-1.tar.gz") back to the name
+/// the console reads; a name that is already right stays. False for anything else.
+bool upload_name(const std::string& in, std::string& out) {
+  if (sb::valid_name(in)) {
+    out = in;
+    return true;
+  }
+  const std::string ext = ".tar.gz";
+  if (in.size() <= ext.size() || in.compare(in.size() - ext.size(), ext.size(), ext) != 0) return false;
+  const std::string stem = in.substr(0, in.size() - ext.size());
+  auto digits = [&](size_t from, size_t to) {
+    if (to <= from || to - from > 6) return false;
+    for (size_t i = from; i < to; ++i)
+      if (stem[i] < '0' || stem[i] > '9') return false;
+    return true;
+  };
+  size_t cut = std::string::npos;
+  if (!stem.empty() && stem.back() == ')') {  // " (N)"
+    const size_t open = stem.rfind(" (");
+    if (open != std::string::npos && digits(open + 2, stem.size() - 1)) cut = open;
+  } else {  // "-N"
+    const size_t dash = stem.rfind('-');
+    if (dash != std::string::npos && digits(dash + 1, stem.size())) cut = dash;
+  }
+  if (cut == std::string::npos) return false;
+  out = stem.substr(0, cut) + ext;
+  return sb::valid_name(out);
+}
+
 http::Response put(const http::Request& req, http::BodyStream& body, const webtransfer::Env&) {
-  std::string name;
-  if (!http::query_param(req, "name", name) || !sb::valid_name(name)) return err(400, "invalid backup name");
+  std::string given, name;
+  if (!http::query_param(req, "name", given) || !upload_name(given, name)) return err(400, "the file name must look like saves-YYYYMMDD-HHMM.tar.gz");
   const uint64_t len = body.total();
   if (len == 0) return err(400, "empty file");
   if (len > kMaxUpload) return err(413, "the file is too big");
@@ -529,7 +558,7 @@ const char* kSection = R"HTML(<button type="button" id="svnow">Back up now</butt
 <input id="svfile" type="file" accept=".gz,.tgz,application/gzip">
 <button type="button" id="svup" class="alt">Upload</button>)HTML";
 
-const char* kJs = R"JS(var list=[],game=false,busy=false,timer=0,upBusy=false;
+const char* kJs = R"JS(var list=[],game=false,busy=false,timer=0,upBusy=false,pdelay=1000,pwarned=false,away=false;
 function note(t){Z.$("svinfo").textContent=t}
 function human(n){return n>=1073741824?(n/1073741824).toFixed(1)+" GB":n>=1048576?(n/1048576).toFixed(1)+" MB":n>=1024?Math.round(n/1024)+" KB":n+" B"}
 function draw(){var ul=Z.$("sv");ul.textContent="";
@@ -551,32 +580,40 @@ function restore(b){if(game||busy)return;
  if(!window.confirm("Replace the saves on the console with this backup? A backup of the current saves is made first."))return;
  Z.say("");Z.call("POST","/files/saves/restore?name="+encodeURIComponent(b.name)+"&confirm=1",function(x){
   if(!x)return;if(x.status!==202){Z.say(Z.why(x),true);return}
-  busy=true;draw();note("Confirm on the console...");poll()})}
-function poll(){clearTimeout(timer);timer=setTimeout(function(){Z.call("GET","/files/saves/status",function(x){
- if(!x||x.status!==200){poll();return}
- var s={};try{s=JSON.parse(x.responseText)}catch(_){}
- if(s.busy){poll();return}
- busy=false;var l=s.last;
- if(l&&(l.op==="create"||l.op==="restore")){if(l.ok)Z.say(l.op==="restore"?"Saves restored.":"Backup done: "+l.name);else Z.say("Failed: "+l.error,true)}
- note("");refresh()})},1000)}
+  busy=true;draw();note("Confirm on the console...");begin()})}
+/* the status is asked every second while the console works; when it does not answer, every time later (1, 2, 4 ... 30 s), with one
+   warning, and never once the tab is left */
+function begin(){pdelay=1000;pwarned=false;poll()}
+function poll(){clearTimeout(timer);if(away)return;timer=setTimeout(function(){
+ var x=new XMLHttpRequest();x.open("GET","/files/saves/status");Z.auth(x);x.timeout=15000;
+ function lost(){if(!pwarned){pwarned=true;Z.say("Cannot reach the console.",true)}pdelay=Math.min(pdelay*2,30000);poll()}
+ x.onload=function(){if(away)return;if(x.status!==200){lost();return}
+  pdelay=1000;pwarned=false;
+  var s={};try{s=JSON.parse(x.responseText)}catch(_){}
+  if(s.busy){poll();return}
+  busy=false;var l=s.last;
+  if(l&&(l.op==="create"||l.op==="restore")){if(l.ok)Z.say(l.op==="restore"?"Saves restored.":"Backup done: "+l.name);else Z.say("Failed: "+l.error,true)}
+  note("");refresh()};
+ x.onerror=x.ontimeout=function(){if(!away)lost()};x.send()},pdelay)}
 function refresh(){Z.call("GET","/files/saves",function(x){
  if(Z.jerr(x))return;var r={};try{r=JSON.parse(x.responseText)}catch(_){}
  list=r.backups||[];game=!!r.game;busy=!!r.busy;draw();
  note((game?"A game is running: restoring is off until you close it. ":"")+"Free space: "+human(r.free||0));
- if(busy){note("Working on the console...");poll()}})}
+ if(busy){note("Working on the console...");begin()}})}
 Z.$("svnow").onclick=function(){if(busy)return;Z.say("");
  Z.call("POST","/files/saves/create",function(x){if(!x)return;if(x.status!==202){Z.say(Z.why(x),true);return}
-  busy=true;draw();note("Backing up...");poll()})};
+  busy=true;draw();note("Backing up...");begin()})};
 Z.$("svup").onclick=function(){var f=Z.$("svfile").files[0];if(busy||upBusy)return;
  if(!f){Z.say("Choose a backup file first.",true);return}
- if(!/^saves-\d{8}-\d{4}(-pre\d*)?\.tar\.gz$/.test(f.name)){Z.say("The file name must look like saves-YYYYMMDD-HHMM.tar.gz.",true);return}
+ if(!/^saves-\d{8}-\d{4}(-pre\d*)?( \(\d+\)|-\d+)?\.tar\.gz$/.test(f.name)){Z.say("The file name must look like saves-YYYYMMDD-HHMM.tar.gz.",true);return}
  Z.say("");upBusy=true;draw();note("Uploading 0%");
  var x=new XMLHttpRequest();x.open("POST","/files/saves/put?name="+encodeURIComponent(f.name));Z.auth(x);
  x.upload.onprogress=function(e){if(e.lengthComputable)note("Uploading "+Math.floor(100*e.loaded/e.total)+"%")};
  x.onload=function(){upBusy=false;note("");if(x.status===200){Z.say("Backup uploaded.");Z.$("svfile").value=""}else Z.say(Z.why(x),true);refresh()};
  x.onerror=function(){upBusy=false;note("");Z.say("Connection lost.",true);refresh()};
  x.send(f)};
-Z.ontab.sv=function(){refresh()};)JS";
+Z.ontab.sv=function(){away=false;refresh()};
+Z.onleave.sv=function(){away=true;clearTimeout(timer)};)JS";
 
 }  // namespace
 

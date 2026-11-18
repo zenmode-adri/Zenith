@@ -109,6 +109,7 @@ constexpr float kNominalVolts = 3.8f;
 long g_last_sample = -100000;
 bool g_in_game = false;
 Now g_start_now, g_end_now;
+long g_start_mono = 0;  // CLOCK_MONOTONIC at game_started: a suspend in the middle is not counted as play
 bool g_have_session = false;
 
 }  // namespace
@@ -277,8 +278,23 @@ Session take_session(uint64_t secs) {
   return make_session(g_start_now, g_end_now, secs);
 }
 
+int minutes_left_at_mean(const Now& a, const Now& b, double secs) {
+  if (!a.have || !b.have || a.charging || b.charging || secs < 180.0 || a.charge_uah <= 0 || b.charge_uah <= 0) return -1;
+  const long used = a.charge_uah - b.charge_uah;
+  if (used <= 0) return -1;
+  const double mean_ua = double(used) * 3600.0 / secs;
+  const double hours = std::min(double(b.charge_uah) / mean_ua, 48.0);
+  return int(std::lround(hours * 60.0));
+}
+
+int game_minutes_left() {
+  if (!g_in_game) return -1;
+  return minutes_left_at_mean(g_start_now, read_now(), double(clock_secs(CLOCK_MONOTONIC) - g_start_mono));
+}
+
 void game_started(const std::string& name) {
   g_start_now = read_now();
+  g_start_mono = clock_secs(CLOCK_MONOTONIC);
   g_have_session = false;
   log_event('G', short_title(name));
   g_in_game = true;

@@ -105,7 +105,3 @@ makeinstall_target() {
   cp ${PKG_BUILD}/datas.zip ${INSTALL}/usr/share/misc/
 
 }
-
-post_install() {
-  sed -e "s/@GRENDERER@/${GRENDERER}/g" -i ${INSTALL}/usr/bin/start_ppsspp.sh
-}

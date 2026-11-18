@@ -22,6 +22,8 @@
 #include "homemenu.hpp"
 #include "i18n.hpp"
 #include "launch.hpp"
+#include "menu_system.hpp"
+#include "menu_welcome.hpp"
 #include "oscontract.hpp"
 #include "registry.hpp"
 #include "resume_last.hpp"
@@ -79,6 +81,9 @@ struct Args {
   /// `--home-panel`: not the frontend but the in-game HOME panel (homemenu.hpp): one menu, its answer is the exit code. Started by the
   /// frontend itself while the game is paused; `--home-states` adds the SAVE STATE / LOAD STATE rows.
   bool home_panel = false, home_states = false;
+  /// `--home-shot FILE` (the paused game's last picture, taken by the parent), `--home-title`, `--home-sub` (game and system names): what the panel shows around its rows.
+  std::string home_shot, home_title, home_sub;
+  int home_left = -1;  // `--home-left MIN`: battery minutes left with this game (the parent measured it)
 };
 
 System demo_system(const std::string& t, const std::string& n, std::vector<std::string> games) {
@@ -261,6 +266,16 @@ bool parse_args(int argc, char** argv, Args& a, std::string& err) {
       a.home_panel = true;
     } else if (k == "--home-states") {
       a.home_states = true;
+    } else if (k == "--home-shot") {
+      if (!val(a.home_shot)) return false;
+    } else if (k == "--home-title") {
+      if (!val(a.home_title)) return false;
+    } else if (k == "--home-sub") {
+      if (!val(a.home_sub)) return false;
+    } else if (k == "--home-left") {
+      std::string v;
+      if (!val(v)) return false;
+      a.home_left = std::atoi(v.c_str());
     } else if (k == "--dry-run") {
       a.dry_run = true;
     } else if (k == "--sim-gpu") {
@@ -338,6 +353,7 @@ int run(int argc, char** argv, std::string& err) {
   // a previous zfront that died while it had a game paused (HOME menu): resume what it left stopped. Free when there is no file.
   if (!args.home_panel && !args.has_preview && !args.dump) homemenu::recover_stopped(homemenu::stopped_file_path(), [](int pid, int sig) { return ::kill(pid_t(pid), sig); });
   homemenu::set_panel_mode(args.home_panel);
+  if (args.home_panel) std::fprintf(stderr, "zfront: HOME timing: panel main(), uptime %s\n", uptime_text().c_str());
   Ctx cx;
 #ifdef ZF_WITH_SDL
   if (!args.has_preview && !args.dump && !args.home_panel) {  // the panel is a guest: no OS contract (it would rewrite the kill target)
@@ -422,7 +438,9 @@ int run(int argc, char** argv, std::string& err) {
   players::set(players::read(cx.es));
   uimode::apply(cx.es);  // Kiosk / Kid decide which games and systems are loaded
   // before the systems: LoadEmptySystems, HiddenSystems and SortSystems decide what the carousel shows
-  if (!args.systems.empty()) {
+  // The HOME panel shows no system or game: it skips reading es_systems.cfg and the rom folders it was given with the frontend's own
+  // arguments (the panel took 1-2 s to appear over the paused game on the R36S).
+  if (!args.systems.empty() && !args.home_panel) {
     // device loop: first frame does not wait for the counts (they arrive from a background thread)
     bool lazy = args.lazy_counts || (!args.has_preview && !args.dump);
     // The same loader serves the hot reload (`App::maybe_reload_systems`): it captures only paths and the mode, never `cx`.
@@ -448,6 +466,7 @@ int run(int argc, char** argv, std::string& err) {
   set_writes_blocked(cx.sv->cmd.dry_run);  // never write system.cfg / es_settings.cfg / gamelists / collections in preview or dry-run
   cx.sv->cmd.keep_log = args.has_preview;
   cx.async_covers = !args.has_preview && !args.dump;
+  if (!args.has_preview && !args.dump && !args.home_panel) msys::restore_power_led(cx);  // the OS does not restore POWER LED COLOR
   {  // window / screen motion only on the device, and not when ES is set to instant transitions or to the instant power saver
     const std::string* style = cx.es.get("TransitionStyle");
     const std::string* saver = cx.es.get("PowerSaverMode");
@@ -469,6 +488,7 @@ int run(int argc, char** argv, std::string& err) {
   if (!load_common(cx.th, cx.assets, cx.common, err)) return 1;
   long n = long(cx.items.size());
   int start = int(n > 0 ? ((args.cursor % n) + n) % n : 0);
+  if (n > 0 && cx.items[0].sys == kItemAddGames) start = 0;  // a console with no game: the "Add games" card is chosen, not Tools or Music
   std::unique_ptr<Pad> pad = make_pad(args.es_settings);  // the file the menu writes (--es-settings), not a fixed path
   cx.pad = pad.get();
   // ES launchStartupGame: the game set in system.cfg starts once per boot, before the menus (bootargs.cpp, startup_outcome)
@@ -482,6 +502,10 @@ int run(int argc, char** argv, std::string& err) {
       startup = [rom](App& app) { return startup_outcome(app, rom); };
     } else {  // no boot game: "resume last game at startup" (off by default; resume_last.hpp)
       startup = [](App& app) -> std::optional<Outcome> {
+        if (welcome_due(app.cx)) {  // first boot only (menu_welcome.cpp): goes before "resume last game"
+          app.push_screen(make_welcome(app.cx, false));
+          return std::nullopt;
+        }
         std::string why2;
         app.push_screen(resume::begin(app.cx, resume::default_paths(), std::time(nullptr), why2));
         if (!why2.empty()) std::fprintf(stderr, "zfront: %s\n", why2.c_str());
@@ -491,6 +515,9 @@ int run(int argc, char** argv, std::string& err) {
   }
   std::unique_ptr<Screen> root;
   if (args.home_panel) {
+    homemenu::PanelInfo info{args.home_shot, args.home_title, args.home_sub};
+    info.left_min = args.home_left;
+    homemenu::set_panel_info(info);
     root = Registry::instance().make("menu.home", cx, args.home_states ? "states" : "");
     if (!root) {
       err = "--home-panel: no menu.home";

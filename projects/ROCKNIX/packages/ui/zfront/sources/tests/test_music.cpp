@@ -545,7 +545,7 @@ int main() {
       CHECK(h >= 0);
       if (h >= 0) {  // ES order, ES labels, ES defaults
         const char* order[] = {"FRONTEND MUSIC", "MUSIC VOLUME", "DISPLAY SONG TITLES", "SONG TITLE DISPLAY DURATION",
-                               "ONLY PLAY SYSTEM-SPECIFIC MUSIC FOLDER", "PLAY SYSTEM-SPECIFIC MUSIC", "LOWER MUSIC WHEN PLAYING VIDEO"};
+                               "ONLY PLAY SYSTEM-SPECIFIC MUSIC FOLDER", "PLAY THEME MUSIC", "LOWER MUSIC WHEN PLAYING VIDEO"};
         CHECK(m->entry(size_t(h)).kind == EntryKind::Header);
         for (int i = 0; i < 7; ++i) CHECK_EQ(m->entry(size_t(h + 1 + i)).label, std::string(order[i]));
         const Entry& fm = m->entry(size_t(h + 1));

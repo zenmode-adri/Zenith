@@ -23,18 +23,6 @@
         <image>./images/file-manager.svg</image>
     </game>
     <game>
-        <path>./Start M8C.sh</path>
-        <name>M8C</name>
-        <desc>跨平台 M8 音轨器无界面客户端。</desc>
-        <developer>ROCKNIX</developer>
-        <publisher>ROCKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2022</releasedate>
-        <genre>工具</genre>
-        <players>1</players>
-        <image>./images/m8c.svg</image>
-    </game>
-    <game>
         <path>./Install ROCKNIX.sh</path>
         <name>安装 ROCKNIX</name>
         <desc>将 ROCKNIX 安装到设备本地存储。注意：所选目标磁盘上的数据将被清空。</desc>
@@ -61,7 +49,7 @@
     <game>
         <path>./cloud_backup.sh</path>
         <name>RCLONE 备份</name>
-        <desc>使用 RCLONE 将存档备份到云盘。请先按 rocknix.org 说明完成 RCLONE 配置。</desc>
+        <desc>使用 RCLONE 将存档备份到云盘。请先在文件传输网页的“云”标签中连接云盘。</desc>
         <developer>ROCKNIX</developer>
         <publisher>ROCKNIX</publisher>
         <rating>5.0</rating>
@@ -73,7 +61,7 @@
     <game>
         <path>./cloud_restore.sh</path>
         <name>RCLONE 恢复</name>
-        <desc>使用 RCLONE 从云盘恢复存档。请先按 rocknix.org 说明完成 RCLONE 配置。</desc>
+        <desc>使用 RCLONE 从云盘恢复存档。请先在文件传输网页的“云”标签中连接云盘。</desc>
         <developer>ROCKNIX</developer>
         <publisher>ROCKNIX</publisher>
         <rating>5.0</rating>
@@ -407,18 +395,6 @@
         <image>./images/calibrate-gamepad.svg</image>
     </game>
     <game>
-        <path>./Mount NFS.sh</path>
-        <name>挂载 NFS</name>
-        <desc>按 /storage/.nfs-mount 中的定义挂载 NFS 共享，并与机内游戏卡合并为可写的上层存储。</desc>
-        <developer>ROCKNIX</developer>
-        <publisher>ROCKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2024</releasedate>
-        <genre>工具</genre>
-        <players>1</players>
-        <image>./images/nfs.svg</image>
-    </game>
-    <game>
         <path>./MOD_TOOLS/Offline Upgrade.sh</path>
         <name>离线升级</name>
         <desc>准备离线系统 OTA 更新。将 AURKNIX 更新包 .tar 放到独立分区的 /storage/roms/.update/ 后，运行本工具配置启动重定向。</desc>
@@ -479,18 +455,6 @@
         <image>./images/reset-config.svg</image>
     </game>
     <game>
-        <path>./MOD_TOOLS/Reset YabaSanshiro Input.sh</path>
-        <name>重置 YabaSanshiro 按键</name>
-        <desc>运行 YabaSanshiro 土星模拟器按键设置，为当前手柄重新映射控制。</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>工具</genre>
-        <players>1</players>
-        <image>./images/reset-config.svg</image>
-    </game>
-    <game>
         <path>./MOD_TOOLS/FixShutdown.sh</path>
         <name>修复关机</name>
         <desc>为 RK3566 设备应用关机修复，解决无法正常关机的问题。</desc>
@@ -515,42 +479,6 @@
         <image>./images/install-rocknix.svg</image>
     </game>
     <game>
-        <path>./MOD_TOOLS/Install AURKNIX to EMMC.sh</path>
-        <name>安装 AURKNIX 到 eMMC</name>
-        <desc>将当前运行的 AURKNIX 系统从 SD 卡克隆到机内 eMMC。将重新分区并清空 eMMC。</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>工具</genre>
-        <players>1</players>
-        <image>./images/emmc-install.svg</image>
-    </game>
-    <game>
-        <path>./MOD_TOOLS/Backup EMMC.sh</path>
-        <name>备份 eMMC</name>
-        <desc>将机内 eMMC 上的 AURKNIX 分区备份为镜像文件，保存到可移动存储。</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>工具</genre>
-        <players>1</players>
-        <image>./images/emmc-backup.svg</image>
-    </game>
-    <game>
-        <path>./MOD_TOOLS/Restore EMMC.sh</path>
-        <name>恢复 eMMC</name>
-        <desc>从可移动存储上的备份镜像恢复机内 eMMC 的 AURKNIX 分区。</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>工具</genre>
-        <players>1</players>
-        <image>./images/emmc-restore.svg</image>
-    </game>
-    <game>
         <path>./MOD_TOOLS/Toggle Power Button.sh</path>
         <name>切换电源键</name>
         <desc>通过 systemd logind 设置，切换电源键触发休眠或关机。</desc>
@@ -563,20 +491,8 @@
         <image>./images/toggle-power.svg</image>
     </game>
     <game>
-        <path>./MOD_TOOLS/Start Baidu Sync.sh</path>
-        <name>启动百度同步</name>
-        <desc>在 Commander 中启动百度网盘同步客户端，管理设备上的云存储。</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>工具</genre>
-        <players>1</players>
-        <image>./images/rclone-backup.svg</image>
-    </game>
-    <game>
         <path>./Start R36 Tuner.sh</path>
-        <name>R36 Tuner</name>
+        <name>R36 Tuner Next</name>
         <desc>R36 Tuner Next: set the CPU governor and frequencies, unlock the turbo steps, run CPU, GPU and RAM benchmarks and monitor the temperature.</desc>
         <developer>zenmode-adri</developer>
         <publisher>Zenith</publisher>

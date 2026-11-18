@@ -108,7 +108,8 @@ open(sys.argv[2], 'w').write(xml)
     RK3326*)
       for dead in "Install ROCKNIX.sh" "qterminal.sh" "Start AetherSX2.sh" "Start BigPEmu.sh" "Start CEMU.sh" \
                   "Start DaedalusX64.sh" "Start Dolphin.sh" "Start MelonDS.sh" "Start Moonlight.sh" "Start PCSX2.sh" \
-                  "Start SkyEmu.sh" "Start RPCS3.sh" "Start Xemu.sh" "Test Touchscreen.sh" "GPcal.sh"; do
+                  "Start SkyEmu.sh" "Start RPCS3.sh" "Start Xemu.sh" "Test Touchscreen.sh" "GPcal.sh" \
+                  "Install AURKNIX to EMMC.sh" "Backup EMMC.sh" "Restore EMMC.sh" "Reset YabaSanshiro Input.sh"; do
         remove_gamelist_game "${dead}"
       done
     ;;

@@ -142,7 +142,7 @@ void set_random_for_tests(std::function<size_t(size_t)> f);
 
 // ---- menu rows ----------------------------------------------------------------------------------------------------------
 /// The MUSIC group of ES's sound menu (GuiMenu::openSoundSettings): FRONTEND MUSIC, MUSIC VOLUME, DISPLAY SONG TITLES, SONG TITLE
-/// DISPLAY DURATION, ONLY PLAY SYSTEM-SPECIFIC MUSIC FOLDER, PLAY SYSTEM-SPECIFIC MUSIC, LOWER MUSIC WHEN PLAYING VIDEO.
+/// DISPLAY DURATION, ONLY PLAY SYSTEM-SPECIFIC MUSIC FOLDER, PLAY THEME MUSIC, LOWER MUSIC WHEN PLAYING VIDEO.
 void build_menu(MenuBuilder& m, Ctx& cx);
 /// STOP MUSIC ON SCREENSAVER (GuiGeneralScreensaverOptions): only with frontend music on, as in ES.
 void build_saver_row(MenuBuilder& m, Ctx& cx);

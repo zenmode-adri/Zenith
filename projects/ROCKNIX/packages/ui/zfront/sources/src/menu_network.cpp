@@ -137,7 +137,6 @@ void apply_fixture(const std::string& cmd, CmdResult& r) {
   else if (starts_with(cmd, "systemctl ") || starts_with(cmd, "wg-quick ")) r.exit_code = flag("service_fail") ? 1 : 0;
   else if (starts_with(cmd, "/usr/bin/usbgadget address")) r.out = file("usb_address.txt");
   else if (starts_with(cmd, "tailscale status")) r.out = file("tailscale.txt");
-  else if (starts_with(cmd, "zerotier-cli")) r.out = file("zerotier.txt");
 }
 
 CmdResult run_cmd(Services& sv, const std::string& cmd, int timeout_ms) {
@@ -171,7 +170,7 @@ void query_ap_mode(Ctx& cx, const Refresh& refresh) {
 
 // ---- Wi-Fi: enable / country / local play ------------------------------------------------------------------------------
 
-void set_wifi_enabled(Ctx& cx, bool on, const Refresh& refresh) {
+void set_wifi_on_impl(Ctx& cx, bool on, const Refresh& refresh) {
   cx.conf.persist("wifi.enabled", on ? "1" : "0");
   Services* sv = cx.sv.get();
   std::string ssid = cx.conf.get_or("wifi.ssid", ""), key = cx.conf.get_or("wifi.key", ""), country = cx.conf.get_or("wifi.country", "");
@@ -209,11 +208,34 @@ void set_country(Ctx& cx, const std::string& code, const Refresh& refresh) {
 }
 
 /// GuiMenu enable_adhoc callback: keys for netplay, then restart the radio in the new mode.
+/// ES wrote the local-play netplay keys (host 192.168.80.1, its port, no relay) for good, on and off: after local play, netplay
+/// over the internet kept pointing at the console's own access point. zfront keeps the user's keys when it turns local play on and
+/// puts them back when it turns it off (a console that turned it on before this: the local-play values are removed).
 void set_local_play(Ctx& cx, bool on, const Refresh& refresh) {
+  static const char* const kNet[][2] = {{"global.netplay.host", "192.168.80.1"}, {"global.netplay.port", "55435"}, {"global.netplay.relay", "none"}};
+  auto saved_key = [](const char* k) { return std::string("zfront.localplay.") + (k + 15); };  // global.netplay.host -> ...host
+  const bool was_on = cx.conf.get_bool("wifi.adhoc.enabled", false);
   cx.conf.persist("wifi.adhoc.id", cx.conf.get_or("wifi.adhoc.id", "").empty() ? "1" : cx.conf.get_or("wifi.adhoc.id", "1"));
-  cx.conf.persist("global.netplay.host", "192.168.80.1");
-  cx.conf.persist("global.netplay.port", "55435");
-  cx.conf.persist("global.netplay.relay", "none");
+  if (on) {
+    if (!was_on) {
+      for (const auto& k : kNet) {
+        const std::string v = cx.conf.get_or(k[0], "");
+        if (v.empty()) cx.conf.persist_remove(saved_key(k[0]));
+        else cx.conf.persist(saved_key(k[0]), v);
+      }
+      cx.conf.persist("zfront.localplay.saved", "1");
+    }
+    for (const auto& k : kNet) cx.conf.persist(k[0], k[1]);
+  } else if (was_on) {
+    const bool saved = cx.conf.get_bool("zfront.localplay.saved", false);
+    for (const auto& k : kNet) {
+      const std::string back = saved ? cx.conf.get_or(saved_key(k[0]), "") : std::string();
+      if (!back.empty()) cx.conf.persist(k[0], back);
+      else if (saved || cx.conf.get_or(k[0], "") == k[1]) cx.conf.persist_remove(k[0]);
+      cx.conf.persist_remove(saved_key(k[0]));
+    }
+    cx.conf.persist_remove("zfront.localplay.saved");
+  }
   cx.conf.persist("wifi.adhoc.enabled", on ? "1" : "0");
   if (cx.conf.get_bool("wifi.enabled", false)) {
     Services* sv = cx.sv.get();
@@ -281,7 +303,9 @@ std::string live_signature(Ctx& cx) {
 /// A menu that looks at `live_signature` every two seconds and rebuilds when it changed (the loop sleeps in between: `wake_in`).
 class LiveMenu : public Menu {
  public:
-  LiveMenu(MenuSpec s, std::function<void(Ctx&, const Refresh&)> on_change) : Menu(std::move(s)), on_change_(std::move(on_change)) {}
+  LiveMenu(MenuSpec s, std::function<void(Ctx&, const Refresh&)> on_change, std::function<Transition(Ctx&)> take = nullptr)
+      : Menu(std::move(s)), on_change_(std::move(on_change)), take_(std::move(take)) {}
+  Transition take_transition(Ctx& cx) override { return take_ ? take_(cx) : Menu::take_transition(cx); }
   bool tick(float dt, Ctx& cx) override {
     bool moving = Menu::tick(dt, cx);
     if (!seen_) {  // the first tick built the menu
@@ -311,6 +335,7 @@ class LiveMenu : public Menu {
  private:
   static constexpr float kLivePoll = 2.0f;
   std::function<void(Ctx&, const Refresh&)> on_change_;
+  std::function<Transition(Ctx&)> take_;
   bool seen_ = false;
   float left_ = kLivePoll;
   std::string sig_;
@@ -350,8 +375,8 @@ std::string country_name(const std::string& code) {
 bool has_services() {
   std::string udc_function;
   return exists("/usr/sbin/sshd") || exists("/usr/lib/systemd/system/simple-http-server.service") ||
-         (exists("/usr/bin/usbgadget") && usb_function(udc_function)) || exists("/usr/bin/syncthing") || exists("/usr/bin/rclonectl") ||
-         exists("/storage/.config/wireguard/wg0.conf") || exists("/usr/sbin/tailscale") || exists("/usr/sbin/zerotier-cli");
+         (exists("/usr/bin/usbgadget") && usb_function(udc_function)) || exists("/usr/bin/rclonectl") ||
+         exists("/storage/.config/wireguard/wg0.conf") || exists("/usr/sbin/tailscale");
 }
 
 void build_network(MenuBuilder& m, Ctx& cx) {
@@ -363,7 +388,7 @@ void build_network(MenuBuilder& m, Ctx& cx) {
   // ---- Wi-Fi first (what is used most outside a game), then file transfer, then the state, local play and the services
   if (wifi) {
     m.header(tr("WI-FI"));
-    m.toggle(tr("ENABLE WI-FI"), [&cx] { return cx.conf.get_bool("wifi.enabled", false); }, [&cx, refresh](bool b) { set_wifi_enabled(cx, b, refresh); });
+    m.toggle(tr("ENABLE WI-FI"), [&cx] { return cx.conf.get_bool("wifi.enabled", false); }, [&cx, refresh](bool b) { set_wifi_on_impl(cx, b, refresh); });
     if (wifi_on && !adhoc) {
       m.submenu(tr("WI-FI NETWORKS"), "menu.network.wifi");
       const std::string code = cx.conf.get_or("wifi.country", "");
@@ -394,12 +419,6 @@ void build_network(MenuBuilder& m, Ctx& cx) {
     m.info(tr("IP ADDRESS"), ips.empty() ? tr("NOT CONNECTED") : ips[0]);
   }
   m.info(tr("INTERNET STATUS"), ips.empty() ? tr("NOT CONNECTED") : tr("CONNECTED"));
-  m.toggle(tr("SHOW NETWORK INDICATOR"), [&cx] { return cx.es.get_bool("ShowNetworkIndicator", true); },
-           [&cx](bool b) {
-             cx.es.set_bool("ShowNetworkIndicator", b);
-             cx.es.save();
-             ui_prefs::reapply(cx);  // the status bar follows at once
-           });
 
   // ---- local play (netplay over an access point)
   if ((wifi && wifi_on && g_ap_supported == 1) || adhoc) m.header(tr("LOCAL PLAY"));
@@ -429,11 +448,9 @@ void build_services(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st
   const bool http = exists("/usr/lib/systemd/system/simple-http-server.service");
   std::string udc_function;
   const bool gadget = exists("/usr/bin/usbgadget") && usb_function(udc_function);
-  const bool syncthing = exists("/usr/bin/syncthing");
   const bool cloud = exists("/usr/bin/rclonectl");
   const bool wireguard = exists("/storage/.config/wireguard/wg0.conf");
   const bool tailscale = exists("/usr/sbin/tailscale");
-  const bool zerotier = exists("/usr/sbin/zerotier-cli");
 
   if (ssh || http || gadget) m.header(tr("NETWORK SERVICES"));
   if (ssh)
@@ -477,13 +494,8 @@ void build_services(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st
         .hint(tr("What the console offers on its USB-C port."));
   }
 
-  if (syncthing || cloud) m.header(tr("CLOUD SERVICES"));
-  if (syncthing)
-    m.toggle(tr("ENABLE SYNCTHING"), [&cx, st] { return shown(*st, cx, "syncthing.enabled"); },
-             [&cx, refresh](bool b) {
-               apply_service(cx, "syncthing.enabled", b, {b ? "systemctl start syncthing" : "systemctl stop syncthing"},
-                             b ? tr("Syncthing is on") : tr("Syncthing is off"), refresh, {"systemctl stop syncthing"});
-             });
+  // Syncthing is driven from the Cloud tab of the web transfer page (websync.cpp), not from a switch here
+  if (cloud) m.header(tr("CLOUD SERVICES"));
   if (cloud)
     m.toggle(tr("MOUNT CLOUD DRIVE"), [&cx, st] { return shown(*st, cx, "clouddrive.mounted"); },
              [&cx, st, refresh](bool b) {
@@ -501,7 +513,7 @@ void build_services(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st
                refresh();
              });
 
-  if (wireguard || tailscale || zerotier) m.header(tr("VPN SERVICES"));
+  if (wireguard || tailscale) m.header(tr("VPN SERVICES"));
   if (wireguard)
     m.toggle(tr("WIREGUARD VPN"), [&cx, st] { return shown(*st, cx, "wireguard.up"); },
              [&cx, refresh](bool b) {
@@ -545,31 +557,6 @@ void build_services(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st
       m.action(tr("TAILSCALE LOGIN"), [url]() -> Transition { return ui::message(url, nullptr, tr("TAILSCALE REAUTHENTICATE:")); }).value(tr("SHOW LINK"));
     }
   }
-  if (zerotier)
-    m.toggle(tr("ZeroTier One"), [&cx, st] { return shown(*st, cx, "zerotier.up"); },
-             [&cx, st, refresh](bool b) {
-               st->pending["zerotier.up"] = b;
-               Services* sv = cx.sv.get();
-               Ctx* cxp = &cx;
-               auto up = std::make_shared<bool>(false);
-               sv->jobs.post_slow([sv, b, up] {
-                 if (b) {
-                   run_cmd(*sv, "systemctl start zerotier-one", 30000);
-                   *up = zerotier_running(run_cmd(*sv, "zerotier-cli -D/storage/.config/zerotier/ info", 15000).out);
-                 } else {
-                   run_cmd(*sv, "systemctl stop zerotier-one", 30000);
-                 }
-               },
-                             [sv, cxp, st, refresh, b, up] {
-                               st->pending.erase("zerotier.up");
-                               bool on = b && *up;
-                               cxp->conf.persist("zerotier.up", on ? "1" : "0");
-                               sv->toasts.push(!b ? tr("ZeroTier is off") : (on ? tr("ZeroTier is on") : tr("ZeroTier could not connect")));
-                               refresh();
-                             });
-               refresh();
-             });
-
   m.header(tr("SETTINGS"));
   m.text(tr("HOSTNAME"), [&cx] { return cx.conf.get_or("system.hostname", ""); },
          [&cx](const std::string& v) {
@@ -587,9 +574,11 @@ void build_services(MenuBuilder& m, Ctx& cx, const std::shared_ptr<NetState>& st
 // TRANSFER FILES: upload games from a browser on the same network. Off by default; the PIN is new at every start.
 void build_transfer(MenuBuilder& m, Ctx& cx) {
   const Refresh refresh = m.refresh;
-  m.toggle(tr("WEB FILE TRANSFER"), [&cx] { return cx.conf.get_bool("zfront.webtransfer", false); },
+  // on: stored (this switch) or for a while (the "Add games" card / the welcome, not stored); turning it on here makes it stored
+  m.toggle(tr("WEB FILE TRANSFER"), [&cx] { return cx.conf.get_bool("zfront.webtransfer", false) || webtransfer::enabled(); },
            [&cx, refresh](bool b) {
              cx.conf.persist("zfront.webtransfer", b ? "1" : "0");
+             webtransfer::set_temporary(false);
              if (!webtransfer::apply(b) && b) {  // starts / stops the listener on its own port; the port may be taken
                webtransfer::set_enabled(false);
                cx.conf.persist("zfront.webtransfer", "0");  // the switch goes back: it must not say on while nothing listens
@@ -598,7 +587,7 @@ void build_transfer(MenuBuilder& m, Ctx& cx) {
              refresh();
            })
       .hint(tr("Lets a phone or computer on this network send games to the console."));
-  if (cx.conf.get_bool("zfront.webtransfer", false)) {
+  if (cx.conf.get_bool("zfront.webtransfer", false) || webtransfer::enabled()) {
     if (!webtransfer::listening()) {
       m.info(tr("WEB ADDRESS"), tr("COULD NOT START (PORT BUSY?)"));
     } else {
@@ -671,6 +660,8 @@ struct ListState {
   bool scanning = true;
   std::string connecting;  // SSID being joined (empty: none)
   unsigned gen = 0;        // a scan answer older than this is dropped
+  bool close_on_join = false;  // opened from the welcome: a successful join closes the list (the welcome then goes on by itself)
+  bool joined_ok = false;      // set by a successful join, taken once by `take_transition`
 };
 
 /// `wifictl scanlist` (scan) or `wifictl list` (no scan) + the signal/security iwd knows + the saved networks, on a job.
@@ -757,7 +748,8 @@ std::string net_value(const WifiNet& n) {
 
 Transition pick_network(Ctx& cx, const std::shared_ptr<ListState>& st, const Refresh& refresh, const WifiNet& net) {
   if (!st->connecting.empty()) return Transition::none();
-  auto joined = [st, refresh, &cx](bool) {
+  auto joined = [st, refresh, &cx](bool ok) {
+    if (ok && st->close_on_join) st->joined_ok = true;
     st->connecting.clear();
     start_scan(cx, st, refresh, false, false);
     refresh();
@@ -827,18 +819,26 @@ void build_list(MenuBuilder& m, Ctx&, const std::shared_ptr<ListState>& st) {
   m.submenu(tr("INPUT MANUALLY"), "menu.network.manual").disabled(busy);
 }
 
-std::unique_ptr<Screen> make_wifi_list() {
+std::unique_ptr<Screen> make_wifi_list(bool close_on_join) {
   auto st = std::make_shared<ListState>();
+  st->close_on_join = close_on_join;
   MenuSpec s;
   s.title = tr("WI-FI NETWORKS");
   s.title_key = N_("WI-FI NETWORKS");
   s.build = [st](MenuBuilder& m, Ctx& cx) { build_list(m, cx, st); };
   s.on_open = [st](Ctx& cx, const Refresh& refresh) { start_scan(cx, st, refresh, true, false); };
   // the Wi-Fi drops or joins while the list is open: CONNECTED / SAVED follow (no new scan, iwd's list is read again)
-  return make_live_menu(std::move(s), [st](Ctx& cx, const Refresh& refresh) {
-    if (st->scanning || !st->connecting.empty()) return;
-    start_scan(cx, st, refresh, false, false);
-  });
+  return std::make_unique<LiveMenu>(
+      std::move(s),
+      [st](Ctx& cx, const Refresh& refresh) {
+        if (st->scanning || !st->connecting.empty()) return;
+        start_scan(cx, st, refresh, false, false);
+      },
+      [st](Ctx&) {
+        if (!st->joined_ok) return Transition::none();
+        st->joined_ok = false;
+        return Transition::pop();  // back to the welcome, which sees the new network and goes on
+      });
 }
 
 // ---- INPUT MANUALLY (hidden network) ----------------------------------------------------------------------------------------
@@ -884,6 +884,10 @@ std::unique_ptr<Screen> make_live_menu(MenuSpec spec, std::function<void(Ctx&, c
 
 std::vector<std::string> local_ip_list() { return local_ips(); }
 
+bool has_wifi_hw() { return has_wifi(); }
+
+void set_wifi_enabled(Ctx& cx, bool on, const Refresh& refresh) { set_wifi_on_impl(cx, on, refresh); }
+
 std::string web_address(const std::string& ip) {
   const std::string host = ip.find(':') != std::string::npos ? "[" + ip + "]" : ip;
   return "http://" + host + ":" + std::to_string(webtransfer::listen_port());  // "/" sends the browser on to /files
@@ -893,7 +897,8 @@ std::string web_address(const std::string& ip) {
 
 ZF_REGISTER_SCREEN("menu.network", [](Ctx&, const std::string&) { return netmenu::make_network(); });
 ZF_REGISTER_SCREEN("menu.network.services", [](Ctx&, const std::string&) { return netmenu::make_services(); });
-ZF_REGISTER_SCREEN("menu.network.wifi", [](Ctx&, const std::string&) { return netmenu::make_wifi_list(); });
+// arg "welcome": opened from the welcome's WiFi step, the list closes itself after a successful join
+ZF_REGISTER_SCREEN("menu.network.wifi", [](Ctx&, const std::string& arg) { return netmenu::make_wifi_list(arg == "welcome"); });
 ZF_REGISTER_SCREEN("menu.network.transfer", [](Ctx&, const std::string&) { return netmenu::make_transfer(); });
 ZF_REGISTER_SCREEN("menu.network.manual", [](Ctx&, const std::string&) { return netmenu::make_manual(); });
 

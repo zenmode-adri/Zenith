@@ -4,14 +4,13 @@
 #   cpp/tools/extract-strings.sh [OUT.pot] [ES.pot]
 #
 # Finds tr("..."), ntr("sing", "plural", n) and ctr("ctx", "text") in cpp/src (the English text is the msgid, as in ES's
-# own catalogs). Needs GNU gettext (xgettext, msgcomm). If ES's template is found (second argument, $ZF_ES_POT, or the
-# usual place in the ES checkout), the strings that ES's catalogs do NOT have are listed on stderr: those need a
+# own catalogs). Needs GNU gettext (xgettext, msgcomm). If ES's template is given (second argument or $ZF_ES_POT), the strings that ES's catalogs do NOT have are listed on stderr: those need a
 # translation of their own in a `zfront` catalog (zfront.po -> `msgfmt -o zfront.mo`, installed next to
 # emulationstation2.mo as <locale>/<lang>/LC_MESSAGES/zfront.mo); the others are already translated in 35 languages.
 set -eu
 here=$(cd "$(dirname "$0")/.." && pwd)
 out=${1:-$here/zfront.pot}
-es_pot=${2:-${ZF_ES_POT:?set ZF_ES_POT to EmulationStation's emulationstation2.pot}}
+es_pot=${2:-${ZF_ES_POT:-}}  # optional: without ES's template the strings it lacks are not listed
 
 command -v xgettext >/dev/null 2>&1 || { echo "extract-strings: xgettext not found (install GNU gettext)" >&2; exit 1; }
 

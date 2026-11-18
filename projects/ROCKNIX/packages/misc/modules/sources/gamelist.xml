@@ -3,7 +3,7 @@
     <folder>
         <path>./MOD_TOOLS</path>
         <name>MOD_TOOLS</name>
-        <desc>Advanced system tools: eMMC backup, install and restore, offline upgrade, bezels installer, power button behaviour and controller fixes.</desc>
+        <desc>Advanced system tools: offline upgrade, bezels installer, power button behaviour and controller fixes.</desc>
         <developer>AURKNIX</developer>
         <publisher>Zenith</publisher>
         <rating>5.0</rating>
@@ -21,18 +21,6 @@
         <genre>Tool</genre>
         <players>1</players>
         <image>./images/file-manager.svg</image>
-    </game>
-    <game>
-        <path>./Start M8C.sh</path>
-        <name>M8C</name>
-        <desc>Cross-platform M8 tracker headless client.</desc>
-        <developer>ROCKNIX</developer>
-        <publisher>ROCKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2022</releasedate>
-        <genre>Tool</genre>
-        <players>1</players>
-        <image>./images/m8c.svg</image>
     </game>
     <game>
         <path>./Install ROCKNIX.sh</path>
@@ -61,7 +49,7 @@
     <game>
         <path>./cloud_backup.sh</path>
         <name>RCLONE Backup</name>
-        <desc>Backup your saves to a cloud drive using RCLONE. Please make sure you have followed the steps at rocknix.org to set up RCLONE first.</desc>
+        <desc>Backup your saves to a cloud drive using RCLONE. Connect your cloud first from the Cloud tab of the file transfer web page.</desc>
         <developer>ROCKNIX</developer>
         <publisher>ROCKNIX</publisher>
         <rating>5.0</rating>
@@ -73,7 +61,7 @@
     <game>
         <path>./cloud_restore.sh</path>
         <name>RCLONE Restore</name>
-        <desc>Restores your saves from a cloud drive using RCLONE. Please make sure you have followed the steps at rocknix.org to set up RCLONE first.</desc>
+        <desc>Restores your saves from a cloud drive using RCLONE. Connect your cloud first from the Cloud tab of the file transfer web page.</desc>
         <developer>ROCKNIX</developer>
         <publisher>ROCKNIX</publisher>
         <rating>5.0</rating>
@@ -408,18 +396,6 @@ and keyboard to modify settings.</desc>
         <image>./images/calibrate-gamepad.svg</image>
     </game>
     <game>
-        <path>./Mount NFS.sh</path>
-        <name>Mount NFS</name>
-        <desc>Mounts an NFS share at a location defined in /storage/.nfs-mount and creates a merged storage with the games-internal card as the upper/writeable location</desc>
-        <developer>ROCKNIX</developer>
-        <publisher>ROCKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2024</releasedate>
-        <genre>tool</genre>
-        <players>1</players>
-        <image>./images/nfs.svg</image>
-     </game>
-    <game>
         <path>./MOD_TOOLS/Offline Upgrade.sh</path>
         <name>Offline Upgrade</name>
         <desc>Prepare an offline system OTA update. Place the AURKNIX update .tar file in /storage/roms/.update/ on a separate partition, then run this tool to configure the boot redirect.</desc>
@@ -480,18 +456,6 @@ and keyboard to modify settings.</desc>
         <image>./images/reset-config.svg</image>
     </game>
     <game>
-        <path>./MOD_TOOLS/Reset YabaSanshiro Input.sh</path>
-        <name>Reset YabaSanshiro Input</name>
-        <desc>Run the YabaSanshiro Saturn emulator input setup to remap controls for the connected gamepad.</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>Tool</genre>
-        <players>1</players>
-        <image>./images/reset-config.svg</image>
-    </game>
-    <game>
         <path>./MOD_TOOLS/FixShutdown.sh</path>
         <name>Fix Shutdown</name>
         <desc>Apply shutdown fixes for RK3566 devices where power-off does not complete correctly.</desc>
@@ -516,42 +480,6 @@ and keyboard to modify settings.</desc>
         <image>./images/install-rocknix.svg</image>
     </game>
     <game>
-        <path>./MOD_TOOLS/Install AURKNIX to EMMC.sh</path>
-        <name>Install AURKNIX to EMMC</name>
-        <desc>Clone the running AURKNIX system from the SD card to internal eMMC storage. This will repartition and wipe the eMMC.</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>Tool</genre>
-        <players>1</players>
-        <image>./images/emmc-install.svg</image>
-    </game>
-    <game>
-        <path>./MOD_TOOLS/Backup EMMC.sh</path>
-        <name>Backup EMMC</name>
-        <desc>Back up the internal eMMC AURKNIX partitions to image files on removable storage.</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>Tool</genre>
-        <players>1</players>
-        <image>./images/emmc-backup.svg</image>
-    </game>
-    <game>
-        <path>./MOD_TOOLS/Restore EMMC.sh</path>
-        <name>Restore EMMC</name>
-        <desc>Restore internal eMMC AURKNIX partitions from backup images on removable storage.</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>Tool</genre>
-        <players>1</players>
-        <image>./images/emmc-restore.svg</image>
-    </game>
-    <game>
         <path>./MOD_TOOLS/Toggle Power Button.sh</path>
         <name>Toggle Power Button</name>
         <desc>Toggle whether the power button triggers suspend or shutdown via systemd logind settings.</desc>
@@ -564,21 +492,8 @@ and keyboard to modify settings.</desc>
         <image>./images/toggle-power.svg</image>
     </game>
     <game>
-        <path>./MOD_TOOLS/Start Baidu Sync.sh</path>
-        <name>Start Baidu Sync</name>
-        <desc>Launch the Baidu Netdisk sync client in Commander for managing cloud storage on your device.</desc>
-        <developer>AURKNIX</developer>
-        <publisher>AURKNIX</publisher>
-        <rating>5.0</rating>
-        <releasedate>2025</releasedate>
-        <genre>Tool</genre>
-        <players>1</players>
-        <image>./images/rclone-backup.svg</image>
-        <hidden>true</hidden>
-    </game>
-    <game>
         <path>./Start R36 Tuner.sh</path>
-        <name>R36 Tuner</name>
+        <name>R36 Tuner Next</name>
         <desc>R36 Tuner Next: set the CPU governor and frequencies, unlock the turbo steps, run CPU, GPU and RAM benchmarks and monitor the temperature.</desc>
         <developer>zenmode-adri</developer>
         <publisher>Zenith</publisher>

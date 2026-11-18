@@ -966,11 +966,18 @@ std::string stamp(const std::string& p) {
   return std::to_string(uint64_t(sb.st_size)) + ":" + std::to_string(int64_t(sb.st_mtime));
 }
 // What the generated folder depends on: the flattened theme, the screen, the Zenith bases and the generator itself.
+bool skin_fonts(const std::string& carousel, std::string& main_face, std::string& alt_face);
+
 std::string fingerprint(const std::string& es_dir, const Resolved& r, const Options& opt, const Bases& bases) {
   uint64_t h = 1469598103934665603ULL;
   auto feed = [&](const std::string& v) { h = fnv(h, v); };
-  feed("estheme-gen-6");
+  feed("estheme-gen-8");
+  {
+    std::string fm, fa;
+    if (skin_fonts(opt.carousel, fm, fa)) feed("skinfonts=" + fm);
+  }
   feed(real(es_dir));
+  feed("carousel=" + opt.carousel);
   feed(opt.ratio + "|" + std::to_string(opt.width) + "x" + std::to_string(opt.height) + "|" + opt.lang);
   for (const auto& kv : r.vars) feed(kv.first + "=" + kv.second);
   for (const auto& kv : r.subsets) feed("subset " + kv.first + "=" + kv.second);
@@ -1070,6 +1077,11 @@ RemadeLook iconic_look(const RemadeLook& base, const Resolved& r, std::string& e
     l.tile_txt = u32_of(ink);
     l.accent = u32_of(accent);
     l.accent_soft = u32_of(mix(card, accent, 0.3));
+    // The text of the focused row (and the titles on the page) is the theme's own selected ink: light on this dark fill. The dark indigo of the light look
+    // stayed here before and gave 1.04:1 on the fill (unreadable); the fill is the same as ever.
+    Rgb on_fill = ink;
+    if (contrast(on_fill, rgb_of(l.accent_soft)) < 4.5) on_fill = white;
+    l.accent_dark = u32_of(on_fill);
     l.surface = u32_of(card);
     l.panel = u32_of(card);
     l.separator = u32_of(pick("menuGroupSeparatorColor", 0x444444));
@@ -1086,6 +1098,51 @@ RemadeLook iconic_look(const RemadeLook& base, const Resolved& r, std::string& e
   extra += "<icVideo>" + std::string(sub("play-video-previews-of-games") == "no" ? "0" : "1") + "</icVideo>";
   extra += "<icDetail>" + std::string(sub("show-detailed-game-info") == "no" ? "0" : "1") + "</icDetail>";
   return l;
+}
+
+// The menus of the three virtual themes (Aurora, Swiss, Industrial) wear the colours and the selector of their own carousel, in both
+// modes: what the Style of the menus reads (`bg txt dim cyan cyanDark cyanSoft`, `selStyle`, `corner`) is set here, so every screen that is
+// not a carousel (menus, dialogs, lists) follows. `cyan` is the accent of a dark page, `cyanDark` the one of a light page AND the text of the
+// selected row; `cyanSoft` is the fill of the selector.
+// The faces of the three skins (ship with zfront in share/zfront/fonts; ZF_SKIN_FONTS points at another folder): the main face and the second one.
+// False when a file is missing: the theme keeps the faces it has.
+bool skin_fonts(const std::string& carousel, std::string& main_face, std::string& alt_face) {
+  const char* m = nullptr;
+  const char* a = nullptr;
+  if (carousel == "swiss") m = "SpaceGrotesk-Bold.ttf", a = "Inter-Medium.ttf";
+  else if (carousel == "aurora") m = "Sora-Regular.ttf", a = "Sora-SemiBold.ttf";
+  else if (carousel == "industrial") m = "Inter-Bold.ttf", a = "JetBrainsMono-Bold.ttf";
+  else return false;
+  const char* env = ::getenv("ZF_SKIN_FONTS");
+  const std::string dir = env && *env ? env : "/usr/share/zfront/fonts";
+  main_face = dir + "/" + m, alt_face = dir + "/" + a;
+  return file_exists(main_face) && file_exists(alt_face);
+}
+
+void virtual_skin(const std::string& carousel, RemadeLook& l, std::string& extra) {
+  struct Skin {
+    uint32_t bg, txt, dim, dim_dark, cyan, cyan_dark, soft, panel, sep, track;
+    const char* vars;
+  };
+  const bool d = l.dark;
+  Skin s{};
+  if (carousel == "aurora")
+    s = d ? Skin{0x13113A, 0xFFFFFF, 0xC4C2E2, 0xD6D4EE, 0x2EE6C8, 0xFFFFFF, 0x3C3977, 0x23205A, 0x3A3774, 0x4A4780, "<selStyle>fill</selStyle><corner>1</corner>"}
+          : Skin{0xEEF0FF, 0x1D1B3A, 0x5A5790, 0x3E3B70, 0x3B2FA0, 0x3B2FA0, 0xDAD6FF, 0xF8F8FF, 0xD2D0EE, 0xCFCCF0, "<selStyle>fill</selStyle><corner>1</corner>"};
+  else if (carousel == "swiss")
+    s = d ? Skin{0x2540FF, 0xFFFFFF, 0xC2CBFF, 0xDCE1FF, 0xFFFFFF, 0x2540FF, 0xFFFFFF, 0x3550FF, 0x5570FF, 0x1A2FC8, "<selStyle>fill</selStyle><corner>0</corner>"}
+          : Skin{0xF3F1EA, 0x12163A, 0x6A6C80, 0x3C4058, 0x2540FF, 0x2540FF, 0xDFE3FF, 0xFFFFFF, 0xCFCDC4, 0xCFD3F5, "<selStyle>fill</selStyle><corner>0</corner>"};
+  else if (carousel == "industrial")
+    s = d ? Skin{0x1D1C1A, 0xF1EFE6, 0xA3A196, 0xC4C2B8, 0xFF5A1F, 0xFFB08C, 0x4A2A1C, 0x2B2A27, 0x3A3934, 0x4A4842, "<selStyle>fill</selStyle><corner>0.25</corner>"}
+          : Skin{0xE8E6DF, 0x1B1A17, 0x6E6C63, 0x4A4942, 0xFF5A1F, 0xC7380A, 0xFFDCCB, 0xF5F4EE, 0xCFCDC4, 0xC4C2B8, "<selStyle>fill</selStyle><corner>0.25</corner>"};
+  else
+    return;
+  l.bg = s.bg, l.txt = s.txt, l.dim = s.dim, l.dim_dark = s.dim_dark, l.tile_txt = s.txt;
+  l.accent = s.cyan, l.accent_dark = s.cyan_dark, l.accent_soft = s.soft;
+  l.surface = s.panel, l.panel = s.panel, l.separator = s.sep, l.track = s.track;
+  l.switch_on = s.cyan, l.switch_off = d ? s.track : s.dim, l.hint = s.dim, l.input_border = s.sep;
+  for (size_t p; (p = extra.find("<corner>0.5</corner>")) != std::string::npos;) extra.erase(p, 20);  // Iconic's own: the skin sets its corner
+  extra += s.vars;
 }
 }  // namespace
 
@@ -1108,6 +1165,11 @@ bool generate(const std::string& es_dir_in, const Bases& bases, const std::strin
   std::string name;
   for (char ch : path_filename(es_dir)) name += (std::isalnum(static_cast<unsigned char>(ch)) || ch == '-' || ch == '_' || ch == '.') ? ch : '_';
   if (name.empty() || name[0] == '.') name = "estheme";
+  if (!opt.carousel.empty()) {  // one generated folder for each carousel on the same pictures
+    name += '-';
+    for (char ch : opt.carousel)
+      if (ch >= 'a' && ch <= 'z') name += ch;
+  }
   const std::string dir = out_root + "/" + name;
 
   // Same inputs as the folder already there (a restart of the frontend, THEME SET...): reuse it, generation is the slow part.
@@ -1131,10 +1193,15 @@ bool generate(const std::string& es_dir_in, const Bases& bases, const std::strin
   const RemadeLook* look = nullptr;
   for (const RemadeLook& l : kLooks)
     if (style == l.name) look = &l;
+  std::string skin_alt;    // second face of a skin (absolute path)
   RemadeLook scheme_look;  // the look with the user's choices of the theme (Iconic)
   std::string look_extra;
   if (look && style == "iconic") {
     scheme_look = iconic_look(*look, r, look_extra);
+    for (char ch : opt.carousel)
+      if (ch < 'a' || ch > 'z') look_extra.clear();  // a name that is not a name (it never is: the table of bootargs.cpp)
+    if (!look_extra.empty() && !opt.carousel.empty()) look_extra += "<esCarousel>" + opt.carousel + "</esCarousel>";
+    if (!look_extra.empty() && !opt.carousel.empty()) virtual_skin(opt.carousel, scheme_look, look_extra);
     scheme_look.extra = look_extra.c_str();
     look = &scheme_look;
   }
@@ -1143,6 +1210,8 @@ bool generate(const std::string& es_dir_in, const Bases& bases, const std::strin
     t.pal = Palette{rgb_of(look->bg), rgb_of(look->txt), rgb_of(look->dim), rgb_of(look->dim_dark), rgb_of(look->tile_txt), rgb_of(look->accent), rgb_of(look->accent_dark), rgb_of(look->accent_soft),
                     rgb_of(look->surface), rgb_of(look->panel), rgb_of(look->separator), rgb_of(look->track), rgb_of(look->switch_on), rgb_of(look->switch_off), rgb_of(look->hint), rgb_of(look->input_border)};
     t.font_src = *look->font ? theme_file(es_dir, look->font) : std::string();
+    if (style == "iconic" && !opt.carousel.empty() && skin_fonts(opt.carousel, t.font_src, skin_alt)) {  // the skins' own faces
+    }
     t.report.add("remade", "translated", style + ": layout, pictures and colours of the zfront remake (remake.cpp)");
   }
   if (t.dark && !have_d) t.dark = false;  // only the light base exists
@@ -1205,7 +1274,9 @@ bool generate(const std::string& es_dir_in, const Bases& bases, const std::strin
     const size_t vars_at = x.find("<variables>");
     if (vars_at != std::string::npos) {
       std::string more = std::string("\n<esStyle>") + look->name + "</esStyle><esDir>" + real(es_dir) + "</esDir>" + look->extra;
-      if (*look->font_alt) {
+      if (!skin_alt.empty()) {
+        more += "<esFontAlt>" + skin_alt + "</esFontAlt>";
+      } else if (*look->font_alt) {
         const std::string alt = theme_file(es_dir, look->font_alt);
         if (!alt.empty()) more += "<esFontAlt>" + real(alt) + "</esFontAlt>";
       }

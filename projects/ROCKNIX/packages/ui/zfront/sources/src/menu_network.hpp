@@ -20,6 +20,10 @@ namespace netmenu {
 
 /// The addresses ES shows for this console, the first one is the one to give out (below `$ZF_NET_ROOT/fixture/ips.txt` in tests).
 std::vector<std::string> local_ip_list();
+/// The console has a WiFi adapter (the test the NETWORK menu uses to show its WiFi rows).
+bool has_wifi_hw();
+/// ENABLE WI-FI as the NETWORK menu does it (persist, `wifictl enable`, toasts); `refresh` runs when it ends.
+void set_wifi_enabled(Ctx& cx, bool on, const Refresh& refresh);
 /// `http://<ip>:<port>/files`, the address of the web file transfer (an IPv6 address in brackets).
 std::string web_address(const std::string& ip);
 

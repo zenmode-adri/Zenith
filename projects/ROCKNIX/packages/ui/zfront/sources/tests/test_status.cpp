@@ -100,11 +100,26 @@ int main() {
     write_all(r + "/class/rfkill/rfkill0/state", "0\n");
     CHECK(!probe_bluetooth(r));
     write_all(r + "/class/rfkill/rfkill0/state", "1\n");
+    // adapter + unblocked radio but the Bluetooth service stopped (switch OFF): no icon (R36S combo dongle)
+    CHECK(!probe_bluetooth(r));
+    CHECK(mkdir((r + "/fs").c_str(), 0755) == 0);
+    CHECK(mkdir((r + "/fs/cgroup").c_str(), 0755) == 0);
+    CHECK(mkdir((r + "/fs/cgroup/systemd").c_str(), 0755) == 0);
+    CHECK(mkdir((r + "/fs/cgroup/systemd/system.slice").c_str(), 0755) == 0);
+    CHECK(!probe_bluetooth(r));
+    CHECK(mkdir((r + "/fs/cgroup/systemd/system.slice/bluetooth.service").c_str(), 0755) == 0);  // service running (switch ON)
     CHECK(probe_bluetooth(r));
+    write_all(r + "/class/rfkill/rfkill0/state", "0\n");
+    CHECK(!probe_bluetooth(r));
+    write_all(r + "/class/rfkill/rfkill0/state", "1\n");
     write_all(r + "/class/rfkill/rfkill0/type", "wlan\n");
     CHECK(!probe_bluetooth(r));
     std::error_code ec;
     std::filesystem::remove_all(r, ec);
+    CHECK(!take_status_refresh());  // an immediate re-read is asked once and taken once
+    request_status_refresh();
+    CHECK(take_status_refresh());
+    CHECK(!take_status_refresh());
   }
 
   // override parser
@@ -122,6 +137,22 @@ int main() {
   CHECK(t.empty() || (t.size() == 5 && t[2] == ':'));
   (void)probe_wifi();
 
+  // `plugged` (the bedside clock and the plug-in notice read it): a charger online, or the kernel's own Charging / Full, whatever the charger file says
+  auto plug = [&](std::initializer_list<std::pair<const char*, const char*>> f) { return read_battery(fake(f))->plugged; };
+  CHECK(!plug({{"battery/capacity", "23"}, {"battery/status", "Discharging"}}));
+  CHECK(plug({{"battery/capacity", "80"}, {"battery/status", "Charging"}}));
+  CHECK(plug({{"battery/capacity", "100"}, {"battery/status", "Full"}}));
+  CHECK(!plug({{"battery/capacity", "50"}, {"battery/status", "Not charging"}}));
+  CHECK(!plug({{"battery/capacity", "50"}, {"battery/status", "Unknown"}}));
+  CHECK(plug({{"battery/capacity", "7"}, {"usb/online", "1"}}));
+  CHECK(plug({{"battery/capacity", "97"}, {"battery/status", "Not charging"}, {"rk817-charger/online", "1"}}));
+  CHECK(!plug({{"battery/capacity", "60"}, {"battery/status", "Not charging"}, {"rk817-charger/online", "0"}}));
+  // the R36S: its charger file stays 0 (the chip does not see it) but the gauge says Charging / Full: plugged, although `charging` follows the file
+  {
+    const std::optional<Battery> b = read_battery(fake({{"battery/capacity", "90"}, {"battery/status", "Charging"}, {"rk817-charger/online", "0"}}));
+    CHECK(b && b->plugged && !b->charging);
+  }
+
   // monitor: nothing is re-read before its deadline; changes are reported once
   std::string r = fake({{"battery/capacity", "60"}, {"battery/status", "Discharging"}});
   StatusProbes pr;
@@ -131,15 +162,19 @@ int main() {
   CHECK(src->status().battery == (Battery{60, false}));
   CHECK(src->status().wifi);
   CHECK(src->status().time == "10:00");
+  const unsigned reads0 = src->battery_reads();  // the battery was read once by the constructor, and not again by a poll that is not due
+  CHECK(reads0 >= 1);
   put(r, "class/power_supply/battery/capacity", "59");
   TimePoint t0 = Clock::now();
   CHECK(!src->poll(t0));
+  CHECK_EQ(src->battery_reads(), reads0);
   CHECK_EQ(int(src->status().battery->percent), 60);
   auto dl = src->next_deadline();
   CHECK(dl && *dl > t0 && *dl <= t0 + 61s);
   // 30 s later: battery refreshed (fd kept open, value re-read) and wifi change seen
   g_wifi = false;
   CHECK(src->poll(t0 + 31s));
+  CHECK_EQ(src->battery_reads(), reads0 + 1);
   CHECK_EQ(int(src->status().battery->percent), 59);
   CHECK(!src->status().wifi);
   CHECK(!src->poll(t0 + 31s));  // same values: no redraw
@@ -158,6 +193,19 @@ int main() {
   g_time.clear();
   CHECK(src->poll(t0 + 200s));
   CHECK(src->status().time.empty());
+  {  // `reread`: the next poll reads the battery before its half minute is up (what the plug-in filter asks for to confirm a plug)
+    const std::string r2 = fake({{"battery/capacity", "50"}, {"battery/status", "Discharging"}});
+    auto s2 = make_status_source(r2, pr);
+    const unsigned n0 = s2->battery_reads();
+    TimePoint u0 = Clock::now();
+    CHECK(!s2->poll(u0));
+    CHECK_EQ(s2->battery_reads(), n0);
+    put(r2, "class/power_supply/battery/capacity", "51");
+    s2->reread();
+    CHECK(s2->poll(u0));
+    CHECK_EQ(s2->battery_reads(), n0 + 1);
+    CHECK_EQ(int(s2->status().battery->percent), 51);
+  }
   // deadlines stay within a minute (~2 wake-ups per minute)
   CHECK(*src->next_deadline() <= t0 + 200s + 61s);
 

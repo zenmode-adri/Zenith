@@ -44,6 +44,8 @@ struct Access {
 Access& access();
 /// Sets both; `gen` grows only when something changed.
 void set_access(TextSize size, bool contrast);
+/// Every open menu lays itself out again (the theme variables its style reads changed).
+void relayout_all();
 
 /// Colours of the menu view. Taken from `theme.xml` (`menuBackground`, `menuText`, `menuSwitch`, `menuVolume`,
 /// `menuGroup`) with `${var}` resolved; whatever the file does not say is derived from the base variables
@@ -61,6 +63,10 @@ struct Style {
   bool header_center = false;           // theme variable `headerAlign` = center: screen titles centred in the column (Zenith: left)
   /// Accent colour of the outline / underline / bar selector styles (the help bar's main-action colour).
   Color accent() const { return dark ? cyan : cyan_dark; }
+  /// The ink of the focused row. `cyan_dark` with the theme's own filled selector (it is made for the fill: a theme with a dark fill under light ink, or
+  /// black ink on an orange one, would not read on the plain page); with outline / underline / bar the row sits on the page, so it is the first of
+  /// `cyan_dark`, the accent and `txt` that reaches 4.5:1 on `bg`.
+  Color sel_ink;
   /// Corner radius of a surface (selector, help bar, toast, dialog button) of height `h`: half of it at corner = 1.
   int radius(float h) const { return int(h / 2.0f * corner); }
   /// With `access().contrast` the colours are the high-contrast ones: pure white (dark pages) or black (light pages) text, opaque panels,
@@ -86,15 +92,26 @@ struct Metrics {
   float inset = 0;                      // where the text of a row starts inside it: two cells
   int u = 0;                            // the cell of the grid, px
   float help_h = 0, help_bottom = 0;    // the help row: its height (whole cells) and its bottom (the bottom margin)
+  float hint_room = 0;                  // the band reserved under the list for a hint
+  bool keeps_gap = false;               // the theme sets its own gap under the title: balance_list leaves it
+  /// Moves the list down so the room above and under it is about the same (whole cells); only a menu calls it.
+  void balance_list();
   static Metrics from(const Theme& th, float w, float h);
 };
+
+/// The text levels, ONE table for every screen of every theme (the old themes read the same factors from layout.xml; the Aurora / Swiss /
+/// Industrial skins ask for them here, so no text of theirs is sized on its own). Title = screen title, Row = rows and values, Small = section
+/// headers and hints, Foot = counters and keycaps, Help = the help bar. Size = factor of the screen height by aspect ratio (the Zenith
+/// layout.xml values: 1:1, 4:3, 3:2, 16:9), times TEXT SIZE, never under 11 px. `Level::Display` is not here on purpose: big names keep their own size.
+enum class Level : uint8_t { Title, Row, Small, Foot, Help };
+int level_px(Level lv, float W, float H);
 
 /// Constants of the spec (document them in menu-spec.md when you change one).
 constexpr float kTitleScale = 1.22f;    // title size = fMenuTitle * this
 constexpr float kColMaxH = 1.8f;        // content column width <= 1.8 * H (every target screen is narrower: full width)
 constexpr float kPillInset = 0.55f;     // text inset inside the selector pill, in pill heights
 
-enum class Icon : uint8_t { ChevronRight, ChevronLeft, Check, Sun };
+enum class Icon : uint8_t { ChevronRight, ChevronLeft, Check, Sun, Folder, File, Image, Game, Archive, Back };
 
 /// Rounded rectangles, discs and icons as images. Handles per `Assets` instance are checked every call (a marker image),
 /// so a new `Assets` never sees ids of another.
@@ -110,8 +127,9 @@ class Shapes {
   /// Ring: the outline of a rounded rectangle, `t` pixels thick, nothing inside (safe over any background).
   void ring(Assets& a, std::vector<Op>& out, float x, float y, float w, float h, int r, float t, Color c);
   /// Selector of the selected row / element in the box (x, y, w, h), drawn as the theme's `selStyle`: `fill` colour for Fill,
-  /// `accent` for the other three. The line / ring weight and the bar width follow the height.
-  void selector(Assets& a, const Style& st, std::vector<Op>& out, float x, float y, float w, float h, Color fill, Color accent);
+  /// `accent` for the other three. The line / ring weight and the bar width follow the height. `radius` >= 0 and `weight` > 0 give the corner and the
+  /// stroke of a theme that has its own (Zenith Next: the row's card), otherwise they follow the style and the height.
+  void selector(Assets& a, const Style& st, std::vector<Op>& out, float x, float y, float w, float h, Color fill, Color accent, int radius = -1, int weight = 0);
   /// `fill` rounded rectangle inside a `border` one of `t` pixels.
   void framed(Assets& a, std::vector<Op>& out, float x, float y, float w, float h, int r, Color fill, Color border, float t);
   /// Stroke icon in a `px` x `px` box at (x, y), tinted.

@@ -10,11 +10,97 @@ UPDATE_ROOT="/storage/.update"
 MOUNT_GAMES=$(get_setting system.automount)
 GAMES_DEVICE=$(get_setting system.gamesdevice)
 MS_PATH="/storage/roms"
+OWN_LAYOUT=0
 
 
 function unmount() {
   log $0 "Unmount ${1}."
   umount -f "${1}" 2>/dev/null ||:
+}
+
+### Zenith monta la tarjeta de juegos tal cual (/flash/ms_unsupported): su RAIZ va a /storage/roms, con las carpetas de los
+### sistemas (gba, snes, psx...) sueltas en ella, como en ArkOS/dArkOS. Las tarjetas de ROCKNIX, muOS o Batocera llevan los
+### sistemas dentro de "roms" (o "share/roms"): si esa carpeta tiene mas sistemas con juegos que la raiz, se enlaza esa.
+### Reconoce los sistemas por el nombre exacto de la carpeta (los de es_systems); se omiten los nombres genericos (bios,
+### themes, music, ports, pc, mac...). No mueve ni escribe nada en la tarjeta: solo elige que carpeta se enlaza.
+ROM_SYSTEMS=" \
+  3do amiga amigacd32 amstradcpc arcade arduboy atari2600 atari5200 atari7800 atari800 \
+  atarijaguar atarilynx atarist atomiswave bbcmicro bbk c128 c16 c64 cdi channelf chip-8 coleco \
+  cps1 cps2 cps3 daphne dreamcast easyrpg famicom fbneo fds gameandwatch gamegear gamegearh gb \
+  gba gbah gbav gbc gbch gbh genesis genh hbmame intellivision krkr2 mame mastersystem megacd \
+  megadrive megadrive-japan megadriveh megaduck mkxp mrp msx msx2 n64 naomi nds ndsiware neocd \
+  neogeo nes nesh ngp ngpc odyssey onscripter openbor palm pc88 pc98 pcengine pcenginecd pcfx pet \
+  pico-8 pokemini psp pspminis psx pymo satellaview saturn scummvm scv sega32x segacd sfc sg-1000 \
+  sgfx snes snesh snesmsu1 st-v sufami supervision tg16 tg16cd tic-80 uzebox varcade vectrex \
+  vic20 videopac vircon32 virtualboy wonderswan wonderswancolor x1 x68000 zmachine zx81 \
+  zxspectrum \
+ "
+
+### $1 = carpeta. Imprime cuantas carpetas de sistemas con algo dentro tiene.
+function count_systems() {
+  local n=0 d l
+  for d in "${1}"/*/
+  do
+    d=${d%/}
+    d=${d##*/}
+    l=${d,,}
+    ### Los nombres reales solo llevan a-z, 0-9 y "-": cualquier otra cosa (espacios, signos) no es un sistema.
+    case "${l}" in
+      ""|*[!a-z0-9-]*) continue ;;
+    esac
+    ### En FAT/exFAT/NTFS "GBA" y "gba" son la misma carpeta; en ext4 no: solo cuenta si la ruta en minusculas ES esta carpeta.
+    ### Solo cuentan las carpetas con algo dentro: las vacias no son juegos.
+    case "${ROM_SYSTEMS}" in
+      *" ${l} "*)
+        if [ -d "${1}/${l}" ] && [ "${1}/${l}" -ef "${1}/${d}" ] && [ -n "$(ls -A "${1}/${l}" 2>/dev/null | head -n 1)" ]
+        then
+          n=$((n+1))
+        fi
+      ;;
+    esac
+  done
+  echo ${n}
+}
+
+### $1 = punto de montaje. Imprime la carpeta a enlazar: la raiz, salvo que roms/ROMS/Roms/share/roms tenga mas sistemas.
+function pick_roms_dir() {
+  local m="${1}" d n best="${1}" bestn
+  bestn=$(count_systems "${m}")
+  for d in "${m}/roms" "${m}/ROMS" "${m}/Roms" "${m}/share/roms"
+  do
+    [ -d "${d}" ] || continue
+    n=$(count_systems "${d}")
+    if [ "${n}" -ge 1 ] && [ "${n}" -gt "${bestn}" ]
+    then
+      best="${d}"
+      bestn=${n}
+    fi
+  done
+  echo "${best}"
+}
+
+### $1 = particion. Imprime el disco al que pertenece (mmcblk1p3 -> mmcblk1).
+function disk_of() {
+  echo "${1}" | sed -e "s#^/.*/##g" -e "s#p[0-9].*\$##g"
+}
+
+### $1 = punto de montaje, $2 = particion. Enlaza la tarjeta a /storage/roms (Zenith, sin almacenamiento combinado).
+function bind_games_root() {
+  local src sysdisk
+  src=$(pick_roms_dir "${1}")
+  if [ ! "${src}" = "${1}" ]
+  then
+    log $0 "Card keeps its systems in ${src}, using it."
+  fi
+  log $0 "Executing bind mount of ${src} to ${MS_PATH}"
+  mount --bind "${src}" ${MS_PATH}
+
+  ### Tarjeta de OTRO disco que ya trae sus juegos: no se le crean carpetas de sistemas vacias.
+  sysdisk=${SYSTEM_DISK:-$(disk_of "$(awk '$2 == "/flash" {print $1}' /proc/mounts | head -1)")}
+  if [ -n "${sysdisk}" ] && [ ! "$(disk_of "${2}")" = "${sysdisk}" ] && [ "$(count_systems "${src}")" -ge 3 ]
+  then
+    OWN_LAYOUT=1
+  fi
 }
 
 function start_ms() {
@@ -102,6 +188,11 @@ then
 fi
 
 function create_game_dirs() {
+  if [ "${OWN_LAYOUT}" = 1 ]
+  then
+    log $0 "Card with its own games, not creating game directories."
+    return
+  fi
   ### We don't want systemd to manage this or the directories could be created in the wrong location.
   if [ -e "/usr/config/system-dirs.conf" ]
   then
@@ -189,7 +280,7 @@ function mount_games() {
       fi
       if [ -e "/flash/ms_unsupported" ]
       then
-	      mount --bind ${MOUNT_PATH} ${MS_PATH}
+	      bind_games_root "${MOUNT_PATH}" "${1}"
       else
               start_ms external
       fi
@@ -281,6 +372,9 @@ function find_games() {
 }
 
 ## Main..
+
+### Para las pruebas: cargar las funciones sin ejecutar nada.
+[ -n "${AUTOMOUNT_SOURCE_ONLY}" ] && return 0
 
 load_modules
 

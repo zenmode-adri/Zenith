@@ -3,7 +3,7 @@ import hashlib
 import os
 import shutil
 
-BASE = 'C:/Users/epsil/Documents/r36-kernel-mainline/SESION-2026-10-04-OS-DEFINITIVO/temas-zenith/'
+BASE = os.environ.get('ZENITH_THEMES_SRC', 'temas-zenith').rstrip('/') + '/'
 LIGHT = BASE + 'zenith-switch-claro/'
 DARK = BASE + 'zenith-oscuro-WIP/'
 OUT = 'C:/tmp/zt/pkg/es-theme-zenith/'

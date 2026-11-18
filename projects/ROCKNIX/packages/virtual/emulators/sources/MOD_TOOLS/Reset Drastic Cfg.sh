@@ -1,36 +1,47 @@
 #!/bin/bash
 
 . /etc/profile
+set -u
 
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)  # 脚本绝对路径
-SDL_DB_FILE="/storage/.config/SDL-GameControllerDB/gamecontrollerdb.txt" # 目标DB文件
-JOYGUID_BIN="/usr/bin/joyguid"     # joyguid路径
-DRASTIC_TEMPLATE="/usr/config/drastic/config//drastic.cfg"       # drastic.cfg模板
+for cmd in awk grep mktemp tr cp mv; do
+  command -v "${cmd}" >/dev/null 2>&1 || { echo "Error: required command '${cmd}' not found." >&2; exit 1; }
+done
+
+SDL_DB_FILE="/storage/.config/SDL-GameControllerDB/gamecontrollerdb.txt"  # SDL controller database
+JOYGUID_BIN="/usr/bin/joyguid"  # prints the GUID of the built-in pad
+DRASTIC_TEMPLATE="/usr/config/drastic/config/drastic.cfg"  # factory template
 DRASTIC_CFG="/storage/.config/drastic/config/drastic.cfg"
 
-# 定义配置文件路径
-CONFIG_FILE="/storage/.config/joy_guid"
+
+# Guarda una copia de la configuracion actual antes de restablecerla (fuera de config/, para que el rm de abajo no la borre)
+if [ -f "${DRASTIC_CFG}" ]; then
+    cp -f "${DRASTIC_CFG}" /storage/.config/drastic/drastic-cfg-copia-antes-de-reset.cfg
+fi
 
 if [ -f /storage/.config/drastic/config/drastic.cf2 ]; then
     rm -rf /storage/.config/drastic/config/drastic.cf*
 fi
 
+[ -f "${DRASTIC_TEMPLATE}" ] || { echo "Error: Drastic is not installed (no template at ${DRASTIC_TEMPLATE})." >&2; exit 1; }
+[ -x "${JOYGUID_BIN}" ] || { echo "Error: ${JOYGUID_BIN} not found." >&2; exit 1; }
+mkdir -p "$(dirname "${DRASTIC_CFG}")"
 cp "${DRASTIC_TEMPLATE}" "${DRASTIC_CFG}"
+echo "Drastic settings reset to the factory file."
 
-guid=$("$JOYGUID_BIN" 2>/dev/null | tr -d '\n')  # 移除换行符
+guid=$("$JOYGUID_BIN" 2>/dev/null | tr -d '\n')
 
 # 查找匹配的配置行
-mapping_line=$(grep -m1 "^${guid}," "$SDL_DB_FILE")
+mapping_line=$(grep -m1 "^${guid}," "$SDL_DB_FILE" 2>/dev/null || true)
 
 if [ -z "$mapping_line" ]; then
-    echo "错误：未找到GUID $guid 对应的控制器配置"
+    echo "Error: no controller mapping found for GUID ${guid}; Drastic keeps the factory buttons." >&2
     exit 1
 fi
 
 # 生成临时文件
 tmp_file=$(mktemp)
 
-awk -v mapping_str="$mapping_line" -v no_right_stick="$NO_RIGHT_STICK" '
+awk -v mapping_str="$mapping_line" -v no_right_stick="${NO_RIGHT_STICK:-}" '
 BEGIN {
     # Hat 方向掩码到值的映射 (Drastic 使用 0x440 | mask)
     hat_values["1"] = 1089  # up:    0x440 | 1 = 0x441
@@ -291,11 +302,10 @@ BEGIN {
 }
 ' "$DRASTIC_CFG" > "$tmp_file"
 
-# 替换原文件
 mv "$tmp_file" "$DRASTIC_CFG"
 
 if [ -d /storage/.config/drastic_chn/config/ ]; then
     cp "$DRASTIC_CFG"  /storage/.config/drastic_chn/config/drastic.cfg
 fi
 
-echo "配置文件已更新：$config_file（使用GUID：$guid）"
+echo "Drastic buttons mapped from the controller database (GUID ${guid})."

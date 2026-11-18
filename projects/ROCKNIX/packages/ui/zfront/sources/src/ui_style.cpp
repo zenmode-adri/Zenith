@@ -29,6 +29,17 @@ namespace {
 
 float luma(Color c) { return (0.2126f * float(c[0]) + 0.7152f * float(c[1]) + 0.0722f * float(c[2])) / 255.0f; }
 
+/// WCAG contrast ratio of two opaque colours.
+float contrast_ratio(Color a, Color b) {
+  const auto lin = [](uint8_t v) {
+    const float u = float(v) / 255.0f;
+    return u <= 0.03928f ? u / 12.92f : std::pow((u + 0.055f) / 1.055f, 2.4f);
+  };
+  const auto lum = [&](Color c) { return 0.2126f * lin(c[0]) + 0.7152f * lin(c[1]) + 0.0722f * lin(c[2]); };
+  const float la = lum(a), lb = lum(b);
+  return (std::max(la, lb) + 0.05f) / (std::min(la, lb) + 0.05f);
+}
+
 /// Colour text of the theme: `RRGGBB[AA]` or `${variable}`.
 Color resolve(const Theme& th, const char* text, Color def) {
   std::string_view v = trim(text ? text : "");
@@ -80,6 +91,8 @@ void set_access(TextSize size, bool contrast) {
   ++a.gen;
 }
 
+void relayout_all() { ++access().gen; }
+
 namespace {
 
 /// The high-contrast copy of a style: text pure white / black, every panel opaque, a selector fill without translucency.
@@ -97,6 +110,7 @@ Style high_contrast(Style s) {
   s.line = mix(s.panel, pure, 0.65f);
   s.cyan = s.dark ? Color{0x00, 0xE5, 0xFF, 255} : Color{0x00, 0x46, 0x8C, 255};
   s.cyan_dark = s.dark ? Color{0x00, 0xE5, 0xFF, 255} : Color{0x00, 0x32, 0x78, 255};
+  s.sel_ink = s.cyan_dark;
   s.cyan_soft = s.dark ? black : white;  // the selected row: opaque, with the thick ring of `Shapes::selector` around it
   s.sw_on = s.cyan;
   s.sw_off = mix(bg, pure, 0.60f);
@@ -127,10 +141,18 @@ Style Style::from(const Theme& th) {
 namespace {
 
 Style base_style(const Theme& th) {
-  // one parse per theme folder
-  static std::map<std::string, Style> cache;
-  auto hit = cache.find(th.dir());
-  if (hit != cache.end()) return hit->second;
+  // one parse per theme folder and per choice of the user (selector style and title alignment can change while zfront runs)
+  // the folder of a generated theme has the same name in light and in dark (and is rewritten when the mode changes): the colours are part of the key.
+  // Looked up by comparing views: this runs on every frame of every menu and a hit must not allocate.
+  struct Entry {
+    std::string dir, sel, align, bg, txt, cyan;
+    Style style;
+  };
+  static std::vector<Entry> cache;
+  const std::string_view sel = th.str("selStyle"), align = th.str("headerAlign"), bgv = th.str("bg", ""), txtv = th.str("txt", ""), cyanv = th.str("cyan", "");
+  for (const Entry& e : cache)
+    if (e.dir == th.dir() && e.sel == sel && e.align == align && e.bg == bgv && e.txt == txtv && e.cyan == cyanv) return e.style;
+  if (cache.size() > 64) cache.clear();  // a few themes x two modes x the user's choices: never reached in practice
 
   Style s;
   s.corner = std::min(std::max(th.f("corner", 1.0f), 0.0f), 1.0f);
@@ -190,11 +212,38 @@ Style base_style(const Theme& th) {
   s.danger = s.dark ? Color{0xEE, 0x6B, 0x74, 255} : Color{0xC2, 0x34, 0x40, 255};
   s.danger_soft = mix(s.bg, s.danger, s.dark ? 0.28f : 0.15f);
   s.scrim = Color{0, 0, 0, uint8_t(s.dark ? 165 : 80)};
-  cache.emplace(th.dir(), s);
+  s.sel_ink = s.cyan_dark;
+  if (s.sel_style != SelStyle::Fill) {  // the row is not on a fill: its ink must read on the page
+    const Color page = {s.bg[0], s.bg[1], s.bg[2], 255};
+    for (const Color c : {s.cyan_dark, s.accent(), s.txt}) {
+      s.sel_ink = Color{c[0], c[1], c[2], 255};
+      if (contrast_ratio(s.sel_ink, page) >= 4.5f) break;
+    }
+  }
+  cache.push_back({std::string(th.dir()), std::string(sel), std::string(align), std::string(bgv), std::string(txtv), std::string(cyanv), s});
   return s;
 }
 
 }  // namespace
+
+int level_px(Level lv, float W, float H) {
+  struct F { float row, small, foot, title, help; };
+  static const F k11{0.03f, 0.02403f, 0.02194f, 0.03131f, 0.02306f};      // 1:1
+  static const F k43{0.0375f, 0.03021f, 0.02708f, 0.03834f, 0.02542f};    // 4:3 and everything not listed
+  static const F k32{0.04688f, 0.0375f, 0.03438f, 0.04887f, 0.03188f};    // 3:2
+  static const F k169{0.0375f, 0.03021f, 0.02708f, 0.03834f, 0.02708f};   // 16:9 and wider
+  const float a = H > 0 ? W / H : 1.333f;
+  const F& f = a < 1.1f ? k11 : a < 1.4f ? k43 : a < 1.55f ? k32 : k169;
+  float v = f.row;
+  switch (lv) {
+    case Level::Title: v = f.title * kTitleScale; break;
+    case Level::Row: v = f.row; break;
+    case Level::Small: v = f.small; break;
+    case Level::Foot: v = f.foot; break;
+    case Level::Help: v = f.help; break;
+  }
+  return std::max(11, int(std::floor(v * H * access().scale())));
+}
 
 Metrics Metrics::from(const Theme& th, float w, float h) {
   Metrics m;
@@ -280,10 +329,31 @@ Metrics Metrics::from(const Theme& th, float w, float h) {
     while (lines > 1 && m.row_h * float(lines) > avail) --lines;
     m.lines = lines;
     m.list_h = m.row_h * float(lines);
+    m.hint_room = hint_h;
+    m.keeps_gap = remake::next(th);  // Next already sets its list a cell lower and puts its help row elsewhere
     m.pill_h = m.row_h;  // the selector is the row: its edges on the lines of the cells
     m.hint_y = std::round(m.list_top + m.list_h + hint_h / 2.0f);
   }
   return m;
+}
+
+void Metrics::balance_list() {
+  // The room above the list (bar to first row) and under it (last row to help) should be closer to each other: half of the difference moves the
+  // list down, in whole cells and at most two. It never uses the band under the list kept for a row's hint (nor what lies over the help pill) and it does
+  // not depend on the menu (a hint or not): the first row sits on the same line in every menu of a screen.
+  if (!grid || u <= 0 || keeps_gap) return;
+  const float cell = float(u);
+  const float help_top = help_bottom - help_h;  // the pill itself
+  const float bar_bottom = header_cy + float(4 * u) / 2.0f;
+  const float gap_top = list_top - bar_bottom;
+  const float gap_bot = help_top - (list_top + list_h);
+  // what a hint needs over the help pill: its own text height and the gap menu.cpp keeps over the pill (0.3 of the text size)
+  const float hint_need = std::round(float(small_px) * 0.3f) + std::ceil(float(small_px) * 1.3f);
+  const float usable = std::max(0.0f, help_top - hint_need - (list_top + list_h));
+  const float shift = std::max(0.0f, std::floor((gap_bot - gap_top) / 2.0f / cell)) * cell;
+  const float move = std::min({shift, std::floor(usable / cell) * cell, 2.0f * cell});
+  list_top += move;
+  hint_y += move;
 }
 
 // ---- shapes ----------------------------------------------------------------------------------------------------------
@@ -358,6 +428,13 @@ Img make_strokes(int px, const Seg* s, int n, float thick, float disc_r) {
   return im;
 }
 
+/// Polyline through the points (x0,y0,x1,y1,...) as segments; `close` joins the last to the first.
+int poly(Seg* out, int at, const float* pts, int n, bool close) {
+  for (int i = 0; i + 1 < n; ++i) out[at++] = {pts[2 * i], pts[2 * i + 1], pts[2 * i + 2], pts[2 * i + 3]};
+  if (close && n > 2) out[at++] = {pts[2 * (n - 1)], pts[2 * (n - 1) + 1], pts[0], pts[1]};
+  return at;
+}
+
 Img make_icon(Icon k, int px) {
   switch (k) {
     case Icon::ChevronRight: {
@@ -371,6 +448,54 @@ Img make_icon(Icon k, int px) {
     case Icon::Check: {
       const Seg s[] = {{0.16f, 0.54f, 0.40f, 0.78f}, {0.40f, 0.78f, 0.84f, 0.26f}};
       return make_strokes(px, s, 2, 0.13f, 0);
+    }
+    case Icon::Folder: {
+      Seg s[8];
+      const float f[] = {0.10f, 0.26f, 0.38f, 0.26f, 0.46f, 0.36f, 0.90f, 0.36f, 0.90f, 0.78f, 0.10f, 0.78f};
+      const int n = poly(s, 0, f, 6, true);
+      return make_strokes(px, s, n, 0.085f, 0);
+    }
+    case Icon::File: {
+      Seg s[10];
+      const float f[] = {0.24f, 0.10f, 0.58f, 0.10f, 0.78f, 0.30f, 0.78f, 0.90f, 0.24f, 0.90f};
+      int n = poly(s, 0, f, 5, true);
+      const float g[] = {0.58f, 0.10f, 0.58f, 0.30f, 0.78f, 0.30f};
+      n = poly(s, n, g, 3, false);
+      return make_strokes(px, s, n, 0.085f, 0);
+    }
+    case Icon::Image: {
+      Seg s[10];
+      const float f[] = {0.10f, 0.22f, 0.90f, 0.22f, 0.90f, 0.78f, 0.10f, 0.78f};
+      int n = poly(s, 0, f, 4, true);
+      const float g[] = {0.10f, 0.70f, 0.38f, 0.42f, 0.58f, 0.62f, 0.68f, 0.52f, 0.90f, 0.72f};
+      n = poly(s, n, g, 5, false);
+      return make_strokes(px, s, n, 0.08f, 0);
+    }
+    case Icon::Game: {
+      Seg s[14];
+      const float f[] = {0.12f, 0.34f, 0.88f, 0.34f, 0.94f, 0.50f, 0.86f, 0.70f, 0.70f, 0.70f, 0.60f, 0.58f, 0.40f, 0.58f, 0.30f, 0.70f, 0.14f, 0.70f, 0.06f, 0.50f};
+      int n = poly(s, 0, f, 10, true);
+      s[n++] = {0.28f, 0.42f, 0.28f, 0.54f};
+      s[n++] = {0.22f, 0.48f, 0.34f, 0.48f};
+      s[n++] = {0.70f, 0.46f, 0.71f, 0.47f};
+      return make_strokes(px, s, n, 0.08f, 0);
+    }
+    case Icon::Archive: {
+      Seg s[12];
+      const float f[] = {0.16f, 0.30f, 0.84f, 0.30f, 0.84f, 0.84f, 0.16f, 0.84f};
+      int n = poly(s, 0, f, 4, true);
+      const float g[] = {0.10f, 0.16f, 0.90f, 0.16f, 0.90f, 0.30f, 0.10f, 0.30f};
+      n = poly(s, n, g, 4, true);
+      s[n++] = {0.42f, 0.50f, 0.58f, 0.50f};
+      return make_strokes(px, s, n, 0.08f, 0);
+    }
+    case Icon::Back: {
+      Seg s[10];
+      const float f[] = {0.22f, 0.34f, 0.72f, 0.34f, 0.84f, 0.46f, 0.84f, 0.64f, 0.72f, 0.76f, 0.30f, 0.76f};
+      int n = poly(s, 0, f, 6, false);
+      s[n++] = {0.22f, 0.34f, 0.38f, 0.18f};
+      s[n++] = {0.22f, 0.34f, 0.38f, 0.50f};
+      return make_strokes(px, s, n, 0.09f, 0);
     }
     case Icon::Sun: {
       Seg s[8];
@@ -496,15 +621,17 @@ void Shapes::ring(Assets& a, std::vector<Op>& out, float x, float y, float w, fl
   out.push_back(Op::image(q[3], float(x0), float(y1 - r), fr, fr, c));
 }
 
-void Shapes::selector(Assets& a, const Style& st, std::vector<Op>& out, float x, float y, float w, float h, Color fill, Color accent) {
+void Shapes::selector(Assets& a, const Style& st, std::vector<Op>& out, float x, float y, float w, float h, Color fill, Color accent, int radius, int weight_px) {
   const bool hc = access().contrast;
-  const int weight = hc ? std::max(3, int(std::lround(h * 0.12f))) : std::max(2, int(std::lround(h * 0.07f)));  // ring / underline thickness (2 px at 30 px tall, 3 at 40)
+  int weight = hc ? std::max(3, int(std::lround(h * 0.12f))) : std::max(2, int(std::lround(h * 0.07f)));  // ring / underline thickness (2 px at 30 px tall, 3 at 40)
+  if (weight_px > 0 && !hc) weight = weight_px;
+  const int r = radius >= 0 ? radius : st.radius(h);
   switch (st.sel_style) {
     case SelStyle::Fill:
-      rrect(a, out, x, y, w, h, st.radius(h), fill);
+      rrect(a, out, x, y, w, h, r, fill);
       break;
     case SelStyle::Outline:
-      ring(a, out, x, y, w, h, st.radius(h), float(weight), accent);
+      ring(a, out, x, y, w, h, r, float(weight), accent);
       break;
     case SelStyle::Underline:
       out.push_back(Op::rect(float(std::lround(x)), float(std::lround(y + h)) - float(weight), float(std::lround(x + w) - std::lround(x)), float(weight), accent));
@@ -516,7 +643,7 @@ void Shapes::selector(Assets& a, const Style& st, std::vector<Op>& out, float x,
     }
   }
   // high contrast: every style also gets a thick ring in the accent colour, so the selection never rests on a fill colour alone
-  if (hc && st.sel_style != SelStyle::Outline) ring(a, out, x, y, w, h, st.radius(h), float(weight), accent);
+  if (hc && st.sel_style != SelStyle::Outline) ring(a, out, x, y, w, h, r, float(weight), accent);
 }
 
 void Shapes::framed(Assets& a, std::vector<Op>& out, float x, float y, float w, float h, int r, Color fill, Color border, float t) {
@@ -644,8 +771,15 @@ void help_pill(Assets& a, const Style& st, float W, float H, float help_y, float
     for (size_t i = 0; i < n; ++i) t += it[i].iw * ih / it[i].ih + igap + it[i].tw + (i + 1 < n ? egap : 0.0f);
     return t;
   };
+  // On the grid the pill is widened to whole pairs of cells and centred between the margins: that width is the one that must fit there
+  // (with only the 96 % of the screen, some languages drew it 4 px past the side margin: Greek, Russian, Turkish... in the file manager).
+  auto fits = [&](size_t k) {
+    if (!grid) return width(k) <= W * 0.96f;
+    const float pair = 2.0f * float(grid->u);
+    return std::ceil(width(k) / pair) * pair <= W - 2.0f * float(grid->margin);
+  };
   size_t n = it.size();
-  while (n > 1 && width(n) > W * 0.96f) --n;
+  while (n > 1 && !fits(n)) --n;
   float total = std::round(width(n));
   float x0 = std::round((W - total) / 2.0f), y0 = help_pill_y0(W, H, help_y, ph);
   if (grid) {  // centred on the grid: the middle of the screen is a line, so a width of whole pairs of cells puts both edges on lines

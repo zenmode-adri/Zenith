@@ -24,7 +24,15 @@ void operator delete(void* p, size_t) noexcept { std::free(p); }
 
 static std::string sc(const char* s) { return i18n::sentence_case(s); }
 
+// Spanish questions and exclamations: the capital goes after the opening mark
+static void test_inverted_marks() {
+  CHECK_EQ(sc("\xC2\xBFSALIR DEL JUEGO?"), std::string("\xC2\xBFSalir del juego?"));
+  CHECK_EQ(sc("\xC2\xA1HECHO!"), std::string("\xC2\xA1Hecho!"));
+  CHECK_EQ(sc("GUARDADO. \xC2\xBFSALIR AHORA?"), std::string("Guardado. \xC2\xBFSalir ahora?"));
+}
+
 int main() {
+  test_inverted_marks();
   // plain words
   CHECK_EQ(sc("GAME SETTINGS"), std::string("Game settings"));
   CHECK_EQ(sc("SWITCHES AND SLIDERS"), std::string("Switches and sliders"));
@@ -36,6 +44,8 @@ int main() {
   CHECK_EQ(sc("NETWORK DRIVE (SAMBA)"), std::string("Network drive (Samba)"));
   CHECK_EQ(sc("ENABLE SAMBA"), std::string("Enable Samba"));
   CHECK_EQ(sc("TAILSCALE LOGIN"), std::string("Tailscale login"));
+  CHECK_EQ(sc("EJECT MICROSD CARD"), std::string("Eject microSD card"));
+  CHECK_EQ(sc("R36 Tuner Next"), std::string("R36 Tuner Next"));  // a name: kept as written
   CHECK_EQ(sc("WIFI"), std::string("Wi-Fi"));
   CHECK_EQ(sc("SHOW QR CODE"), std::string("Show QR code"));
   CHECK_EQ(sc("MOSTRAR CÓDIGO QR"), std::string("Mostrar código QR"));

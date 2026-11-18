@@ -1,6 +1,7 @@
 #include "homemenu.hpp"
 
 #include "launch.hpp"
+#include "power.hpp"
 #include "oscontract.hpp"
 
 #include <arpa/inet.h>
@@ -239,14 +240,29 @@ std::vector<int> find_pids_by_name(const std::vector<std::string>& names, int se
     char* end = nullptr;
     long pid = std::strtol(e->d_name, &end, 10);
     if (!end || *end || pid <= 1 || pid == self) continue;
+    const std::string dir = proc_root + "/" + e->d_name;
     std::string comm;
-    if (!read_file(proc_root + "/" + e->d_name + "/comm", comm)) continue;
+    if (!read_file(dir + "/comm", comm)) continue;
     while (!comm.empty() && (comm.back() == '\n' || comm.back() == '\r')) comm.pop_back();
+    bool hit = false;
     for (const std::string& n : names)
-      if (comm == n.substr(0, 15)) {
-        out.push_back(int(pid));
-        break;
+      if (comm == n.substr(0, 15)) hit = true;
+    if (!hit) {
+      // A program that restarts itself with execv("/proc/self/exe") keeps its pid but its comm becomes "exe" (PPSSPP when its graphics
+      // backend is changed from its own menu, seen on the R36 Ultra): the binary the pid runs, and argv[0], still say who it is.
+      std::string other[2];
+      char buf[512];
+      const ssize_t n = ::readlink((dir + "/exe").c_str(), buf, sizeof buf - 1);
+      if (n > 0) other[0] = std::string(buf, size_t(n));
+      if (read_file(dir + "/cmdline", other[1])) other[1] = other[1].substr(0, other[1].find('\0'));
+      for (std::string& o : other) {
+        if (const size_t sp = o.find(" (deleted)"); sp != std::string::npos && sp + 10 == o.size()) o.resize(sp);  // binary replaced by an OTA
+        if (const size_t sl = o.rfind('/'); sl != std::string::npos) o = o.substr(sl + 1);
+        for (const std::string& nm : names)
+          if (!o.empty() && o == nm) hit = true;
       }
+    }
+    if (hit) out.push_back(int(pid));
   }
   ::closedir(d);
   std::sort(out.begin(), out.end());
@@ -480,13 +496,103 @@ void set_panel_args(std::string exe, std::vector<std::string> args) {
 }
 bool panel_args_set() { return !g_exe.empty(); }
 
+namespace {
+std::string g_game_title, g_game_sub;
+PanelInfo g_info;
+std::string g_capture_tool = "grim", g_capture_file = kShotPath;
+}  // namespace
+
+void set_game_info(std::string title, std::string sub) {
+  g_game_title = std::move(title);
+  g_game_sub = std::move(sub);
+}
+void set_panel_info(PanelInfo info) { g_info = std::move(info); }
+const PanelInfo& panel_info() { return g_info; }
+void set_capture_for_test(std::string tool, std::string file) {
+  g_capture_tool = tool.empty() ? "grim" : std::move(tool);
+  g_capture_file = file.empty() ? kShotPath : std::move(file);
+}
+
+std::vector<std::string> panel_args_tail(bool with_states, const PanelInfo& info) {
+  std::vector<std::string> v = {"--home-panel"};
+  if (with_states) v.push_back("--home-states");
+  if (!info.shot.empty()) v.push_back("--home-shot"), v.push_back(info.shot);
+  if (!info.title.empty()) v.push_back("--home-title"), v.push_back(info.title);
+  if (!info.sub.empty()) v.push_back("--home-sub"), v.push_back(info.sub);
+  if (info.left_min >= 0) v.push_back("--home-left"), v.push_back(std::to_string(info.left_min));
+  return v;
+}
+
+std::vector<std::string> grim_argv(const std::string& tool, const std::string& file) { return {tool, "-l", "0", file}; }
+
+bool capture_shot(const std::string& tool, const std::string& file, int wait_ms, const std::function<bool()>& term_requested) {
+  ::unlink(file.c_str());
+  const size_t slash = file.rfind('/');
+  if (slash != std::string::npos && slash > 0) ::mkdir(file.substr(0, slash).c_str(), 0755);
+  std::vector<std::string> v = grim_argv(tool, file);
+  std::vector<char*> argv;
+  for (std::string& s : v) argv.push_back(s.data());
+  argv.push_back(nullptr);
+  pid_t pid = -1;
+  if (::posix_spawnp(&pid, tool.c_str(), nullptr, nullptr, argv.data(), environ) != 0 || pid <= 0) return false;
+  bool done = false;
+  for (int waited = 0; waited <= wait_ms && !done; waited += 10) {
+    int st = 0;
+    const pid_t r = ::waitpid(pid, &st, WNOHANG);
+    if (r == pid) {
+      done = WIFEXITED(st) && WEXITSTATUS(st) == 0;
+      pid = -1;
+      break;
+    }
+    if (r < 0 && errno != EINTR) {
+      pid = -1;
+      break;
+    }
+    if (term_requested && term_requested()) break;
+    timespec ts{0, 10 * 1000 * 1000};
+    ::nanosleep(&ts, nullptr);
+  }
+  if (pid > 0) {  // too slow (or a SIGTERM is pending): the panel goes without a picture
+    ::kill(pid, SIGKILL);
+    ::waitpid(pid, nullptr, 0);
+    done = false;
+  }
+  struct stat sb;
+  if (!done || ::stat(file.c_str(), &sb) != 0 || sb.st_size <= 0) {
+    ::unlink(file.c_str());
+    return false;
+  }
+  return true;
+}
+
+std::vector<RowId> panel_rows(bool states, bool backlight) {
+  std::vector<RowId> v = {RowId::Resume};
+  if (states) v.push_back(RowId::SaveState), v.push_back(RowId::LoadState);
+  v.push_back(RowId::Separator);
+  if (backlight) v.push_back(RowId::Brightness);
+  v.push_back(RowId::Volume);
+  v.push_back(RowId::Separator);
+  v.push_back(RowId::Quit);
+  return v;
+}
+
 PanelResult run_panel_child(bool with_states, const std::function<bool()>& term_requested) {
   if (g_exe.empty()) return PanelResult::Failed;
+  // the game is already paused: its last picture is on the screen. Whatever way out follows, the file goes.
+  struct ShotGuard {
+    const std::string& f;
+    ~ShotGuard() { ::unlink(f.c_str()); }
+  } shot_guard{g_capture_file};
+  PanelInfo info{std::string(), g_game_title, g_game_sub};
+  info.left_min = power::game_minutes_left();  // read now: the game was running until a moment ago
+  std::fprintf(stderr, "zfront: HOME timing: capture start, uptime %s\n", uptime_text().c_str());
+  if (capture_shot(g_capture_tool, g_capture_file, kShotWaitMs, term_requested)) info.shot = g_capture_file;
+  std::fprintf(stderr, "zfront: HOME timing: capture %s, uptime %s\n", info.shot.empty() ? "failed" : "done", uptime_text().c_str());
+  if (term_requested && term_requested()) return PanelResult::Resume;  // the game's SIGTERM is pending: no panel
   std::vector<std::string> argv_s;
   argv_s.push_back(g_exe);
   for (const std::string& a : g_args) argv_s.push_back(a);
-  argv_s.push_back("--home-panel");
-  if (with_states) argv_s.push_back("--home-states");
+  for (std::string& a : panel_args_tail(with_states, info)) argv_s.push_back(std::move(a));
   std::vector<char*> argv;
   for (std::string& s : argv_s) argv.push_back(s.data());
   argv.push_back(nullptr);
@@ -500,6 +606,7 @@ PanelResult run_panel_child(bool with_states, const std::function<bool()>& term_
   envp.push_back(nullptr);
   pid_t pid = -1;
   if (::posix_spawn(&pid, g_exe.c_str(), nullptr, nullptr, argv.data(), envp.data()) != 0 || pid <= 0) return PanelResult::Failed;
+  std::fprintf(stderr, "zfront: HOME timing: panel process started, uptime %s\n", uptime_text().c_str());
   bool killed = false;
   for (;;) {
     int st = 0;

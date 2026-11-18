@@ -1,3 +1,4 @@
+#include "addgames.hpp"  // the "Add games" card's line under the carousel
 #include "remake.hpp"
 
 #include "ui_prefs.hpp"
@@ -245,7 +246,30 @@ void text(Assets& a, std::vector<Op>& ops, std::string_view s, float x, float cy
     rec(an == L ? x : an == C ? x - tw / 2.0f : x - tw, cy - thh / 2.0f, tw, thh, "\"" + std::string(s.substr(0, 18)) + "\"", an == L ? 'L' : an == C ? 'C' : 'R', an != C);
   }
 }
+/// LIST TEXT CASE (theme variable `listCase`, APPEARANCE): "" keeps the case of each name, "upper" / "lower" force it on the names of a list. `buf` keeps the
+/// result alive; nothing is made when the user has not chosen.
+std::string_view list_cased(const Theme& th, const std::string& s, std::string& buf) {
+  const std::string_view mode = th.str("listCase", "");
+  if (mode == "lower") return buf = utf8_lower(s);
+  if (mode == "upper") return buf = utf8_upper(s);
+  return s;
+}
 /// The theme's second face (titles).
+/// A system name in place of a missing logo: one line if it fits in `max_w`, else two, cut at the space nearest the middle (each line is
+/// still clipped with an ellipsis by `text` if a word alone is too long). Centred on (cx, cy).
+void name_lines(Assets& a, std::vector<Op>& ops, const std::string& s, float cx, float cy, int px, Color c, float max_w) {
+  if (a.measure(s, float(px)) <= max_w || s.find(' ') == std::string::npos) {
+    text(a, ops, s, cx, cy, px, c, max_w, C);
+    return;
+  }
+  size_t cut = std::string::npos;
+  for (size_t i = s.find(' '); i != std::string::npos; i = s.find(' ', i + 1))
+    if (cut == std::string::npos || std::abs(int(i) - int(s.size() / 2)) < std::abs(int(cut) - int(s.size() / 2))) cut = i;
+  const float lh = a.line_height(float(px));
+  text(a, ops, s.substr(0, cut), cx, cy - lh / 2.0f, px, c, max_w, C);
+  text(a, ops, s.substr(cut + 1), cx, cy + lh / 2.0f, px, c, max_w, C);
+}
+
 void text_alt(Assets& a, std::vector<Op>& ops, std::string_view s, float x, float cy, int px, Color c, float max_w = 0, Anchor an = L) {
   a.use_alt_face(true);
   text(a, ops, s, x, cy, px, c, max_w, an);
@@ -324,8 +348,10 @@ struct HelpLook {
   float scale = 1.0f;               // menus with a larger text size (ui::access): icon, text and gaps grow, what does not fit is left out from the end
 };
 void help(const Theme& th, Assets& a, const Grid& g, const HelpPrompts& prompts, const HelpLook& look, std::vector<Op>& ops) {
-  const float k = look.scale;
-  const int ih = int(std::lround(float(g.help_h()) * k)), px = int(std::lround(float(g.F(13, 11)) * k)), pad = int(std::lround(float(g.P(6)) * k));
+  // Text and row come from the Grid (level Help, TEXT SIZE included); `look.scale` only widens the gaps and decides what is left out.
+  const float k = std::max(look.scale, std::max(ui::access().scale(), 1.0f));
+  const int px = g.L(ui::Level::Help);
+  const int ih = std::min(g.help_h(), std::max(2, int(std::lround(1.2f * float(px) / float(g.u)))) * g.u), pad = int(std::lround(float(g.P(6)) * k));
   int gap = g.P(16);
   struct Item {
     ImgId icon = 0, label = 0;
@@ -346,11 +372,10 @@ void help(const Theme& th, Assets& a, const Grid& g, const HelpPrompts& prompts,
   }
   if (items.empty()) return;
   const float room = g.w - 2.0f * float(g.margin());
-  if (k > 1.0f)  // never past the margin: the last prompts go
-    while (items.size() > 1 && total + float(g.P(6)) * float(items.size() - 1) > room) {
-      total -= items.back().iw + float(pad) + items.back().lw;
-      items.pop_back();
-    }
+  while (items.size() > 1 && total + float(g.P(6)) * float(items.size() - 1) > room) {  // never past the margin: the last prompts go
+    total -= items.back().iw + float(pad) + items.back().lw;
+    items.pop_back();
+  }
   const float bare = total;
   while (gap > g.P(6) && bare + float(gap) * float(items.size() - 1) > room) --gap;
   total = bare + float(gap) * float(items.size() - 1);
@@ -376,6 +401,52 @@ std::vector<size_t> window(size_t n, size_t cursor, size_t rows) {
   const size_t st = n > rows ? std::min(cursor > rows / 2 ? cursor - rows / 2 : 0, n - rows) : 0;
   for (size_t i = st; i < std::min(n, st + rows); ++i) out.push_back(i);
   return out;
+}
+
+/// The camera seen as a pair of systems: `lo` and `lo + 1` with `frac` between them. At rest (and within 0.001 of it) the camera is snapped
+/// to the whole system, so `frac` is exactly 0 and only `lo` is drawn: the resting picture does not depend on the motion code.
+struct CamPair {
+  int lo = 0;
+  float frac = 0.0f;
+  bool moving = false;
+  explicit CamPair(float cam) {
+    moving = !at_rest(cam);
+    const float c = moving ? cam : std::round(cam);
+    lo = int(std::floor(c));
+    frac = c - float(lo);
+  }
+  /// 0 = still at `lo`, 1 = already at `lo + 1`; `a` (0..0.2) delays the start, so a second text can follow the first a beat later.
+  /// It reaches 0 and 1 without a jump, and going backwards the same value runs the other way.
+  float phase(float a) const { return std::clamp((frac - a) / (1.0f - a), 0.0f, 1.0f); }
+};
+
+/// A rectangle that cuts what rolls inside it while the camera moves (h <= 0: no cut).
+struct RollBand {
+  float x = 0, y = 0, w = 0, h = 0;
+};
+
+/// Draws the text (or whatever) of the two systems the camera is between, as a roll: `draw(item, index, s)` is called for each one with
+/// `s` = -d for the system the camera leaves and 1 - d for the one it reaches, in units of the roll's travel (so the old one goes up and out
+/// and the new one comes up from below; backwards the same numbers give the opposite way). With `dim` the old one fades out and the new one
+/// in (`d` and `1 - d`), without it they are only cut by the band, like the digits of an odometer. What moves is not measured by the audit.
+/// Only the position and the opacity change per frame, never a colour or a size: nothing new is made for the text cache while it moves.
+template <class F>
+void draw_pair(std::vector<Op>& ops, const std::vector<SystemItem>& items, const CamPair& cp, float a, const RollBand& band, bool dim, F&& draw) {
+  const float d = cp.phase(a);
+  const int n = int(items.size());
+  const bool quiet = g_audit_quiet;
+  const bool cut = cp.moving && band.h > 0.0f;
+  if (cut) ops.push_back(Op::clip(band.x, band.y, band.w, band.h));
+  for (int k = 0; k < (cp.moving ? 2 : 1); ++k) {
+    const float wk = k == 0 ? 1.0f - d : d;
+    if (wk <= 0.004f) continue;
+    const size_t from = ops.size();
+    if (cp.moving) g_audit_quiet = true;
+    draw(items[size_t(rem_e(cp.lo + k, n))], rem_e(cp.lo + k, n), k == 0 ? -d : 1.0f - d);
+    g_audit_quiet = quiet;
+    if (dim) motion::fade(ops, from, wk);
+  }
+  if (cut) ops.push_back(Op::unclip());
 }
 
 /// Box of a 4:3 picture `w` wide that fits under `max_h`.
@@ -578,12 +649,12 @@ void xmb_system(const Theme& th, Assets& a, const Grid& g, const std::vector<Sys
   }
   rec(cx - o.icon / 2.0f, cy0 - o.icon / 2.0f, o.icon, o.icon, "icono", 'C', false, true);
   const size_t info = ops.size();
-  if (cur.games != kCountPending) {
+  if (cur.games != kCountPending || cur.sys == kItemAddGames) {  // the "Add games" card: its name, never a count
     const float room = g.w - float(g.margin()) - o.x;
     int px = o.name_px;
     while (px > g.F(18) && a.measure(cur.full_name, float(px)) > room) --px;
     xtext(a, ops, cur.full_name, o.x, o.name_y, px, kWhite, room);
-    xtext(a, ops, games_low(cur.games), o.x, o.count_y, o.count_px, Color{255, 255, 255, 205});
+    if (cur.games != kCountPending) xtext(a, ops, games_low(cur.games), o.x, o.count_y, o.count_px, Color{255, 255, 255, 205});
   }
   motion::fade(ops, info, fade.alpha);
   // continue playing, hanging from the icon
@@ -592,7 +663,7 @@ void xmb_system(const Theme& th, Assets& a, const Grid& g, const std::vector<Sys
     if (r.fit > 0) {
       recent->box_w = uint32_t(r.tile_w);
       recent->box_h = uint32_t(r.tile_h);
-      xtext(a, ops, i18n::sentence_case(tr("CONTINUE PLAYING")), r.x, r.label_y, r.label_px, Color{255, 255, 255, 170});
+      text(a, ops, i18n::sentence_case(tr("CONTINUE PLAYING")), r.x, r.label_y, r.label_px, Color{255, 255, 255, 170});  // no plate, no shadow: the text's own opacity gives the contrast
       int k = 0;
       for (size_t idx = 0; idx < recent->items.size() && k < r.fit; ++idx) {
         const RecentItem& it = recent->items[idx];
@@ -614,9 +685,9 @@ void xmb_system(const Theme& th, Assets& a, const Grid& g, const std::vector<Sys
         const float room = g.w - r.text_x - float(g.margin());
         const int al = foc ? 255 : 200 - 40 * k, tpx = g.F(16, 13), apx = g.F(12, 11);
         if (it.ago.empty()) {
-          xtext(a, ops, short_title(it.name), r.text_x, cy, tpx, Color{255, 255, 255, uint8_t(al)}, room);
+          text(a, ops, short_title(it.name), r.text_x, cy, tpx, Color{255, 255, 255, uint8_t(al)}, room);
         } else {
-          xtext(a, ops, short_title(it.name), r.text_x, cy - float(apx) / 2.0f - 1.0f, tpx, Color{255, 255, 255, uint8_t(al)}, room);
+          text(a, ops, short_title(it.name), r.text_x, cy - float(apx) / 2.0f - 1.0f, tpx, Color{255, 255, 255, uint8_t(al)}, room);
           text(a, ops, it.ago, r.text_x, cy + float(tpx) / 2.0f + 1.0f, apx, Color{255, 255, 255, uint8_t(al * 3 / 4)}, room);
         }
         ++k;
@@ -643,7 +714,8 @@ void xmb_list(const Theme& th, Assets& a, const Grid& g, const std::string& syst
   disc(a, ops, x0 + isz / 2.0f, icy, isz * 0.6f, Color{255, 255, 255, 60});
   if (!ctrl.empty() && pic(a, ctrl, g.colw(), g.colw(), true, id)) put_fit(a, ops, id, x0, icy - isz / 2.0f, isz, isz);
   rec(x0, icy - isz / 2.0f, isz, isz, "icono", 'L', true, true);
-  xtext(a, ops, system_name, tx, icy, g.F(17), Color{255, 255, 255, 225}, textw);
+  std::string cased_sys;
+  xtext(a, ops, list_cased(th, system_name, cased_sys), tx, icy, g.F(17), Color{255, 255, 255, 225}, textw);
   const float icon_bottom = icy + isz / 2.0f;
   // Every row is a band of whole cells with its tile centred in it, so tile and row edges sit on the lines; the chosen row is the tall one
   // (its title is bigger), its data under it.
@@ -685,7 +757,8 @@ void xmb_list(const Theme& th, Assets& a, const Grid& g, const std::string& syst
     if (!im.empty() && exists_once(im) && pic(a, cover_key(im, 3), tile_w, tile_h, true, t)) put_fit(a, ops, t, x0, y - tile_h / 2.0f, tile_w, tile_h, Color{255, 255, 255, uint8_t(al)});
     else g_shapes.rrect(a, ops, x0, y - tile_h / 2.0f, tile_w, tile_h, g.P(4), Color{255, 255, 255, uint8_t(al / 5)});
     rec(x0, y - tile_h / 2.0f, tile_w, tile_h, "miniatura", 'L', true, true);
-    xtext(a, ops, names[k], tx, y, fs, Color{255, 255, 255, uint8_t(al)}, textw);
+    std::string cb;
+    xtext(a, ops, list_cased(th, names[k], cb), tx, y, fs, Color{255, 255, 255, uint8_t(al)}, textw);
   };
   if (!names.empty()) {
     for (int k = 1; k <= 6; ++k) {
@@ -702,7 +775,8 @@ void xmb_list(const Theme& th, Assets& a, const Grid& g, const std::string& syst
     g_state.rows_shown = shown;
     beam(a, ops, 0, ct - float(g.P(2)), g.w, hb + float(g.P(4)), 80);
     cover_box(a, ops, d ? d->image : std::string(), x0, cy0 + slide - tile_h / 2.0f, tile_w, tile_h, g.P(4), ctrl, Color{255, 255, 255, 40}, Color{255, 255, 255, 170}, Color{0, 0, 0, 0});
-    xtext(a, ops, names[cursor], tx, cy0 + slide, title_px, kWhite, textw);
+    std::string cb_cur;
+    xtext(a, ops, list_cased(th, names[cursor], cb_cur), tx, cy0 + slide, title_px, kWhite, textw);
     if (d) {
       xtext(a, ops, meta_of(*d), tx, meta_y, meta_px, Color{255, 255, 255, 205}, textw);
       const float cover_bottom = cy0 + tile_h / 2.0f;
@@ -733,6 +807,14 @@ Color readable_on_dark(Color c) {
   for (int i = 0; i < 24 && (lum(c) + 0.05f) / 0.053f < 4.5f; ++i) c = motion::mix(c, kWhite, 0.08f);
   return c;
 }
+Color readable_on_light(Color c);
+/// A fill that carries white text (3:1 at least). The accent of a system without an illustration is the theme's own, which on a dark skin is light
+/// (Swiss: white): then the fill is taken towards black until the white name reads on it.
+Color holds_white(Color c) {
+  const auto f = [](float u) { return u <= 0.03928f ? u / 12.92f : std::pow((u + 0.055f) / 1.055f, 2.4f); };
+  const float l = 0.2126f * f(float(c[0]) / 255) + 0.7152f * f(float(c[1]) / 255) + 0.0722f * f(float(c[2]) / 255);
+  return 1.05f / (l + 0.05f) >= 3.0f ? c : readable_on_light(c);
+}
 Color readable_on_light(Color c) {
   auto lum = [](Color x) {
     const auto f = [](float u) { return u <= 0.03928f ? u / 12.92f : std::pow((u + 0.055f) / 1.055f, 2.4f); };
@@ -740,6 +822,22 @@ Color readable_on_light(Color c) {
   };
   for (int i = 0; i < 24 && 1.05f / (lum(c) + 0.05f) < 4.5f; ++i) c = motion::mix(c, Color{0, 0, 0, 255}, 0.08f);
   return c;
+}
+
+/// `fg` as it is when it already reads on `page` (contrast 4.5:1 or more); otherwise pulled towards white (dark page) or black (light page)
+/// until it does. The ink of a theme is made for its own page: a skin with a page of another colour (Swiss dark is blue) needs this.
+Color legible_on(Color fg, Color page) {
+  auto lum = [](Color x) {
+    const auto f = [](float u) { return u <= 0.03928f ? u / 12.92f : std::pow((u + 0.055f) / 1.055f, 2.4f); };
+    return 0.2126f * f(float(x[0]) / 255) + 0.7152f * f(float(x[1]) / 255) + 0.0722f * f(float(x[2]) / 255);
+  };
+  const auto ratio = [&](Color a, Color b) {
+    const float la = lum(a), lb = lum(b);
+    return (std::max(la, lb) + 0.05f) / (std::min(la, lb) + 0.05f);
+  };
+  const Color toward = lum(page) < 0.4f ? kWhite : Color{0, 0, 0, 255};
+  for (int i = 0; i < 24 && ratio(fg, page) < 4.5f; ++i) fg = motion::mix(fg, toward, 0.1f);
+  return fg;
 }
 
 // ---- on the cells (Art Book, Iconic, TechDweeb) ----
@@ -783,22 +881,34 @@ void chips(Assets& a, std::vector<Op>& ops, const DetailedData& d, const Grid& g
 }
 
 /// The light of a picture: very small and blurred, stretched. Also leaves its strongest colour in `accent`.
-bool ambient_of(Assets& a, const std::string& path, ImgId& id, Color& accent) {
-  const std::string b = baked(path, "a");
+bool ambient_baked(Assets& a, const std::string& b, ImgId& id, Color& accent) {
   if (!pic(a, b, 32, 24, true, id)) return false;
   Assets::accent_of(b, accent);
   return true;
 }
+bool ambient_of(Assets& a, const std::string& path, ImgId& id, Color& accent) { return ambient_baked(a, baked(path, "a"), id, accent); }
 
 std::string g_art_system;  // the system the menu of this theme takes its colour from
 
 /// Behind the menu: the picture of the system, only as a dark haze of its colours.
 void art_menu_back(const Theme& th, Assets& a, const Grid& g, std::vector<Op>& ops) {
   if (g_art_system.empty()) return;
-  const std::string art = sys_file(th, "_inc/systems/artwork-default", g_art_system, ".png");
+  // the path (with the existence of its file) is made when the theme folder, the system or the games change: a frame at rest builds no string
+  static struct {
+    std::string dir, sys, baked;
+    unsigned gen = ~0u;
+  } c;
+  const std::string_view dir = th.str("esDir", "");
+  if (c.gen != games_generation() || c.sys != g_art_system || c.dir != dir) {
+    c.gen = games_generation();
+    c.sys = g_art_system;
+    c.dir.assign(dir);
+    const std::string art = sys_file(th, "_inc/systems/artwork-default", g_art_system, ".png");
+    c.baked = art.empty() ? std::string() : baked(art, "a");
+  }
   ImgId am;
   Color got = kWhite;
-  if (art.empty() || !ambient_of(a, art, am, got)) return;
+  if (c.baked.empty() || !ambient_baked(a, c.baked, am, got)) return;
   ops.push_back(Op::image(am, 0, 0, g.w, g.h));
   ops.push_back(Op::rect(0, 0, g.w, g.h, Color{10, 10, 14, 195}));
 }
@@ -915,14 +1025,15 @@ void art_list(const Theme& th, Assets& a, const Grid& g, const std::vector<std::
     ops.push_back(Op::rect(0, ys, float(std::max(3, g.P(6))), float(pitch), acc));
   }
   const float tw_max = pw - float(m + g.U(2));
+  std::string cased_row;
   for (size_t k = rw.first; k < rw.end; ++k) {
     const float y = float(y0) + (float(k) - rw.start) * float(pitch) + float(pitch) / 2.0f;
     if (k == rw.lit) {
-      text_alt(a, ops, names[k], float(m), y, fs, kWhite, tw_max);
+      text_alt(a, ops, list_cased(th, names[k], cased_row), float(m), y, fs, kWhite, tw_max);
     } else {
       const size_t dist = k > cursor ? k - cursor : cursor - k;
       const int v = std::max(92, 175 - int(dist) * 16);
-      text(a, ops, names[k], float(m), y, fs, Color{uint8_t(v), uint8_t(v), uint8_t(v + 4), 255}, tw_max);
+      text(a, ops, list_cased(th, names[k], cased_row), float(m), y, fs, Color{uint8_t(v), uint8_t(v), uint8_t(v + 4), 255}, tw_max);
     }
   }
   if (rw.moving) ops.push_back(Op::unclip());
@@ -936,7 +1047,8 @@ void art_list(const Theme& th, Assets& a, const Grid& g, const std::vector<std::
     if (!has) top = down_to_line(g, float(g.content_top()), (float(g.help_top() + g.content_top()) - ch - reserve) / 2.0f);
     cover_box(a, ops, image, x, top, cw, ch, g.P(8), logo.empty() ? std::string() : baked(logo, "w"), Color{255, 255, 255, 18}, Color{0, 0, 0, 0}, Color{0, 0, 0, 170}, d->video);
     const float yt = top + ch + float(g.U(3));
-    text_alt(a, ops, d->name, x, yt, title, kWhite, w);
+    std::string cased_name;
+    text_alt(a, ops, list_cased(th, d->name, cased_name), x, yt, title, kWhite, w);
     if (has) {
       const int cf = g.F(13, 11), star = g.P(14);
       const float ph = cells_of(g, 24), star_w = float(5 * (star + g.P(3)));
@@ -1007,39 +1119,662 @@ void iconic_page(const Theme& th, Assets& a, const Grid& g, Color acc, std::vect
   corner_light(a, ops, g.w, g.h, alpha(acc, 34));
 }
 
-void iconic_system(const Theme& th, Assets& a, const Grid& g, const std::vector<SystemItem>& items, int cursor, const SystemItem& cur, float cam, const Status& status, const InfoFade& fade, std::vector<Op>& ops) {
+// ---- Aurora: glass cards over the light of the picture --------------------------------------------------------------------------------------
+// The page is the colour of the chosen system's illustration, blurred (it is a tiny picture stretched) with three soft blobs of colour over it.
+// The system is a card of frosted glass in the middle; its neighbours are smaller, fainter cards that peek out at the sides. Under the card:
+// the name, light and large, and a row of dots. Night: white on a deep violet; day: ink on a pale lilac. Nothing is blurred at run time.
+
+void aurora_system(const Theme& th, Assets& a, const Grid& g, const std::vector<SystemItem>& items, int cursor, const SystemItem& cur, float cam, const Status& status, const InfoFade& fade, std::vector<Op>& ops) {
+  (void)cursor;  // the dots follow the camera
+  (void)cur;     // the name follows the camera too (and with it, the fade of the caller is not needed)
+  (void)fade;
   const IconicInk sc = iconic_ink(th);
-  const Color acc = iconic_accent(th, a, cur.theme_name), soft_c = alpha(acc, 30);
+  const bool dk = sc.dark;
+  const Color base = dk ? rgb(0x13113A) : rgb(0xEEF0FF), ink = dk ? kWhite : rgb(0x1D1B3A), dim = dk ? Color{255, 255, 255, 170} : rgb(0x5A5790), acc = dk ? kWhite : rgb(0x3B2FA0);
+  const int n = int(items.size());
+  const float ctop = float(g.content_top()), u = float(g.u), bot = float(g.help_top()) - float(g.U(1));
+  const int lo = int(std::floor(cam));
+  ImgId id;
+  // The page is always the same (the colour of the theme and its three soft blobs, as in the menus): it does not change with the system
+  // under the cursor, so turning the carousel never makes the background flicker or shift.
+  ops.push_back(Op::rect(0, 0, g.w, g.h, base));
+  disc(a, ops, g.w * 0.10f, g.h * 0.86f, g.w * 0.50f, alpha(dk ? rgb(0x2EE6C8) : rgb(0x7FE8D6), dk ? 190 : 230));
+  disc(a, ops, g.w * 0.82f, g.h * 0.08f, g.w * 0.44f, alpha(dk ? rgb(0xFF5FA8) : rgb(0xFFB3D1), dk ? 190 : 235));
+  disc(a, ops, g.w * 0.50f, g.h * 0.40f, g.w * 0.40f, alpha(dk ? rgb(0x7A5CFF) : rgb(0xB9A8FF), dk ? 170 : 200));
+  ops.push_back(Op::rect(0, 0, g.w, g.h, alpha(base, dk ? 50 : 70)));
+  // the cards
+  using ui::Level;
+  const int title_px = g.L(Level::Title), small_px = g.L(Level::Small), foot_px = g.L(Level::Foot);
+  // the name's band holds a line of the smallest name size (Title level) on whole cells
+  const float name_h = std::max(cells_of(g, 56, 3), float(g.cells_over(1.25f * float(title_px)) * g.u)), dot = float(std::max(4, g.P(8)));
+  const float dots_y = bot - dot, name_cy = dots_y - float(g.U(2)) - name_h / 2.0f;
+  const float top = ctop + float(g.U(1));
+  const float ch = std::max(u * 8.0f, std::floor((name_cy - name_h / 2.0f - float(g.U(1)) - top) / u) * u);
+  const float cw = g.span(8), x0 = g.col(2), cx = x0 + cw / 2.0f;
+  const int radius = std::max(6, g.P(30));
+  const float ref_pw = std::round(cw * 0.34f), ref_ph = std::round(ref_pw * 0.45f), photo_w = cw * 0.6f, photo_h = ch * 0.5f;
+  rec(x0, top, cw, ch, "tarjeta", 'B', true, true);
+  g_audit_quiet = true;  // the cards slide: only the one in the middle is measured
+  std::vector<int> idx;
+  for (int i = lo - 2; i <= lo + 3; ++i) idx.push_back(i);
+  std::sort(idx.begin(), idx.end(), [&](int l, int r) { return std::fabs(float(l) - cam) > std::fabs(float(r) - cam); });
+  for (int i : idx) {
+    const float d = float(i) - cam, ad = std::fabs(d);
+    const float k = std::min(ad, 1.0f), k2 = std::clamp(ad - 1.0f, 0.0f, 1.0f), vis = 1.0f - k2;
+    if (vis <= 0.004f) continue;  // only a card with no alpha left is skipped: nothing visible pops out
+    const float bw = cw * (1.0f - 0.4f * k), bh = ch * (1.0f - 0.12f * k);
+    const float off = (d < 0 ? -1.0f : 1.0f) * (k * cw * 0.8f + k2 * cw * 0.3f);
+    const float bx = cx + off - bw / 2.0f, by = top + (ch - bh) / 2.0f;
+    if (bx + bw < 0.0f || bx > g.w) continue;
+    const SystemItem& it = items[size_t(rem_e(i, n))];
+    const float cc = (1.0f - k) * vis;  // what only the middle card shows
+    soft(a, ops, bx, by + float(g.P(12)), bw, bh, float(g.P(28)), alpha(dk ? rgb(0x0A0832) : rgb(0x3C328C), int((dk ? 90.0f : 44.0f) * vis)));
+    g_shapes.rrect(a, ops, bx, by, bw, bh, int(float(radius) * (1.0f - 0.1f * k)), alpha(kWhite, int((dk ? 40.0f : 158.0f) * (1.0f - 0.35f * k) * vis)));
+    if (cc > 0.004f) {  // the sheen of the glass
+      // Eight rounded layers of the card itself, each a little shorter than the last: a soft light at the top that fades down and can never
+      // leave the rounded corners (a rectangular clip let a square corner of light out).
+      const int rr = int(float(radius) * (1.0f - 0.1f * k));
+      for (int s = 0; s < 8; ++s) {
+        const float lh = bh * (1.0f - 0.09f * float(s));
+        g_shapes.rrect(a, ops, bx, by, bw, lh, std::min(rr, int(lh / 2.0f)), alpha(kWhite, int((dk ? 7.0f : 19.0f) * cc)));
+      }
+    }
+    std::string ctrl = sys_file(th, "_inc/controllers", it.theme_name, ".webp");
+    if (ctrl.empty()) ctrl = es_file(th, "_inc/controllers/_default.webp");
+    if (cc > 0.004f && exists_once(ctrl) && pic(a, ctrl, photo_w, photo_h, true, id)) {
+      float ow, oh;
+      fit_size(a.img(id), photo_w, photo_h, ow, oh);
+      const float s = bw / cw, py = by + bh * 0.07f;
+      ow *= s;
+      oh *= s;
+      // Aurora is depth: parallax. The controller is the farthest layer of the card, it travels at 0.7 of the card's own displacement (the plate and
+      // the texts, at 1.0, stay with the card), so it lags toward the middle; never further than what keeps it inside the card, clear of the corners.
+      const float room = std::max(0.0f, (bw - ow) / 2.0f - float(g.U(1))), par = std::clamp(-0.3f * off, -room, room);
+      soft(a, ops, bx + bw / 2.0f - ow * 0.4f + par, py + oh * 0.92f, ow * 0.8f, std::max(1.0f, oh * 0.06f), float(g.P(14)), alpha(dk ? rgb(0x0A0832) : rgb(0x3C328C), int(110.0f * cc)));
+      ops.push_back(Op::image(id, std::round(bx + bw / 2.0f - ow / 2.0f + par), std::round(py + (photo_h * s - oh) / 2.0f), ow, oh, Color{255, 255, 255, uint8_t(255.0f * cc)}));
+    }
+    // the logo on its plate: below the picture on the middle card, in the middle of the card on the others
+    // (a side card is half under the middle one: its plate sits in the part that shows)
+    const float shown = d < 0 ? x0 - std::max(bx, 0.0f) : std::min(bx + bw, g.w) - (x0 + cw);
+    const float pw = std::round(std::min(bw * lerp(0.34f, 0.62f, k), lerp(bw, std::max(shown - float(g.U(3)), ref_pw * 0.5f), k))), ph = std::round(pw * 0.45f);
+    const float pcx = k <= 0.0f ? bx + bw / 2.0f : lerp(bx + bw / 2.0f, d < 0 ? std::max(bx, 0.0f) + shown / 2.0f : x0 + cw + shown / 2.0f, k);
+    // at rest the plate sits at 62% of the card, but never over the games label under it (a line of Small, two cells from the foot, and a cell of air)
+    const float rest_py = std::max(by + bh * 0.45f, std::min(by + bh * 0.62f, by + bh - float(g.U(3)) - 1.25f * float(small_px) - ph));
+    const float py = lerp(rest_py, by + (bh - ph) / 2.0f, k), plx = pcx - pw / 2.0f;
+    g_shapes.rrect(a, ops, plx, py, pw, ph, int(ph * 0.34f), alpha(kWhite, int(242.0f * vis)));
+    const std::string lp = sys_file(th, "_inc/logos", it.theme_name, ".webp");
+    const float in_ = std::max(2.0f, ph * 0.14f);
+    if (!lp.empty() && pic(a, lp, ref_pw - 2.0f * in_, ref_ph - 2.0f * in_, true, id))
+      put_fit(a, ops, id, plx + in_, py + in_, pw - 2.0f * in_, ph - 2.0f * in_, Color{255, 255, 255, uint8_t(255.0f * vis)});
+    else if (lp.empty())
+      text(a, ops, it.full_name, pcx, py + ph / 2.0f, small_px, alpha(rgb(0x1D1B3A), int(255.0f * vis)), pw - 2.0f * in_, C);
+    if (cc > 0.004f) {
+      char b[32];
+      std::snprintf(b, sizeof b, "%02d / %02d", rem_e(i, n) + 1, n);
+      text(a, ops, b, bx + float(g.U(2)), by + float(g.U(2)) + 0.65f * float(foot_px), foot_px, alpha(dim, int(float(dim[3]) * cc)));
+      if (it.games != kCountPending) text(a, ops, games_low(it.games), bx + bw / 2.0f, by + bh - float(g.U(2)) - 0.65f * float(small_px), small_px, alpha(ink, int(255.0f * cc)), bw - float(g.U(4)), C);
+    }
+  }
+  g_audit_quiet = false;
+  if (at_rest(cam))  // the logos and pictures about to come in, ready before the move
+    for (int dd : {-2, -1, 1, 2, 3}) {
+      const SystemItem& it = items[size_t(rem_e(int(std::round(cam)) + dd, n))];
+      ImgId nid;
+      const float in_ = std::max(2.0f, ref_ph * 0.14f);
+      const std::string lp = sys_file(th, "_inc/logos", it.theme_name, ".webp");
+      if (!lp.empty()) pic(a, lp, ref_pw - 2.0f * in_, ref_ph - 2.0f * in_, true, nid);
+      const std::string cp = sys_file(th, "_inc/controllers", it.theme_name, ".webp");
+      if (!cp.empty() && std::abs(dd) == 1) pic(a, cp, photo_w, photo_h, true, nid);
+    }
+  // the name and the dots
+  const int min_tpx = std::max(g.F(24, 14), title_px);  // a system name is never smaller than a title
+  const int disp_tpx = std::max(g.F(40, 20), min_tpx);  // display size
+  const auto name_px = [&](const std::string& s) {
+    int p = disp_tpx;
+    while (p > min_tpx && a.measure(s, float(p)) > g.span(10)) --p;
+    return p;
+  };
+  const CamPair pair(cam);
+  // The name is a cross-fade driven by the camera (not by the cursor): the old one drifts away a couple of cells in the direction of the move
+  // while it fades, the new one drifts in from the opposite side. A slow, soft glide, no bounce; at rest only the name under the camera.
+  draw_pair(ops, items, pair, 0.0f, RollBand{}, true, [&](const SystemItem& it, int, float s) { text_alt(a, ops, it.full_name, g.w / 2.0f + s * 2.0f * u, name_cy, name_px(it.full_name), ink, g.span(10), C); });
+  if (!pair.moving)  // the names of the neighbours, drawn once now, so the move does not have to make a large title in its first frame
+    for (int dd : {-2, -1, 1, 2}) {
+      const std::string& nm = items[size_t(rem_e(pair.lo + dd, n))].full_name;
+      const int p = name_px(nm);  // measured with the main face, as the real draw does, before the title face is on
+      a.use_alt_face(true);
+      (void)a.text_ellipsis(nm, float(p), ink, g.span(10));
+      a.use_alt_face(false);
+    }
+  {
+    // The dots follow the camera, not the cursor: the strip slides one dot as the camera crosses a system and the lit dot widens and
+    // narrows continuously. With more systems than dots the window is circular and always centred on the camera (the lit dot in the
+    // middle), so it slides through the wrap-around too (j runs past 0 / n-1 and the dot drawn is rem_e(j, n)); with few, the row is fixed.
+    const int shown = std::min(n, 9);
+    const bool circ = n > shown;
+    const float cm = cam - float(n) * std::floor(cam / float(n));  // the camera wrapped into [0, n)
+    const float sf = circ ? cm - float(shown / 2) : 0.0f;  // where the strip starts (may be under 0: the window wraps)
+    const int j0 = int(std::floor(sf));
+    const float gap = float(std::max(4, g.P(12)));
+    const float total = float(shown - 1) * (dot + gap) + dot * 3.0f;
+    float x = std::round((g.w - total) / 2.0f) - (sf - float(j0)) * (dot + gap);
+    const Color off_c = alpha(dk ? kWhite : rgb(0x1D1B3A), dk ? 90 : 64);
+    for (int j = j0; j <= j0 + shown && (circ || j < n); ++j) {
+      const float rel = float(j) - sf, edge = std::clamp(std::min(rel + 1.0f, float(shown) - rel), 0.0f, 1.0f);  // the two ends fade in / out
+      // distance to the camera along the unwrapped line (the window is only `shown` wide, so it is also the circular one when circ)
+      const float dj = std::fabs(float(j) - cm), on = std::clamp(1.0f - (circ ? dj : std::min(dj, float(n) - dj)), 0.0f, 1.0f);
+      const float w = lerp(dot, dot * 3.0f, on);
+      if (edge > 0.004f) {
+        const Color c = motion::mix(off_c, acc, on);
+        g_shapes.rrect(a, ops, x, dots_y, w, dot, int(dot / 2.0f), alpha(c, int(float(c[3]) * edge)));
+      }
+      x += w + gap;
+    }
+  }
+  status_pill(th, a, g, status, Color{255, 255, 255, 240}, ops);
+  HelpLook hl;
+  hl.fg = dk ? Color{255, 255, 255, 230} : rgb(0x3A3768);
+  hl.accent = acc;
+  hl.cy = float(g.help_y());
+  hl.right = g.w - float(g.margin());
+  help(th, a, g, system_help(), hl, ops);
+}
+
+// ---- Swiss: flat colour, a huge name and a list ----------------------------------------------------------------------------------------------
+// Dark mode is the blue page, light mode the paper one. The name of the system is the headline (two lines when it is long), a rule, the count,
+// and a list of the neighbours whose chosen row is a solid bar; the controller stands in a disc at the foot of the right side.
+
+void swiss_system(const Theme& th, Assets& a, const Grid& g, const std::vector<SystemItem>& items, int cursor, const SystemItem& cur, float cam, const Status& status, const InfoFade& fade, std::vector<Op>& ops) {
+  (void)cursor;  // everything that changes with the system follows the camera, not the cursor
+  (void)cur;
+  (void)fade;
+  const IconicInk sc = iconic_ink(th);
+  const bool dk = sc.dark;
+  const Color bg = dk ? rgb(0x2540FF) : rgb(0xF3F1EA), ink = dk ? kWhite : rgb(0x12163A), dim = dk ? Color{255, 255, 255, 180} : Color{0x12, 0x16, 0x3A, 160};
+  const Color bar = dk ? kWhite : rgb(0x2540FF), bar_ink = dk ? rgb(0x2540FF) : kWhite, round_c = dk ? rgb(0x4660FF) : rgb(0xDFE3FF);
+  const int n = int(items.size());
+  const float mg = float(g.margin()), ctop = float(g.content_top()), u = float(g.u), bot = float(g.help_top()) - float(g.U(1));
+  const int lo = int(std::floor(cam));
+  const CamPair pair(cam);
+  ImgId id;
+  ops.push_back(Op::rect(0, 0, g.w, g.h, bg));
+  // the disc and the controller at the foot of the right side
+  const float cs = std::max(u * 6.0f, std::floor(std::min(g.span(6), (bot - ctop) * 0.62f) / u) * u);
+  const float dcx = g.w - mg - cs / 2.0f, dcy = bot - cs / 2.0f;
+  g_shapes.rrect(a, ops, dcx - cs / 2.0f, dcy - cs / 2.0f, cs, cs, int(cs / 2.0f), round_c);
+  const float pw_ = cs * 1.08f, ph_ = cs * 0.62f;
+  // Swiss moves on one axis, the vertical, and with no ornament: everything that changes with the camera ROLLS up and down (the old one goes
+  // up and out, the new one comes up from below; backwards, the other way), by the same rule. The controller slides a cell, the old and the new
+  // one at the same time but a cell apart (no ghost in place), without scale.
+  g_audit_quiet = true;
+  draw_pair(ops, items, pair, 0.0f, RollBand{}, true, [&](const SystemItem& it, int, float s) {
+    std::string ctrl = sys_file(th, "_inc/controllers", it.theme_name, ".webp");
+    if (ctrl.empty()) ctrl = es_file(th, "_inc/controllers/_default.webp");
+    if (!exists_once(ctrl) || !pic(a, ctrl, pw_, ph_, true, id)) return;
+    float ow, oh;
+    fit_size(a.img(id), pw_, ph_, ow, oh);
+    const float dy = s * float(g.U(1));
+    soft(a, ops, dcx - ow / 2.0f + ow * 0.1f, dcy + cs * 0.12f + oh * 0.35f + dy, ow * 0.8f, oh * 0.18f, float(g.P(14)), alpha(dk ? rgb(0x0A1478) : rgb(0x2540FF), int(255.0f * (dk ? 0.5f : 0.3f))));
+    ops.push_back(Op::image(id, std::round(dcx - ow / 2.0f), std::round(dcy + cs * 0.1f - oh / 2.0f + dy), ow, oh, Color{255, 255, 255, 255}));
+  });
+  g_audit_quiet = false;
+  if (at_rest(cam))
+    for (int dd : {-1, 1}) {
+      std::string cp = sys_file(th, "_inc/controllers", items[size_t(rem_e(int(std::round(cam)) + dd, n))].theme_name, ".webp");
+      ImgId nid;
+      if (!cp.empty()) pic(a, cp, pw_, ph_, true, nid);
+    }
+  // the counter, top left, in the row of the status bar
+  using ui::Level;
+  const int title_px = g.L(Level::Title), row_px = g.L(Level::Row), small_px = g.L(Level::Small), foot_px = g.L(Level::Foot);
+  const float row_cy = float(g.status_y());
+  // The index, the headline and the count belong to the system the camera shows and roll together (index and headline at once, the count a beat
+  // later: it follows the headline with a small delay). Each rolls inside its own band: the old text goes up and out, the new one comes up from
+  // below, with the opacity going the other way; the rule under the headline is structure and does not move.
+  {
+    a.use_alt_face(true);
+    const float ih = a.line_height(float(small_px));
+    a.use_alt_face(false);
+    draw_pair(ops, items, pair, 0.0f, RollBand{0.0f, row_cy - ih / 2.0f, g.w * 0.5f, ih}, true, [&](const SystemItem&, int idx, float s) {
+      char b[32];
+      std::snprintf(b, sizeof b, "%02d / %02d", idx + 1, n);
+      text_alt(a, ops, b, mg, row_cy + s * 0.6f * ih, small_px, ink);
+    });
+  }
+  // the headline
+  const float avail = g.w - 2.0f * mg;
+  auto meas = [&](const std::string& s, int px) {
+    a.use_alt_face(true);
+    const float w = a.measure(s, float(px));
+    a.use_alt_face(false);
+    return w;
+  };
+  const float rh =std::max(cells_of(g, 36, 2), float(g.cells_over(1.6f * float(row_px)) * g.u)), list_w = g.span(5);  // a row holds its text at 1.6 lines
+  const float idx_w = std::max(float(g.U(4)), float(g.cells_over(a.measure("00", float(foot_px)) + u) * g.u));  // the index column: its two digits and a cell
+  // the height of a headline line of `p` px, on whole cells (the lines of the headline must not touch)
+  const auto lh_of = [&](int p) {
+    a.use_alt_face(true);
+    const float v = std::ceil(std::max(float(p), a.line_height(float(p))) / u) * u;
+    a.use_alt_face(false);
+    return v;
+  };
+  // The count's band is always reserved (also while it is still being counted) and so is a headline of TWO lines: everything under the headline
+  // (rule, count, list) is where it is for every system, so nothing below moves when the cursor changes to a name of one line or of two.
+  const float count_h = std::ceil(float(g.F(34, 16)) * 1.15f / u) * u + float(g.U(2));
+  const int min_px = std::max(g.F(36, 18), title_px);  // a system name is never smaller than a title
+  const int disp_px = std::max(g.F(84, 28), min_px);  // display size
+  // the box is two lines of the largest size that still leaves three rows of the list: the headline gives way before the list does
+  int box_px = disp_px;
+  while (box_px > min_px && ctop + float(g.U(1)) + 2.0f * lh_of(box_px) + float(g.U(5)) + count_h + 3.0f * rh > bot) --box_px;
+  const float box_h = 2.0f * lh_of(box_px);
+  // the layout of the headline of a name: the size as large as fits in the width and in the box, and its one or two lines
+  struct Head {
+    std::string l1, l2;
+    int px = 0;
+    float lh = 0.0f;
+  };
+  const auto head_of = [&](const std::string& name) {
+    Head h;
+    h.px = disp_px;
+    for (;;) {
+      h.l1 = name;
+      h.l2.clear();
+      if (meas(h.l1, h.px) > avail) {  // two lines, split at the space nearest the middle
+        size_t best = std::string::npos;
+        for (size_t i = 0; i < name.size(); ++i)
+          if (name[i] == ' ' && (best == std::string::npos || std::llabs(long(i) - long(name.size() / 2)) < std::llabs(long(best) - long(name.size() / 2)))) best = i;
+        if (best != std::string::npos) {
+          h.l1 = name.substr(0, best);
+          h.l2 = name.substr(best + 1);
+        }
+      }
+      if ((meas(h.l1, h.px) <= avail && (h.l2.empty() || meas(h.l2, h.px) <= avail) && float(h.l2.empty() ? 1 : 2) * lh_of(h.px) <= box_h) || h.px <= min_px) break;
+      --h.px;
+    }
+    h.lh = lh_of(h.px);
+    return h;
+  };
+  // the lines sit at the foot of the box, on the rule: a name of one line leaves the room above it empty, the second line (if any) goes above
+  const float head_top = ctop + float(g.U(1));
+  float y = head_top + box_h;
+  // The headline rolls inside its box (a roll of 0.6 of its own line height, cut to the box: the square cut suits Swiss).
+  draw_pair(ops, items, pair, 0.0f, RollBand{0.0f, head_top, g.w, box_h}, true, [&](const SystemItem& it, int, float s) {
+    const Head h = head_of(it.full_name);
+    const float ly = y - (h.l2.empty() ? 1.0f : 2.0f) * h.lh + s * 0.6f * h.lh;
+    text_alt(a, ops, h.l1, mg, ly + h.lh / 2.0f, h.px, ink, avail);
+    if (!h.l2.empty()) text_alt(a, ops, h.l2, mg, ly + h.lh + h.lh / 2.0f, h.px, ink, avail);
+  });
+  y += float(g.U(2));
+  ops.push_back(Op::rect(mg, y, g.w - 2.0f * mg, float(std::max(2, g.P(3))), ink));  // the rule: structure, it neither moves nor fades
+  y += float(g.U(3));
+  // the count: a big number and its word (its band is there even before the count is known); it rolls a beat after the headline
+  const int bp = g.F(34, 16);
+  const float bh = std::ceil(float(bp) * 1.15f / u) * u;
+  const auto count_parts = [&](const SystemItem& it, std::string& num, std::string& word) {
+    const std::string t = games_low(it.games);
+    const size_t sp = t.find(' ');
+    num = sp == std::string::npos ? t : t.substr(0, sp);
+    word = sp == std::string::npos ? std::string() : t.substr(sp + 1);
+  };
+  draw_pair(ops, items, pair, 0.15f, RollBand{0.0f, y, g.w, bh}, true, [&](const SystemItem& it, int, float s) {
+    if (it.games == kCountPending) return;
+    std::string num, word;
+    count_parts(it, num, word);
+    const float cy = y + bh / 2.0f + s * 0.6f * bh;
+    text_alt(a, ops, num, mg, cy, bp, ink);
+    float wx = g.col(11);  // the word starts on the first column line after the number
+    for (int c = 1; c < 12; ++c)
+      if (g.col(c) >= mg + a.measure(num, float(bp)) + float(g.U(2))) {
+        wx = g.col(c);
+        break;
+      }
+    text(a, ops, word, wx, cy + float(g.P(3)), small_px, dim);
+  });
+  if (!pair.moving)  // the texts of the neighbours, made now (at rest), so the first frame of a move does not have to rasterise a headline of 84 px
+    for (int dd : {-2, -1, 1, 2}) {
+      const SystemItem& nb = items[size_t(rem_e(pair.lo + dd, n))];
+      const Head h = head_of(nb.full_name);
+      a.use_alt_face(true);
+      (void)a.text_ellipsis(h.l1, float(h.px), ink, avail);
+      if (!h.l2.empty()) (void)a.text_ellipsis(h.l2, float(h.px), ink, avail);
+      char b[32];
+      std::snprintf(b, sizeof b, "%02d / %02d", rem_e(pair.lo + dd, n) + 1, n);
+      (void)a.text(b, float(small_px), ink);
+      if (nb.games != kCountPending) {
+        std::string num, word;
+        count_parts(nb, num, word);
+        (void)a.text(num, float(bp), ink);
+        a.use_alt_face(false);
+        if (!word.empty()) (void)a.text(word, float(small_px), dim);
+      }
+      a.use_alt_face(false);
+    }
+  y += bh + float(g.U(2));
+  // the list of neighbours: the chosen row is a bar
+  const float list_top = down_to_line(g, ctop, y);
+  int slots = std::min(5, int(std::floor((bot - list_top) / rh)));
+  if (slots % 2 == 0) --slots;  // odd: the chosen row in the middle; never one more row than there is room for
+  const int mid_slot = slots / 2;
+  if (slots >= 3) {
+    const float bx = mg, in_ = float(g.U(1));
+    rec(bx, list_top + float(mid_slot) * rh, list_w, rh, "tarjeta", 'B', true, true);
+    g_shapes.rrect(a, ops, bx, list_top + float(mid_slot) * rh, list_w, rh, 0, bar);
+    g_audit_quiet = true;  // the rows slide: only the bar is measured
+    ops.push_back(Op::clip(bx, list_top, list_w, float(slots) * rh));
+    for (int i = lo - mid_slot - 1; i <= lo + mid_slot + 2; ++i) {
+      const float d = float(i) - cam, ad = std::fabs(d);
+      const float ry = list_top + (float(mid_slot) + d) * rh;
+      if (ry + rh <= list_top || ry >= list_top + float(slots) * rh) continue;
+      // The rows do not get cut in half at the top and the bottom of the window: they fade out as they leave it (the alpha follows how much of the
+      // row is already outside, so it is 1 for every slot at rest and 0 when the row has gone). The square clip stays behind, only as a safety.
+      const float over = std::max(list_top - ry, ry + rh - (list_top + float(slots) * rh));
+      const float edge_a = std::clamp(1.0f - over / rh, 0.0f, 1.0f);
+      if (edge_a <= 0.004f) continue;
+      const SystemItem& it = items[size_t(rem_e(i, n))];
+      // The colour changes continuously as the row crosses the bar: two layers of the text (the ink one and the bar one), each with the alpha
+      // it has at this distance (a text picture is baked in its colour, so mixing the colour itself would bake a new picture every frame).
+      const float on = std::clamp(1.0f - ad, 0.0f, 1.0f), row_a = 0.62f - 0.12f * std::min(ad, 3.0f);
+      char b[8];
+      std::snprintf(b, sizeof b, "%02d", rem_e(i, n) + 1);
+      const std::string_view nm = it.full_name;
+      for (int layer = 0; layer < 2; ++layer) {
+        const float w_l = layer == 0 ? 1.0f - on : on;  // layer 0: ink, layer 1: the text on the bar
+        if (w_l <= 0.004f) continue;
+        const Color lc = layer == 0 ? ink : bar_ink;
+        size_t f0 = ops.size();
+        text(a, ops, b, mg + in_, ry + rh / 2.0f, foot_px, lc);
+        motion::fade(ops, f0, w_l * edge_a * (layer == 0 ? 150.0f / 255.0f : 1.0f));
+        f0 = ops.size();
+        text_alt(a, ops, nm, mg + in_ + idx_w, ry + rh / 2.0f, row_px, lc, list_w - in_ - idx_w);
+        motion::fade(ops, f0, w_l * edge_a * (layer == 0 ? row_a : 1.0f));
+      }
+    }
+    ops.push_back(Op::unclip());
+    g_audit_quiet = false;
+  }
+  status_pill(th, a, g, status, Color{255, 255, 255, 240}, ops);
+  HelpLook hl;
+  hl.fg = dk ? Color{255, 255, 255, 235} : rgb(0x12163A);
+  hl.accent = dk ? kWhite : rgb(0x2540FF);
+  hl.cy = float(g.help_y());
+  hl.right = g.w - float(g.margin());
+  help(th, a, g, system_help(), hl, ops);
+}
+
+// ---- Industrial: the panel of a device -------------------------------------------------------------------------------------------------------
+// A dark screen with the illustration of the system in one colour (a grey picture tinted orange, with scan lines), a dial with the position, and
+// a row of keys under them: the chosen one is orange and lit. Light: warm grey with cream keys; dark: graphite. The orange is the same in both.
+
+void industrial_system(const Theme& th, Assets& a, const Grid& g, const std::vector<SystemItem>& items, int cursor, const SystemItem& cur, float cam, const Status& status, const InfoFade& fade, std::vector<Op>& ops) {
+  (void)cursor;  // the dial's number follows the camera
+  (void)cur;     // so do the plate, the name bar and the counts: none of them is drawn from the cursor or from the caller's fade
+  (void)fade;
+  const IconicInk sc = iconic_ink(th);
+  const bool dk = sc.dark;
+  const Color page = dk ? rgb(0x1D1C1A) : rgb(0xE8E6DF), panel = dk ? rgb(0x2B2A27) : rgb(0xF5F4EE), lip = dk ? rgb(0x0C0B0A) : rgb(0xCFCDC4), ink = dk ? rgb(0xF1EFE6) : rgb(0x1B1A17);
+  const Color dim = dk ? rgb(0xA3A196) : rgb(0x6E6C63), bez = dk ? rgb(0x0B0B0C) : rgb(0x17161A), orange = rgb(0xFF5A1F), led_off = dk ? rgb(0x4A4842) : rgb(0xC4C2B8);
+  const Color ring_c = dk ? rgb(0x35342F) : rgb(0xE1DFD6);
+  const int n = int(items.size());
+  const float mg = float(g.margin()), ctop = float(g.content_top()), u = float(g.u), bot = float(g.help_top()) - float(g.U(1));
+  const int lo = int(std::floor(cam));
+  const float frac = cam - float(lo);
+  const CamPair pair(cam);  // the same camera as a pair of systems, for the texts that roll
+  const float lipd = cells_of(g, 6, 1);  // a whole number of cells: the rows under the screen stay on the lines
+  const int rad = std::max(4, g.P(24));
+  ImgId id;
+  ops.push_back(Op::rect(0, 0, g.w, g.h, page));
+  const float gap = g.gutter();
+  using ui::Level;
+  const int title_px = g.L(Level::Title), small_px = g.L(Level::Small), foot_px = g.L(Level::Foot);
+  // a key holds its lip, the index line, and room for the logo under it
+  const float tile_h = std::max(cells_of(g, 92, 4), float(g.cells_over(lipd + u + 1.25f * float(foot_px) + 3.0f * u) * g.u)), led_h = float(g.U(2));
+  const float strip_h = led_h + tile_h + lipd;
+  const float top = ctop;
+  const float sh = std::max(u * 8.0f, std::floor((bot - top - strip_h - gap - lipd) / u) * u);
+  const float sx = g.col(0), sw = g.span(8), dx = g.col(8), dw = g.span(4);
+  // the header, in the row of the status bar
+  {
+    const float cy = float(g.status_y()), r = float(std::max(4, g.P(6)));
+    g_shapes.rrect(a, ops, mg, cy - r, 2.0f * r, 2.0f * r, int(r), orange);
+    text(a, ops, "ZENITH  \xC2\xB7  SYS-SELECT", g.col(1), cy, small_px, ink, g.w * 0.5f);
+  }
+  // the screen
+  rec(sx, top, sw, sh, "tarjeta", 'B', true, true);
+  g_shapes.rrect(a, ops, sx, top + lipd, sw, sh, rad, lip);
+  g_shapes.rrect(a, ops, sx, top, sw, sh, rad, bez);
+  const float pad = float(g.U(1)), px0 = sx + pad, py0 = top + pad, pw_ = sw - 2.0f * pad, ph_ = sh - 2.0f * pad;
+  const int prad = std::max(3, rad - g.P(10));
+  const std::string flags = "gcr" + std::to_string(prad);
+  g_audit_quiet = true;
+  for (int k = 0; k < 2; ++k) {
+    if (k == 1 && frac < 0.004f) break;
+    const SystemItem& it = items[size_t(rem_e(lo + k, n))];
+    const std::string art = sys_file(th, "_inc/backgrounds", it.theme_name, ".webp");
+    const std::string art_any = art.empty() ? es_file(th, "_inc/backgrounds/_default.webp") : art;
+    const int al = int(255.0f * (k == 0 ? 1.0f : frac));
+    if (exists_once(art_any) && pic(a, baked(art_any, flags.c_str()), pw_, ph_, true, id)) put_fit(a, ops, id, px0, py0, pw_, ph_, Color{255, 110, 50, uint8_t(al)});
+    else if (k == 0) g_shapes.rrect(a, ops, px0, py0, pw_, ph_, prad, alpha(orange, 90));
+  }
+  if (at_rest(cam))
+    for (int dd : {-1, 1}) {
+      const std::string art = sys_file(th, "_inc/backgrounds", items[size_t(rem_e(int(std::round(cam)) + dd, n))].theme_name, ".webp");
+      ImgId nid;
+      if (!art.empty()) pic(a, baked(art, flags.c_str()), pw_, ph_, true, nid);
+    }
+  scanlines(a, ops, px0, py0, pw_, ph_, g.h);
+  // the logo on its plate, top left of the screen, and the bar with the name at its foot
+  const float bar_h = std::max(cells_of(g, 56, 3), float(g.cells_over(1.25f * float(title_px) + 2.0f * u) * g.u));  // the name bar holds a Title line
+  g_shapes.rrect(a, ops, px0, py0 + ph_ - bar_h, pw_, bar_h, std::max(3, prad / 2), bez);
+  // Industrial is a device: what changes with the camera is MECHANICAL, a quick sweep cut to its own window with no fading (like the digits of an
+  // odometer or the label of a panel): the old one goes up and out while the new one comes up from below, a whole window of travel; going back
+  // it is the other way round. The plate of the logo and the name bar sweep together.
+  const float plw = std::min(g.span(3), pw_ * 0.34f), plh = std::max(u * 3.0f, std::floor(plw * 0.4f / u) * u);
+  draw_pair(ops, items, pair, 0.0f, RollBand{px0 + float(g.U(1)), py0 + float(g.U(1)), plw, plh}, false, [&](const SystemItem& it, int, float s) {
+    const std::string lp = sys_file(th, "_inc/logos", it.theme_name, ".webp");
+    const float dy = s * plh;
+    g_shapes.rrect(a, ops, px0 + float(g.U(1)), py0 + float(g.U(1)) + dy, plw, plh, std::max(3, g.P(8)), kWhite);
+    if (!lp.empty() && pic(a, lp, plw - float(g.U(2)), plh - float(g.U(1)), true, id)) put_fit(a, ops, id, px0 + float(g.U(1)) + float(g.U(1)) / 2.0f, py0 + float(g.U(1)) + float(g.U(1)) / 4.0f + dy, plw - float(g.U(1)), plh - float(g.U(1)) / 2.0f);
+    else if (lp.empty())  // Iconic has no logo for this system (Music Player, Media Player, books...): its name, not an empty plate
+      name_lines(a, ops, it.full_name, px0 + float(g.U(1)) + plw / 2.0f, py0 + float(g.U(1)) + dy + plh / 2.0f, small_px, rgb(0x1A1A1A), plw - float(g.U(2)));
+  });
+  g_audit_quiet = false;
+  // the name of the system and its count, on the bar at the foot of the screen: the name's size depends on the room the count leaves
+  const float bar_cy = py0 + ph_ - bar_h / 2.0f;
+  const int fs_min = std::max(g.F(15, 10), title_px);  // a system name is never smaller than a title
+  struct Bar {
+    std::string t;
+    float tw = 0.0f, max_w = 0.0f;
+    int fs = 0;
+  };
+  const auto bar_of = [&](const SystemItem& it) {
+    Bar b;
+    b.t = it.games != kCountPending ? games_of(it.games) : std::string();
+    b.tw = b.t.empty() ? 0.0f : a.measure(b.t, float(small_px)) + float(g.U(2));
+    b.max_w = pw_ - b.tw - float(g.U(4));
+    b.fs = std::max(g.F(22, 13), fs_min);  // display size
+    while (b.fs > fs_min && a.measure(it.full_name, float(b.fs)) > b.max_w) --b.fs;
+    return b;
+  };
+  draw_pair(ops, items, pair, 0.0f, RollBand{px0, py0 + ph_ - bar_h, pw_, bar_h}, false, [&](const SystemItem& it, int, float s) {
+    const Bar b = bar_of(it);
+    const float cy = bar_cy + s * bar_h;
+    const bool quiet = g_audit_quiet;
+    g_audit_quiet = true;  // inside the screen: the screen is what is measured
+    text_alt(a, ops, it.full_name, px0 + float(g.U(2)), cy, b.fs, rgb(0xF4F2EA), b.max_w);
+    if (!b.t.empty()) text(a, ops, b.t, px0 + pw_ - float(g.U(2)), cy, small_px, orange, 0, R);
+    g_audit_quiet = quiet;
+  });
+  if (!pair.moving)  // the plates and names of the neighbours, ready before the move (at rest): a title is not rasterised in the first frame of a turn
+    for (int dd : {-2, -1, 1, 2}) {
+      const SystemItem& nb = items[size_t(rem_e(pair.lo + dd, n))];
+      ImgId nid;
+      const std::string lp = sys_file(th, "_inc/logos", nb.theme_name, ".webp");
+      if (!lp.empty()) pic(a, lp, plw - float(g.U(2)), plh - float(g.U(1)), true, nid);
+      const Bar b = bar_of(nb);
+      a.use_alt_face(true);
+      (void)a.text_ellipsis(nb.full_name, float(b.fs), rgb(0xF4F2EA), b.max_w);
+      a.use_alt_face(false);
+      if (!b.t.empty()) (void)a.text(b.t, float(small_px), orange);
+    }
+  // the dial: a ring, twelve marks and the position in the middle
+  g_shapes.rrect(a, ops, dx, top + lipd, dw, sh, rad, lip);
+  g_shapes.rrect(a, ops, dx, top, dw, sh, rad, panel);
+  {
+    const float dd = std::max(u * 4.0f, std::min(dw - float(g.U(3)), sh * 0.56f)), cx = dx + dw / 2.0f, cy = top + float(g.U(2)) + dd / 2.0f;
+    const float bw2 = float(std::max(2, g.P(2)));
+    g_shapes.rrect(a, ops, cx - dd / 2.0f, cy - dd / 2.0f, dd, dd, int(dd / 2.0f), ink);
+    g_shapes.rrect(a, ops, cx - dd / 2.0f + bw2, cy - dd / 2.0f + bw2, dd - 2.0f * bw2, dd - 2.0f * bw2, int(dd / 2.0f), ring_c);
+    const float d2 = dd * 0.78f;
+    g_shapes.rrect(a, ops, cx - d2 / 2.0f, cy - d2 / 2.0f, d2, d2, int(d2 / 2.0f), ink);
+    g_shapes.rrect(a, ops, cx - d2 / 2.0f + bw2, cy - d2 / 2.0f + bw2, d2 - 2.0f * bw2, d2 - 2.0f * bw2, int(d2 / 2.0f), panel);
+    // The lit mark follows the camera: it slides from the mark of the system the camera leaves to the one it reaches (each is where the
+    // system sits on the dial, as before), so at rest the same single mark is lit.
+    const auto mark_of = [&](int i) { return int(std::lround(float(rem_e(i, n)) / float(n) * 12.0f)); };
+    const int q_lo = mark_of(lo);
+    int q_hi = mark_of(lo + 1);
+    if (q_hi < q_lo) q_hi += 12;  // the carousel wraps round the dial
+    const float pos = std::fmod(lerp(float(q_lo), float(q_hi), frac), 12.0f);
+    for (int t = 0; t < 12; ++t) {
+      const float ang = float(t) * 3.14159265f / 6.0f, r = dd * 0.455f;
+      const float dt = std::fabs(float(t) - pos), lit = std::clamp(1.0f - std::min(dt, 12.0f - dt), 0.0f, 1.0f);
+      const float m = lerp(float(std::max(3, g.P(4))), float(std::max(5, g.P(8))), lit);
+      g_shapes.rrect(a, ops, cx + std::sin(ang) * r - m / 2.0f, cy - std::cos(ang) * r - m / 2.0f, m, m, int(m / 2.0f), motion::mix(ink, orange, lit));
+    }
+    char b[16];
+    // The number is an ODOMETER, driven by the camera like the lit mark of the ring: the number of the system the camera leaves goes up and out
+    // of its slot while the next one comes up from below, a line of travel, cut to the slot (the total, "/ NN", never changes). At rest it is
+    // the number of the system under the camera. The count of games below follows it with the same roll.
+    a.use_alt_face(true);
+    const float nh = a.line_height(float(g.F(30, 14)));
+    a.use_alt_face(false);
+    const float sh2 = a.line_height(float(foot_px));
+    const float y0 = cy - (nh + sh2) / 2.0f;  // the number and its total, one over the other, centred in the dial
+    draw_pair(ops, items, pair, 0.0f, RollBand{cx - d2 / 2.0f + bw2, y0, d2 - 2.0f * bw2, nh}, false, [&](const SystemItem&, int idx, float s) {
+      char nb[16];
+      std::snprintf(nb, sizeof nb, "%02d", idx + 1);
+      text_alt(a, ops, nb, cx, y0 + nh / 2.0f + s * nh, g.F(30, 14), ink, 0, C);
+    });
+    std::snprintf(b, sizeof b, "/ %02d", n);
+    text(a, ops, b, cx, y0 + nh + sh2 / 2.0f, foot_px, dim, 0, C);
+    // the games count sits two cells over the foot of the panel, and only if it clears the ring by a cell
+    const float lab_cy = top + sh - float(g.U(2)) - 0.65f * float(small_px);
+    if (cy + dd / 2.0f + u + 0.65f * float(small_px) <= lab_cy) {
+      const float lbh = a.line_height(float(small_px));
+      draw_pair(ops, items, pair, 0.0f, RollBand{dx, lab_cy - lbh / 2.0f, dw, lbh}, false, [&](const SystemItem& it, int, float s) {
+        if (it.games != kCountPending) text(a, ops, games_of(it.games), cx, lab_cy + s * lbh, small_px, dim, dw - float(g.U(2)), C);
+      });
+    }
+    if (!pair.moving)  // the numbers and counts of the neighbours, made now (at rest) for the first frame of a turn
+      for (int dd2 : {-2, -1, 1, 2}) {
+        const SystemItem& nb = items[size_t(rem_e(pair.lo + dd2, n))];
+        std::snprintf(b, sizeof b, "%02d", rem_e(pair.lo + dd2, n) + 1);
+        a.use_alt_face(true);
+        (void)a.text(b, float(g.F(30, 14)), ink);
+        a.use_alt_face(false);
+        if (nb.games != kCountPending) (void)a.text_ellipsis(games_of(nb.games), float(small_px), dim, dw - float(g.U(2)));
+      }
+  }
+  // the keys: five slide under the lit slot, the sixth only counts the rest
+  const float pitch = g.col(2) - g.col(0), tw_ = g.span(2), ty = top + sh + gap + lipd;
+  const float tl = ty + led_h;
+  rec(g.col(4), tl, tw_, tile_h, "tarjeta", 'B', true, true);
+  g_audit_quiet = true;
+  ops.push_back(Op::clip(g.col(0), ty - float(g.U(1)), 5.0f * pitch - gap, strip_h + float(g.U(1))));
+  for (int i = lo - 3; i <= lo + 4; ++i) {
+    const float d = float(i) - cam, ad = std::fabs(d), x = g.col(0) + (2.0f + d) * pitch;
+    if (x + tw_ <= g.col(0) || x >= g.col(0) + 5.0f * pitch) continue;
+    const float on = std::clamp(1.0f - ad, 0.0f, 1.0f);
+    const SystemItem& it = items[size_t(rem_e(i, n))];
+    const float r = float(g.U(1)) / 2.0f;
+    // Every part of a key goes from "resting" to "lit" with `on`, which follows the camera: nothing switches at a threshold.
+    if (on > 0.008f) disc(a, ops, x + tw_ / 2.0f, ty + r, r * 4.0f, alpha(orange, int(160.0f * on)));  // (skipped only while it has no alpha)
+    g_shapes.rrect(a, ops, x + tw_ / 2.0f - r, ty, 2.0f * r, 2.0f * r, int(r), motion::mix(led_off, orange, on));
+    // The key that is being lit is PRESSED: its face sinks a pixel or two into its lip and comes back (sin(pi * on): 0 when the key rests, lit or
+    // not, and the most in the middle of the move). The lip stays; the index and the logo travel with the face.
+    const float press = (on > 0.0005f && on < 0.9995f ? std::sin(3.14159265f * on) : 0.0f) * std::min(float(std::max(1, g.P(2))), lipd * 0.5f);
+    const float ky = tl + press;
+    g_shapes.rrect(a, ops, x, tl + lipd, tw_, tile_h - lipd, int(g.P(12)), motion::mix(lip, rgb(0xB83A0D), on));
+    g_shapes.rrect(a, ops, x, ky, tw_, tile_h - lipd, int(g.P(12)), motion::mix(panel, orange, on));
+    char b[8];
+    std::snprintf(b, sizeof b, "%02d", rem_e(i, n) + 1);
+    // the index is two layers of the text, the resting colour and white, each with its alpha (a text picture is baked in its colour)
+    for (int layer = 0; layer < 2; ++layer) {
+      const float w_l = layer == 0 ? 1.0f - on : on;
+      if (w_l <= 0.004f) continue;
+      const size_t f0 = ops.size();
+      text(a, ops, b, x + float(g.U(1)), ky + float(g.U(1)) + 0.6f * float(foot_px), foot_px, layer == 0 ? dim : kWhite);
+      motion::fade(ops, f0, w_l);
+    }
+    const std::string lp = sys_file(th, "_inc/logos", it.theme_name, ".webp");
+    const float lw = tw_ - float(g.U(3)), lh = (tile_h - lipd) * 0.5f;
+    if (!lp.empty() && pic(a, lp, lw, lh, true, id)) {
+      // the white plate of the logo: lit keys have it (in the dark theme all of them do), and it comes in with `on`
+      const int plate_a = dk ? 255 : int(std::lround(255.0f * on));
+      if (plate_a > 0) g_shapes.rrect(a, ops, x + float(g.U(1)), ky + (tile_h - lipd - lh - float(g.U(1))) / 2.0f + float(g.U(1)) / 2.0f, tw_ - float(g.U(2)), lh + float(g.U(1)), std::max(3, g.P(6)), alpha(kWhite, plate_a));
+      put_fit(a, ops, id, x + (tw_ - lw) / 2.0f, ky + (tile_h - lipd - lh) / 2.0f + float(g.U(1)) / 2.0f, lw, lh);
+    } else if (lp.empty()) {  // no logo in Iconic for this system: its name, in the two layers of the index (resting colour, white when lit)
+      for (int layer = 0; layer < 2; ++layer) {
+        const float w_l = layer == 0 ? 1.0f - on : on;
+        if (w_l <= 0.004f) continue;
+        const size_t f0 = ops.size();
+        name_lines(a, ops, it.full_name, x + tw_ / 2.0f, ky + (tile_h - lipd) / 2.0f + float(g.U(1)) / 2.0f, foot_px, layer == 0 ? ink : kWhite, tw_ - float(g.U(2)));
+        motion::fade(ops, f0, w_l);
+      }
+    }
+  }
+  ops.push_back(Op::unclip());
+  g_audit_quiet = false;
+  if (n > 5) {
+    const float x = g.col(10), ky = tl;
+    g_shapes.rrect(a, ops, x, ky, tw_, tile_h - lipd, g.P(12), dk ? rgb(0x262522) : rgb(0xDCDAD1));
+    char b[12];
+    std::snprintf(b, sizeof b, "+%d", n - 5);
+    text_alt(a, ops, b, x + tw_ / 2.0f, ky + (tile_h - lipd) / 2.0f, small_px, dim, tw_, C);
+  }
+  if (at_rest(cam))
+    for (int dd : {-4, -3, 4, 5}) {
+      const std::string lp = sys_file(th, "_inc/logos", items[size_t(rem_e(int(std::round(cam)) + dd, n))].theme_name, ".webp");
+      ImgId nid;
+      if (!lp.empty()) pic(a, lp, tw_ - float(g.U(3)), (tile_h - lipd) * 0.5f, true, nid);
+    }
+  status_pill(th, a, g, status, Color{255, 255, 255, 240}, ops);
+  HelpLook hl;
+  hl.fg = ink;
+  hl.accent = orange;
+  hl.cy = float(g.help_y());
+  hl.right = g.w - float(g.margin());
+  help(th, a, g, system_help(), hl, ops);
+}
+
+void iconic_system(const Theme& th, Assets& a, const Grid& g, const std::vector<SystemItem>& items, int cursor, const SystemItem& cur, float cam, const Status& status, const InfoFade& fade, std::vector<Op>& ops) {
+  if (th.str("esCarousel", "") == "aurora") return aurora_system(th, a, g, items, cursor, cur, cam, status, fade, ops);
+  if (th.str("esCarousel", "") == "swiss") return swiss_system(th, a, g, items, cursor, cur, cam, status, fade, ops);
+  if (th.str("esCarousel", "") == "industrial") return industrial_system(th, a, g, items, cursor, cur, cam, status, fade, ops);
+  const IconicInk sc = iconic_ink(th);
+  const Color acc = iconic_accent(th, a, cur.theme_name), soft_c = alpha(acc, sc.dark ? 56 : 30);  // the chips of the dark page need more body to show
   iconic_page(th, a, g, acc, ops);
   const int n = int(items.size());
-  const float mg = float(g.margin()), ctop = float(g.content_top()), pw = g.col(4), u = float(g.u);
+  const float mg = float(g.margin()), ctop = float(g.content_top()), u = float(g.u);
   const float dock_h = cells_of(g, 62, 4), dock_y = float(g.help_top()) - dock_h;
   const size_t fade_from = ops.size();
-  // the illustration, in its card
-  const float iw = g.w - pw - mg, ih = dock_y - g.gutter() - ctop;
-  rec(pw, ctop, iw, ih, "tarjeta", 'B', true, true);
+  // the illustration fills the page, as in the theme's own view; the panel and the logos lie on it
+  const float ih = dock_y - g.gutter() - ctop, panel_w = mg + g.span(4) + mg;
   const std::string art = sys_file(th, "_inc/backgrounds", cur.theme_name, ".webp");
   const std::string art_any = art.empty() ? es_file(th, "_inc/backgrounds/_default.webp") : art;
   ImgId id;
-  if (exists_once(art_any)) {
-    char fl[16];
-    std::snprintf(fl, sizeof fl, "cr%d", g.P(18));
-    if (pic(a, baked(art_any, fl), iw, ih, true, id)) {
-      soft(a, ops, pw, ctop + float(g.P(4)), iw, ih, float(g.P(14)), Color{20, 22, 40, 70});
-      ops.push_back(Op::image(id, pw, ctop, float(a.img(id).w), float(a.img(id).h)));
-    } else {
-      g_shapes.rrect(a, ops, pw, ctop, iw, ih, g.P(18), soft_c);
-    }
-  }
+  bool art_on = false;
+  if (exists_once(art_any)) art_on = pic(a, baked(art_any, "c"), g.w, g.h, true, id);
+  if (art_on) ops.push_back(Op::image(id, 0, 0, float(a.img(id).w), float(a.img(id).h)));
+  else ops.push_back(Op::rect(0, 0, g.w, g.h, soft_c));  // while it loads: the colour of the system, not an empty page
   if (at_rest(cam) && exists_once(art_any)) {  // on the job thread, one by one: the next illustrations are ready before the move
-    char fl[16];
-    std::snprintf(fl, sizeof fl, "cr%d", g.P(18));
-    for (int dd : {1, -1}) {
+    for (int dd : {1, -1, 2, -2}) {
       const std::string np = sys_file(th, "_inc/backgrounds", items[size_t(rem_e(int(std::round(cam)) + dd, int(items.size())))].theme_name, ".webp");
       ImgId nid;
-      if (!np.empty()) pic(a, baked(np, fl), iw, ih, true, nid);
+      if (!np.empty()) pic(a, baked(np, "c"), g.w, g.h, true, nid);
     }
   }
+  ops.push_back(Op::rect(0, 0, panel_w, g.h, alpha(sc.card, 222)));  // the panel of the system, over the whole height
+  ops.push_back(Op::rect(panel_w, 0, 1, g.h, alpha(sc.dim, 40)));
   // the panel: controller, name, count
   const float cxm = mg + g.span(4) / 2.0f;
   const float chh = std::max(u, std::floor(std::min(float(g.P(124)), std::floor(ih * 0.47f)) / u) * u);
@@ -1084,10 +1819,8 @@ void iconic_system(const Theme& th, Assets& a, const Grid& g, const std::vector<
   motion::fade(ops, fade_from, fade.alpha);
   // the dock
   const float dock_w = g.w - 2 * mg, inset = float(g.U(1));
-  soft(a, ops, mg, dock_y + float(g.P(3)), dock_w, dock_h, float(g.P(10)), Color{20, 22, 40, 46});
-  g_shapes.rrect(a, ops, mg, dock_y, dock_w, dock_h, g.P(20), sc.card);
+  for (int pass = 0; pass < 2; ++pass) bottom_fade(a, ops, g.w, g.h, g.h - dock_y + float(g.U(12)), alpha(sc.card, 236));  // the logos stand on the page, no card: two passes, or a grey logo is lost on the art
   const float selw = float(g.snap(std::floor(g.w * 0.3125f), 4)), sx = mg + inset;
-  g_shapes.rrect(a, ops, sx, dock_y + inset, selw, dock_h - 2 * inset, g.P(14), soft_c);
   const float rest_x = sx + selw + inset, rest = g.w - mg - inset - rest_x;
   const int cells = rest > float(g.P(300)) ? 3 : 2;
   const float cell = rest / float(cells), pad_sel = float(g.U(4)), pad_cell = inset, pad_v = float(g.U(4));
@@ -1140,30 +1873,34 @@ void iconic_system(const Theme& th, Assets& a, const Grid& g, const std::vector<
 
 void iconic_list(const Theme& th, Assets& a, const Grid& g, const std::vector<std::string>& names, size_t cursor, const Status& status, const DetailedData* d, std::vector<Op>& ops) {
   const IconicInk sc = iconic_ink(th);
-  const Color acc = iconic_accent(th, a, g_state.system_theme), soft_c = alpha(acc, 30);
+  const Color acc = iconic_accent(th, a, g_state.system_theme), soft_c = alpha(acc, sc.dark ? 56 : 30);  // the chips of the dark page need more body to show
   iconic_page(th, a, g, acc, ops);
   const int m = g.margin();
   const float x = float(m), w = g.span(5);
   const std::string logo = sys_file(th, "_inc/logos", g_state.system_theme, ".webp");
   if (d) {
     const bool has = sc.detail && has_data(*d);
-    const int title = g.F(23, 15), lh = g.F(20, 16);
-    const float reserve = float(g.U(3) + (has ? g.U(9) + 2 * lh : g.U(5)));
+    using ui::Level;
+    const int title = g.L(Level::Title), row_px = g.L(Level::Row), small_px = g.L(Level::Small);
+    // under the cover, on whole cells: the title line, the chips (Small at 1.6 lines), the stars and two lines of description
+    const int title_h = g.cells_over(1.25f * float(title)) * g.u, chip_h = std::max(int(cells_of(g, 24)), g.cells_over(1.6f * float(small_px)) * g.u);
+    const int star_h = d->show_rating ? g.cells_over(float(g.P(14))) * g.u : 0, lh = int(std::lround(1.3f * float(row_px)));
+    const float reserve = float(2 * g.u + title_h + (has ? 3 * g.u + chip_h + star_h + 2 * lh : (star_h ? g.u + star_h : 0)));
     float top = float(g.content_top()), cw, ch;
     box43c(g, w, float(g.help_top()) - top - reserve, cw, ch);
     if (!has) top = down_to_line(g, float(g.content_top()), (float(g.help_top() + g.content_top()) - ch - reserve) / 2.0f);
     cover_box(a, ops, d->image, x, top, cw, ch, g.P(14), logo, sc.card, Color{0, 0, 0, 0}, Color{20, 22, 40, 70}, sc.video ? d->video : std::string());
     if (!sc.video) video::box_reset();  // PLAY VIDEO PREVIEWS: no (the list never offers its picture's box to the preview)
-    const float yt = top + ch + float(g.U(3));
-    text(a, ops, d->name, x, yt, title, sc.ink, w);
+    const float y0 = top + ch + float(g.U(2)), yt = y0 + float(title_h) / 2.0f;  // the title's line, centred in its cells
+    std::string cased;
+    text(a, ops, list_cased(th, d->name, cased), x, yt, title, sc.ink, w);
     if (has) {
-      const float ph = cells_of(g, 24);
-      chips(a, ops, *d, g, x, yt + float(g.U(2)), ph, x + w, g.F(13, 11), cells_of(g, 10), soft_c, iconic_text(sc, acc));
-      if (d->show_rating) stars(th, a, ops, x, yt + float(g.U(6)), g.P(14), d->rating, iconic_text(sc, acc), sc.star, g.P(3));
-      const float yd = yt + float(g.U(9));
-      desc_block(a, ops, *d, x, yd, w, float(g.help_top()) - yd, g.F(14), sc.body);
-    } else if (d->show_rating) {
-      stars(th, a, ops, x, yt + float(g.U(2)), g.P(16), d->rating, iconic_text(sc, acc), sc.star, g.P(3));
+      const float yc = y0 + float(title_h) + float(g.u), ys = yc + float(chip_h) + float(g.u), yd = ys + float(star_h) + float(g.u);
+      chips(a, ops, *d, g, x, yc, float(chip_h), x + w, small_px, cells_of(g, 10), soft_c, iconic_text(sc, acc));
+      if (star_h) stars(th, a, ops, x, ys, g.P(14), d->rating, iconic_text(sc, acc), sc.star, g.P(3));
+      desc_block(a, ops, *d, x, star_h ? yd : ys, w, float(g.help_top()) - (star_h ? yd : ys), row_px, sc.body);
+    } else if (star_h) {
+      stars(th, a, ops, x, y0 + float(title_h) + float(g.u), g.P(14), d->rating, iconic_text(sc, acc), sc.star, g.P(3));
     }
   }
   // the card of the list, on the columns from the sixth to the margin; the rows inside it, a cell in
@@ -1173,25 +1910,28 @@ void iconic_list(const Theme& th, Assets& a, const Grid& g, const std::vector<st
   rec(lx, ly, lw, lh2, "tarjeta", 'B', true, true);
   ImgId lg;
   if (!logo.empty() && pic(a, logo, float(g.P(150)), float(g.P(28)), true, lg)) put_fit(a, ops, lg, float(m), float(g.top()), cells_of(g, 150), float(g.bar_h()), kWhite, 0.0f);
-  const int pitch = g.snap(float(g.P(36)), 3), fs = g.F(17, 14);
+  const int fs = g.L(ui::Level::Row);  // the game's name; a row holds it at 1.6 lines, on whole cells
+  const int pitch = std::max(g.snap(float(g.P(36)), 3), g.cells_over(1.6f * float(fs)) * g.u);
   const size_t rows = size_t(std::max(1, int((lh2 - 2 * inset) / float(pitch))));
   const RowWindow rw = row_window(names.size(), cursor, rows);
   if (rw.moving) ops.push_back(Op::clip(lx, ly, lw, lh2));
   if (!names.empty()) {  // the selected row: a pill of whole cells inside the card
     const float ys = ly + inset + rw.sel * float(pitch);
-    soft(a, ops, lx + inset, ys + float(g.P(3)), lw - 2 * inset, float(pitch), float(g.P(6)), alpha(acc, 70));
-    g_shapes.rrect(a, ops, lx + inset, ys, lw - 2 * inset, float(pitch), g.P(12), acc);
+    const Color pill_c = holds_white(acc);  // the name of the row is white
+    soft(a, ops, lx + inset, ys + float(g.P(3)), lw - 2 * inset, float(pitch), float(g.P(6)), alpha(pill_c, 70));
+    g_shapes.rrect(a, ops, lx + inset, ys, lw - 2 * inset, float(pitch), g.P(12), pill_c);
     rec(lx + inset, ys, lw - 2 * inset, float(pitch), "tarjeta", 'B', false, true);
   }
   const Free in_card;
+  std::string cased_row;
   for (size_t k = rw.first; k < rw.end; ++k) {
     const float y = ly + inset + (float(k) - rw.start) * float(pitch) + float(pitch) / 2.0f;
-    text(a, ops, names[k], lx + float(g.U(3)), y, fs, k == rw.lit ? kWhite : sc.body, lw - float(g.U(6)));
+    text(a, ops, list_cased(th, names[k], cased_row), lx + float(g.U(3)), y, fs, k == rw.lit ? kWhite : sc.body, lw - float(g.U(6)));
   }
   if (rw.moving) ops.push_back(Op::unclip());
   status_bar(th, a, g.w, g.h, status, ops);
   HelpLook hl;
-  hl.fg = sc.dim;
+  hl.fg = legible_on(sc.dim, th.color("bg"));
   hl.accent = iconic_text(sc, acc);
   hl.cy = float(g.help_y());
   hl.right = g.w - float(g.margin());
@@ -1213,8 +1953,18 @@ int pixel_px(const Grid& g) { return g.s < 1.45f ? 16 : g.s < 2.2f ? 24 : 32; } 
 
 void tech_scene(const Theme& th, Assets& a, const Grid& g, int al, std::vector<Op>& ops) {
   ImgId id;
-  const std::string p = es_file(th, "_inc/images/system-view/orange.png");
-  if (exists_once(p) && pic(a, baked(p, "c"), g.w, g.h, true, id)) ops.push_back(Op::image(id, 0, 0, g.w, g.h, Color{255, 255, 255, uint8_t(al)}));
+  static struct {
+    std::string dir, baked;
+    unsigned gen = ~0u;
+  } c;  // the path is made when the theme folder or the games change, not on every frame
+  const std::string_view dir = th.str("esDir", "");
+  if (c.gen != games_generation() || c.dir != dir) {
+    c.gen = games_generation();
+    c.dir.assign(dir);
+    const std::string p = es_file(th, "_inc/images/system-view/orange.png");
+    c.baked = exists_once(p) ? baked(p, "c") : std::string();
+  }
+  if (!c.baked.empty() && pic(a, c.baked, g.w, g.h, true, id)) ops.push_back(Op::image(id, 0, 0, g.w, g.h, Color{255, 255, 255, uint8_t(al)}));
 }
 
 void tech_system(const Theme& th, Assets& a, const Grid& g, const std::vector<SystemItem>& items, const SystemItem& cur, float cam, const Status& status, const InfoFade& fade, std::vector<Op>& ops) {
@@ -1300,10 +2050,11 @@ void tech_list(const Theme& th, Assets& a, const Grid& g, const std::vector<std:
   for (size_t k = rw.first; k < rw.end; ++k) {
     const float y = float(y0) + (float(k) - rw.start) * float(pitch) + float(pitch) / 2.0f;
     const bool on = k == rw.lit;
+    std::string cased_row;
     char num[16];
     std::snprintf(num, sizeof num, "%02zu", (k + 1) % 100);
     text_alt(a, ops, num, float(m), y, pn, on ? kInkT : rgb(0xB4631F));
-    text(a, ops, names[k], g.col(1), y, fs, on ? kInkT : rgb(0xC3C3C8), pw - g.col(1) - float(g.U(1)));
+    text(a, ops, list_cased(th, names[k], cased_row), g.col(1), y, fs, on ? kInkT : rgb(0xC3C3C8), pw - g.col(1) - float(g.U(1)));
   }
   if (rw.moving) ops.push_back(Op::unclip());
   const float x = pw + g.gutter(), w = g.w - x - float(m);
@@ -1337,10 +2088,12 @@ void tech_list(const Theme& th, Assets& a, const Grid& g, const std::vector<std:
     }
     const float yt = y + ch + float(g.U(3));
     a.use_alt_face(true);
-    const bool fits = a.measure(d->name, float(pn)) <= w;
+    std::string cased_name;
+    const std::string_view shown_name = list_cased(th, d->name, cased_name);
+    const bool fits = a.measure(shown_name, float(pn)) <= w;
     a.use_alt_face(false);
-    if (fits) text_alt(a, ops, d->name, x, yt, pn, kOrange);
-    else text(a, ops, d->name, x, yt, g.F(18, 15), kOrange, w);  // a title too long for the pixel face stays whole in the readable one
+    if (fits) text_alt(a, ops, shown_name, x, yt, pn, kOrange);
+    else text(a, ops, shown_name, x, yt, g.F(18, 15), kOrange, w);  // a title too long for the pixel face stays whole in the readable one
     if (has) {
       text(a, ops, meta_of(*d), x, yt + float(g.U(4)), g.F(14), rgb(0xAAAAAF), w);
       if (d->show_rating) stars(th, a, ops, x, yt + float(g.U(5)), g.P(14), d->rating, kOrange, Color{255, 255, 255, 45}, g.P(3));
@@ -1479,7 +2232,9 @@ void status_xmb(Assets& a, const Grid& g, const Status& st, std::vector<Op>& ops
   const int px = g.F(15, 12);
   const Color w{255, 255, 255, 235};
   std::string when = st.time;
-  if (!when.empty()) {
+  if (!when.empty() && !st.date.empty()) {
+    when = st.date + "  " + when;
+  } else if (!when.empty()) {
     const std::time_t now = std::time(nullptr);
     std::tm tmv{};
     char day[16];
@@ -1609,6 +2364,153 @@ void status_iconic(const Theme& th, Assets& a, const Grid& g, const Status& st, 
     x += pt.w + gap;
   }
   if (tw > 0) text(a, ops, st.time, x, cy, px, ink);
+}
+
+/// Aurora: one glass pill; the clock sits in a bubble of its own at its right end.
+void status_aurora(const Theme& th, Assets& a, const Grid& g, const Status& st, std::vector<Op>& ops) {
+  const IconicInk sc = iconic_ink(th);
+  const bool dk = sc.dark;
+  const int px = g.L(ui::Level::Small);  // hour and percent: the Small level (fits the 4-cell bar)
+  // the bubble inside the bar keeps a line of Row plus a cell: its inset shrinks before the text would not fit
+  const float gap = float(g.P(10)), cy = float(g.status_y()), h = float(g.bar_h()), inset = std::max(1.0f, std::min(float(std::max(2, g.P(4))), std::floor((float(g.bar_h()) - float(px + g.u)) / 2.0f)));
+  const Color ink = dk ? kWhite : rgb(0x1D1B3A);
+  const InkLine ln = ink_line(a, st.time, px, cy);
+  const std::string pct = pct_text(st);
+  const OnLine pt = pct.empty() ? OnLine{} : text_fit(a, pct, px, ln);
+  const float tw = st.time.empty() ? 0.0f : a.measure(st.time, float(px));
+  const Fitted fb = st.bluetooth ? fit_on(a, "rm:si:bi", 1.0f, fn_bt(0.07f), ln) : Fitted{};
+  const Fitted fw = st.wifi ? fit_on(a, "rm:si:wi", 1.0f, fn_wifi(0.07f), ln) : Fitted{};
+  const Fitted fa = st.battery ? fit_on(a, "rm:si:ai", kBattAspect, fn_batt(0.05f), ln) : Fitted{};
+  float icons = 0.0f;
+  const auto add = [&](float v) { icons += (icons > 0 ? gap : 0.0f) + v; };
+  if (st.bluetooth) add(fb.w);
+  if (st.wifi) add(fw.w);
+  if (st.battery) add(fa.w);
+  if (pt.w > 0) add(pt.w);
+  const float lpad = float(g.P(14)), bub_w = tw > 0 ? tw + 2.0f * float(g.P(12)) : 0.0f, bub_h = h - 2.0f * inset;
+  const float total = lpad + icons + (icons > 0 && bub_w > 0 ? gap : 0.0f) + bub_w + (bub_w > 0 ? inset : lpad);
+  if (icons <= 0 && bub_w <= 0) return;
+  const float bw = std::round(total), x0 = g.w - float(g.margin()) - bw;
+  const size_t bg = ops.size();
+  g_shapes.pill(a, ops, x0, cy - h / 2.0f, bw, h, alpha(kWhite, dk ? 40 : 168));
+  if (bub_w > 0) g_shapes.pill(a, ops, x0 + bw - inset - bub_w, cy - bub_h / 2.0f, bub_w, bub_h, alpha(kWhite, dk ? 56 : 255));
+  status_bg(ops, bg);
+  float x = std::round(x0 + lpad);
+  if (st.bluetooth) {
+    ops.push_back(Op::image(fb.id, x, fb.y, fb.w, fb.h, dk ? rgb(0xB9A8FF) : rgb(0x3B2FA0)));
+    x += fb.w + gap;
+  }
+  if (st.wifi) {
+    ops.push_back(Op::image(fw.id, x, fw.y, fw.w, fw.h, ink));
+    x += fw.w + gap;
+  }
+  if (st.battery) {
+    const int p = st.battery->percent;
+    const Color c = st.battery->charging || p > 40 ? (dk ? rgb(0x5EF2D4) : rgb(0x0FA88A)) : p > 15 ? rgb(0xE8A317) : rgb(0xE5484D);
+    put_batt(a, ops, fa.id, 0.05f, *st.battery, x, fa.y, fa.h, c, c, ink, alpha(kWhite, 0));
+    x += fa.w + gap;
+  }
+  if (pt.w > 0) {
+    text(a, ops, pct, x, pt.cy, pt.px, ink);
+    x += pt.w + gap;
+  }
+  if (tw > 0) text(a, ops, st.time, x0 + bw - inset - bub_w + (bub_w - tw) / 2.0f, cy, px, ink);
+}
+
+/// Swiss: no box. The marks and the numbers stand on the page in its ink, separated by thin vertical rules.
+void status_swiss(const Theme& th, Assets& a, const Grid& g, const Status& st, std::vector<Op>& ops) {
+  const IconicInk sc = iconic_ink(th);
+  const bool dk = sc.dark;
+  const Color ink = dk ? kWhite : rgb(0x12163A), page = dk ? rgb(0x2540FF) : rgb(0xF3F1EA);
+  const float gap = float(g.P(12)), cy = float(g.status_y());
+  const int px = g.L(ui::Level::Small);  // hour and percent: the Small level (fits the 4-cell bar)
+  const InkLine ln = ink_line(a, st.time, px, cy);
+  const std::string pct = pct_text(st);
+  const OnLine pt = pct.empty() ? OnLine{} : text_fit(a, pct, px, ln);
+  a.use_alt_face(true);
+  const float tw = st.time.empty() ? 0.0f : a.measure(st.time, float(px));  // drawn in the second face
+  a.use_alt_face(false);
+  const Fitted fb = st.bluetooth ? fit_on(a, "rm:si:bi", 1.0f, fn_bt(0.07f), ln) : Fitted{};
+  const Fitted fw = st.wifi ? fit_on(a, "rm:si:wi", 1.0f, fn_wifi(0.07f), ln) : Fitted{};
+  const Fitted fa = st.battery ? fit_on(a, "rm:si:ai", kBattAspect, fn_batt(0.05f), ln) : Fitted{};
+  const float rule_w = float(std::max(1, g.P(2))), rule_h = float(g.bar_h()) * 0.6f;
+  const bool marks = st.bluetooth || st.wifi, power = st.battery.has_value() || pt.w > 0, clock = tw > 0;
+  float total = 0.0f;
+  const auto add = [&](float v) { total += (total > 0 ? gap : 0.0f) + v; };
+  if (st.bluetooth) add(fb.w);
+  if (st.wifi) add(fw.w);
+  if (marks && (power || clock)) add(rule_w);
+  if (st.battery) add(fa.w);
+  if (pt.w > 0) add(pt.w);
+  if (power && clock) add(rule_w);
+  if (clock) add(tw);
+  if (total <= 0) return;
+  float x = std::round(g.w - float(g.margin()) - total);
+  if (st.bluetooth) {
+    ops.push_back(Op::image(fb.id, x, fb.y, fb.w, fb.h, ink));
+    x += fb.w + gap;
+  }
+  if (st.wifi) {
+    ops.push_back(Op::image(fw.id, x, fw.y, fw.w, fw.h, ink));
+    x += fw.w + gap;
+  }
+  if (marks && (power || clock)) {
+    ops.push_back(Op::rect(x, cy - rule_h / 2.0f, rule_w, rule_h, ink));
+    x += rule_w + gap;
+  }
+  if (st.battery) {
+    put_batt(a, ops, fa.id, 0.05f, *st.battery, x, fa.y, fa.h, ink, ink, ink, page);
+    x += fa.w + gap;
+  }
+  if (pt.w > 0) {
+    text(a, ops, pct, x, pt.cy, pt.px, ink);
+    x += pt.w + gap;
+  }
+  if (power && clock) {
+    ops.push_back(Op::rect(x, cy - rule_h / 2.0f, rule_w, rule_h, ink));
+    x += rule_w + gap;
+  }
+  if (clock) text_alt(a, ops, st.time, x, cy, px, ink);
+}
+
+/// Industrial: the readout of an appliance, a window with a thick outline: wifi, battery, charge and time in it.
+void status_industrial(const Theme& th, Assets& a, const Grid& g, const Status& st, std::vector<Op>& ops) {
+  const IconicInk sc = iconic_ink(th);
+  const bool dk = sc.dark;
+  const Color ink = dk ? rgb(0xF1EFE6) : rgb(0x1B1A17), page = dk ? rgb(0x1D1C1A) : rgb(0xE8E6DF);
+  const float gap = float(g.P(12)), cy = float(g.status_y()), pad = float(g.P(12));
+  const int px = g.L(ui::Level::Small);  // hour and percent: the Small level (fits the 4-cell bar)
+  const InkLine ln = ink_line(a, st.time, px, cy);
+  const std::string pct = pct_text(st);
+  a.use_alt_face(true);  // the readout is set in the second face
+  const OnLine pt = pct.empty() ? OnLine{} : text_fit(a, pct, px, ln);
+  const float tw = st.time.empty() ? 0.0f : a.measure(st.time, float(px));
+  a.use_alt_face(false);
+  const Fitted fw = st.wifi ? fit_on(a, "rm:si:wi", 1.0f, fn_wifi(0.07f), ln) : Fitted{};
+  const Fitted fa = st.battery ? fit_on(a, "rm:si:ai", kBattAspect, fn_batt(0.05f), ln) : Fitted{};
+  float total = 0.0f;
+  const auto add = [&](float v) { total += (total > 0 ? gap : 0.0f) + v; };
+  if (st.wifi) add(fw.w);
+  if (st.battery) add(fa.w);
+  if (pt.w > 0) add(pt.w);
+  if (tw > 0) add(tw);
+  if (total <= 0) return;
+  const float bw = total + 2.0f * pad, bh = float(g.bar_h()), bx = std::round(g.w - float(g.margin()) - bw), by = std::round(cy - bh / 2.0f);
+  g_shapes.ring(a, ops, bx, by, bw, bh, std::max(3, g.P(6)), float(std::max(2, g.P(2))), ink);
+  float x = bx + pad;
+  if (st.wifi) {
+    ops.push_back(Op::image(fw.id, x, fw.y, fw.w, fw.h, ink));
+    x += fw.w + gap;
+  }
+  if (st.battery) {
+    put_batt(a, ops, fa.id, 0.05f, *st.battery, x, fa.y, fa.h, ink, ink, ink, page);
+    x += fa.w + gap;
+  }
+  if (pt.w > 0) {
+    text_alt(a, ops, pct, x, pt.cy, pt.px, ink);
+    x += pt.w + gap;
+  }
+  if (tw > 0) text_alt(a, ops, st.time, x, cy, px, ink);
 }
 
 /// TechDweeb: a black plate with an orange pixel frame, icons drawn dot by dot, as many rows as the digits of the pixel face are tall.
@@ -1952,10 +2854,10 @@ void zen_system(const Theme& th, Assets& a, const Grid& g, const std::vector<Sys
       }
   }
   rec(ccx - sel_w / 2.0f, hero_y, sel_w, sel_h, "ficha", 'B', true, true);
-  if (cur.games == kCountPending) return;
+  if (cur.games == kCountPending && cur.sys != kItemAddGames) return;
   const size_t info = ops.size();
   const float ny = hero_y + sel_h + g.gutter() + info_h / 2.0f;
-  const std::string count = zen_count(cur.theme_name, cur.games);
+  const std::string count = cur.sys == kItemAddGames ? addgames::card_hint() : zen_count(cur.theme_name, cur.games);  // the card: how games get here
   const float cw = a.measure(count, float(count_px));
   text(a, ops, cur.full_name, g.col(0), ny, name_px, st.txt, g.w - 2.0f * float(g.margin()) - cw - g.gutter());
   text(a, ops, count, g.w - float(g.margin()), ny, count_px, st.dim, 0, R);
@@ -1992,8 +2894,10 @@ void zen_list(const Theme& th, Assets& a, const Grid& g, const std::string& syst
   const float top = float(g.content_top()), bottom = float(g.help_top());
   // the title in the bar's four cells; a line taller than them starts on the top margin instead of poking out above it
   const int title_px = g.F(20, 15);
-  const float title_h = float(a.img(a.text(system_name, float(title_px), st.txt)).h);
-  text(a, ops, system_name, g.col(0), std::max(float(g.status_y()), float(g.top()) + title_h / 2.0f), title_px, st.txt, g.span(7));
+  std::string cased_sys;
+  const std::string_view shown_sys = list_cased(th, system_name, cased_sys);
+  const float title_h = float(a.img(a.text(shown_sys, float(title_px), st.txt)).h);
+  text(a, ops, shown_sys, g.col(0), std::max(float(g.status_y()), float(g.top()) + title_h / 2.0f), title_px, st.txt, g.span(7));
   const int list_cols = 7;
   const float lw = g.span(list_cols);
   const int fs = g.F(16, 13);
@@ -2008,12 +2912,17 @@ void zen_list(const Theme& th, Assets& a, const Grid& g, const std::string& syst
     if (rw.moving) ops.push_back(Op::clip(0, top, g.w, float(rows) * pitch));
     if (!names.empty()) {  // framed like the chosen card of the home screen and the chosen row of the menus
       const float sy = top + rw.sel * pitch;
-      g_shapes.rrect(a, ops, g.col(0), sy, lw, pitch, g.P(10), st.cyan_soft);
-      g_shapes.ring(a, ops, g.col(0), sy, lw, pitch, g.P(10), std::max(2.0f, float(g.P(2))), st.accent());
+      if (st.sel_style == ui::SelStyle::Fill) {
+        g_shapes.rrect(a, ops, g.col(0), sy, lw, pitch, g.P(10), st.cyan_soft);
+        g_shapes.ring(a, ops, g.col(0), sy, lw, pitch, g.P(10), std::max(2.0f, float(g.P(2))), st.accent());
+      } else {  // SELECTOR STYLE chosen by the user: the shape over the same row, with the card's corner and stroke
+        g_shapes.selector(a, st, ops, g.col(0), sy, lw, pitch, st.cyan_soft, st.accent(), g.P(10), int(std::max(2.0f, float(g.P(2)))));
+      }
     }
+    std::string cased_row;
     for (size_t k = rw.first; k < rw.end; ++k) {
       const float cy = top + (float(k) - rw.start) * pitch + pitch / 2.0f;
-      text(a, ops, names[k], g.col(0) + inset, cy, fs, k == rw.lit ? st.cyan_dark : st.txt, lw - 2.0f * inset);
+      text(a, ops, list_cased(th, names[k], cased_row), g.col(0) + inset, cy, fs, k == rw.lit ? st.sel_ink : st.txt, lw - 2.0f * inset);
     }
     if (rw.moving) ops.push_back(Op::unclip());
   }
@@ -2041,7 +2950,8 @@ void zen_list(const Theme& th, Assets& a, const Grid& g, const std::string& syst
   }
   const int tp = g.F(19, 14), mp = g.F(13, 11);
   float y = ry + ch + float(g.snap(float(g.P(10)))) + float(tp) / 2.0f;
-  text(a, ops, d->name, rx, y, tp, st.txt, rw);
+  std::string cased_name;
+  text(a, ops, list_cased(th, d->name, cased_name), rx, y, tp, st.txt, rw);
   y += float(tp) / 2.0f + float(g.P(4));
   std::string meta;
   char yr[16] = "";
@@ -2219,7 +3129,12 @@ void status(const Theme& th, Assets& a, float w, float h, const Status& st, std:
   switch (kind_of(th)) {
     case Kind::Xmb: status_xmb(a, g, st, ops); break;
     case Kind::Art: status_art(a, g, st, ops); break;
-    case Kind::Iconic: status_iconic(th, a, g, st, ops); break;
+    case Kind::Iconic:
+      if (th.str("esCarousel", "") == "aurora") status_aurora(th, a, g, st, ops);
+      else if (th.str("esCarousel", "") == "swiss") status_swiss(th, a, g, st, ops);
+      else if (th.str("esCarousel", "") == "industrial") status_industrial(th, a, g, st, ops);
+      else status_iconic(th, a, g, st, ops);
+      break;
     case Kind::Tech: status_tech(a, g, st, ops); break;
     case Kind::Zen: status_zen(th, a, g, st, ops); break;
     default: break;
@@ -2236,12 +3151,37 @@ void menu_backdrop(const Theme& th, Assets& a, float w, float h, std::vector<Op>
   const Grid g(w, h);
   switch (kind_of(th)) {
     case Kind::Xmb: xmb_back(th, a, g, ops); break;
-    case Kind::Iconic: iconic_page(th, a, g, th.color("cyan"), ops); break;
+    case Kind::Iconic: {
+      const std::string_view car = th.str("esCarousel", "");
+      const bool dk = iconic_ink(th).dark;
+      if (car == "aurora") {  // the light of the carousel, quieter: three soft blobs on the page
+        ops.push_back(Op::rect(0, 0, g.w, g.h, th.color("bg")));
+        disc(a, ops, g.w * 0.10f, g.h * 0.86f, g.w * 0.50f, alpha(dk ? rgb(0x2EE6C8) : rgb(0x7FE8D6), dk ? 190 : 230));
+        disc(a, ops, g.w * 0.82f, g.h * 0.08f, g.w * 0.44f, alpha(dk ? rgb(0xFF5FA8) : rgb(0xFFB3D1), dk ? 190 : 235));
+        disc(a, ops, g.w * 0.50f, g.h * 0.40f, g.w * 0.40f, alpha(dk ? rgb(0x7A5CFF) : rgb(0xB9A8FF), dk ? 170 : 200));
+        ops.push_back(Op::rect(0, 0, g.w, g.h, alpha(th.color("bg"), dk ? 50 : 70)));
+      } else if (car == "swiss") {  // flat colour, nothing else
+        ops.push_back(Op::rect(0, 0, g.w, g.h, th.color("bg")));
+      } else if (car == "industrial") {  // the panel: a darker lip at the top and a thin orange line under it
+        ops.push_back(Op::rect(0, 0, g.w, g.h, th.color("bg")));
+        ops.push_back(Op::rect(0, 0, g.w, float(g.top()) * 0.5f, dk ? rgb(0x0C0B0A) : rgb(0xCFCDC4)));
+        ops.push_back(Op::rect(0, float(g.top()) * 0.5f, g.w, std::max(1.0f, float(g.P(3))), rgb(0xFF5A1F)));
+      } else {
+        iconic_page(th, a, g, th.color("cyan"), ops);
+      }
+      break;
+    }
     case Kind::Tech: tech_scene(th, a, g, 34, ops); break;
     case Kind::Art: art_menu_back(th, a, g, ops); break;
     case Kind::Zen: zen_back(th, a, g, ui::Style::from(th).cyan, ops, 0.45f); break;  // always the same: a menu is not of a system
     default: break;
   }
+}
+
+int menu_skin(const Theme& th) {
+  if (kind_of(th) != Kind::Iconic) return 0;
+  const std::string_view car = th.str("esCarousel", "");
+  return car == "aurora" ? 1 : car == "swiss" ? 2 : car == "industrial" ? 3 : 0;
 }
 
 void menu_help(const Theme& th, Assets& a, float w, float h, const std::vector<std::pair<const char*, const char*>>& prompts, std::vector<Op>& ops) {
@@ -2268,7 +3208,7 @@ void menu_help(const Theme& th, Assets& a, float w, float h, const std::vector<s
   hl.fg = st.dim;
   hl.accent = st.dark ? st.cyan : st.cyan_dark;
   hl.scale = scale;
-  hl.cy = float(g.bottom() - int(std::lround(float(g.help_h()) * hl.scale)) / 2);  // = g.help_y() at scale 1
+  hl.cy = float(g.help_y());  // help_h() already carries the text size
   hl.right = g.w - float(g.margin());
   help(th, a, g, prompts, hl, ops);
   if (g_audit) return;  // the tests that measure it read the boxes it reports, every time

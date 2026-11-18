@@ -180,6 +180,10 @@ struct MenuSpec {
   /// Optional: a help bar that replaces the one chosen from the entry under the cursor (static storage, `help_n` prompts).
   const ui::Prompt* help = nullptr;
   size_t help_n = 0;
+  /// Optional: a shorter form of `title`, drawn only when the full title does not fit the room it has (large text on a small screen)
+  /// instead of cutting it with "...". `title_short_key` is its untranslated key, like `title_key`.
+  std::string title_short;
+  const char* title_short_key = nullptr;
 };
 
 class Menu : public Screen {
@@ -215,6 +219,8 @@ class Menu : public Screen {
   void set_title(std::string t);
   /// Rebuilds now (keeps the cursor on the same entry by id/label).
   void rebuild(Ctx& cx);
+  /// Back from a tool launched from this menu: its values are read again.
+  void on_back_from_launch(Ctx& cx) override { rebuild(cx); }
   /// Safe handle to ask for a rebuild from jobs.
   Refresh refresher();
   /// Rows that fit in the viewport (needs a layout: after the first handle/draw).
@@ -242,6 +248,25 @@ class Menu : public Screen {
   Transition activate(Entry& e, Ctx& cx);
   bool focusable(size_t i) const;
   void draw_row(Ctx& cx, std::vector<Op>& out, size_t i, float y, bool sel, float vis = 1.0f);
+  // the four skinned menus (menu_skin.cpp): 0 = none, 1 Aurora, 2 Swiss, 3 Industrial, 4 Cinema
+  void skin_metrics(Ctx& cx);
+  void draw_skin(Ctx& cx, std::vector<Op>& out);
+  int skin_ = 0;
+  ui::SelStyle skin_sel_ = ui::SelStyle::Fill;  // SELECTOR STYLE over a skin (1..3): Fill = the skin's own focus, the others draw their own shape in its colours
+  bool sub_gl_ = false;  // Cinema: this (sub)menu has a glyph disc before each row
+ public:
+  /// Cinema glyph (file name stem in share/zfront/fonts/icon-*.svg, or "t:text") of a row; empty if it has none.
+  static std::string skin_glyph(const Entry& e, bool main);
+ private:
+  float hdr_h_ = 0;
+  std::vector<ui::Txt> t_num_, t_hl_, t_hg_;
+  ui::Txt t_chip_, t_chip2_;
+  int chip_for_ = -1;
+  const ui::Prompt* hk_ = nullptr;
+  size_t hn_ = 0;
+  std::string hlang_;
+  std::vector<ImgId> h_icon_;
+  std::vector<float> h_iw_;
 
   MenuSpec spec_;
   std::vector<Entry> e_;

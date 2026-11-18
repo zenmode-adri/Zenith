@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "bootargs.hpp"
 #include "app.hpp"
 #include "check.hpp"
 #include "alloc_nothrow.hpp"
@@ -255,7 +256,7 @@ int main() {
     std::vector<MainRow> rows = main_rows();
     CHECK_EQ(rows.size(), size_t(10));
     for (size_t i = 0; i < rows.size(); ++i) CHECK_EQ(rows[i].screen, std::string(kAllScreens[i]));
-    CHECK_EQ(rows[0].label, T("GAMES"));  // what is touched often first (diseno-menus/PROPUESTA-REORDEN-10nov.md)
+    CHECK_EQ(rows[0].label, T("GAME SETTINGS"));  // what is touched often first (diseno-menus/PROPUESTA-REORDEN-10nov.md)
     CHECK_EQ(rows[1].label, T("RETROACHIEVEMENTS"));  // ES's row, next to the games
     CHECK_EQ(rows[2].icon, std::string("battery"));
     CHECK_EQ(rows[7].label, T("APPEARANCE"));
@@ -439,7 +440,7 @@ int main() {
     CHECK(index_of(m, "QUICK SYSTEM SELECT") >= 0);
     CHECK(index_of(m, "ON-SCREEN HELP") >= 0);
     CHECK(index_of(m, "SHOW BATTERY STATUS") >= 0);
-    CHECK(index_of(m, "START SCREENSAVER AFTER") >= 0);
+    CHECK(index_of(m, "START SCREENSAVER AFTER") < 0);  // the time is "Screensaver after" on the battery screen
     CHECK(index_of(m, "SCREENSAVER TYPE") >= 0);
     // things zfront does not have are not there
     for (const char* gone : {"THEME SET", "THEME CONFIGURATION", "GAMELIST VIEW STYLE", "LIST TRANSITION", "GAME LAUNCH TRANSITION",
@@ -526,19 +527,6 @@ int main() {
     for (int i = 0; i < 70; ++i) press(m, cx, Action::Left);
     CHECK_EQ(m.entry(size_t(m.cursor())).value_text, std::string("5%"));
 
-    // screensaver: minutes in the UI, milliseconds in the file; 0 = off
-    CHECK(goto_label(m, cx, "START SCREENSAVER AFTER"));
-    CHECK_EQ(m.entry(size_t(m.cursor())).value_text, std::string("5 min"));
-    press(m, cx, Action::Right);
-    CHECK_EQ(cx.es.get_int("ScreenSaverTime", -1), 360000L);
-    wait_commit(m, cx);
-    CHECK_EQ(EsSettings::load(d + "/w/es_settings.cfg").get_int("ScreenSaverTime", -1), 360000L);
-    for (int i = 0; i < 6; ++i) press(m, cx, Action::Left);
-    CHECK_EQ(m.entry(size_t(m.cursor())).value_text, T("OFF"));
-    wait_commit(m, cx);
-    CHECK_EQ(EsSettings::load(d + "/w/es_settings.cfg").get_int("ScreenSaverTime", -1), 0L);
-    CHECK_EQ(oscontract::idle_deadline(cx.es).has_value(), false);  // the timer the loop reads: never
-
     CHECK(goto_label(m, cx, "SCREENSAVER TYPE"));
     CHECK_EQ(m.entry(size_t(m.cursor())).value_text, std::string("Black"));
     // dim, black, random video, slideshow, suspend: the last one only exists with pm-suspend (this fixture has it)
@@ -565,7 +553,7 @@ int main() {
     CHECK_EQ(as_menu(u4).entry(size_t(as_menu(u4).cursor())).value_text, std::string("Slideshow"));
   }
 
-  // ---- the four look options (selector style, title alignment, carousel cards, list text case): saved at once, the frontend restarts ONCE, when the menu is left
+  // ---- the three look options (selector style, title alignment, list text case): saved and applied at once, with no restart
   {
     Ctx cx;
     fresh(cx);
@@ -574,21 +562,20 @@ int main() {
     CHECK(goto_label(m, cx, "SELECTOR STYLE"));
     m.entry(size_t(m.cursor())).set_s("outline");
     CHECK(slurp(d + "/w/system.cfg").find("zfront.sel_style=outline") != std::string::npos);
-    CHECK(!oscontract::quit_requested());  // saved, and nothing restarted yet
-    CHECK(goto_label(m, cx, "LIST TEXT CASE"));
-    m.entry(size_t(m.cursor())).set_s("lower");
-    CHECK(slurp(d + "/w/system.cfg").find("zfront.list_case=lower") != std::string::npos);
-    CHECK(!oscontract::quit_requested());  // two options changed, still no restart
-    press(m, cx, Action::B);               // leaving the menu: the one restart
-    CHECK(oscontract::quit_requested());
-    CHECK_EQ(int(oscontract::quit_mode()), int(oscontract::Mode::Quit));
-    // a menu where nothing was changed leaves without restarting
-    bind_os(cx);
-    auto u2 = Registry::instance().make("menu.ui", cx, "");
-    Menu& m2 = as_menu(u2);
-    CHECK(goto_label(m2, cx, "SELECTOR STYLE"));
-    press(m2, cx, Action::B);
+    CHECK(!oscontract::quit_requested());  // nothing restarts
+    CHECK(cx.th.str("selStyle") == "outline");  // the theme's variable changed at once
+    CHECK(ui::Style::from(cx.th).sel_style == ui::SelStyle::Outline);  // and the style every menu reads follows it (it was cached per theme folder)
+    CHECK(goto_label(m, cx, "SELECTOR STYLE"));
+    m.entry(size_t(m.cursor())).set_s("");  // "Theme default": the choice goes away and the theme's own comes back
+    CHECK(cx.th.str("selStyle") != "outline");
+    CHECK(ui::Style::from(cx.th).sel_style != ui::SelStyle::Outline);
+    CHECK(slurp(d + "/w/system.cfg").find("zfront.sel_style") == std::string::npos);
     CHECK(!oscontract::quit_requested());
+    // the carousel cards are not an option of the user any more
+    CHECK_EQ(index_of(m, "CAROUSEL CARDS"), -1);
+    // an unknown value changes nothing in the theme
+    boot::set_user_theme(cx.th, "zfront.sel_style", "nonsense");
+    CHECK(cx.th.str("selStyle") != "nonsense");
   }
 
   // ---- menu.ui without hardware: no backlight row, no battery row
@@ -604,7 +591,7 @@ int main() {
     CHECK(index_of(m, "SCREEN BRIGHTNESS") < 0);
     CHECK(index_of(m, "SHOW BATTERY STATUS") < 0);
     CHECK(index_of(m, "SCREENSAVER TYPE") >= 0);  // dim / black exist everywhere; suspend needs pm-suspend
-    CHECK(index_of(m, "START SCREENSAVER AFTER") >= 0);
+    CHECK(index_of(m, "START SCREENSAVER AFTER") < 0);
     CHECK(index_of(m, "SHOW CLOCK") >= 0);
   }
 

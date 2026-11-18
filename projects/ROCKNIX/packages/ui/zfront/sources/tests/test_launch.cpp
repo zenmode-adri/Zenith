@@ -19,7 +19,7 @@ using std::vector;
 namespace {
 
 string tmpdir(const char* tag) {
-  string d = string("/tmp/zf-launch-") + tag + "-" + std::to_string(::getpid());
+  string d = zt::tmp_base() + "/zf-launch-" + tag + "-" + std::to_string(::getpid());
   string c = "rm -rf " + d + " && mkdir -p " + d;
   if (std::system(c.c_str()) != 0) std::abort();
   return d;
@@ -59,6 +59,12 @@ vector<string> sp(const string& s) {
 }  // namespace
 
 int main() {
+  // ---- R36 Tuner Next is graphical: no terminal window (foot) around its launcher
+  CHECK_EQ(launch::direct_command("/usr/bin/run /storage/.config/modules/Start\\ R36\\ Tuner.sh"), std::string("/storage/.config/modules/Start\\ R36\\ Tuner.sh"));
+  CHECK_EQ(launch::direct_command("/usr/bin/run /storage/.config/modules/Other\\ Tool.sh"), std::string("/usr/bin/run /storage/.config/modules/Other\\ Tool.sh"));
+  CHECK_EQ(launch::direct_command("/usr/bin/run /x/NotStart\\ R36\\ Tuner.sh"), std::string("/usr/bin/run /x/NotStart\\ R36\\ Tuner.sh"));
+  CHECK_EQ(launch::direct_command("/usr/bin/runemu.sh /r/a.gb"), std::string("/usr/bin/runemu.sh /r/a.gb"));
+  CHECK_EQ(launch::direct_command(""), std::string());
   // ---- escape / command (ported from the Rust tests of zf/launch)
   CHECK(launch::escape_path("/r/a b (1)/x.gb") == "/r/a\\ b\\ \\(1\\)/x.gb");
   CHECK(launch::escape_path("/r/it's [!].gb") == "/r/it\\'s\\ \\[\\!\\].gb");
@@ -83,6 +89,15 @@ int main() {
       std::ifstream in(out);
       string got((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
       CHECK_EQ(got, raw);
+    }
+    // a backslash of the name itself right before a special character: generic_path turns `\` into `/` first, so the
+    // "already escaped, skip it" rule of escape_path never sees a backslash that came from the name (checked 15-nov)
+    for (const string& raw : vector<string>{"/r/a\\;touch " + marker + ";.gb", "/r/a\\`touch " + marker + "`.gb",
+                                            "/r/a\\|touch " + marker + ".gb", "/r/a\\$(touch " + marker + ").gb", "/r/a\\"}) {
+      CHECK(launch::escape_path(raw).find("\\\\") == string::npos);  // no literal backslash survives
+      std::ofstream(d + "/cmd3.sh") << "printf '%s' " << launch::escape_path(raw) << " > " << d << "/out3.txt\n";
+      CHECK_EQ(std::system(("sh " + d + "/cmd3.sh").c_str()), 0);
+      CHECK_EQ(::access(marker.c_str(), F_OK), -1);
     }
     // a newline in the name: nothing runs (the file just cannot be found)
     std::ofstream(d + "/cmd2.sh") << "printf '%s' " << launch::escape_path("/r/x\ntouch " + marker + "\n.gb") << " > " << d << "/out2.txt\n";
@@ -455,11 +470,12 @@ int main() {
       rq.cmd = "/bin/sh -c exit\\ 210";
       o = launch::execute(rq, env);
       CHECK(o.run.exit_code == 210 && !o.after.count_play && o.message == "UKNOWN ERROR : 210");
-      std::ofstream("/tmp/launch_error.log") << "no core";
+      env.error_log = d + "/launch_error.log";  // not the shared /tmp one: two runs of this test at once must not eat each other's file
+      std::ofstream(env.error_log) << "no core";
       rq.cmd = "/bin/sh -c exit\\ 250";
       o = launch::execute(rq, env);
       CHECK_EQ(o.message, string("no core"));
-      CHECK(!file_exists("/tmp/launch_error.log"));
+      CHECK(!file_exists(env.error_log));
       // with a preparation object: the launch command is untouched and the target is forgotten
       launch::LaunchPrep::Config cf;
       cf.dwell_ms = 0;

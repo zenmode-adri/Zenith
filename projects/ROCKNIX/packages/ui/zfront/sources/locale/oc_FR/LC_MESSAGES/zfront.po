@@ -1,0 +1,3168 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: zfront\n"
+"Language: oc_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+
+msgid "DAMAGED GAME LIST"
+msgstr "LISTA DE JÒCS DETERIORADA"
+
+msgid "Not available yet"
+msgstr "Pas encara disponible"
+
+msgid "Game lists updated"
+msgstr "Listas de jòcs mesas a jorn"
+
+msgid "COVERS ADDED"
+msgstr "COBERTAS AJUSTADAS"
+
+msgid "PERFORMANCE MODE MAY HELP THIS GAME"
+msgstr "LO MODE PERFORMANÇA POGUÈT AIDAR AQUEL JÒC"
+
+msgid "THIS GAME MAY RUN BETTER WITH PERFORMANCE MODE"
+msgstr "AQUEL JÒC POGUÈT FUNCIONAR MELHOR AMB LO MODE PERFORMANÇA"
+
+msgid "TURN ON PERFORMANCE MODE FOR THIS GAME"
+msgstr "ACTIVAR LO MODE PERFORMANÇA PER AQUEL JÒC"
+
+msgid "PERFORMANCE MODE ON FOR THIS GAME"
+msgstr "MODE PERFORMANÇA ACTIVAT PER AQUEL JÒC"
+
+msgid "This game may run better with performance mode: the GPU and memory stay at full speed while playing."
+msgstr "Aquel jòc pòt foncionar melhor amb lo mode performança : lo GPU e la memòria demòran a plena velocitat pendent que jogas."
+
+msgid "STOP SUGGESTING PERFORMANCE MODE"
+msgstr "PLUS PROPOSAR LO MODE PERFORMANÇA"
+
+msgid "Do not suggest performance mode for this game again."
+msgstr "Pas tornar proposar lo mode performança per aquel jòc."
+
+msgid "BATTERY"
+msgstr "BATARIÁ"
+
+msgid "NOT ENOUGH DATA YET"
+msgstr "PAS ENCARA PRÒP DE DONADAS"
+
+msgid "Play this game for five minutes or more on the battery and the estimate appears here."
+msgstr "Jòga a aquel jòc cinc minutas o mai sus batariá e l'estimacion apareisserà aicí."
+
+msgid "With the current charge, at the rate of the last sessions of this game."
+msgstr "Amb lo cargament actual, al ritme de las darrièras sessions d'aquel jòc."
+
+msgid "With the current charge. No sessions of this game yet: the average of its system is used."
+msgstr "Amb lo cargament actual. Pas encara de sessions d'aquel jòc : s'utiliza la mejana de son sistèma."
+
+msgid "With the current charge. No sessions of this system yet: the average of all games is used."
+msgstr "Amb lo cargament actual. Pas encara de sessions d'aqueste sistèma : s'utiliza la mejana de totes los jòcs."
+
+msgid "Never"
+msgstr "Jamai"
+
+msgid "What used the most"
+msgstr "Çò que a mai consumit"
+
+msgid "Since the last full charge. Estimated."
+msgstr "Dempuèi lo darrièr cargament complet. Estimat."
+
+msgid "Nothing measured yet. It fills in as you play."
+msgstr "Pas encara res mesurat. Se emplís a mesura que jogas."
+
+msgid "Asleep"
+msgstr "En velha"
+
+msgid "Menus and system"
+msgstr "Menús e sistèma"
+
+msgid "Screen"
+msgstr "Ecran"
+
+msgid "Charging"
+msgstr "En cargament"
+
+msgid "About"
+msgstr "A prepaus"
+
+msgid "Since full"
+msgstr "Dempuèi lo cargament complet"
+
+msgid "Using now"
+msgstr "Utilizacion actuala"
+
+msgid "Last hours"
+msgstr "Darrièras oras"
+
+msgid "Now"
+msgstr "Ara"
+
+msgid "More settings"
+msgstr "Mai de paramètres"
+
+msgid "Power saver"
+msgstr "Economia d'energia"
+
+msgid "Screensaver after"
+msgstr "Salvaecran aprèp"
+
+msgid "Turn on by itself at"
+msgstr "Se botar sol a"
+
+msgid "ADJUST"
+msgstr "AJUSTAR"
+
+msgid "Action"
+msgstr "Accion"
+
+msgid "Adult"
+msgstr "Adulte"
+
+msgid "Adventure"
+msgstr "Aventura"
+
+msgid "Beat'em Up"
+msgstr "Beat'em Up"
+
+msgid "Casino"
+msgstr "Casino"
+
+msgid "Casual Game"
+msgstr "Jòc ocasional"
+
+msgid "Hunting and Fishing"
+msgstr "Caça e pesca"
+
+msgid "Fight"
+msgstr "Combat"
+
+msgid "Race, Driving"
+msgstr "Corsas, conduita"
+
+msgid "Demo"
+msgstr "Demo"
+
+msgid "Pinball"
+msgstr "Pinball"
+
+msgid "Playing cards"
+msgstr "Jòcs de cartas"
+
+msgid "Role playing games"
+msgstr "Jòcs de ròtle"
+
+msgid "Asiatic board game"
+msgstr "Jòc de taula asiatic"
+
+msgid "Educational"
+msgstr "Educatiu"
+
+msgid "Music and Dance"
+msgstr "Musica e dança"
+
+msgid "Platform"
+msgstr "Plataformas"
+
+msgid "Puzzle-Game"
+msgstr "Casse-tèsta"
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Reflection"
+msgstr "Refleccion"
+
+msgid "Shoot'em Up"
+msgstr "Shoot'em Up"
+
+msgid "Simulation"
+msgstr "Simulacion"
+
+msgid "Sports"
+msgstr "Espòrts"
+
+msgid "Sports with Animals"
+msgstr "Espòrts amb animals"
+
+msgid "Strategy"
+msgstr "Estrategia"
+
+msgid "Shooter"
+msgstr "Tir"
+
+msgid "lightgun games"
+msgstr "jòcs de pistolet optic"
+
+msgid "wheel games"
+msgstr "jòcs de volant"
+
+msgid "trackball games"
+msgstr "jòcs de trackball"
+
+msgid "spinner games"
+msgstr "jòcs de spinner"
+
+msgid "Not set"
+msgstr "Pas definit"
+
+msgctxt "date"
+msgid "Mon"
+msgstr "dl."
+
+msgctxt "date"
+msgid "Sun"
+msgstr "dg."
+
+msgctxt "date"
+msgid "Tue"
+msgstr "dm."
+
+msgctxt "date"
+msgid "Wed"
+msgstr "dc."
+
+msgctxt "date"
+msgid "Fri"
+msgstr "dv."
+
+msgctxt "date"
+msgid "Sat"
+msgstr "ds."
+
+msgctxt "date"
+msgid "Thu"
+msgstr "dj."
+
+msgctxt "date"
+msgid "Apr"
+msgstr "abr."
+
+msgctxt "date"
+msgid "Feb"
+msgstr "febr."
+
+msgctxt "date"
+msgid "Jan"
+msgstr "gen."
+
+msgctxt "date"
+msgid "Jun"
+msgstr "junh"
+
+msgctxt "date"
+msgid "Mar"
+msgstr "març"
+
+msgctxt "date"
+msgid "May"
+msgstr "mai"
+
+msgctxt "date"
+msgid "Aug"
+msgstr "ago."
+
+msgctxt "date"
+msgid "Dec"
+msgstr "dec."
+
+msgctxt "date"
+msgid "Jul"
+msgstr "julh"
+
+msgctxt "date"
+msgid "Nov"
+msgstr "nov."
+
+msgctxt "date"
+msgid "Oct"
+msgstr "oct."
+
+msgctxt "date"
+msgid "Sep"
+msgstr "set."
+
+msgid "COULD NOT SAVE GAME DATA"
+msgstr "IMPOSSIBLE DE SALVAR LAS DONADAS DEL JÒC"
+
+msgid "THE EMULATOR EXITED UNEXPECTEDLY"
+msgstr "L'EMULADOR S'ES ARRESTAT DE MANIÈRA IMPREVISTA"
+
+msgid "BAD COMMAND LINE ARGUMENTS"
+msgstr "ARGUMENTS DE LA LINHA DE COMANDA INVALIDS"
+
+msgid "INVALID CONFIGURATION"
+msgstr "CONFIGURACION INVALIDA"
+
+msgid "UNKNOWN EMULATOR"
+msgstr "EMULADOR DESCONEGUT"
+
+msgid "EMULATOR IS MISSING"
+msgstr "L'EMULADOR MANCA"
+
+msgid "CORE IS MISSING"
+msgstr "LO NUCLI MANCA"
+
+msgid ""
+"WARNING: THE SYSTEM HAS MISSING BIOS FILE(S) AND THE GAME MAY NOT WORK CORRECTLY.\n"
+"DO YOU WANT TO LAUNCH IT ANYWAY?"
+msgstr "ATENCION : AL SISTÈMA MANCAN DE FICHIÈRS BIOS E LO JÒC POT PAS FONCIONAR CORRECTAMENT.\nLO VOLÈTZ LANÇAR QUAND MEMA ?"
+
+msgid "Could not save the settings"
+msgstr "Impossible de salvar los paramètres"
+
+msgid "NUMBER PLAYERS, ASCENDING"
+msgstr "NOMBRE DE JOGAIRES, CRESCENT"
+
+msgid "NUMBER PLAYERS, DESCENDING"
+msgstr "NOMBRE DE JOGAIRES, DESCRESCENT"
+
+msgid "RELEASE DATE, ASCENDING"
+msgstr "DATA DE SORTIDA, CRESCENTA"
+
+msgid "RELEASE DATE, DESCENDING"
+msgstr "DATA DE SORTIDA, DESCRESCENTA"
+
+msgid "GAME TIME, ASCENDING"
+msgstr "TEMPS DE JÒC, CRESCENT"
+
+msgid "GENRE, ASCENDING"
+msgstr "GENRE, CRESCENT"
+
+msgid "GENRE, DESCENDING"
+msgstr "GENRE, DESCRESCENT"
+
+msgid "GAME TIME, DESCENDING"
+msgstr "TEMPS DE JÒC, DESCRESCENT"
+
+msgid "GAMELIST OPTIONS"
+msgstr "OPCIONS DE LA LISTA DE JÒCS"
+
+msgid "SHOW FAVORITES ON TOP"
+msgstr "MOSTRAR LOS FAVORITS EN NAUT"
+
+msgid "SHOW HIDDEN FILES"
+msgstr "MOSTRAR LOS FICHIÈRS AMAGATS"
+
+msgid "SHOW FILENAMES INSTEAD"
+msgstr "MOSTRAR LOS NOMS DE FICHIÈRS A LA PLAÇA"
+
+msgid "IGNORE LEADING ARTICLES WHEN SORTING"
+msgstr "IGNORAR LOS ARTICLES AL COMENÇAMENT DEL TRIATGE"
+
+msgid "Ignore 'The' and 'A' if at the start."
+msgstr "Ignora « The » e « A » al començament."
+
+msgid "FILTER BY"
+msgstr "FILTRAR PER"
+
+msgid "FAVORITES ONLY"
+msgstr "ÚNICAMENT FAVORITS"
+
+msgid "ALL"
+msgstr "TOT"
+
+msgid "LIST"
+msgstr "LISTA"
+
+msgid "The chosen theme could not be loaded: using Zenith"
+msgstr "Impossible de cargar lo tèma causit : utilizacion de Zenith"
+
+msgid "GAME MEDIA"
+msgstr "MÈDIAS DEL JÒC"
+
+msgid "VIEW GAME MAGAZINE"
+msgstr "VEIRE LA REVISTA DEL JÒC"
+
+msgid "PAGE"
+msgstr "PÀGINA"
+
+msgid "ZOOM"
+msgstr "ZOOM"
+
+msgid "ZOOM IN"
+msgstr "AGRANDIR"
+
+msgid "ZOOM OUT"
+msgstr "RETRACHAR"
+
+msgid "MOVE"
+msgstr "DESPLAÇAR"
+
+msgid "Could not show this page"
+msgstr "Impossible de mostrar aquesta pagina"
+
+msgid "THE BEZEL PROJECT"
+msgstr "THE BEZEL PROJECT"
+
+msgid "SELECT BEZELS TO INSTALL/REMOVE"
+msgstr "SELECCIONAR LAS BORDURAS A INSTALLAR/LEVAR"
+
+msgid "INSTALLED"
+msgstr "INSTALLAT"
+
+msgid "NO GAMES FOUND"
+msgstr "CAP DE JÒC TROBAT"
+
+msgid "SMART COLLECTIONS"
+msgstr "COLLECCIONS INTELLIGENTAS"
+
+msgid "EDIT FILTERS"
+msgstr "MODIFICAR LOS FILTRES"
+
+msgid "NO OPTIONS"
+msgstr "CAP D'OPCION"
+
+msgid "COLLECTIONS"
+msgstr "COLLECCIONS"
+
+msgid "Are you sure you want to delete '%s'?"
+msgstr "Volètz de bon suprimir '%s' ?"
+
+msgid "Set its filters afterwards in Custom game collections."
+msgstr "Definissètz sos filtres puèi dins Colleccions de jòcs personalizadas."
+
+msgid "SHOW EMPTY SYSTEMS"
+msgstr "MOSTRAR LOS SISTÈMAS VOIDS"
+
+msgid "Restart the front-end to apply the changes."
+msgstr "Reaviatz l'interfàcia per aplicar los cambiaments."
+
+msgid "ADD TO %s"
+msgstr "AJUSTAR A %s"
+
+msgid "REMOVE FROM %s"
+msgstr "LEVAR DE %s"
+
+msgid "Could not save the setting"
+msgstr "Impossible de salvar lo paramètre"
+
+msgid "YOU ARE GOING TO MAP A CONTROLLER. MAP BASED ON THE BUTTON'S POSITION, NOT ITS PHYSICAL LABEL. IF YOU DO NOT HAVE A SPECIAL BUTTON FOR HOTKEY, USE THE SELECT BUTTON. SKIP ALL BUTTONS/STICKS YOU DO NOT HAVE BY HOLDING ANY BUTTON. PRESS THE SOUTH BUTTON TO CONFIRM WHEN DONE."
+msgstr "ALLETZ ASSIGNAR UNA MANETA. ASSIGNATZ SEGON LA POSICION DEL BOTON, PAS SA ETIQUETA FISICA. SI AVETZ PAS DE BOTON ESPECIAL PER LA TÈCLA RAPIDA, UTILIZATZ LO BOTON SELECT. PASSATZ LOS BOTONS/STICKS QUE AVETZ PAS EN APUIANT SUS UN BOTON QUIN QUE SIÁ. APUIATZ SUS LO BOTON SUD PER CONFIRMAR QUAND AVETZ ACABAT."
+
+msgid "ASSIGN CONTROLLERS TO PLAYERS"
+msgstr "ASSIGNAR LAS MANETAS ALS JOGAIRES"
+
+msgid "P%i'S CONTROLLER"
+msgstr "MANETA DEL JOGAIRE %i"
+
+msgid "BLUETOOTH"
+msgstr "BLUETOOTH"
+
+msgid "ENABLE BLUETOOTH"
+msgstr "ACTIVAR BLUETOOTH"
+
+msgid "Could not start Bluetooth"
+msgstr "Impossible de lançar lo Bluetooth"
+
+msgid "PAIR BLUETOOTH PADS AUTOMATICALLY"
+msgstr "APARELHAR AUTOMATICAMENT LAS MANETAS BLUETOOTH"
+
+msgid "Searching..."
+msgstr "Recèrca..."
+
+msgid "PAIR A BLUETOOTH DEVICE MANUALLY"
+msgstr "APARELHAR MANUALAMENT UN PERIFERIC BLUETOOTH"
+
+msgid "BLUETOOTH DEVICE LIST"
+msgstr "LISTA DELS PERIFERICS BLUETOOTH"
+
+msgid "CONTROLLERS"
+msgstr "MANETAS"
+
+msgid "CONTROLLER MAPPING"
+msgstr "ASSIGNACION DE LA MANETA"
+
+msgid "SWITCH CONFIRM & CANCEL BUTTONS"
+msgstr "INVERTIR LOS BOTONS CONFIRMAR E ANULLAR"
+
+msgid "Switches the South and East buttons' functionality"
+msgstr "Inverteís la foncion dels botons Sud e Est"
+
+msgid "ENABLE RUMBLE"
+msgstr "ACTIVAR LA VIBRACION"
+
+msgid "AUTOCONFIGURE RETROARCH HOTKEYS"
+msgstr "AUTOCONFIGURAR LAS TÈCLAS RAPIDAS DE RETROARCH"
+
+msgid "SHOW CONTROLLER NOTIFICATIONS"
+msgstr "MOSTRAR LAS NOTIFICACIONS DE MANETA"
+
+msgid "CONNECTED CONTROLLERS"
+msgstr "MANETAS CONNECTADAS"
+
+msgid "Not configured"
+msgstr "Pas configurat"
+
+msgid "Unknown controller"
+msgstr "Maneta desconeguda"
+
+msgid "PAIR A BLUETOOTH DEVICE"
+msgstr "APARELHAR UN PERIFERIC BLUETOOTH"
+
+msgid "PAIRED"
+msgstr "APARELHAT"
+
+msgid "Could not pair"
+msgstr "Impossible d'aparelhar"
+
+msgid "Connected"
+msgstr "Connectat"
+
+msgid "Remove all Bluetooth devices?"
+msgstr "Levar totes los periferics Bluetooth ?"
+
+msgid "Could not disconnect"
+msgstr "Impossible de desconnectar"
+
+msgid "DISCONNECT"
+msgstr "DESCONNECTAR"
+
+msgid "ARE YOU SURE YOU WANT TO DISCONNECT '%s' ?"
+msgstr "VOLÈTZ DE BON DESCONNECTAR '%s' ?"
+
+msgid "CONNECT"
+msgstr "CONNECTAR"
+
+msgid "Could not connect"
+msgstr "Impossible de se connectar"
+
+msgid "ARE YOU SURE YOU WANT TO CONNECT TO '%s' ?"
+msgstr "VOLÈTZ DE BON VOS CONNECTAR A '%s' ?"
+
+msgid "Could not remove"
+msgstr "Impossible de levar"
+
+msgid "FORGET"
+msgstr "OBLIDAR"
+
+msgid "ARE YOU SURE YOU WANT TO FORGET '%s' ?"
+msgstr "VOLÈTZ DE BON OBLIDAR '%s' ?"
+
+msgctxt "joystick"
+msgid "D-PAD UP"
+msgstr "CROSSA NAUT"
+
+msgctxt "joystick"
+msgid "D-PAD DOWN"
+msgstr "CROSSA BAS"
+
+msgctxt "joystick"
+msgid "D-PAD LEFT"
+msgstr "CROSSA ESQUÈRRA"
+
+msgctxt "joystick"
+msgid "D-PAD RIGHT"
+msgstr "CROSSA DRECHA"
+
+msgctxt "joystick"
+msgid "START"
+msgstr "START"
+
+msgctxt "joystick"
+msgid "SELECT"
+msgstr "SELECT"
+
+msgctxt "joystick"
+msgid "BUTTON A / EAST"
+msgstr "BOTON A / EST"
+
+msgctxt "joystick"
+msgid "BUTTON B / SOUTH"
+msgstr "BOTON B / SUD"
+
+msgctxt "joystick"
+msgid "BUTTON X / NORTH"
+msgstr "BOTON X / NÒRD"
+
+msgctxt "joystick"
+msgid "BUTTON Y / WEST"
+msgstr "BOTON Y / OEST"
+
+msgctxt "joystick"
+msgid "LEFT SHOULDER"
+msgstr "ESPATLA ESQUÈRRA"
+
+msgctxt "joystick"
+msgid "RIGHT SHOULDER"
+msgstr "ESPATLA DRECHA"
+
+msgctxt "joystick"
+msgid "LEFT TRIGGER"
+msgstr "GACHETA ESQUÈRRA"
+
+msgctxt "joystick"
+msgid "RIGHT TRIGGER"
+msgstr "GACHETA DRECHA"
+
+msgctxt "joystick"
+msgid "LEFT THUMB"
+msgstr "POLZE ESQUÈRRE"
+
+msgctxt "joystick"
+msgid "RIGHT THUMB"
+msgstr "POLZE DRECH"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG UP"
+msgstr "ANALOGIC ESQUÈRRE NAUT"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG DOWN"
+msgstr "ANALOGIC ESQUÈRRE BAS"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG LEFT"
+msgstr "ANALOGIC ESQUÈRRE ESQUÈRRA"
+
+msgctxt "joystick"
+msgid "LEFT ANALOG RIGHT"
+msgstr "ANALOGIC ESQUÈRRE DRECHA"
+
+msgctxt "joystick"
+msgid "HOTKEY ENABLE"
+msgstr "ACTIVAR TÈCLA RAPIDA"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG UP"
+msgstr "ANALOGIC DRECH NAUT"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG DOWN"
+msgstr "ANALOGIC DRECH BAS"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG LEFT"
+msgstr "ANALOGIC DRECH ESQUÈRRA"
+
+msgctxt "joystick"
+msgid "RIGHT ANALOG RIGHT"
+msgstr "ANALOGIC DRECH DRECHA"
+
+msgid "DO NOT ASSIGN HOTKEY"
+msgstr "PAS ASSIGNAR DE TÈCLA RAPIDA"
+
+msgid "SET SELECT AS HOTKEY"
+msgstr "DEFINIR SELECT COM A TÈCLA RAPIDA"
+
+msgid "BUILT-IN CONTROLLER"
+msgstr "MANETA INTEGRADA"
+
+msgid "GAMEPAD DETECTED"
+msgstr "MANETA DETECTADA"
+
+msgid "GAMEPADS DETECTED"
+msgstr "MANETAS DETECTADAS"
+
+msgid "NO GAMEPADS DETECTED"
+msgstr "CAP DE MANETA DETECTADA"
+
+msgid "PRESS B TO CANCEL."
+msgstr "APUIATZ SUS B PER ANULLAR."
+
+msgid "Could not save the controller configuration"
+msgstr "Impossible de salvar la configuracion de la maneta"
+
+msgid "Controller configuration saved"
+msgstr "Configuracion de la maneta salvada"
+
+msgid "Controller configuration cancelled"
+msgstr "Configuracion de la maneta anullada"
+
+msgid "Controller disconnected"
+msgstr "Maneta desconnectada"
+
+msgid "KEEP HOLDING TO CANCEL"
+msgstr "CONTINUATZ D'APUIAR PER ANULLAR"
+
+msgid "HOLD ANY BUTTON FOR 3 SECONDS TO CANCEL."
+msgstr "APUIATZ SUS UN BOTON PENDENT 3 SEGONDAS PER ANULLAR."
+
+msgid "HOLD ANY BUTTON TO SKIP. KEEP HOLDING TO CANCEL."
+msgstr "APUIATZ SUS UN BOTON PER PASSAR. SI CONTINUATZ, S'ANULLA."
+
+msgid "ALL BUTTONS ARE DONE"
+msgstr "TOTES LOS BOTONS SON PRÒPTES"
+
+msgid "set"
+msgstr "assignat"
+
+msgid "skipped"
+msgstr "passat"
+
+msgid "NO HOTKEY BUTTON HAS BEEN ASSIGNED. THIS IS REQUIRED FOR EXITING GAMES WITH A CONTROLLER."
+msgstr "CAP DE BOTON DE TÈCLA RAPIDA AUTRIAT. ES NECESSARI PER SORTIR DELS JÒCS AMB UNA MANETA."
+
+msgid "DATE & TIME"
+msgstr "DATA E ORA"
+
+msgid "YEAR"
+msgstr "ANNADA"
+
+msgid "MONTH"
+msgstr "MES"
+
+msgid "DAY"
+msgstr "DIA"
+
+msgid "HOUR"
+msgstr "ORA"
+
+msgid "MINUTE"
+msgstr "MINUTA"
+
+msgid "SET DATE & TIME"
+msgstr "DEFINIR DATA E ORA"
+
+msgid "Date and time set"
+msgstr "Data e ora definidas"
+
+msgid "With Wi-Fi the time is set automatically."
+msgstr "Amb lo Wi-Fi, l'ora se definís automaticament."
+
+msgid "That folder is protected"
+msgstr "Aquel dossièr es protegit"
+
+msgid "Outside the allowed folders"
+msgstr "Fòra dels dossièrs autorizats"
+
+msgid "Not enough free space"
+msgstr "Pas pro d'espaci liure"
+
+msgid "That name already exists"
+msgstr "Aquel nom existís ja"
+
+msgid "Cancelled"
+msgstr "Anullat"
+
+msgid "A folder cannot go into itself"
+msgstr "Un dossièr pòt pas anar dins el meteis"
+
+msgid "That name is not valid"
+msgstr "Aquel nom es pas valid"
+
+msgid "Not found"
+msgstr "Pas trobat"
+
+msgid "File larger than 4 GB: this card cannot hold it"
+msgstr "Fichièr de mai de 4 Go : aquesta carta lo pòt pas conténer"
+
+msgid "This card does not accept that name"
+msgstr "Aquesta carta accepta pas aquel nom"
+
+msgid "This location is read-only"
+msgstr "Aqueste emplaçament es en lectura sola"
+
+msgid "An error occurred"
+msgstr "Una error s'es producha"
+
+msgid "%s of %s done"
+msgstr "%s sus %s fachs"
+
+msgid "item"
+msgstr "element"
+
+msgid "items"
+msgstr "elements"
+
+msgid "link skipped"
+msgstr "ligam passat"
+
+msgid "links skipped"
+msgstr "ligams passats"
+
+msgid "This can't be undone."
+msgstr "Aquò se pòt pas desfar."
+
+msgid "Files"
+msgstr "Fichièrs"
+
+msgid "selected"
+msgstr "seleccionats"
+
+msgid "Cannot read this folder"
+msgstr "Impossible de legir aqueste dossièr"
+
+msgid "This folder is empty"
+msgstr "Aqueste dossièr es void"
+
+msgid "free"
+msgstr "liures"
+
+msgid "File"
+msgstr "Fichièr"
+
+msgid "Folder"
+msgstr "Dossièr"
+
+msgid "Link"
+msgstr "Ligam"
+
+msgid "Properties"
+msgstr "Proprietats"
+
+msgid "Copy"
+msgstr "Copiar"
+
+msgid "Move"
+msgstr "Desplaçar"
+
+msgid "Paste here"
+msgstr "Pegar aicí"
+
+msgid "Rename"
+msgstr "Tornar nomenar"
+
+msgid "New folder"
+msgstr "Dossièr novèl"
+
+msgid "Delete"
+msgstr "Suprimir"
+
+msgid "Select all"
+msgstr "Tot seleccionar"
+
+msgid "Clear selection"
+msgstr "Escafar la seleccion"
+
+msgid "Date"
+msgstr "Data"
+
+msgid "Size"
+msgstr "Talha"
+
+msgid "Sort by"
+msgstr "Triar per"
+
+msgid "Hide hidden files"
+msgstr "Amagar los fichièrs amagats"
+
+msgid "Show hidden files"
+msgstr "Mostrar los fichièrs amagats"
+
+msgid "Actions"
+msgstr "Accions"
+
+msgid "Home"
+msgstr "Acuèlh"
+
+msgid "Games"
+msgstr "Jòcs"
+
+msgid "Game card"
+msgstr "Carta de jòcs"
+
+msgid "USB drive"
+msgstr "Clau USB"
+
+msgid "Screenshots"
+msgstr "Capturas d'ecran"
+
+msgid "Go to"
+msgstr "Anar a"
+
+msgid "Ready to copy"
+msgstr "Prèst a copiar"
+
+msgid "Ready to move"
+msgstr "Prèst a desplaçar"
+
+msgid "Warning"
+msgstr "Avertiment"
+
+msgid "Cancel"
+msgstr "Anullar"
+
+msgid "This is a system file. Renaming it can break the console."
+msgstr "Es un fichièr del sistèma. Tornar lo nomenar pòt copar la consòla."
+
+msgid "This is a system file. Deleting it can break the console."
+msgstr "Es un fichièr del sistèma. Lo suprimir pòt copar la consòla."
+
+msgid "Wait for the other job"
+msgstr "Esperatz que l'autra tasca s'acabe"
+
+msgid "Copied"
+msgstr "Copiat"
+
+msgid "Deleted"
+msgstr "Suprimit"
+
+msgid "Moved"
+msgstr "Desplaçat"
+
+msgid "originals kept"
+msgstr "originals gardats"
+
+msgid "Copying"
+msgstr "Còpia"
+
+msgid "Deleting"
+msgstr "Supression"
+
+msgid "Moving"
+msgstr "Desplaçament"
+
+msgid "Calculating..."
+msgstr "Calcul..."
+
+msgid "Back"
+msgstr "Tornar"
+
+msgid "Close"
+msgstr "Tampar"
+
+msgid "Mark"
+msgstr "Marcar"
+
+msgid "Open"
+msgstr "Dobrir"
+
+msgid "Page"
+msgstr "Pagina"
+
+msgid "GAME SETTINGS"
+msgstr "PARAMÈTRES DEL JÒC"
+
+msgid "WHILE PLAYING"
+msgstr "PENDENT LO JÒC"
+
+msgid "RESUME LAST GAME AT STARTUP"
+msgstr "REPRENDRE LO DARRIÈR JÒC A L'AVIADA"
+
+msgid "Starts your last game from its autosave at boot. B cancels."
+msgstr "Lança lo darrièr jòc dempuèi sa salvagarda automatica a l'aviada. B anulla."
+
+msgid "HOME MENU DURING GAMES"
+msgstr "MENÚ D'ACUÈLH PENDENT LOS JÒCS"
+
+msgid "Experimental. Hold START and the chosen shoulder button for one second while a game runs to pause it and open a panel with battery, brightness, volume, RESUME and QUIT GAME (SAVE STATE and LOAD STATE only with RetroArch network commands on)."
+msgstr "Experimental. Mantenètz START e lo boton d'espatla causit pendent una segonda quand un jòc s'executa per lo metre en pausa e dobrir un panèl amb batariá, luminositat, volum, REPRENDRE e QUITAR LO JÒC (SALVAR L'ESTAT e CARGAR L'ESTAT sonque amb las comandas de ret de RetroArch activadas)."
+
+msgid "HOME MENU BUTTONS"
+msgstr "BOTONS DEL MENÚ D'ACUÈLH"
+
+msgid "The buttons held with START to open the home menu. Select based chords are used by RetroArch."
+msgstr "Los botons mantenguts amb START per dobrir lo menú d'acuèlh. Las combinasons amb Select las utiliza RetroArch."
+
+msgid "PERFORMANCE SUGGESTIONS"
+msgstr "SUGERIMENTS DE PERFORMANÇA"
+
+msgid "Suggests performance mode for games the GPU governor holds back."
+msgstr "Propausa lo mode performança pels jòcs que lo governador del GPU frenha."
+
+msgid "PLAY TIME LIMIT"
+msgstr "LIMITA DE TEMPS DE JÒC"
+
+msgid "Time to play each day. A message comes 5 minutes before the end (inside the game only with RetroArch network commands on) and then the game is closed. Time starts counting when this is turned on."
+msgstr "Temps de jogar cada jorn. Un messatge arriba 5 minutas abans la fin (dins lo jòc sonque amb las comandas de ret de RetroArch activadas) e puèi lo jòc se barra. Lo temps comença de comptar quand aquò s'activa."
+
+msgid "SAVED GAMES"
+msgstr "PARTIDAS SALVADAS"
+
+msgid "AUTO SAVE/LOAD"
+msgstr "SALVAR/CARGAR AUTOMATICAMENT"
+
+msgid "Load latest savestate on game launch and savestate when exiting game."
+msgstr "Carga lo darrièr estat salvat al lançament del jòc e salva l'estat en quitar lo jòc."
+
+msgid "INCREMENTAL SAVESTATES"
+msgstr "ESTATS SALVATS INCREMENTALS"
+
+msgid "DO NOT INCREMENT"
+msgstr "PAS INCREMENTAR"
+
+msgid "INCREMENT PER SAVE"
+msgstr "INCREMENTAR A CADA SALVAMENT"
+
+msgid "INCREMENT SLOT"
+msgstr "INCREMENTAR L'EMPLAÇAMENT"
+
+msgid "Never overwrite old savestates, always make new ones."
+msgstr "Pas jamai escriure sus los vièlhs estats salvats, ne crear de novèls tot temps."
+
+msgid "ALWAYS"
+msgstr "TOT TEMPS"
+
+msgid "IF NOT EMPTY"
+msgstr "SI PAS VOID"
+
+msgid "SHOW SAVESTATE MANAGER"
+msgstr "MOSTRAR LO GESTIONARI D'ESTATS SALVATS"
+
+msgid "Display savestate manager before launching a game."
+msgstr "Mòstra lo gestionari d'estats salvats abans de lançar un jòc."
+
+msgid "PICTURE AND CONTROL"
+msgstr "IMATGE E CONTRÒLE"
+
+msgid "Force the game to render in this aspect ratio."
+msgstr "Fòrça lo jòc a s'afichar amb aquesta proporcion."
+
+msgid "GAME ASPECT RATIO"
+msgstr "PROPORCION DEL JÒC"
+
+msgid "SMOOTH GAMES (BILINEAR FILTERING)"
+msgstr "LISSAR LOS JÒCS (FILTRATGE BILINEAR)"
+
+msgid "INTEGER SCALING (PIXEL PERFECT)"
+msgstr "ESCALADA ENTIÈRA (PIXEL PERFECT)"
+
+msgid "Store past states to rewind to in realtime, if the core supports it."
+msgstr "Gardar d'estats passats per tornar en arrièr en temps real, se lo nucli ho pren en carga."
+
+msgid "LATENCY REDUCTION"
+msgstr "REDUCCION DE LA LATÈNCIA"
+
+msgid "SHADER SET"
+msgstr "JÒC DE SHADERS"
+
+msgid "VIDEO FILTER"
+msgstr "FILTRE VIDEO"
+
+msgid "DECORATION SET"
+msgstr "JÒC DE DECORACIONS"
+
+msgid "MOONLIGHT GAME STREAMING"
+msgstr "DIFUSION DE JÒCS MOONLIGHT"
+
+msgid "BIOS SETTINGS"
+msgstr "PARAMÈTRES BIOS"
+
+msgid "MISSING BIOS CHECK"
+msgstr "VERIFICACION DELS BIOS MANCANTS"
+
+msgid "CHECK BIOS FILES BEFORE RUNNING A GAME"
+msgstr "VERIFICAR LOS FICHIÈRS BIOS ABANS DE LANÇAR UN JÒC"
+
+msgid "MORE"
+msgstr "MAI"
+
+msgid "RETROACHIEVEMENTS SETTINGS"
+msgstr "PARAMÈTRES RETROACHIEVEMENTS"
+
+msgid "AI GAME TRANSLATION"
+msgstr "TRADUCCION IA DE JÒCS"
+
+msgid "PLAY STATISTICS"
+msgstr "ESTATISTICAS DE JÒC"
+
+msgid "PER SYSTEM OPTIONS"
+msgstr "OPCIONS PER SISTÈMA"
+
+msgid "ENABLE AI TRANSLATION SERVICE"
+msgstr "ACTIVAR LO SERVICI DE TRADUCCION IA"
+
+msgid "AI TRANSLATION SERVICE URL"
+msgstr "URL DEL SERVICI DE TRADUCCION IA"
+
+msgid "NO MISSING BIOS FILES"
+msgstr "CAP DE FICHIÈR BIOS MANCANT"
+
+msgctxt "game_options"
+msgid "performance mode"
+msgstr "mode performança"
+
+msgctxt "game_options"
+msgid "GPU and memory at full speed while playing"
+msgstr "GPU e memòria a plena velocitat pendent lo jòc"
+
+msgid "Current setting"
+msgstr "Paramètre actual"
+
+msgid "UNKNOWN SYSTEM"
+msgstr "SISTÈMA DESCONEGUT"
+
+msgid "EMULATOR"
+msgstr "EMULADOR"
+
+msgid "The emulator and core that run this."
+msgstr "L'emulador e lo nucli que l'executan."
+
+msgid "SYSTEM OPTIONS"
+msgstr "OPCIONS DEL SISTÈMA"
+
+msgid "DISPLAY"
+msgstr "ECRAN"
+
+msgid "GAMEPLAY"
+msgstr "JOCABILITAT"
+
+msgid "Load latest save state on game launch and save state when exiting game."
+msgstr "Carga lo darrièr estat salvat al lançament del jòc e salva l'estat en quitar lo jòc."
+
+msgid "ACTIONS"
+msgstr "ACCIONS"
+
+msgid "RANDOM GAME"
+msgstr "JÒC ALEATÒRI"
+
+msgid "COOLING PROFILE"
+msgstr "PROFIL DE REFREDIMENT"
+
+msgid "AGGRESSIVE"
+msgstr "AGRESSIU"
+
+msgid "CUSTOM"
+msgstr "PERSONALIZAT"
+
+msgid "DEFAULT"
+msgstr "PER DEFAUT"
+
+msgid "MODERATE"
+msgstr "MODERAT"
+
+msgid "QUIET"
+msgstr "SILENCIÒS"
+
+msgid "CPU SCALING GOVERNOR"
+msgstr "GOVERNADOR D'ESCALADA DEL CPU"
+
+msgid "GPU SCALING GOVERNOR"
+msgstr "GOVERNADOR D'ESCALADA DEL GPU"
+
+msgid "DISABLED"
+msgstr "DESACTIVAT"
+
+msgid "ENABLED"
+msgstr "ACTIVAT"
+
+msgid "MANGOHUD OVERLAY"
+msgstr "SUPERPOSICION MANGOHUD"
+
+msgid "High numbers can result in visible jitter."
+msgstr "De valors nauts pòdon provocar de tremolaments visibles."
+
+msgid "RUN-AHEAD FRAMES"
+msgstr "IMATGES DE RUN-AHEAD"
+
+msgid "Can prevent audio skips on button presses."
+msgstr "Pòt empachar de salts àudio a l'apiejada dels botons."
+
+msgid "USE SECOND INSTANCE FOR RUN-AHEAD"
+msgstr "UTILIZAR UNA SEGONDA INSTANCIA PER AL RUN-AHEAD"
+
+msgid "UNKNOWN GAME"
+msgstr "JÒC DESCONEGUT"
+
+msgid "this game's name"
+msgstr "lo nom d'aqueste jòc"
+
+msgid "this game's description"
+msgstr "la descripcion d'aqueste jòc"
+
+msgid "Sort name"
+msgstr "Nom de triatge"
+
+msgid "enter game sort name"
+msgstr "entrar lo nom de triatge del jòc"
+
+msgid "this game's developer"
+msgstr "lo desvolopaire d'aqueste jòc"
+
+msgid "this game's publisher"
+msgstr "l'editor d'aqueste jòc"
+
+msgid "this game's number of players"
+msgstr "lo nombre de jogaires d'aqueste jòc"
+
+msgid "INVALID DATE"
+msgstr "DATA INVALIDA"
+
+msgid "THE GAME COULD NOT BE DELETED"
+msgstr "LO JÒC A POGUT PAS ESTRE SUPRIMIT"
+
+msgid "DELETE GAME"
+msgstr "SUPRIMIR LO JÒC"
+
+msgid ""
+"THIS WILL DELETE THE ACTUAL GAME FILE(S)!\n"
+"ARE YOU SURE?"
+msgstr "AQUÒ SUPRIMIRÀ LO(S) FICHIÈR(S) REAL(S) DEL JÒC !\nPER DE BON ?"
+
+msgid "CONFIG"
+msgstr "CONFIGURACION"
+
+msgid "CORE PROVIDED"
+msgstr "SEGON LO NUCLI"
+
+msgid "FULL"
+msgstr "COMPLÈT"
+
+msgid "SQUARE PIXEL"
+msgstr "PIXEL CARRAT"
+
+msgid "PANEL ADJUSTMENT"
+msgstr "AJUSTAMENT DEL PANÈL"
+
+msgid "SCREEN & SOUND"
+msgstr "ECRAN E SON"
+
+msgid "APPEARANCE"
+msgstr "APARÉNCIA"
+
+msgid "R36 Tuner Next"
+msgstr "R36 Tuner Next"
+
+msgid "IDLE"
+msgstr "AL REPAUS"
+
+msgid "MONITORING"
+msgstr "MONITORATGE"
+
+msgid "OVERCLOCK & MONITORING"
+msgstr "OVERCLOCK E MONITORATGE"
+
+msgid "BATTERY & PERFORMANCE"
+msgstr "BATARIÁ E PERFORMANÇA"
+
+msgid "LIBRARY"
+msgstr "BIBLIOTECA"
+
+msgid "CHECK LIBRARY"
+msgstr "VERIFICAR LA BIBLIOTECA"
+
+msgid "SAVE BACKUPS"
+msgstr "COPIAS DE SALVAMENT DE PARTIDAS"
+
+msgid "UPDATE GAMELISTS"
+msgstr "METRE A JORN LAS LISTAS DE JÒCS"
+
+msgid "LANGUAGE & TIME"
+msgstr "LENGA E ORA"
+
+msgid "HOME MENU"
+msgstr "MENÚ D'ACUÈLH"
+
+msgid "CHARGING"
+msgstr "EN CARGAMENT"
+
+msgid "SCREEN BRIGHTNESS"
+msgstr "LUMINOSITAT DE L'ECRAN"
+
+msgid "OVERWRITE THE SAVE STATE?"
+msgstr "ESCRIURE SUS L'ESTAT SALVAT ?"
+
+msgid "SAVE STATE"
+msgstr "SALVAR L'ESTAT"
+
+msgid "LOAD STATE"
+msgstr "CARGAR L'ESTAT"
+
+msgid "LOAD THE SAVE STATE? UNSAVED PROGRESS IS LOST."
+msgstr "CARGAR L'ESTAT SALVAT ? LA PROGRESSION NON SALVADA ES PERDUDA."
+
+msgid "RESUME"
+msgstr "REPRENDRE"
+
+msgid "QUIT GAME"
+msgstr "QUITAR LO JÒC"
+
+msgid "REALLY QUIT THE GAME?"
+msgstr "QUITAR LO JÒC PER DE BON ?"
+
+msgid "AND MORE"
+msgstr "E MAI"
+
+msgid "NO PROBLEMS FOUND"
+msgstr "CAP DE PROBLÈMA TROBAT"
+
+msgid "PROBLEMS FOUND"
+msgstr "PROBLÈMAS TROBATS"
+
+msgid "MISSING BIOS"
+msgstr "BIOS MANCANTS"
+
+msgid "POSSIBLY BROKEN FILES"
+msgstr "FICHIÈRS POSSIBLAMENT CORROMPUTS"
+
+msgid "DUPLICATES"
+msgstr "DOBLETS"
+
+msgid "GAMES WITHOUT A PICTURE"
+msgstr "JÒCS SENSE IMATGE"
+
+msgid "NETWORK"
+msgstr "RET"
+
+msgid "CONTROLLER & BLUETOOTH"
+msgstr "MANETAS E BLUETOOTH"
+
+msgid "UNLOCK USER INTERFACE MODE"
+msgstr "DESVEROLHAR LO MODE D'INTERFÀCIA"
+
+msgid "Development only: every widget of the menu framework."
+msgstr "Sonque per al desvolopament : totes los elements del quadre de menús."
+
+msgid "WIDGET DEMO"
+msgstr "DEMO DELS ELEMENTS"
+
+msgid "Unable to connect to server"
+msgstr "Impossible de se connectar al servidor"
+
+msgid "Succesfully paired with server"
+msgstr "Aparelhat amb succès amb lo servidor"
+
+msgid "QUIT CURRENT GAME"
+msgstr "QUITAR LO JÒC ACTUAL"
+
+msgid "UPDATE MOONLIGHT GAMES"
+msgstr "METRE A JORN LOS JÒCS MOONLIGHT"
+
+msgid "PAIR WITH SERVER"
+msgstr "APARELHAR AMB LO SERVIDOR"
+
+msgid "UNPAIR WITH SERVER"
+msgstr "DESAPARELHAR DEL SERVIDOR"
+
+msgid "Unpaired and settings cleared"
+msgstr "Desaparelhat e paramètres escafats"
+
+msgid "Unpaired from server"
+msgstr "Desaparelhat del servidor"
+
+msgid "SERVER IP"
+msgstr "IP DEL SERVIDOR"
+
+msgid "PAIRING PIN"
+msgstr "PIN D'APARELHATGE"
+
+msgid "YOU ARE NOT CONNECTED TO A NETWORK"
+msgstr "SÈTZ PAS CONNECTAT A UNA RET"
+
+msgid "HOST"
+msgstr "ÒSTE"
+
+msgid "MADRID"
+msgstr "MADRID"
+
+msgid "MONTREAL"
+msgstr "MONTREAL"
+
+msgid "NEW YORK"
+msgstr "NOVÈLA YORK"
+
+msgid "SAO PAULO"
+msgstr "SAO PAULO"
+
+msgid "USE RELAY SERVER"
+msgstr "UTILIZAR LO SERVIDOR RELAI"
+
+msgid "CUSTOM RELAY SERVER"
+msgstr "SERVIDOR RELAI PERSONALIZAT"
+
+msgid "Relay server games have a higher chance of successful entry."
+msgstr "Los jòcs de servidor relai an mai de nautas possibilitats de s'i connectar amb succès."
+
+msgid "SHOW RELAY SERVER GAMES ONLY"
+msgstr "MOSTRAR SONQUE LOS JÒCS DE SERVIDOR RELAI"
+
+msgid "SHOW UNAVAILABLE GAMES"
+msgstr "MOSTRAR LOS JÒCS INDISPONIBLES"
+
+msgid "Show rooms for games not present on this machine."
+msgstr "Mòstra las salas dels jòcs pas presents sus aquesta maquina."
+
+msgid "Select a game lobby to join"
+msgstr "Seleccionatz una sala de jòc a rejonher"
+
+msgid "ONLINE GAMES"
+msgstr "JÒCS EN LINHA"
+
+msgid "START GAME"
+msgstr "LANÇAR LO JÒC"
+
+msgid "HOST A NETPLAY GAME"
+msgstr "ORGANIZAR UNA PARTIDA EN RET"
+
+msgid "JOIN A NETPLAY GAME"
+msgstr "REJONHER UNA PARTIDA EN RET"
+
+msgid "NETPLAY NICKNAME"
+msgstr "ALIAS DE JÒC EN RET"
+
+msgid "PLAYER PASSWORD"
+msgstr "SENHAL DEL JOGAIRE"
+
+msgid "PUBLICLY ANNOUNCE GAME"
+msgstr "ANONCIAR PUBLICAMENT LO JÒC"
+
+msgid "NETPLAY HOST"
+msgstr "ÒSTE DE JÒC EN RET"
+
+msgid "NETPLAY PORT"
+msgstr "PÒRT DE JÒC EN RET"
+
+msgid "START A NETPLAY GAME"
+msgstr "LANÇAR UNA PARTIDA EN RET"
+
+msgid "Turning Wi-Fi on..."
+msgstr "Activacion del Wi-Fi..."
+
+msgid "Wi-Fi configuration error"
+msgstr "Error de configuracion del Wi-Fi"
+
+msgid "Wi-Fi is on"
+msgstr "Wi-Fi activat"
+
+msgid "Wi-Fi is off"
+msgstr "Wi-Fi desactivat"
+
+msgid "Wi-Fi region updated"
+msgstr "Region Wi-Fi mesa a jorn"
+
+msgid "Please wait..."
+msgstr "Un moment..."
+
+msgid "Local play mode updated"
+msgstr "Mode de jòc local mes a jorn"
+
+msgid "The service did not answer"
+msgstr "Lo servici a pas respondut"
+
+msgid "N/A"
+msgstr "N/D"
+
+msgid "WI-FI"
+msgstr "WI-FI"
+
+msgid "WI-FI NETWORKS"
+msgstr "RETS WI-FI"
+
+msgid "WI-FI COUNTRY"
+msgstr "PAÍS WI-FI"
+
+msgid "Sets the radio regulations: the channels you may use."
+msgstr "Definís la reglamentacion ràdio : los canals que podètz utilizar."
+
+msgid "TRANSFER FILES"
+msgstr "TRANSFERIR DE FICHIÈRS"
+
+msgid "Send games to the console from a phone or computer on this network."
+msgstr "Mandatz de jòcs a la consòla dempuèi un telefòn o un ordenador d'aquesta ret."
+
+msgid "AVAILABLE IP ADDRESSES:"
+msgstr "ADRECHAS IP DISPONIBLAS :"
+
+msgid "INTERNET STATUS"
+msgstr "ESTAT D'INTERNET"
+
+msgid "LOCAL PLAY"
+msgstr "JÒC LOCAL"
+
+msgid "LOCAL PLAY MODE"
+msgstr "MODE DE JÒC LOCAL"
+
+msgid "Hosts an access point for netplay with other consoles."
+msgstr "Crèa un punt d'accès per jogar en ret amb d'autras consòlas."
+
+msgid "1 (HOST)"
+msgstr "1 (ÒSTE)"
+
+msgid "2 (CLIENT 1)"
+msgstr "2 (CLIENT 1)"
+
+msgid "3 (CLIENT 2)"
+msgstr "3 (CLIENT 2)"
+
+msgid "4 (CLIENT 3)"
+msgstr "4 (CLIENT 3)"
+
+msgid "LOCAL PLAY ID"
+msgstr "ID DE JÒC LOCAL"
+
+msgid "SERVICES"
+msgstr "SERVICIS"
+
+msgid "SSH, USB, cloud, VPN and the console's name."
+msgstr "SSH, USB, nívol, VPN e lo nom de la consòla."
+
+msgid "NETWORK SERVICES"
+msgstr "SERVICIS DE RET"
+
+msgid "ENABLE SSH"
+msgstr "ACTIVAR SSH"
+
+msgid "SSH is off"
+msgstr "SSH desactivat"
+
+msgid "SSH is on"
+msgstr "SSH activat"
+
+msgid "Remote access to the console over the network."
+msgstr "Accès a distància a la consòla per la ret."
+
+msgid "ENABLE SIMPLE HTTP SERVER"
+msgstr "ACTIVAR LO SERVIDOR HTTP SIMPLE"
+
+msgid "HTTP server is off"
+msgstr "Servidor HTTP desactivat"
+
+msgid "HTTP server is on"
+msgstr "Servidor HTTP activat"
+
+msgid "FILE TRANSFER"
+msgstr "TRANSFERIMENT DE FICHIÈRS"
+
+msgid "USB GADGET FUNCTION"
+msgstr "FONCION USB GADGET"
+
+msgid "USB networking is on. The console is at"
+msgstr "La ret USB es activada. La consòla es a"
+
+msgid "What the console offers on its USB-C port."
+msgstr "Çò que la consòla ofrís pel pòrt USB-C."
+
+msgid "CLOUD SERVICES"
+msgstr "SERVICIS NÍVOL"
+
+msgid "MOUNT CLOUD DRIVE"
+msgstr "MONTAR L'ENGIN NÍVOL"
+
+msgid "Cloud drive mounted"
+msgstr "Engin nívol montat"
+
+msgid "Cloud drive unmounted"
+msgstr "Engin nívol desmontat"
+
+msgid "VPN SERVICES"
+msgstr "SERVICIS VPN"
+
+msgid "WIREGUARD VPN"
+msgstr "VPN WIREGUARD"
+
+msgid "WireGuard is off"
+msgstr "WireGuard desactivat"
+
+msgid "WireGuard is on"
+msgstr "WireGuard activat"
+
+msgid "TAILSCALE VPN"
+msgstr "VPN TAILSCALE"
+
+msgid "Tailscale is off"
+msgstr "Tailscale desactivat"
+
+msgid "Tailscale is on"
+msgstr "Tailscale activat"
+
+msgid "Tailscale could not connect"
+msgstr "Tailscale a pas pogut se connectar"
+
+msgid "Tailscale needs you to log in"
+msgstr "Tailscale a besonh que vos connectetz"
+
+msgid "SHOW LINK"
+msgstr "MOSTRAR LO LIGAM"
+
+msgid "TAILSCALE LOGIN"
+msgstr "CONNEXION TAILSCALE"
+
+msgid "TAILSCALE REAUTHENTICATE:"
+msgstr "TORNAR AUTENTIFICAR TAILSCALE :"
+
+msgid "Use letters, digits and dashes only"
+msgstr "Utilizatz sonque de letras, de chifras e de tirets"
+
+msgid "Hostname saved. It applies at the next boot"
+msgstr "Nom d'òste salvat. S'aplicarà a la proèra aviada"
+
+msgid "The new name is used at the next boot."
+msgstr "Lo nom novèl serà utilizat a la proèra aviada."
+
+msgid "WEB FILE TRANSFER"
+msgstr "TRANSFERIMENT DE FICHIÈRS PER WEB"
+
+msgid "Could not start the web transfer"
+msgstr "Impossible de lançar lo transferiment per web"
+
+msgid "Lets a phone or computer on this network send games to the console."
+msgstr "Permet a un telefòn o un ordenador d'aquesta ret de mandar de jòcs a la consòla."
+
+msgid "COULD NOT START (PORT BUSY?)"
+msgstr "IMPOSSIBLE DE LANÇAR (PÒRT OCUPAT ?)"
+
+msgid "WEB ADDRESS"
+msgstr "ADRECHA WEB"
+
+msgid "WEB PIN"
+msgstr "PIN WEB"
+
+msgid "NETWORK DRIVE (SAMBA)"
+msgstr "ENGIN DE RET (SAMBA)"
+
+msgid "ENABLE SAMBA"
+msgstr "ACTIVAR SAMBA"
+
+msgid "Samba is off"
+msgstr "Samba desactivat"
+
+msgid "Samba is on"
+msgstr "Samba activat"
+
+msgid "Shares the games folder with other computers."
+msgstr "Partatja lo dossièr dels jòcs amb d'autres ordenadors."
+
+msgid "SAMBA ADDRESS"
+msgstr "ADRECHA SAMBA"
+
+msgid "SAMBA USER"
+msgstr "UTILIZAIRE SAMBA"
+
+msgid "SAMBA PASSWORD"
+msgstr "SENHAL SAMBA"
+
+msgid "Connecting to"
+msgstr "Connexion a"
+
+msgid "Connected successfully"
+msgstr "Connectat amb succès"
+
+msgid "Failed to connect"
+msgstr "Connexion fracassada"
+
+msgid "SAVED"
+msgstr "SALVADA"
+
+msgid "OPEN"
+msgstr "DOBRIR"
+
+msgid "ENTERPRISE"
+msgstr "ENTREPRESA"
+
+msgid "SECURED"
+msgstr "SEGURADA"
+
+msgid "Enterprise networks are not supported"
+msgstr "Las rets d'entrepresa son pas preses en carga"
+
+msgid "Network forgotten"
+msgstr "Ret oblidada"
+
+msgid "WI-FI KEY FOR "
+msgstr "CLAU WI-FI DE "
+
+msgid "CONNECTING..."
+msgstr "CONNEXION..."
+
+msgid "INPUT MANUALLY"
+msgstr "ENTRAR MANUALAMENT"
+
+msgid "WI-FI SSID"
+msgstr "SSID WI-FI"
+
+msgid "WI-FI KEY"
+msgstr "CLAU WI-FI"
+
+msgid "QUICK ACCESS"
+msgstr "ACCÈS RAPID"
+
+msgid "REALLY SUSPEND ?"
+msgstr "METRE EN VELHA PER DE BON ?"
+
+msgid "SUSPEND SYSTEM"
+msgstr "METRE LO SISTÈMA EN VELHA"
+
+msgid "REALLY SHUTDOWN?"
+msgstr "ATUDAR PER DE BON ?"
+
+msgid "REALLY RESTART?"
+msgstr "REAVIAR PER DE BON ?"
+
+msgid "REALLY RESTART THE FRONTEND?"
+msgstr "REAVIAR L'INTERFÀCIA PER DE BON ?"
+
+msgid "RESTART THE FRONTEND"
+msgstr "REAVIAR L'INTERFÀCIA"
+
+msgid "Shutdown without saving metadata."
+msgstr "Atudar sens salvar las metadonadas."
+
+msgid "TEST ACCOUNT"
+msgstr "ESPROVAR LO COMPTE"
+
+msgid "Checks the user name and password with retroachievements.org."
+msgstr "Verifica lo nom d'utilizaire e lo senhal amb retroachievements.org."
+
+msgid "CONNECTING TO RETROACHIEVEMENTS"
+msgstr "CONNEXION A RETROACHIEVEMENTS"
+
+msgid "LOGGED IN"
+msgstr "CONNECTAT"
+
+msgid "Disable loading states, rewind and cheats for more points."
+msgstr "Desactivatz lo cargament d'estats, lo retorn en arrièr e los trucs per ganhar mai de punts."
+
+msgid "Compete in high-score and best time leaderboards (requires hardcore)."
+msgstr "Competissètz dins los classaments de scòres e de melhors temps (necessita lo mode hardcore)."
+
+msgid "LEADERBOARDS"
+msgstr "CLASSAMENTS"
+
+msgid "Show achievement progression on game launch and other notifications."
+msgstr "Mòstra la progression dels succèsses al lançament del jòc e dins d'autras notificacions."
+
+msgid "VERBOSE MODE"
+msgstr "MODE DETALHAT"
+
+msgid "RICH PRESENCE"
+msgstr "RICH PRESENCE"
+
+msgid "Automatically take a screenshot when an achievement is earned."
+msgstr "Fa automaticament una captura d'ecran quand un succès es obtengut."
+
+msgid "CHALLENGE INDICATORS"
+msgstr "INDICADORS DE DESFIDAS"
+
+msgid "Shows icons in the bottom right corner when eligible achievements can be earned."
+msgstr "Mòstra d'icònas en bas a drecha quand de succèsses eligibles pòdon èstre obtenguts."
+
+msgid "Enable unlocking of unofficial achievements."
+msgstr "Activa lo desvèrrolhatge dels succèsses pas oficials."
+
+msgid "UNOFFICIAL ACHIEVEMENTS"
+msgstr "SUCCÈSSES PAS OFICIALS"
+
+msgid "UNLOCK SOUND"
+msgstr "SON DE DESVÈRROLHATGE"
+
+msgid "LED NOTIFICATIONS"
+msgstr "NOTIFICACIONS PER LED"
+
+msgid "SHOW RETROACHIEVEMENTS ENTRY IN MAIN MENU"
+msgstr "MOSTRAR L'ENTRADA RETROACHIEVEMENTS AL MENÚ MÀGER"
+
+msgid "Show the RetroAchievements row in the main menu."
+msgstr "Mòstra la linha RetroAchievements dins lo menú màger."
+
+msgid "NO SAVES FOUND"
+msgstr "CAP DE PARTIDA SALVADA TROBADA"
+
+msgid "NOT ENOUGH FREE SPACE"
+msgstr "PAS PRO D'ESPACI LIURE"
+
+msgid "A BACKUP FROM THIS MINUTE ALREADY EXISTS"
+msgstr "UNA COPIA D'AQUESTA MINUTA EXISTÍS JA"
+
+msgid "THE BACKUP IS DAMAGED OR MISSING"
+msgstr "LA COPIA ES DETERIORADA O MANCA"
+
+msgid "BACKUP DONE"
+msgstr "COPIA FACHA"
+
+msgid "SAVES RESTORED"
+msgstr "PARTIDAS RESTAURADAS"
+
+msgid "CLOUD BACKUP DONE"
+msgstr "COPIA NÍVOL FACHA"
+
+msgid "CLOUD BACKUP FAILED"
+msgstr "LA COPIA NÍVOL A FRACASSAT"
+
+msgid "BEFORE A RESTORE"
+msgstr "ABANS UNA RESTAURACION"
+
+msgid "BACK UP SAVES NOW"
+msgstr "FAIRE ARA UNA COPIA DE LAS PARTIDAS"
+
+msgid "SAVEGAMES, SAVESTATES AND PSP SAVES, WITHOUT ROMS OR MEDIA"
+msgstr "PARTIDAS, ESTATS SALVATS E PARTIDAS PSP, SENSE ROMS NI MÈDIAS"
+
+msgid "CLOUD BACKUP"
+msgstr "COPIA NÍVOL"
+
+msgid "BACKUPS"
+msgstr "COPIAS DE SALVAMENT"
+
+msgid "NO BACKUPS YET"
+msgstr "PAS ENCARA DE COPIAS"
+
+msgid "BACKUP DELETED"
+msgstr "COPIA SUPRIMIDA"
+
+msgid "THIS WILL REPLACE YOUR CURRENT SAVES WITH THE ONES FROM %s. A BACKUP OF THE CURRENT SAVES IS MADE FIRST."
+msgstr "AQUÒ SUBSTITUIRÀ LAS PARTIDAS ACTUALAS PER AQUELAS DEL %s. UNA COPIA DE LAS ACTUALAS ES FACHA ABANS."
+
+msgid "RESTORE"
+msgstr "RESTAURAR"
+
+msgid "DELETE BACKUP"
+msgstr "SUPRIMIR LA COPIA"
+
+msgid "DELETE THIS BACKUP?"
+msgstr "SUPRIMIR AQUESTA COPIA ?"
+
+msgid "COPY TO FREE SLOT"
+msgstr "COPIAR DINS UN EMPLAÇAMENT LIURE"
+
+msgid "SAVESTATE MANAGER"
+msgstr "GESTIONARI D'ESTATS SALVATS"
+
+msgid "START NEW GAME"
+msgstr "COMENÇAR UNA PARTIDA NOVÈLA"
+
+msgid "START NEW AUTO SAVE"
+msgstr "COMENÇAR UN SALVAMENT AUTOMATIC NOVÈL"
+
+msgid "AUTO SAVE"
+msgstr "SALVAMENT AUTOMATIC"
+
+msgid "SLOT"
+msgstr "EMPLAÇAMENT"
+
+msgid "THIS BUILD CANNOT REACH SCREENSCRAPER"
+msgstr "AQUESTA VERSION POT PAS ACCEDIR A SCREENSCRAPER"
+
+msgid "ALL GAMES"
+msgstr "TOTES LOS JÒCS"
+
+msgid "GAMES TO SCRAPE"
+msgstr "JÒCS A RECUPERAR"
+
+msgid "WITH MISSING MEDIA"
+msgstr "AMB DE MÈDIAS MANCANTS"
+
+msgid "WITHOUT ANY MEDIA"
+msgstr "SENSE CAP DE MÈDIA"
+
+msgid "Which games of the chosen systems are looked up."
+msgstr "Quins jòcs dels sistèmas causits son cercats."
+
+msgid "IGNORE RECENTLY SCRAPED GAMES"
+msgstr "IGNORAR LOS JÒCS RECUPERATS RECENTAMENT"
+
+msgid "1 DAY"
+msgstr "1 JORN"
+
+msgid "1 MONTH"
+msgstr "1 MES"
+
+msgid "1 WEEK"
+msgstr "1 SETMANA"
+
+msgid "1 YEAR"
+msgstr "1 AN"
+
+msgid "15 DAYS"
+msgstr "15 JORNS"
+
+msgid "3 MONTHS"
+msgstr "3 MESES"
+
+msgid "Games scraped inside this time are skipped, saving requests."
+msgstr "Los jòcs recuperats dins aqueste temps son passats, per estalviar de requèstas."
+
+msgid "FETCH MISSING MEDIA AUTOMATICALLY"
+msgstr "RECUPERAR AUTOMATICAMENT LOS MÈDIAS MANCANTS"
+
+msgid "Downloads missing covers in the background when idle."
+msgstr "Telecarga las cobertas mancantas en fons de tasca quand es al repaus."
+
+msgid "SCRAPER SETTINGS"
+msgstr "PARAMÈTRES DE LA SEGADOIRA"
+
+msgid "ACCOUNT"
+msgstr "COMPTE"
+
+msgid "Choose at least one system."
+msgstr "Causissètz almens un sistèma."
+
+msgid "Looks the games up on ScreenScraper."
+msgstr "Cerca los jòcs sus ScreenScraper."
+
+msgid "NO SYSTEM WITH GAMES THAT SCREENSCRAPER KNOWS"
+msgstr "CAP DE SISTÈMA AMB DE JÒCS QUE SCREENSCRAPER CONÈIS"
+
+msgid "PICTURES"
+msgstr "IMATGES"
+
+msgid "IMAGE"
+msgstr "IMATGE"
+
+msgid "BOX 3D"
+msgstr "CAISSA 3D"
+
+msgid "BOX FRONT"
+msgstr "DAVANT DE LA CAISSA"
+
+msgid "MIX V1"
+msgstr "MIX V1"
+
+msgid "MIX V2"
+msgstr "MIX V2"
+
+msgid "TITLE SCREEN"
+msgstr "ECRAN TÍTOL"
+
+msgid "The main picture of each game."
+msgstr "L'imatge principala de cada jòc."
+
+msgid "THUMBNAIL"
+msgstr "MINIATURA"
+
+msgid "The small picture of each game."
+msgstr "La pichona imatge de cada jòc."
+
+msgid "LOGO"
+msgstr "LOGOTIPE"
+
+msgid "MARQUEE"
+msgstr "MARQUESINA"
+
+msgid "The logo of each game."
+msgstr "Lo logotipe de cada jòc."
+
+msgid "WHEEL"
+msgstr "WHEEL"
+
+msgid "WHEEL HD"
+msgstr "WHEEL HD"
+
+msgid "FULL SIZE"
+msgstr "TALHA COMPLÈTA"
+
+msgid "IMAGE SIZE"
+msgstr "TALHA DE L'IMATGE"
+
+msgid "ScreenScraper shrinks pictures before sending them: faster and lighter."
+msgstr "ScreenScraper redusís las imatges abans de las mandar : mai rapid e mai leugièr."
+
+msgid "AUTOMATIC"
+msgstr "AUTOMATIC"
+
+msgid "BRAZIL"
+msgstr "BRASIL"
+
+msgid "EUROPE"
+msgstr "EUROPA"
+
+msgid "FRANCE"
+msgstr "FRANÇA"
+
+msgid "GERMANY"
+msgstr "ALEMANHA"
+
+msgid "ITALY"
+msgstr "ITÀLIA"
+
+msgid "JAPAN"
+msgstr "JAPON"
+
+msgid "SPAIN"
+msgstr "ESPANHA"
+
+msgid "USA"
+msgstr "ESTATS UNITS"
+
+msgid "WORLD"
+msgstr "MONDE"
+
+msgid "Preferred region of names, dates and pictures."
+msgstr "Region preferida pels noms, las datas e las imatges."
+
+msgid "NAMES"
+msgstr "NOMS"
+
+msgid "Replace the names of the games."
+msgstr "Remplaça los noms dels jòcs."
+
+msgid "DESCRIPTIONS"
+msgstr "DESCRIPCIONS"
+
+msgid "Replace the descriptions."
+msgstr "Remplaça las descripcions."
+
+msgid "SHORT NAME"
+msgstr "NOM CORT"
+
+msgid "Download the rating of each game."
+msgstr "Telecarga la nòta de cada jòc."
+
+msgid "RATINGS"
+msgstr "NÒTAS"
+
+msgid "EXTRA MEDIA"
+msgstr "MÈDIAS SUPLEMENTARIS"
+
+msgid "VIDEOS"
+msgstr "VIDEOS"
+
+msgid "Videos are big and take longer to download."
+msgstr "Las videos son voluminosas e metan mai de temps a telecargar."
+
+msgid "MANUALS"
+msgstr "MANUALS"
+
+msgid "PDF manuals."
+msgstr "Manuals PDF."
+
+msgid "MAPS"
+msgstr "MAPAS"
+
+msgid "Maps of the game."
+msgstr "Mapas del jòc."
+
+msgid "Background pictures."
+msgstr "Imatges de fons."
+
+msgid "FANART"
+msgstr "FANART"
+
+msgid "BOX BACK"
+msgstr "DARRIÈR DE LA CAISSA"
+
+msgid "The back of the box."
+msgstr "Lo darrièr de la caissa."
+
+msgid "Only for \"All games\": pictures already there are downloaded again."
+msgstr "Sonque per « Totes los jòcs » : las imatges ja presentas son telecargadas tornamai."
+
+msgid "REPLACE EXISTING MEDIA"
+msgstr "REMPLAÇAR LOS MÈDIAS EXISTENTS"
+
+msgid "SCREENSCRAPER"
+msgstr "SCREENSCRAPER"
+
+msgid "Optional. Without an account ScreenScraper allows very few requests."
+msgstr "Opcional. Sens compte, ScreenScraper autoriza fòrça pauc de requèstas."
+
+msgid "IGDB"
+msgstr "IGDB"
+
+msgid "CLIENT ID"
+msgstr "ID CLIENT"
+
+msgid "CLIENT SECRET"
+msgstr "SECRET CLIENT"
+
+msgid "ArcadeDB needs no account."
+msgstr "ArcadeDB a pas besonh de compte."
+
+msgid "Asks IGDB for an access token."
+msgstr "Demanda un geton d'accès a IGDB."
+
+msgid "Asks ScreenScraper for your limits."
+msgstr "Demanda a ScreenScraper vòstras limitas."
+
+msgid "CONNECTING TO SCREENSCRAPER"
+msgstr "CONNEXION A SCREENSCRAPER"
+
+msgid "ANONYMOUS"
+msgstr "ANONIM"
+
+msgid "LOGIN"
+msgstr "IDENTIFIANT"
+
+msgid "REQUESTS TODAY"
+msgstr "REQUÈSTAS D'UÈI"
+
+msgid "REQUESTS PER MINUTE"
+msgstr "REQUÈSTAS PER MINUTA"
+
+msgid "STOP"
+msgstr "ARRESTAR"
+
+msgid "SCROLL"
+msgstr "DEFILAR"
+
+msgid "SCRAPE COMPLETE"
+msgstr "RECUPERACION ACABADA"
+
+msgid "SCRAPE STOPPED"
+msgstr "RECUPERACION ARRESTADA"
+
+msgid "SCRAPE FAILED"
+msgstr "RECUPERACION FRACASSADA"
+
+msgid "FOUND"
+msgstr "TROBATS"
+
+msgid "NOT FOUND"
+msgstr "PAS TROBATS"
+
+msgid "ERRORS"
+msgstr "ERRORS"
+
+msgid "MEDIA FILES"
+msgstr "FICHIÈRS MÈDIAS"
+
+msgid "READING GAME LISTS"
+msgstr "LECTURA DE LAS LISTAS DE JÒCS"
+
+msgid "STOPPING"
+msgstr "ARRÈST"
+
+msgid "SECONDS"
+msgstr "SEGONDAS"
+
+msgid "WAITING"
+msgstr "EN ATENDA"
+
+msgid "STOPPED. WHAT WAS DONE IS SAVED"
+msgstr "ARRESTAT. LO FACH ES SALVAT"
+
+msgid "NO GAMES TO SCRAPE WITH THESE FILTERS"
+msgstr "CAP DE JÒC A RECUPERAR AMB AQUESTES FILTRES"
+
+msgid "GAMES"
+msgstr "JÒCS"
+
+msgid "PROBLEMS"
+msgstr "PROBLÈMAS"
+
+msgid "MEDIA MISSING"
+msgstr "MÈDIAS MANCANTS"
+
+msgid "SWITCHES AND SLIDERS"
+msgstr "INTERRUPTORS E CURSORS"
+
+msgid "The clock shows in the top right corner."
+msgstr "L'ora s'afichís en naut a drecha."
+
+msgid "Volume saved"
+msgstr "Volum salvat"
+
+msgid "LISTS AND TEXT"
+msgstr "LISTAS E TEXTE"
+
+msgid "SHOW BATTERY STATUS"
+msgstr "MOSTRAR L'ESTAT DE LA BATARIÁ"
+
+msgid "TEXT"
+msgstr "TEXTE"
+
+msgid "TIME ZONE"
+msgstr "FUSÈL ORARI"
+
+msgid "WI-FI PASSWORD"
+msgstr "SENHAL WI-FI"
+
+msgid "SHOW A TOAST"
+msgstr "MOSTRAR UN AVÍS"
+
+msgid "Wi-Fi connected: Casa 5G"
+msgstr "Wi-Fi connectat : Casa 5G"
+
+msgid "SHOW THE VOLUME BAR"
+msgstr "MOSTRAR LA BARRA DE VOLUM"
+
+msgid "SHOW THE BRIGHTNESS BAR"
+msgstr "MOSTRAR LA BARRA DE LUMINOSITAT"
+
+msgid "ASK A QUESTION"
+msgstr "POSAR UNA QUESTION"
+
+msgid "Delete all saved states of this game?"
+msgstr "Suprimir totes los estats salvats d'aquel jòc ?"
+
+msgid "SHOW A MESSAGE"
+msgstr "MOSTRAR UN MESSATGE"
+
+msgid "The update was installed. Restart the console to use it."
+msgstr "La mesa a jorn es installada. Reaviatz la consòla per l'utilizar."
+
+msgid "Restart the system now?"
+msgstr "Reaviar lo sistèma ara ?"
+
+msgid "Restarting..."
+msgstr "Reaviada..."
+
+msgid "DISABLED ENTRY"
+msgstr "ENTRADA DESACTIVADA"
+
+msgid "SELECTOR STYLE"
+msgstr "ESTIL DEL SELECTOR"
+
+msgid "TITLE ALIGNMENT"
+msgstr "ALINHAMENT DELS TÍTOLS"
+
+msgid "LIST TEXT CASE"
+msgstr "CAPITALAS DE LA LISTA"
+
+msgid "TEXT SIZE"
+msgstr "TALHA DEL TEXTE"
+
+msgid "HIGH CONTRAST"
+msgstr "CONTRAST FÒRT"
+
+msgid "SHOW CLOCK IN 12-HOUR FORMAT"
+msgstr "MOSTRAR L'ORA AL FORMAT 12 ORAS"
+
+msgid "CAROUSEL TRANSITIONS"
+msgstr "TRANSICIONS DEL CARRÒSSEL"
+
+msgid "options"
+msgstr "opcions"
+
+msgid "ENABLE NAVIGATION SOUNDS"
+msgstr "ACTIVAR LOS SONS DE NAVIGACION"
+
+msgid "AUDIO"
+msgstr "AUDIO"
+
+msgid "SHOW OVERLAY WHEN VOLUME CHANGES"
+msgstr "MOSTRAR LA SUPERPOSICION QUAND LO VOLUM CAMBIA"
+
+msgid "Could not change the audio output"
+msgstr "Impossible de cambiar la sortida àudio"
+
+msgid "AUDIO PROFILE"
+msgstr "PROFIL AUDIO"
+
+msgid "Available options can change depending on current audio output."
+msgstr "Las opcions disponiblas pòdon cambiar segon la sortida àudio actuala."
+
+msgid "BATTERY WARNING"
+msgstr "ALERTA DE BATARIÁ"
+
+msgid "ENABLE AUDIBLE BATTERY WARNING"
+msgstr "ACTIVAR L'ALERTA SONÒRA DE BATARIÁ"
+
+msgid "BATTERY WARNING THRESHOLD"
+msgstr "LIMIT DE L'ALERTA DE BATARIÁ"
+
+msgid "LAUNCH THIS GAME AT STARTUP"
+msgstr "LANÇAR AQUEL JÒC A L'AVIADA"
+
+msgid "Starts this game when the console boots, before the menus, once per boot."
+msgstr "Lança aqueste jòc quand la consòla s'avia, abans los menús, un còp per aviada."
+
+msgid "STOP LAUNCHING THIS GAME AT STARTUP"
+msgstr "PLUS LANÇAR AQUEL JÒC A L'AVIADA"
+
+msgid "Reboot now"
+msgstr "Reaviar ara"
+
+msgid "Later"
+msgstr "Mai tard"
+
+msgid "Default"
+msgstr "Per defaut"
+
+msgid "Arm (official)"
+msgstr "Arm (oficial)"
+
+msgid "Open source (Panfrost / PanVK)"
+msgstr "Còdi dobèrt (Panfrost / PanVK)"
+
+msgid "TIME LEFT TODAY"
+msgstr "TEMPS RESTANT UÈI"
+
+msgid "UPTIME"
+msgstr "TEMPS ALUCAT"
+
+msgid "No information available"
+msgstr "Cap d'informacion disponibla"
+
+msgid "SYSTEM MANAGEMENT AND RESET"
+msgstr "GESTION E REINICIALIZACION DEL SISTÈMA"
+
+msgid ""
+"ARE YOU SURE?\n"
+"\n"
+"THIS CANNOT BE UNDONE."
+msgstr "PER DE BON ?\n\nAQUÒ SE POT PAS DESFAR."
+
+msgid "DATA MANAGEMENT"
+msgstr "GESTION DE LAS DONADAS"
+
+msgid "BACKUP CONFIGURATIONS"
+msgstr "COPIA DE LAS CONFIGURACIONS"
+
+msgid ""
+"WARNING THIS WILL RESTART THE FRONTEND!\n"
+"\n"
+"AFTER THE SCRIPT IS DONE REMEMBER TO COPY THE FILE /storage/roms/backup/ROCKNIX_BACKUP.zip TO SOME PLACE SAFE OR IT WILL BE DELETED ON NEXT REBOOT!\n"
+"\n"
+"BACKUP CURRENT CONFIG AND RESTART?"
+msgstr "ATENCION : AQUÒ REAVIARÀ L'INTERFÀCIA !\n\nQUAND LO SCRIPT SERÀ ACABAT, PENSATZ A COPIAR LO FICHIÈR /storage/roms/backup/ROCKNIX_BACKUP.zip DINS UN LÒC SEGUR O SERÀ SUPRIMIT A LA PROÈRA AVIADA !\n\nFAIRE UNA COPIA DE LA CONFIGURACION ACTUALA E REAVIAR ?"
+
+msgid "RESTORE FROM BACKUP"
+msgstr "RESTAURAR DEMPUÈI UNA COPIA"
+
+msgid ""
+"WARNING THIS WILL REBOOT YOUR DEVICE!\n"
+"\n"
+"YOUR EXISTING CONFIGURATION WILL BE OVERWRITTEN!\n"
+"\n"
+"RESTORE FROM BACKUP AND RESTART?"
+msgstr "ATENCION : AQUÒ REAVIARÀ LO PERIFERIC !\n\nLA CONFIGURACION EXISTENTA SERÀ ESCRICHA !\n\nRESTAURAR DEMPUÈI LA COPIA E REAVIAR ?"
+
+msgid "EMULATOR MANAGEMENT"
+msgstr "GESTION DELS EMULADORS"
+
+msgid "RESET RETROARCH CONFIG TO DEFAULT"
+msgstr "REINICIALIZAR LA CONFIGURACION DE RETROARCH"
+
+msgid ""
+"WARNING: RETROARCH CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL NOT BE AFFECTED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH CONFIG TO DEFAULT?"
+msgstr "ATENCION : LA CONFIGURACION DE RETROARCH SERÀ REINICIALIZADA\n\nLAS CONFIGURACIONS PER NUCLI SERAN PAS AFECTADAS E CAP DE COPIA SERÀ CREADA !\n\nREINICIALIZAR LA CONFIGURACION DE RETROARCH ?"
+
+msgid "RESET OVERLAYS (CORES, CHEATS, JOYPADS, ETC)"
+msgstr "REINICIALIZAR LAS SUPERPOSICIONS (NUCLIS, TRUCS, MANETAS, ETC.)"
+
+msgid ""
+"WARNING: ALL CUSTOM RETROARCH OVERLAYS WILL BE REMOVED\n"
+"\n"
+"CUSTOM CORES, JOYSTICKS, CHEATS, ETC. NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH OVERLAYS TO DEFAULT?"
+msgstr "ATENCION : TOTAS LAS SUPERPOSICIONS PERSONALIZADAS DE RETROARCH SERAN LEVADAS\n\nNUCLIS, MANETAS, TRUCS, ETC. PERSONALIZATS. CAP DE COPIA SERÀ CREADA !\n\nREINICIALIZAR LAS SUPERPOSICIONS DE RETROARCH ?"
+
+msgid "FULLY RESET RETROARCH"
+msgstr "REINICIALIZAR RETROARCH COMPLÈTAMENT"
+
+msgid ""
+"WARNING: RETROARCH AND ALL USER SAVED CONFIGURATIONS WILL RESET TO DEFAULT\n"
+"\n"
+"PER-CORE CONFIGURATIONS WILL BE REMOVED AND NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET RETROARCH?"
+msgstr "ATENCION : RETROARCH E TOTAS LAS CONFIGURACIONS SALVADAS PEL UTILIZAIRE SERAN REINICIALIZADAS\n\nLAS CONFIGURACIONS PER NUCLI SERAN SUPRIMIDAS E CAP DE COPIA SERÀ CREADA !\n\nREINICIALIZAR RETROARCH ?"
+
+msgid "RESET MEDNAFEN CONFIG TO DEFAULT"
+msgstr "REINICIALIZAR LA CONFIGURACION DE MEDNAFEN"
+
+msgid ""
+"WARNING: MEDNAFEN CONFIG WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET MEDNAFEN CONFIG TO DEFAULT?"
+msgstr "ATENCION : LA CONFIGURACION DE MEDNAFEN SERÀ REINICIALIZADA\n\nCAP DE COPIA SERÀ CREADA !\n\nREINICIALIZAR LA CONFIGURACION DE MEDNAFEN ?"
+
+msgid "RESET STANDALONE EMULATOR CONFIGS TO DEFAULT"
+msgstr "REINICIALIZAR LAS CONFIGURACIONS DELS EMULADORS AUTONÒMES"
+
+msgid ""
+"WARNING: STANDALONE EMULATOR CONFIGS WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET STANDALONE EMULATOR CONFIGS TO DEFAULT?"
+msgstr "ATENCION : LAS CONFIGURACIONS DELS EMULADORS AUTONÒMES SERAN REINICIALIZADAS\n\nCAP DE COPIA SERÀ CREADA !\n\nREINICIALIZAR LAS CONFIGURACIONS DELS EMULADORS AUTONÒMES ?"
+
+msgid "FULLY RESET PORTMASTER"
+msgstr "REINICIALIZAR PORTMASTER COMPLÈTAMENT"
+
+msgid ""
+"WARNING: PORTMASTER WILL RESET TO DEFAULT\n"
+"\n"
+"NO BACKUP WILL BE CREATED!\n"
+"\n"
+"RESET PORTMASTER TO DEFAULT?"
+msgstr "ATENCION : PORTMASTER SERÀ REINICIALIZAT\n\nCAP DE COPIA SERÀ CREADA !\n\nREINICIALIZAR PORTMASTER ?"
+
+msgid "SYSTEM MANAGEMENT"
+msgstr "GESTION DEL SISTÈMA"
+
+msgid "AUDIO RESET"
+msgstr "REINICIALIZACION DE L'AUDIO"
+
+msgid ""
+"WARNING: AUDIO SETTINGS WILL BE RESET TO DEFAULTS AND THE SYSTEM WILL REBOOT!\n"
+"\n"
+"RESET AUDIO AND RESTART?"
+msgstr "ATENCION : LOS PARAMÈTRES AUDIO SERAN REINICIALIZATS E LO SISTÈMA REAVIARÀ !\n\nREINICIALIZAR L'AUDIO E REAVIAR ?"
+
+msgid "RESET BATTERY FUEL GAUGE"
+msgstr "REINICIALIZAR LO MESURADOR DE BATARIÁ"
+
+msgid ""
+"WARNING: THE PMIC FUEL GAUGE WILL BE RESET AND THE SYSTEM WILL POWER OFF!\n"
+"\n"
+"LEAVE THE CHARGER UNPLUGGED AND POWER THE DEVICE BACK ON AFTER A FEW SECONDS. THE BATTERY LEVEL IS RE-ESTIMATED FROM THE RESTING BATTERY VOLTAGE AND BECOMES ACCURATE AGAIN AFTER A FULL CHARGE.\n"
+"\n"
+"RESET FUEL GAUGE AND POWER OFF?"
+msgstr "ATENCION : LO MESURADOR DE BATARIÁ DEL PMIC SERÀ REINICIALIZAT E LO SISTÈMA S'ATUDARÀ !\n\nLAISSATZ LO CARGADOR DEBRANCHAT E TORNATZ ALUCAR LO PERIFERIC APRÈP QUALQUAS SEGONDAS. LO NIVÈL DE BATARIÁ ES TORNAT ESTIMAT A PARTIR DE LA TENSION AL REPAUS E DEVENIS TORNAR PRECÍS APRÈP UN CARGAMENT COMPLET.\n\nREINICIALIZAR LO MESURADOR E ATUDAR ?"
+
+msgid "FACTORY RESET"
+msgstr "REINICIALIZACION D'USINA"
+
+msgid ""
+"WARNING: YOUR DATA AND ALL OTHER CONFIGURATIONS WILL BE RESET TO DEFAULTS!\n"
+"\n"
+"IF YOU WANT TO KEEP YOUR SETTINGS MAKE A BACKUP AND SAVE IT ON AN EXTERNAL DRIVE BEFORE RUNING THIS OPTION!\n"
+"\n"
+"EJECT YOUR GAME CARD BEFORE PROCEEDING!\n"
+"\n"
+"RESET SYSTEM AND RESTART?"
+msgstr "ATENCION : VÒSTRAS DONADAS E TOTAS LAS AUTRAS CONFIGURACIONS SERAN REINICIALIZADAS !\n\nSI VOLÈTZ GARDAR VÒSTRES PARAMÈTRES, FAGUÈTZ UNA COPIA E SALVATZ-LA SUS UN ENGIN EXTÈRN ABANS D'EXECUTAR AQUESTA OPCION !\n\nEXTRAIRE VÒSTRA CARTA DE JÒCS ABANS DE CONTINUAR !\n\nREINICIALIZAR LO SISTÈMA E REAVIAR ?"
+
+msgid "REBOOT REQUIRED TO APPLY THE NEW CONFIGURATION"
+msgstr "REAVIADA NECESSÀRIA PER APLICAR LA CONFIGURACION NOVÈLA"
+
+msgid "LANGUAGE (REGION)"
+msgstr "LENGA (REGION)"
+
+msgid "KEYBOARD LAYOUT"
+msgstr "DISPOSICION DEL CLAVIÈR"
+
+msgid "KEYBOARD VARIANT"
+msgstr "VARIANTA DEL CLAVIÈR"
+
+msgid "Select the keyboard variant for the chosen layout (for example, dead keys or alternative key placement)."
+msgstr "Seleccionatz la varianta del clavièr per la disposicion causida (per exemple, tèclas mòrtas o una autra plaça de las tèclas)."
+
+msgid "TIMEZONE"
+msgstr "FUSÈL ORARI"
+
+msgid "Run welcome again"
+msgstr "Tornar mostrar la benvenguda"
+
+msgid "Shows the first-boot welcome again: language, WiFi and time zone."
+msgstr "Mòstra tornamai la benvenguda de la primièra aviada : lenga, WiFi e fusèl orari."
+
+msgid "USER INTERFACE MODE"
+msgstr "MODE D'INTERFÀCIA"
+
+msgid "Kid"
+msgstr "Enfant"
+
+msgid "Kiosk"
+msgstr "Quiòsque"
+
+msgid "Lock down certain config menus for use with guest users/kids."
+msgstr "Verrolha certans menús de configuracion per un usatge amb d'invitats o d'enfants."
+
+msgid "ENABLE MANGOHUD OVERLAY"
+msgstr "ACTIVAR LA SUPERPOSICION MANGOHUD"
+
+msgid "ENABLE TOUCHSCREEN KEYBOARD"
+msgstr "ACTIVAR LO CLAVIÈR TACTIL"
+
+msgid "ENABLE ROCKNIX SCREENSHOT"
+msgstr "ACTIVAR LA CAPTURA D'ECRAN ROCKNIX"
+
+msgid "SCREEN"
+msgstr "ECRAN"
+
+msgid "CONTRAST"
+msgstr "CONTRAST"
+
+msgid "GAMMA"
+msgstr "GAMMA"
+
+msgid "HUE"
+msgstr "TEINTA"
+
+msgid "SATURATION"
+msgstr "SATURACION"
+
+msgid "LEDS"
+msgstr "LEDS"
+
+msgid "DISABLE POWER LED"
+msgstr "DESACTIVAR LO LED D'ALIMENTACION"
+
+msgid "LED COLOR"
+msgstr "COLOR DEL LED"
+
+msgid "JOYSTICK LED"
+msgstr "LED DEL JOYSTICK"
+
+msgid "LED BRIGHTNESS"
+msgstr "LUMINOSITAT DEL LED"
+
+msgid "MAX"
+msgstr "MÀX"
+
+msgid "MID"
+msgstr "MEJ"
+
+msgid "MIN"
+msgstr "MÍN"
+
+msgid "POWER LED COLOR"
+msgstr "COLOR DEL LED D'ALIMENTACION"
+
+msgid "DEVICE"
+msgstr "PERIFERIC"
+
+msgid "THIS DEVICE IS"
+msgstr "AQUEL PERIFERIC ES"
+
+msgid "Device will be switched on next reboot"
+msgstr "Lo periferic serà cambiat a la proèra aviada"
+
+msgid "AUTODETECT GAMES CARD"
+msgstr "AUTODETECTAR LA CARTA DE JÒCS"
+
+msgid "ENABLE MERGED STORAGE"
+msgstr "ACTIVAR L'ESTOCATGE FUSIONAT"
+
+msgid "EXTERNAL"
+msgstr "EXTÈRNA"
+
+msgid "INTERNAL"
+msgstr "INTÈRNA"
+
+msgid "MERGED STORAGE PRIMARY CARD"
+msgstr "CARTA PRINCIPALA DE L'ESTOCATGE FUSIONAT"
+
+msgid "WARNING: CHANGING THE PRIMARY CARD CAN CAUSE ACCESS TO GAMES TO BE LOST, REQUIRING MANUAL INTERVENTION TO CORRECT. CONTINUE?"
+msgstr "ATENCION : CAMBIAR LA CARTA PRINCIPALA POT FAIRE PERDRE L'ACCÈS ALS JÒCS E NECESSITAR UNA INTERVENCION MANUALA PER CORREGIR. CONTINUAR ?"
+
+msgid "EJECT MICROSD CARD"
+msgstr "EXTRAIRE LA CARTA MICROSD"
+
+msgid "You may now remove the card."
+msgstr "Ara podètz levar la carta."
+
+msgid "PERFORMANCE"
+msgstr "PERFORMANÇA"
+
+msgid "DEFAULT SCALING GOVERNOR"
+msgstr "GOVERNADOR D'ESCALADA PER DEFAUT"
+
+msgid "DEFAULT GPU SCALING GOVERNOR"
+msgstr "GOVERNADOR D'ESCALADA GPU PER DEFAUT"
+
+msgid "ENABLE CPU OVERCLOCK"
+msgstr "ACTIVAR L'OVERCLOCK CPU"
+
+msgid "ENABLE GPU OVERCLOCK"
+msgstr "ACTIVAR L'OVERCLOCK GPU"
+
+msgid "GPU DRIVER"
+msgstr "PILÒT GPU"
+
+msgid "GPU driver will be switched on next reboot"
+msgstr "Lo pilòt GPU serà cambiat a la proèra aviada"
+
+msgid "Restarting to apply the theme"
+msgstr "Reaviada per aplicar lo tèma"
+
+msgid "GAMELIST THEME OPTIONS"
+msgstr "OPCIONS DE TÈMA DE LA LISTA DE JÒCS"
+
+msgid "RESET CUSTOMIZATIONS"
+msgstr "REINICIALIZAR LAS PERSONALIZACIONS"
+
+msgid "USER INTERFACE SETTINGS"
+msgstr "PARAMÈTRES DE L'INTERFÀCIA"
+
+msgid "The frontend restarts to apply the theme"
+msgstr "L'interfàcia se reavia per aplicar lo tèma"
+
+msgid "Dark"
+msgstr "Fosc"
+
+msgid "Light"
+msgstr "Clar"
+
+msgid "MODE"
+msgstr "MODE"
+
+msgid "Theme default"
+msgstr "Per defaut del tèma"
+
+msgid "Filled"
+msgstr "Emplit"
+
+msgid "Outline"
+msgstr "Contorn"
+
+msgid "Side bar"
+msgstr "Barra laterala"
+
+msgid "Underline"
+msgstr "Solinhat"
+
+msgid "Centered"
+msgstr "Centrat"
+
+msgid "Left"
+msgstr "A esquèrra"
+
+msgid "Lowercase"
+msgstr "Minusculas"
+
+msgid "Uppercase"
+msgstr "Majusculas"
+
+msgid "EXTRA LARGE"
+msgstr "EXTRA GRAND"
+
+msgid "LARGE"
+msgstr "GRAND"
+
+msgid "NORMAL"
+msgstr "NORMAL"
+
+msgid "SMALL"
+msgstr "PICHON"
+
+msgid "Size of the text in menus, dialogs and help bars"
+msgstr "Talha del tèxte dins los menús, las fenèstras e las barras d'ajuda"
+
+msgid "Pure white or black text, solid panels and a thicker selector"
+msgstr "Tèxte blanc o negre pur, panèls opacs e un selector mai espés"
+
+msgid "CONTROL OPTIONS"
+msgstr "OPCIONS DE CONTRÒLE"
+
+msgid "TOP BAR"
+msgstr "BARRA SUPERIORA"
+
+msgid "SHOW NETWORK INDICATOR"
+msgstr "MOSTRAR L'INDICADOR DE RET"
+
+msgid "QUICK SYSTEM SELECT"
+msgstr "SELECCION RAPIDA DE SISTÈMA"
+
+msgid "SCREENSAVER SETTINGS"
+msgstr "PARAMÈTRES DEL SALVAECRAN"
+
+msgid "BEDSIDE CLOCK"
+msgstr "RELÒTGE DE CAPSET"
+
+msgid "With the charger plugged in, shows a large clock after this long without touching the console, instead of the screensaver. Any button closes it. Never while a game is open."
+msgstr "Amb lo cargador brancat, mòstra un relòtge grand aprèp aquel temps sens tocar la consòla, a la plaça del salvaecran. Un boton quin que siá lo barra. Pas jamai quand un jòc es dobèrt."
+
+msgid ""
+"You are changing the user interface to a restricted mode:\n"
+"This will hide most menu options to prevent changes to the system.\n"
+"To unlock and return to the full user interface, enter this code:"
+msgstr "Passatz l'interfàcia en mode restrenhit :\nAquò amagarà la màger part de las opcions de menú per empachar de modificacions del sistèma.\nPer desvèrrolhar e tornar a l'interfàcia completa, entratz aqueste còdi :"
+
+msgid "Do you want to proceed?"
+msgstr "Volètz contunhar ?"
+
+msgid "ENTER THE CODE NOW TO UNLOCK"
+msgstr "ENTRATZ ARA LO CÒDI PER DESVÈRROLHAR"
+
+msgid ""
+"YOU ARE CURRENTLY USING VERSION %s\n"
+"DO YOU WANT TO UPDATE TO VERSION %s?"
+msgstr "UTILIZATZ ACTUALAMENT LA VERSION %s\nVOLÈTZ METRE A JORN VERS LA VERSION %s ?"
+
+msgid "COULD NOT CANCEL THE DOWNLOAD"
+msgstr "IMPOSSIBLE D'ANULLAR LO TELECARGAMENT"
+
+msgid "DOWNLOAD CANCELLED"
+msgstr "TELECARGAMENT ANULLAT"
+
+msgid "THE UPDATE COULD NOT BE DOWNLOADED. CHECK THE CONNECTION AND TRY AGAIN."
+msgstr "LA MESA A JORN A POGUT PAS ESTRE TELECARGADA. VERIFICATZ LA CONNEXION E TORNATZ ESSAIAR."
+
+msgid "No update source available"
+msgstr "Cap de font de mesa a jorn disponibla"
+
+msgid "FORCE NEXT UPDATE"
+msgstr "FORÇAR LA PROÈRA MESA A JORN"
+
+msgid "UPDATING"
+msgstr "MESA A JORN"
+
+msgid "CANCEL DOWNLOAD"
+msgstr "ANULLAR LO TELECARGAMENT"
+
+msgid "CANCEL THE DOWNLOAD? THE PARTIAL FILE IS DELETED."
+msgstr "ANULLAR LO TELECARGAMENT ? LO FICHIÈR PARCIAL ES SUPRIMIT."
+
+msgid "REBOOT TO APPLY"
+msgstr "REAVIAR PER APLICAR"
+
+msgid "Checking..."
+msgstr "Verificacion..."
+
+msgid "available"
+msgstr "disponibla"
+
+msgid "SKIP ALL"
+msgstr "TOT PASSAR"
+
+msgid "Welcome"
+msgstr "Benvenguda"
+
+msgid "of"
+msgstr "sus"
+
+msgid "Choose your language"
+msgstr "Causissètz vòstra lenga"
+
+msgid "Language"
+msgstr "Lenga"
+
+msgid "You can change it later in System."
+msgstr "Lo podètz cambiar mai tard dins Sistèma."
+
+msgid "Connect to WiFi"
+msgstr "Connectatz-vos al WiFi"
+
+msgid "WiFi"
+msgstr "WiFi"
+
+msgid "Clock, updates and file transfer."
+msgstr "Ora, mesas a jorn e transferiment de fichièrs."
+
+msgid "Continue"
+msgstr "Contunhar"
+
+msgid "Not now"
+msgstr "Pas ara"
+
+msgid "Choose a network"
+msgstr "Causissètz una ret"
+
+msgid "Choose another network"
+msgstr "Causissètz una autra ret"
+
+msgid "Where are you?"
+msgstr "Ont sètz ?"
+
+msgid "Time zone"
+msgstr "Fusèl orari"
+
+msgid "Sets your local time."
+msgstr "Definís vòstra ora locala."
+
+msgid "Keep UTC"
+msgstr "Gardar UTC"
+
+msgid "LOADING..."
+msgstr "CARGAMENT..."
+
+msgid "All set"
+msgstr "Tot es prèst"
+
+msgid "Add games from your phone"
+msgstr "Ajustatz de jòcs dempuèi vòstre telefòn"
+
+msgid "Network"
+msgstr "Ret"
+
+msgid "Start opens the menu"
+msgstr "Start dobrís lo menú"
+
+msgid "anywhere"
+msgstr "d'en pertot"
+
+msgid "Screen looks wrong?"
+msgstr "L'ecran sembla pas bon ?"
+
+msgid "Zenith DTB Selector"
+msgstr "Zenith DTB Selector"
+
+msgid "Start playing"
+msgstr "Començar de jogar"
+
+msgid "DISPLAY SONG TITLES"
+msgstr "MOSTRAR LOS TÍTOLS DE LAS MUSICAS"
+
+msgid "SONG TITLE DISPLAY DURATION"
+msgstr "DURADA D'AFICHATGE DEL TÍTOL DE LA MUSICA"
+
+msgid "ONLY PLAY SYSTEM-SPECIFIC MUSIC FOLDER"
+msgstr "JOGAR SONQUE LO DOSSIÈR DE MUSICA DEL SISTÈMA"
+
+msgid "PLAY THEME MUSIC"
+msgstr "JOGAR LA MUSICA DEL TÈMA"
+
+msgid "LOWER MUSIC WHEN PLAYING VIDEO"
+msgstr "BAISSAR LA MUSICA QUAND UNA VIDEO ES JOGADA"
+
+msgid "STOP MUSIC ON SCREENSAVER"
+msgstr "ARRESTAR LA MUSICA AL SALVAECRAN"
+
+msgid "NO NETWORK CONNECTION"
+msgstr "CAP DE CONNEXION DE RET"
+
+msgid "BATTERY USE (FULL CHARGE)"
+msgstr "UTILIZACION DE LA BATARIÁ (CARGAMENT COMPLET)"
+
+msgid "TOTAL TIME PLAYED"
+msgstr "TEMPS TOTAL JOGAT"
+
+msgid "LAST FIVE WEEKS"
+msgstr "DARRIÈRAS CINC SETMANAS"
+
+msgid "2 WEEKS AGO"
+msgstr "I A 2 SETMANAS"
+
+msgid "3 WEEKS AGO"
+msgstr "I A 3 SETMANAS"
+
+msgid "4 WEEKS AGO"
+msgstr "I A 4 SETMANAS"
+
+msgid "LAST WEEK"
+msgstr "SETMANA PASSADA"
+
+msgid "THIS WEEK"
+msgstr "AQUESTA SETMANA"
+
+msgid "MOST PLAYED GAMES"
+msgstr "JÒCS LOS MAI JOGATS"
+
+msgid "TIME PER SYSTEM"
+msgstr "TEMPS PER SISTÈMA"
+
+msgid "NOTHING PLAYED YET. PLAY A GAME AND IT WILL SHOW UP HERE."
+msgstr "PAS ENCARA RES JOGAT. JOGATZ A UN JÒC E APAREISSERÀ AICÍ."
+
+msgid "Only %d minute of play time left today"
+msgid_plural "Only %d minutes of play time left today"
+msgstr[0] "Demòra pas que %d minuta de jòc uèi"
+msgstr[1] "Demòran pas que %d minutas de jòc uèi"
+
+msgid "Power saver on"
+msgstr "Economia d'energia activada"
+
+msgid "A valid account is required. Please register an account on https://retroachievements.org"
+msgstr "Un compte valid es requesit. Creatz un compte sus https://retroachievements.org"
+
+msgid "UNEXPECTED ANSWER FROM RETROACHIEVEMENTS"
+msgstr "RESPONSA IMPREVISTA DE RETROACHIEVEMENTS"
+
+msgid "UNABLE TO ACTIVATE RETROACHIEVEMENTS:"
+msgstr "IMPOSSIBLE D'ACTIVAR RETROACHIEVEMENTS :"
+
+msgid "NOT AVAILABLE IN THIS BUILD"
+msgstr "PAS DISPONIBLE DINS AQUESTA VERSION"
+
+msgid "%i min ago"
+msgstr "i a %i min"
+
+msgid "%i h ago"
+msgstr "i a %i h"
+
+msgid "%i d ago"
+msgstr "i a %i j"
+
+msgid "CONTINUE PLAYING"
+msgstr "CONTINUAR DE JOGAR"
+
+msgid "START NOW"
+msgstr "COMENÇAR ARA"
+
+msgid "RESUMING"
+msgstr "REPRESA"
+
+msgid "STARTING IN %i"
+msgstr "COMENÇA DINS %i"
+
+msgid "DSiWare"
+msgstr "DSiWare"
+
+msgid "Hacks"
+msgstr "Hacks"
+
+msgid "Homebrew"
+msgstr "Homebrew"
+
+msgid "Minis"
+msgstr "Minis"
+
+msgid "Vertical"
+msgstr "Vertical"
+
+msgid "recently added"
+msgstr "ajustats recentament"
+
+msgid "unfinished"
+msgstr "pas acabats"
+
+msgid "most played this week"
+msgstr "mai jogats aquesta setmana"
+
+msgid "BOOKS"
+msgstr "LIBRES"
+
+msgid "screenshots"
+msgstr "capturas d'ecran"
+
+msgid "media player"
+msgstr "lector multimèdia"
+
+msgid "NETWORK ERROR"
+msgstr "ERROR DE RET"
+
+msgid "SERVER BUSY"
+msgstr "SERVIDOR OCUPAT"
+
+msgid "SERVER ERROR"
+msgstr "ERROR DEL SERVIDOR"
+
+msgid "CANNOT WRITE THE GAMELIST"
+msgstr "IMPOSSIBLE D'ESCRIURE LA LISTA DE JÒCS"
+
+msgid "LOGIN FAILED. CHECK YOUR USERNAME AND PASSWORD"
+msgstr "CONNEXION FRACASSADA. VERIFICATZ VÒSTRE NOM D'UTILIZAIRE E VÒSTRE SENHAL"
+
+msgid "SCREENSCRAPER IS CLOSED TO THIS ACCOUNT RIGHT NOW"
+msgstr "SCREENSCRAPER ES TANCAT PER AQUEL COMPTE ARA"
+
+msgid "SCREENSCRAPER IS UNDER MAINTENANCE"
+msgstr "SCREENSCRAPER ES EN MANTENIMENT"
+
+msgid "THIS SOFTWARE IS BLOCKED BY SCREENSCRAPER"
+msgstr "AQUEL LÒGICIEL ES BLOCAT PER SCREENSCRAPER"
+
+msgid "DAILY SCRAPE QUOTA REACHED. TRY AGAIN TOMORROW"
+msgstr "QUÒTA DE RECUPERACION QUOTIDIÈNA ATENHUDA. TORNATZ ESSAIAR DEMAN"
+
+msgid "TOO MANY UNRECOGNISED ROMS TODAY. TRY AGAIN TOMORROW"
+msgstr "MASSA DE ROMS PAS RECONEGUDAS UÈI. TORNATZ ESSAIAR DEMAN"
+
+msgid "NO SPACE LEFT ON THE CARD"
+msgstr "PLUS D'ESPACI SUS LA CARTA"
+
+msgid "INVALID CREDENTIALS"
+msgstr "IDENTIFIANTS INVALIDS"
+
+msgid "TYPE THE IGDB CLIENT ID AND SECRET IN ACCOUNT FIRST"
+msgstr "ENTRATZ D'ABÒRD L'ID CLIENT E LO SECRET IGDB DINS COMPTE"
+
+msgid "SCRAPING STOPPED"
+msgstr "RECUPERACION ARRESTADA"
+
+msgid "SCRAPING FINISHED"
+msgstr "RECUPERACION ACABADA"
+
+msgid "GAME NOT FOUND"
+msgstr "JÒC PAS TROBAT"
+
+msgid "NO OTHER GAME"
+msgstr "CAP D'AUTRE JÒC"
+
+msgid "%s connected"
+msgstr "%s connectat"
+
+msgid "%s disconnected"
+msgstr "%s desconnectat"
+
+msgid "Time is up for today"
+msgstr "Lo temps d'uèi es acabat"
+
+msgid "RANDOM VIDEO SCREENSAVER SETTINGS"
+msgstr "PARAMÈTRES DEL SALVAECRAN VIDEO ALEATÒRI"
+
+msgid "SLIDESHOW SCREENSAVER SETTINGS"
+msgstr "PARAMÈTRES DEL SALVAECRAN DIAPORAMA"
+
+msgid "VIDEO DURATION (SECS)"
+msgstr "DURADA DE LA VIDEO (SEC)"
+
+msgid "start & end"
+msgstr "començament e fin"
+
+msgid "SHOW DATE TIME"
+msgstr "MOSTRAR DATA E ORA"
+
+msgid "DATE FORMAT"
+msgstr "FORMAT DE LA DATA"
+
+msgid "TIME FORMAT"
+msgstr "FORMAT DE L'ORA"
+
+msgid "USE MARQUEE AS GAME INFO"
+msgstr "UTILIZAR LA MARQUESINA COM A INFO DEL JÒC"
+
+msgid "STRETCH VIDEOS"
+msgstr "ESTIRAR LAS VIDEOS"
+
+msgid "MUTE VIDEO AUDIO"
+msgstr "COPAR LO SON DE LAS VIDEOS"
+
+msgid "STRETCH IMAGES"
+msgstr "ESTIRAR LAS IMATGES"
+
+msgid "USE CUSTOM IMAGES"
+msgstr "UTILIZAR D'IMATGES PERSONALIZADAS"
+
+msgid "USE CUSTOM VIDEOS"
+msgstr "UTILIZAR DE VIDEOS PERSONALIZADAS"
+
+msgid "CUSTOM VIDEO DIRECTORY"
+msgstr "DOSSIÈR DE VIDEOS PERSONALIZADAS"
+
+msgid "USE VIDEOS IN SUBFOLDERS OF CUSTOM DIRECTORY"
+msgstr "UTILIZAR LAS VIDEOS DELS SOSDOSSIÈRS DEL DOSSIÈR PERSONALIZAT"
+
+msgid "CUSTOM VIDEO FILE EXTENSIONS"
+msgstr "EXTENSIONS DE FICHIÈRS VIDEO PERSONALIZADAS"
+
+msgid "CUSTOM IMAGE DIRECTORY"
+msgstr "DOSSIÈR D'IMATGES PERSONALIZADAS"
+
+msgid "USE IMAGES IN SUBFOLDERS OF CUSTOM DIRECTORY"
+msgstr "UTILIZAR LAS IMATGES DELS SOSDOSSIÈRS DEL DOSSIÈR PERSONALIZAT"
+
+msgid "CUSTOM IMAGE FILE EXTENSIONS"
+msgstr "EXTENSIONS DE FICHIÈRS IMATGE PERSONALIZADAS"
+
+msgid "ACCENTS"
+msgstr "ACCENTS"
+
+msgid "SHIFT"
+msgstr "DESCALATGE"
+
+msgid "SHOW"
+msgstr "MOSTRAR"
+
+msgid "SHOW VIDEO PREVIEWS"
+msgstr "MOSTRAR LAS PREVISUALIZACIONS VIDEO"
+
+msgid "ENABLE VIDEO PREVIEW AUDIO"
+msgstr "ACTIVAR LO SON DE LAS PREVISUALIZACIONS VIDEO"
+
+msgid "Device paired"
+msgstr "Periferic aparelhat"
+
+msgid "ALLOW THIS DEVICE?"
+msgstr "AUTORIZAR AQUEL PERIFERIC ?"
+
+msgid "RECEIVED"
+msgstr "RECEBUT"
+
+msgid "QR CODE"
+msgstr "CÒDI QR"
+
+msgid "PIN"
+msgstr "PIN"
+
+msgid "JUST NOW"
+msgstr "ARA MATEISSA"
+
+msgid "%d MINUTE AGO"
+msgid_plural "%d MINUTES AGO"
+msgstr[0] "I A %d MINUTA"
+msgstr[1] "I A %d MINUTAS"
+
+msgid "%d HOUR AGO"
+msgid_plural "%d HOURS AGO"
+msgstr[0] "I A %d ORA"
+msgstr[1] "I A %d ORAS"
+
+msgid "%d DAY AGO"
+msgid_plural "%d DAYS AGO"
+msgstr[0] "I A %d JORN"
+msgstr[1] "I A %d JORNS"
+
+msgid "NO PAIRED DEVICES"
+msgstr "CAP DE PERIFERIC APARELHAT"
+
+msgid "FORGET THIS DEVICE?"
+msgstr "OBLIDAR AQUEL PERIFERIC ?"
+
+msgid "FORGET ALL DEVICES"
+msgstr "OBLIDAR TOTES LOS PERIFERICS"
+
+msgid "FORGET ALL DEVICES?"
+msgstr "OBLIDAR TOTES LOS PERIFERICS ?"
+
+msgid "PAIRED DEVICES"
+msgstr "PERIFERICS APARELHATS"
+
+msgid "SHOW QR CODE"
+msgstr "MOSTRAR LO CÒDI QR"
+
+msgid "Scan it with the phone camera: the page opens and knows the PIN."
+msgstr "Escanatz-lo amb la camèra del telefòn : la pagina se dobrís e coneis lo PIN."
+
+msgid "Phones that need no PIN."
+msgstr "Telefòns que an pas besonh de PIN."
+
+msgid "RESTORE SAVES FROM THE WEB?"
+msgstr "RESTAURAR LAS PARTIDAS DEMPUÈI LO WEB ?"
+
+msgid "BUILD ID"
+msgstr "ID DE COMPILACION"
+
+msgid "KERNEL"
+msgstr "NÒDUL"
+
+msgid "OPERATING SYSTEM"
+msgstr "SISTÈMA D'EXPLOTACION"
+
+msgid "SYSTEM INFORMATION"
+msgstr "INFORMACIONS DEL SISTÈMA"
+
+msgid "BATTERY INFORMATION"
+msgstr "INFORMACIONS DE LA BATARIA"
+
+msgid "DISK SPACE"
+msgstr "ESPACI DEL DISC"
+
+msgid "HOST NAME"
+msgstr "NOM DE L'ORDINADOR"
+
+msgid "NETWORK INFORMATION"
+msgstr "INFORMACIONS DE LA RET"
+
+msgid "BATTERY HEALTH"
+msgstr "SANITAT DE LA BATARIA"
+
+msgid "BATTERY REMAINING"
+msgstr "BATARIA RESTANTA"
+
+msgid "BATTERY STATE"
+msgstr "ESTAT DE LA BATARIA"
+
+msgid "CPU"
+msgstr "CPU"
+
+msgid "CPU INFORMATION"
+msgstr "INFORMACIONS DE LA CPU"
+
+msgid "CPU TEMPERATURE"
+msgstr "TEMPERATURA DE LA CPU"
+
+msgid "CPU FAN"
+msgstr "VENTILADOR DE LA CPU"
+
+msgid "GPU CURRENT FREQUENCY"
+msgstr "FREQÜÈNCIA ACTUALA DE LA GPU"
+
+msgid "GPU INFORMATION"
+msgstr "INFORMACIONS DE LA GPU"
+
+msgid "GPU MAXIMUM FREQUENCY"
+msgstr "FREQÜÈNCIA MAXIMALA DE LA GPU"
+
+msgid "GPU TEMPERATURE"
+msgstr "TEMPERATURA DE LA GPU"
+
+msgid "RAM AVAILABLE"
+msgstr "RAM DISPONIBLA"
+
+msgid "RAM CAPACITY"
+msgstr "CAPACITAT DE LA RAM"
+
+msgid "RAM INFORMATION"
+msgstr "INFORMACIONS DE LA RAM"
+
+msgid "CURRENT FREQUENCY"
+msgstr "FREQÜÈNCIA ACTUALA"
+
+msgid "MAXIMUM FREQUENCY"
+msgstr "FREQÜÈNCIA MAXIMALA"
+
+msgid "DISCHARGING"
+msgstr "EN DESCARGAMENT"
+
+msgid "NOT CHARGING"
+msgstr "NO CARGA"
+
+msgid "Follows the language until you choose one here."
+msgstr "Seguís la lenga fins que ne causiscas una aquí."
+
+msgid "No network. Put the microSD card in a PC and copy each game into the folder of its system, inside roms (for example roms/snes). Or connect to WiFi and come back here to add games from your phone."
+msgstr "Pas de ret. Botatz la carta microSD dins un PC e copiatz cada jòc dins lo dorsièr de son sistèma, dins roms (per exemple roms/snes). O connectatz-vos al WiFi e tornatz aquí per apondre de jòcs dempuèi lo telefòn."
+
+msgid "Add games"
+msgstr "Apondre de jòcs"
+
+msgid "left, in the menus"
+msgstr "restantas, dins los menús"
+
+msgid "From your phone or microSD"
+msgstr "Dempuèi lo telefòn o la microSD"
+
+msgid "Web transfer turned off"
+msgstr "Transferiment web atudat"

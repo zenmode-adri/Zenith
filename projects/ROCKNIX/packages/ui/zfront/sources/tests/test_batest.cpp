@@ -133,6 +133,15 @@ int main() {
     CHECK(make_session(now(80, 3000000, 3000000), now(75, 2850000, 3000000), 300).valid);
     CHECK(!make_session(now(70, 2400000, 3000000), now(75, 2850000, 3000000), 3600).valid);          // it went up
     CHECK(!make_session(now(80, 2400000, 3000000), now(80, 2400000, 3000000), 3600).valid);          // no drop to tell
+
+    // minutes left at the session's mean rate: 300 mAh in 15 min = 1.2 A; 2.7 Ah left -> 2 h 15 min
+    using power::minutes_left_at_mean;
+    CHECK_EQ(minutes_left_at_mean(now(90, 3000000, 3000000), now(80, 2700000, 3000000), 900), 135);
+    CHECK_EQ(minutes_left_at_mean(now(90, 3000000, 3000000), now(80, 2700000, 3000000), 179), -1);        // under 3 min: not yet
+    CHECK_EQ(minutes_left_at_mean(now(90, 3000000, 3000000), now(80, 2700000, 3000000, true), 900), -1);  // charging
+    CHECK_EQ(minutes_left_at_mean(now(80, 2700000, 3000000), now(90, 3000000, 3000000), 900), -1);        // it went up
+    CHECK_EQ(minutes_left_at_mean(now(80, 0, 0), now(70, 0, 0), 900), -1);                                // no charge counter
+    CHECK_EQ(minutes_left_at_mean(now(90, 3000000, 3000000), now(89, 2999990, 3000000), 900), 48 * 60);   // capped at 48 h
     power::Now none;
     CHECK(!make_session(none, now(75, 2850000, 3000000), 3600).valid);                               // no battery
 

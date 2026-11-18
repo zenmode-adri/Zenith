@@ -229,7 +229,7 @@ bool Assets::decode_fit(const std::string& full, uint32_t max_w, uint32_t max_h,
       }
     }
     if (crop && path_ext_lower(path) != ".svg") {
-      if (!decode_image_file(path, im) || im.w == 0 || im.h == 0) return false;
+      if (!decode_image_file_cover(path, max_w, max_h, im) || im.w == 0 || im.h == 0) return false;
       const float s = std::max(float(max_w) / float(im.w), float(max_h) / float(im.h));
       const uint32_t nw = std::max<uint32_t>(uint32_t(std::lround(float(im.w) * s)), max_w), nh = std::max<uint32_t>(uint32_t(std::lround(float(im.h) * s)), max_h);
       if (nw != im.w || nh != im.h) im.rgba = resize_rgba(std::move(im.rgba), im.w, im.h, nw, nh, Filter::Triangle);
@@ -262,7 +262,7 @@ bool Assets::decode_fit(const std::string& full, uint32_t max_w, uint32_t max_h,
   }
   const std::string& path = full;
   if (path_ext_lower(path) == ".svg") return rasterize_svg_fit(path, max_w, max_h, im);
-  if (!decode_image_file(path, im)) return false;
+  if (!decode_image_file_fit(path, max_w, max_h, im)) return false;
   if (im.w > max_w || im.h > max_h) {
     float s = std::min(float(max_w) / float(im.w), float(max_h) / float(im.h));
     uint32_t nw = std::max<uint32_t>(uint32_t(std::lround(float(im.w) * s)), 1);
@@ -399,6 +399,43 @@ ImgId Assets::text_wrap(std::string_view s, float px, Color color, float max_w, 
       if (j == i) break;
       std::string word(para.substr(i, j - i));
       i = j;
+      if (measure(word, px) > max_w) {
+        // a "word" wider than the line (Japanese and Chinese have no spaces: a whole sentence is one): it is cut between letters. Only
+        // then: every text that fitted before wraps exactly as before.
+        if (!cur.empty()) {
+          lines.push_back(cur);
+          cur.clear();
+          if (lines.size() >= max_lines) {
+            truncated = true;
+            stop = true;
+            break;
+          }
+        }
+        size_t k = 0;
+        while (k < word.size()) {
+          size_t end = k, next = k;
+          while (next < word.size()) {
+            size_t n2 = next;
+            utf8_next(word, n2);
+            if (end > k && measure(std::string_view(word).substr(k, n2 - k), px) > max_w) break;
+            end = next = n2;
+          }
+          const std::string piece = word.substr(k, end - k);
+          k = end;
+          if (k < word.size()) {
+            lines.push_back(piece);
+            if (lines.size() >= max_lines) {
+              truncated = true;
+              stop = true;
+              break;
+            }
+          } else {
+            cur = piece;
+          }
+        }
+        if (stop) break;
+        continue;
+      }
       std::string cand = cur.empty() ? word : cur + " " + word;
       if (cur.empty() || measure(cand, px) <= max_w) {
         cur = cand;

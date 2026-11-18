@@ -22,7 +22,6 @@ const std::vector<UserThemeKey>& user_theme_keys() {
   static const std::vector<UserThemeKey> k = {
       {"zfront.sel_style", "selStyle", {"fill", "outline", "underline", "bar"}},
       {"zfront.header_align", "headerAlign", {"left", "center"}},
-      {"zfront.car_count", "carCount", {"3", "5", "7"}},
       {"zfront.list_case", "listCase", {"upper", "lower"}},
   };
   return k;
@@ -32,6 +31,14 @@ void apply_user_theme(Theme& th, const std::function<std::string(const std::stri
   for (const UserThemeKey& k : user_theme_keys()) {
     const std::string v = get(k.key);
     if (std::find(k.values.begin(), k.values.end(), v) != k.values.end()) th.set_var(k.var, v);
+  }
+}
+
+void set_user_theme(Theme& th, const std::string& key, const std::string& value) {
+  for (const UserThemeKey& k : user_theme_keys()) {
+    if (k.key != key) continue;
+    if (value.empty()) th.reset_var(k.var);
+    else if (std::find(k.values.begin(), k.values.end(), value) != k.values.end()) th.set_var(k.var, value);
   }
 }
 
@@ -55,7 +62,9 @@ std::vector<std::string> list_dir(const std::string& dir) {
 }
 }  // namespace
 
-std::string resolve_theme(std::string_view theme_set, const std::string& root) {
+std::string resolve_theme(std::string_view theme_set_in, const std::string& root) {
+  // no ThemeSet (a new console, a cleared setting): Zenith Next dark, the image's default theme
+  const std::string_view theme_set = theme_set_in.empty() ? std::string_view(kDefaultThemeSet) : theme_set_in;
   const std::string set = lower(theme_set);
   const bool zenith = set.find("zenith") != std::string::npos;
   const bool dark = set.find("dark") != std::string::npos;
@@ -86,8 +95,29 @@ void add_unique(std::vector<ThemeChoice>& out, const ThemeChoice& t) {
 }
 }  // namespace
 
+namespace {
+struct VirtualTheme {
+  const char* value;
+  const char* label;
+  const char* carousel;
+};
+const VirtualTheme kVirtual[] = {
+    {"zf-industrial", "Industrial", "industrial"},
+    {"zf-swiss", "Swiss", "swiss"},
+    {"zf-aurora", "Aurora", "aurora"},
+};
+const char* const kVirtualBase = "es-theme-iconic";  // the ES theme whose pictures they use
+}  // namespace
+
+std::string virtual_carousel(std::string_view set) {
+  for (const VirtualTheme& v : kVirtual)
+    if (set == v.value) return v.carousel;
+  return {};
+}
+
 std::string resolve_es_theme(std::string_view theme_set, const std::string& root) {
   if (theme_set.empty() || theme_set.find('/') != std::string_view::npos || theme_set[0] == '.') return {};
+  if (!virtual_carousel(theme_set).empty()) return resolve_es_theme(kVirtualBase, root);
   for (const char* d : kEsThemeDirs) {
     const std::string dir = root + d + "/" + std::string(theme_set);
     if (is_dir(dir) && is_es_theme(dir, std::string(theme_set))) return dir;
@@ -119,6 +149,8 @@ bool translate_es_theme(const std::string& es_dir, unsigned w, unsigned h, const
   opt.width = w;
   opt.height = h;
   opt.setting = setting;
+  if (setting)
+    if (const std::string* ts = setting("ThemeSet")) opt.carousel = virtual_carousel(*ts);
   estheme::Bases bases{resolve_theme("", root), resolve_theme("dark", root)};
   estheme::Generated g;
   if (!estheme::generate(es_dir, bases, out_root.empty() ? estheme::default_out_root() : out_root, opt, g, err)) return false;
@@ -161,12 +193,43 @@ std::vector<ThemeChoice> list_theme_sets(const std::string& root) {
   scan(root + "/usr/share/themes", false);
   scan(root + "/storage/.config/emulationstation/themes", false);
   for (const ThemeChoice& t : list_es_themes(root)) add_unique(out, t);
+  if (!resolve_es_theme(kVirtualBase, root).empty())
+    for (const VirtualTheme& v : kVirtual) add_unique(out, {v.value, v.label, true});
   std::sort(out.begin(), out.end(), [](const ThemeChoice& a, const ThemeChoice& b) {
     auto rank = [](const ThemeChoice& t) { return t.value == "es-theme-zenith" ? 0 : lower(t.value).find("zenith") != std::string::npos ? 1 : 2; };  // Zenith Minimal, the other Zeniths, the rest
     if (rank(a) != rank(b)) return rank(a) < rank(b);
     return a.label < b.label;
   });
   return out;
+}
+
+std::string theme_family(std::string_view set) {
+  constexpr std::string_view kDark = "-dark";
+  if (set.size() > kDark.size() && lower(set.substr(set.size() - kDark.size())) == kDark) set.remove_suffix(kDark.size());
+  return std::string(set);
+}
+
+bool theme_is_dark(std::string_view set) { return theme_family(set).size() != set.size(); }
+
+std::vector<ThemeChoice> theme_families(const std::vector<ThemeChoice>& sets) {
+  auto has = [&](const std::string& v) {
+    for (const ThemeChoice& t : sets)
+      if (t.value == v) return true;
+    return false;
+  };
+  std::vector<ThemeChoice> out;
+  for (const ThemeChoice& t : sets) {
+    if (theme_is_dark(t.value) && has(theme_family(t.value))) continue;  // its light sibling stands for both
+    out.push_back(t);
+  }
+  return out;
+}
+
+std::string theme_in_mode(std::string_view family, bool dark, const std::vector<ThemeChoice>& sets) {
+  const std::string want = dark ? std::string(family) + "-dark" : std::string(family);
+  for (const ThemeChoice& t : sets)
+    if (t.value == want) return want;
+  return {};
 }
 
 bool pick_theme(const std::string& primary, const std::string& fallback, const std::function<bool(const std::string&, std::string&)>& problem,

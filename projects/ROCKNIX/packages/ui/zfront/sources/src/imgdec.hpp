@@ -13,5 +13,10 @@ namespace zf {
 constexpr uint64_t kMaxImagePixels = 16u << 20;
 bool decode_image(const uint8_t* data, size_t size, Img& out);
 bool decode_image_file(const std::string& path, Img& out);
+/// Like `decode_image_file`, but a picture bigger than `max_w x max_h` comes out already reduced to fit inside it (same shape).
+/// A WebP is scaled while it is decoded: the full-size RGBA (8 MB for 1920x1080) is never built and the reduction costs no second pass.
+bool decode_image_file_fit(const std::string& path, uint32_t max_w, uint32_t max_h, Img& out);
+/// Same, for a picture that will be cropped to `max_w x max_h`: it comes out reduced to the smallest size that still covers the box.
+bool decode_image_file_cover(const std::string& path, uint32_t max_w, uint32_t max_h, Img& out);
 
 }  // namespace zf

@@ -226,6 +226,7 @@ bool Menu::sync(Ctx& cx) {
   if (lang_ != i18n::language()) {  // the interface language changed under an open menu: entries and title follow
     lang_ = i18n::language();
     if (spec_.title_key) spec_.title = tr(spec_.title_key);
+    if (spec_.title_short_key) spec_.title_short = tr(spec_.title_short_key);
     t_title_.reset();
     if (opened_) tok_->rebuild = true;
     changed = true;
@@ -254,7 +255,15 @@ bool Menu::sync(Ctx& cx) {
 
 void Menu::layout(Ctx& cx) {
   m_ = ui::Metrics::from(cx.th, cx.w, cx.h);
+  m_.balance_list();
   st_ = ui::Style::from(cx.th);
+  skin_ = ui::access().contrast ? 0 : remake::menu_skin(cx.th);
+  skin_sel_ = skin_ >= 1 && skin_ <= 3 ? st_.sel_style : ui::SelStyle::Fill;  // the skins' themes say `fill`: anything else is the user's choice
+  if (skin_) skin_metrics(cx);
+  sub_gl_ = false;
+  if (skin_ == 4 && !has_icons_)
+    for (const Entry& e : e_) sub_gl_ = sub_gl_ || !skin_glyph(e, false).empty();
+  t_num_.clear(), t_hl_.clear(), t_hg_.clear(), t_chip_.reset(), t_chip2_.reset(), hk_ = nullptr;
   lay_w_ = cx.w, lay_h_ = cx.h;
   lay_gen_ = ui::access().gen;
   top_.assign(e_.size(), 0.0f);
@@ -264,7 +273,7 @@ void Menu::layout(Ctx& cx) {
     for (size_t i = 0; i < e_.size(); ++i) {
       float h = m_.row_h;
       const float u = float(std::max(m_.u, 1));  // headers and separators are whole cells too: the rows under them stay on the lines
-      if (e_[i].kind == EntryKind::Header) h = std::max(std::round(m_.row_h * 0.9f / u), 1.0f) * u;
+      if (e_[i].kind == EntryKind::Header) h = skin_ ? hdr_h_ : std::max(std::round(m_.row_h * 0.9f / u), 1.0f) * u;
       if (e_[i].kind == EntryKind::Separator) h = std::max(std::round(m_.row_h * 0.4f / u), 1.0f) * u;
       top_[i] = y;
       hgt_[i] = h;
@@ -558,8 +567,8 @@ void Menu::draw_row(Ctx& cx, std::vector<Op>& out, size_t idx, float y, bool sel
 
   bool dimmed = !e.enabled;
   float fade = ui::access().contrast ? (sel ? 0.85f : 0.70f) : (sel ? 0.60f : 0.42f);  // dimmed entries: a little stronger under the cursor so they stay readable
-  Color lab = dimmed ? ui::with_alpha(sel ? st.cyan_dark : st.txt, fade) : (e.is_danger ? st.danger : (sel ? st.cyan_dark : st.txt));
-  Color val = dimmed ? ui::with_alpha(sel ? st.cyan_dark : st.dim, fade) : (sel ? st.cyan_dark : st.dim);
+  Color lab = dimmed ? ui::with_alpha(sel ? st.sel_ink : st.txt, fade) : (e.is_danger ? st.danger : (sel ? st.sel_ink : st.txt));
+  Color val = dimmed ? ui::with_alpha(sel ? st.sel_ink : st.dim, fade) : (sel ? st.sel_ink : st.dim);
   Color chev = val;
 
   // icon column
@@ -692,6 +701,10 @@ void Menu::warm(Ctx& cx, std::vector<Op>& out) {
 void Menu::draw(Ctx& cx, std::vector<Op>& out) {
   sync(cx);
   Assets& a = cx.assets;
+  if (skin_) {
+    draw_skin(cx, out);
+    return;
+  }
   const ui::Metrics& m = m_;
   const ui::Style& st = st_;
   out.push_back(Op::rect(0, 0, m.W, m.H, st.bg));
@@ -701,7 +714,11 @@ void Menu::draw(Ctx& cx, std::vector<Op>& out) {
   float inset = m.inset;
   const size_t stack_from = out.size();
   status_bar(cx.th, a, m.W, m.H, cx.status, out);  // before the title: a centred title (headerAlign) keeps clear of it
-  if (!t_title_.alive(a)) t_title_.set(a, spec_.title, m.title_px, ui::title_max_w(st, m, out, stack_from, m.col_w * 0.72f));
+  if (!t_title_.alive(a)) {
+    const float title_room = ui::title_max_w(st, m, out, stack_from, m.col_w * 0.72f);
+    t_title_.set(a, spec_.title, m.title_px, spec_.title_short.empty() ? title_room : 0.0f);  // with a short form: measured whole first
+    if (!spec_.title_short.empty() && t_title_.w > title_room) t_title_.set(a, spec_.title_short, m.title_px, title_room);
+  }
   const float title_x = ui::title_x(st, m, m.title_left, t_title_.w);
   // the box of the title stays under the top margin (a large face is taller than the status bar it is centred on)
   const remake::Grid grid(m.W, m.H);
@@ -720,7 +737,19 @@ void Menu::draw(Ctx& cx, std::vector<Op>& out) {
   const bool scrolls = content_h_ > m.list_h + 0.5f;
   // the scrollbar stays inside the column, out of the margin; the room it takes is whole cells, so the right end of every row stays on a line
   scroll_room_ = scrolls ? std::ceil((bar_w + 2.0f) / float(m.u)) * float(m.u) : 0.0f;
-  out.push_back(Op::clip(m.col_x, m.list_top, m.col_w, m.list_h));
+  // The window ends on the last row boundary that fits: a row cut in half at the foot of a long list read as the help bar covering it. What is
+  // left under it (less than a row) stays empty. A list that fits whole, or the end of one, keeps the whole viewport.
+  float view_h = m.list_h;
+  if (scrolls) {
+    float edge = 0.0f;
+    for (size_t i = 0; i < e_.size(); ++i) {
+      const float bot = top_[i] + hgt_[i] - scroll_;
+      if (bot > m.list_h + 0.5f) break;
+      edge = bot;
+    }
+    if (edge >= std::min(m.row_h, m.list_h)) view_h = std::min(edge, m.list_h);
+  }
+  out.push_back(Op::clip(m.col_x, m.list_top, m.col_w, view_h));
   // Zenith Next: the rows of every group (between two headers) on a card with a hairline between them, as the cards of its home screen
   // Next's menus are flat (the owner's choice, 10-nov: Next has no boxes anywhere, Minimal has its pills); menuCards = on puts the
   // rows of every group on a card again
@@ -749,8 +778,13 @@ void Menu::draw(Ctx& cx, std::vector<Op>& out) {
     const bool danger = e_[size_t(cur_)].is_danger;
     if (next_sel) {  // the whole row, framed
       const float sy = std::round(m.list_top + sel_y_ - scroll_), w = m.col_w - scroll_room_;
-      shapes_.rrect(a, out, m.col_x, sy, w, m.row_h, card_r, danger ? st.danger_soft : st.cyan_soft);
-      shapes_.ring(a, out, m.col_x, sy, w, m.row_h, card_r, std::max(2.0f, std::round(m.H * 0.003f)), danger ? st.danger : st.accent());
+      const float ring_w = std::max(2.0f, std::round(m.H * 0.003f));
+      if (st.sel_style == ui::SelStyle::Fill) {  // Next's own: filled and framed in cyan
+        shapes_.rrect(a, out, m.col_x, sy, w, m.row_h, card_r, danger ? st.danger_soft : st.cyan_soft);
+        shapes_.ring(a, out, m.col_x, sy, w, m.row_h, card_r, ring_w, danger ? st.danger : st.accent());
+      } else {  // SELECTOR STYLE chosen by the user: the shape over the same row, with Next's corner and stroke
+        shapes_.selector(a, st, out, m.col_x, sy, w, m.row_h, st.cyan_soft, danger ? st.danger : st.accent(), card_r, int(ring_w));
+      }
       if (remake::audit_sink()) remake::audit(m.col_x, sy, w, m.row_h, "tarjeta", 'B', false, true);
     } else {
       shapes_.selector(a, st, out, m.col_x, py, m.col_w - scroll_room_, m.pill_h, danger ? st.danger_soft : st.cyan_soft, danger ? st.danger : st.accent());  // selStyle
@@ -759,13 +793,15 @@ void Menu::draw(Ctx& cx, std::vector<Op>& out) {
   }
   for (size_t i = 0; i < e_.size(); ++i) {
     float y = std::round(m.list_top + top_[i] - scroll_);
-    if (y + hgt_[i] <= m.list_top || y >= m.list_top + m.list_h) continue;
+    if (y + hgt_[i] <= m.list_top || y >= m.list_top + view_h) continue;
     float vis = 1.0f;
     if (e_[i].kind == EntryKind::Header) {
-      float top = std::max(y, m.list_top), bot = std::min(y + hgt_[i], m.list_top + m.list_h);
+      float top = std::max(y, m.list_top), bot = std::min(y + hgt_[i], m.list_top + view_h);
       vis = std::min(std::max((bot - top) / hgt_[i], 0.0f), 1.0f);
     }
     draw_row(cx, out, i, y, int(i) == cur_, vis);
+    if (remake::audit_sink() && y < m.list_top + view_h - 0.5f && y + hgt_[i] > m.list_top + view_h + 0.5f)  // a row the window cuts at its foot
+      remake::audit(m.col_x, std::max(y, m.list_top), m.col_w, m.list_top + view_h - std::max(y, m.list_top), "fila cortada", 'B', false);
   }
   out.push_back(Op::unclip());
 

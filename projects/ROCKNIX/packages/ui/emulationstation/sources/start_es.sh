@@ -27,6 +27,8 @@ if [ "$(get_setting system.frontend)" = "zfront" ] && [ -x /usr/bin/zfront ] && 
 then
   ZFRONT_ARGS="$(get_setting zfront.args)"
   [ -n "${ZFRONT_ARGS}" ] || ZFRONT_ARGS="--systems /storage/.config/emulationstation/es_systems.cfg --fullscreen --log-path /var/log"
+  # tema: si ES cambio ThemeSet por uno suyo (es-themeguard.sh), vuelve el que habia elegido en zfront (nunca debe impedir el arranque)
+  [ -r "$(dirname $0)/es-themeguard.sh" ] && ( . "$(dirname $0)/es-themeguard.sh" && themeguard_for_zfront ) 2>/dev/null
   rm -f /tmp/emulationstation.ready   # una marca vieja de una pasada anterior falsearia la comprobacion
   /usr/bin/zfront ${ZFRONT_ARGS}
   ZF_RC=$?
@@ -48,4 +50,6 @@ then
   fi
 fi
 
+### Zenith: ES solo se lleva bien con un ThemeSet que exista como tema suyo (zfront puede haber dejado uno propio, p. ej. zf-swiss)
+[ -r "$(dirname $0)/es-themeguard.sh" ] && ( . "$(dirname $0)/es-themeguard.sh" && themeguard_for_es ) 2>/dev/null
 emulationstation --log-path /var/log
