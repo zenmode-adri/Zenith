@@ -60,11 +60,8 @@ which is a fork of [ROCKNIX](https://github.com/ROCKNIX), developed and measured
 - **Send files from your phone:** scan a QR code and upload games, folders, BIOS and saves from the browser (off by
   default). With an empty library the console starts on an **"Add games"** card that opens it for you (temporary: it turns itself
   off after about 20 minutes without requests).
-- **Zenith DTB Selector** to pick the right screen for your console from Windows, Linux or macOS. See
+- **Zenith DTB Selector** to pick the right screen for your console from Windows. See
   [`docs/DTB-SELECTOR.md`](docs/DTB-SELECTOR.md).
-- **34 languages** in the interface (English and Spanish reviewed; the rest are machine translations, corrections welcome).
-- **A lighter image** (Wine, Box86/Box64, MAME and a few unused packages removed) and **no usage statistics sent to a
-  ROCKNIX server** (v0.2.0 and v0.2.1 still send them).
 
 ## Screenshots
 

@@ -25,7 +25,6 @@ Third public release. Its release tag is the build date, `20261118`, which is wh
 - **The battery gauge now learns the real capacity of your battery after a full cycle** (measured on an R36S: 3000 → 3300 mAh), so the percentage and the time estimates get more accurate. It needs a full cycle from empty, charging with the console on; it does not learn yet when charging with the console off, and it is not validated on the R36 Ultra.
 - **An "Add games" card** when the library is empty, with a QR code for the phone file transfer (or the microSD way if there is no network).
 - **In-game Home menu**, **34 interface languages**, a file manager, a Cloud tab with Syncthing and three polished themes.
-- **A lighter image** and **no more usage statistics sent to a ROCKNIX server.**
 
 ### PSP and Vulkan
 
@@ -78,8 +77,7 @@ Third public release. Its release tag is the build date, `20261118`, which is wh
 - **In-game Home menu** (experimental, off by default; `GAME SETTINGS > HOME MENU DURING GAMES`): hold START + R1 (or R2 / L2)
   for a second to pause the game and open a panel with battery, brightness, volume, **Resume** and **Quit game**. Seen on an R36S
   with PPSSPP; the panel takes 1-2 seconds to draw. Save/Load state are not offered on RK3326.
-- **34 languages, ready to use at once:** all the language data is built into the image, so choosing a language no longer waits ~22 s on the next start (first frame in about 2 s; R36S: 24.7 s before, 1.8 s now). English and Spanish are reviewed; the other 32 are **machine translations, not reviewed by native speakers**
-  (corrections welcome; Catalan, Occitan, Welsh and Nynorsk are the doubtful ones). No Arabic or Hebrew yet. Non-Latin scripts were
+- **34 languages, ready to use at once:** all the language data is built into the image, so choosing a language no longer waits ~22 s on the next start (first frame in about 2 s; R36S: 24.7 s before, 1.8 s now). Corrections to any translation are welcome. No Arabic or Hebrew yet. Non-Latin scripts were
   not seen on a console.
 - **"Add games" card in the carousel when the library is empty:** the console starts with it selected; A opens the web transfer
   with a QR code (without a network it explains how to copy games with a microSD card). The carousel's help bar is shorter:

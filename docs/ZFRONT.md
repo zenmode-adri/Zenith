@@ -61,8 +61,7 @@ frontend. The gain is in the frontend itself and in the memory it leaves free.
   first-boot screens, and menus for network and Wi-Fi, Bluetooth and controllers, sound, display and per-game options.
   Light and dark Zenith themes at 480x320, 640x480, 720x405 and 720x720. Navigation sounds, smooth motion that turns
   itself off in power-saver mode, live reload of the system list.
-- **Translated.** Every text goes through gettext. The interface comes in **34 languages**: English and Spanish are reviewed, the
-  other 32 are machine translations that nobody has reviewed (corrections welcome). No Arabic or Hebrew yet (no right-to-left text).
+- **Translated.** Every text goes through gettext. The interface comes in **34 languages** (corrections welcome). No Arabic or Hebrew yet (no right-to-left text).
 - **Reproducible output.** `-ffp-contract=off` gives identical pixels on x86_64 and aarch64, so the screens can be
   rendered and tested on a PC without a device (`--preview out.png`).
 
